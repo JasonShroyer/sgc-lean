@@ -1,19 +1,35 @@
-import Mathlib.LinearAlgebra.Matrix.Exponential
-import Mathlib.Analysis.Calculus.MeanValue
+import FHDT.Core.Assumptions
+import FHDT.Core.Projector
+import Mathlib.Analysis.NormedSpace.Exponential
+import Mathlib.Analysis.NormedSpace.MatrixExponential
 
 noncomputable section
-open Matrix Real
+open Matrix Real NormedSpace
 
 namespace FHDT
 
-variable {V : Type*} [Fintype V]
+variable {V : Type*} [Fintype V] [DecidableEq V]
+variable {L H : Matrix V V ℝ} {pi_dist : V → ℝ}
 
-/-- Class for envelope specifications. -/
-class EnvelopeSpec (L : Matrix V V ℝ) where
-  -- Placeholder for envelope properties
-
-/-- The heat kernel (semigroup). -/
+/-- Heat semigroup K(t) = e^{tL}. -/
 def HeatKernel (L : Matrix V V ℝ) (t : ℝ) : Matrix V V ℝ :=
-  Matrix.exp (t • L)
+  exp ℝ (t • L)
+
+/--
+**Pillar 2 Interface: `EnvelopeSpec`**
+A typeclass defining the contract for a transient envelope `B(t)`.
+-/
+class EnvelopeSpec (L H : Matrix V V ℝ) (pi_dist : V → ℝ) where
+  B : ℝ → ℝ
+  B_zero : B 0 = 1
+  r : ℝ
+  r_ge_gap : r ≥ SpectralGap_pi pi_dist H
+  /--
+  The core bounding inequality: ‖e^{tL} P_⊥‖_π ≤ B(t) * e^{-rt}.
+  P is the projector onto (span{1})⊥ in the L²(pi) space.
+  -/
+  bound :
+    ∀ t ≥ 0, ∀ (h_pos : ∀ v, 0 < pi_dist v) (P : (V → ℝ) →ₗ[ℝ] (V → ℝ)),
+    opNorm_pi pi_dist h_pos (toLin' (HeatKernel L t) ∘ₗ P) ≤ B t * Real.exp (-r * t)
 
 end FHDT
