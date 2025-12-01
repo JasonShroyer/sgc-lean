@@ -1,0 +1,2 @@
+# Auto-activate lean-env conda environment for this project
+conda activate lean-env

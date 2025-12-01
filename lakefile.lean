@@ -4,7 +4,7 @@ open Lake DSL
 package «fhdt» where
   -- Add package configuration here
 
-require mathlib from git "https://github.com/leanprover-community/mathlib4" @ "v4.8.0"
+require "mathlib" from git "https://github.com/leanprover-community/mathlib4" @ "v4.25.2"
 
 @[default_target]
 lean_lib «FHDT» where

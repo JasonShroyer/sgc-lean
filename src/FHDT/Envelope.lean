@@ -1,7 +1,7 @@
 import FHDT.Core.Assumptions
 import FHDT.Core.Projector
-import Mathlib.Analysis.NormedSpace.Exponential
-import Mathlib.Analysis.NormedSpace.MatrixExponential
+import Mathlib.Analysis.Normed.Algebra.Exponential
+import Mathlib.Analysis.Normed.Algebra.MatrixExponential
 
 noncomputable section
 open Matrix Real NormedSpace

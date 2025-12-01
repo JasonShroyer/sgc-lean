@@ -3,7 +3,7 @@ import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.Calculus.MeanValue
-import Mathlib.Analysis.NormedSpace.FiniteDimension
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Tactic
 
 noncomputable section

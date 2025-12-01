@@ -2,13 +2,13 @@ import FHDT.Envelope
 import FHDT.Core.Assumptions
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.LinearAlgebra.Matrix.Spectrum
+import Mathlib.Analysis.Matrix.Spectrum
 import Mathlib.LinearAlgebra.Matrix.PosDef
-import Mathlib.Analysis.NormedSpace.Exponential
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
+import Mathlib.Analysis.Normed.Algebra.Exponential
+import Mathlib.Analysis.Normed.Operator.Basic
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.MeanValue
-import Mathlib.Analysis.InnerProductSpace.Projection
+import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 
 noncomputable section
 open Matrix Real ContinuousLinearMap Filter Topology Finset LinearMap NormedSpace

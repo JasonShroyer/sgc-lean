@@ -1,0 +1,16 @@
+{
+  "terminal.integrated.env.windows": {
+    "CONDA_DEFAULT_ENV": "lean-env"
+  },
+  "terminal.integrated.profiles.windows": {
+    "PowerShell (lean-env)": {
+      "path": "powershell.exe",
+      "args": [
+        "-NoExit",
+        "-Command",
+        "conda activate lean-env"
+      ]
+    }
+  },
+  "terminal.integrated.defaultProfile.windows": "PowerShell (lean-env)"
+}

@@ -4,7 +4,7 @@ import FHDT.Core.Assumptions
 import FHDT.Core.Projector
 import FHDT.Diagonal
 import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
+import Mathlib.Analysis.Normed.Operator.Basic
 import Mathlib.Data.Real.Basic
 -- Removed dead import: Mathlib.Analysis.Calculus.FDeriv.Matrix
 

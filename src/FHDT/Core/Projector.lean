@@ -1,7 +1,7 @@
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
+import Mathlib.Analysis.Normed.Operator.Basic
 import FHDT.Core.Assumptions
 
 noncomputable section
