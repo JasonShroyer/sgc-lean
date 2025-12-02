@@ -32,31 +32,37 @@ def norm_sq_pi (pi_dist : V → ℝ) (v : V → ℝ) : ℝ :=
 
 lemma inner_pi_add_left {pi_dist : V → ℝ} (u v w : V → ℝ) :
     inner_pi pi_dist (u + v) w = inner_pi pi_dist u w + inner_pi pi_dist v w := by
-  sorry
+  simp only [inner_pi, Pi.add_apply]
+  rw [← Finset.sum_add_distrib]
+  congr 1; ext x; ring
 
 lemma inner_pi_add_right {pi_dist : V → ℝ} (u v w : V → ℝ) :
     inner_pi pi_dist u (v + w) = inner_pi pi_dist u v + inner_pi pi_dist u w := by
-  sorry
+  simp [inner_pi, mul_add, Finset.sum_add_distrib]
 
 lemma inner_pi_smul_left {pi_dist : V → ℝ} (c : ℝ) (u v : V → ℝ) :
     inner_pi pi_dist (c • u) v = c * inner_pi pi_dist u v := by
-  sorry
+  simp only [inner_pi, Pi.smul_apply, smul_eq_mul]
+  rw [Finset.mul_sum]
+  congr 1; ext x; ring
 
 lemma inner_pi_smul_right {pi_dist : V → ℝ} (c : ℝ) (u v : V → ℝ) :
     inner_pi pi_dist u (c • v) = c * inner_pi pi_dist u v := by
-  sorry
+  simp [inner_pi, mul_left_comm, mul_assoc, Finset.mul_sum]
 
 lemma inner_pi_comm {pi_dist : V → ℝ} (u v : V → ℝ) :
     inner_pi pi_dist u v = inner_pi pi_dist v u := by
-  sorry
+  simp [inner_pi, mul_comm, mul_left_comm]
 
 lemma inner_pi_zero_left {pi_dist : V → ℝ} (v : V → ℝ) :
     inner_pi pi_dist 0 v = 0 := by
-  sorry
+  simp [inner_pi]
 
 lemma inner_pi_sub_left {pi_dist : V → ℝ} (u v w : V → ℝ) :
     inner_pi pi_dist (u - v) w = inner_pi pi_dist u w - inner_pi pi_dist v w := by
-  sorry
+  simp only [inner_pi, Pi.sub_apply]
+  rw [← Finset.sum_sub_distrib]
+  congr 1; ext x; ring
 
 /-! ### Spectral Gap Definition and Theorem -/
 
