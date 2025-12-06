@@ -33,7 +33,7 @@ lemma unit_coord_pi_norm_one (hπ : ∀ x, 0 < pi_dist x) (x : V) :
   rw [Real.sq_sqrt (le_of_lt (hπ x))]
   exact div_self (ne_of_gt (hπ x))
 
-lemma abs_diag_le_opNorm_pi (hπ : ∀ x, 0 < pi_dist x) (A_mat : Matrix V V ℝ) (x : V) :
+lemma abs_diag_le_opNorm_pi [Nonempty V] (hπ : ∀ x, 0 < pi_dist x) (A_mat : Matrix V V ℝ) (x : V) :
   |A_mat x x| ≤ opNorm_pi pi_dist hπ (toLin' A_mat) := by
   let A := toLin' A_mat
   let u := unit_coord_pi pi_dist hπ x
@@ -68,7 +68,7 @@ lemma abs_diag_le_opNorm_pi (hπ : ∀ x, 0 < pi_dist x) (A_mat : Matrix V V ℝ
 **Pillar 3: The Diagonal Bridge**
 The sum of absolute diagonal elements is bounded by the cardinality times the operator norm.
 -/
-lemma sum_abs_diag_le_card_opNorm (hπ : ∀ x, 0 < pi_dist x) (A_mat : Matrix V V ℝ) :
+lemma sum_abs_diag_le_card_opNorm [Nonempty V] (hπ : ∀ x, 0 < pi_dist x) (A_mat : Matrix V V ℝ) :
   ∑ x, |A_mat x x| ≤ Fintype.card V * opNorm_pi pi_dist hπ (toLin' A_mat) := by
   calc
     ∑ x, |A_mat x x| ≤ ∑ x, opNorm_pi pi_dist hπ (toLin' A_mat) := by

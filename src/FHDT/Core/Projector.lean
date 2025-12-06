@@ -186,13 +186,21 @@ lemma cauchy_schwarz_pi (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (f 
       _ = norm_pi pi_dist f * norm_pi pi_dist g := by unfold norm_pi a c; rfl
 
 --------------------------------------------------------------------------------
--- 2. Operator Norm via Euclidean Transport
+-- 2. Operator Norm (Direct sInf Definition)
 --------------------------------------------------------------------------------
 
-/-- Type alias for Euclidean Space. Use this to summon the L2 instances. -/
-abbrev Euc (V : Type*) [Fintype V] := EuclideanSpace ℝ V
+/-- The set of constants bounding ‖A f‖_π / ‖f‖_π.
+    This is the defining set for the L²(π) operator norm. -/
+def opNorm_set (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (A : (V → ℝ) →ₗ[ℝ] (V → ℝ)) : Set ℝ :=
+  { c | 0 ≤ c ∧ ∀ f, norm_pi pi_dist (A f) ≤ c * norm_pi pi_dist f }
 
-/-- Simple scaling isometry (V → ℝ) to (V → ℝ). -/
+/-- L²(π) Operator Norm.
+    Defined as the infimum of all constants c such that ‖A f‖_π ≤ c ‖f‖_π.
+    This is the analytically correct operator norm for the L²(π) Hilbert space. -/
+def opNorm_pi (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (A : (V → ℝ) →ₗ[ℝ] (V → ℝ)) : ℝ :=
+  sInf (opNorm_set pi_dist h_pos A)
+
+-- Helper: Scaling isometry used to prove boundedness via Euclidean transport.
 def iso_L2_to_std (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) : (V → ℝ) ≃ₗ[ℝ] (V → ℝ) where
   toFun f v := f v * Real.sqrt (pi_dist v)
   invFun g v := g v / Real.sqrt (pi_dist v)
@@ -201,21 +209,178 @@ def iso_L2_to_std (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) : (V → 
   map_add' f g := by ext; simp [add_mul]
   map_smul' r f := by ext; simp [mul_assoc]
 
-/-- L2(pi) Operator Norm.
-    Defined via conjugation: we scale to standard L2, take the operator norm there, then scale back. -/
-def opNorm_pi (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (A : (V → ℝ) →ₗ[ℝ] (V → ℝ)) : ℝ :=
-  let iso := iso_L2_to_std pi_dist h_pos
-  let A_conj : (V → ℝ) →ₗ[ℝ] (V → ℝ) := iso.toLinearMap ∘ₗ A ∘ₗ iso.symm.toLinearMap
-  ‖A_conj.toContinuousLinearMap‖
+/-- The isometry property: norm_sq_pi f = Σ (iso f v)².
+    Used to show that the conjugated operator has bounded norm. -/
+lemma norm_sq_pi_eq_euclidean (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (f : V → ℝ) :
+    norm_sq_pi pi_dist f = ∑ v, (iso_L2_to_std pi_dist h_pos f v)^2 := by
+  unfold iso_L2_to_std norm_sq_pi inner_pi
+  simp only [LinearEquiv.coe_mk]
+  apply Finset.sum_congr rfl
+  intro v _
+  show pi_dist v * f v * f v = (f v * Real.sqrt (pi_dist v)) ^ 2
+  rw [mul_pow, Real.sq_sqrt (le_of_lt (h_pos v))]
+  ring
 
-/-- The Bound Lemma.
-    We prove this directly using the definition of opNorm_pi as a supremum. -/
-lemma opNorm_pi_bound (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (A : (V → ℝ) →ₗ[ℝ] (V → ℝ)) (f : V → ℝ) :
-  norm_pi pi_dist (A f) ≤ opNorm_pi pi_dist h_pos A * norm_pi pi_dist f := by
-  -- The opNorm_pi is defined as the operator norm of the conjugated map
-  -- For now, we use the fact that this is the correct definition and keep as sorry
-  -- A full proof would require showing the conjugation preserves the operator norm property
-  sorry
+/-- norm_pi expressed in terms of iso. -/
+lemma norm_pi_eq_sqrt_sum_sq (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (f : V → ℝ) :
+    norm_pi pi_dist f = Real.sqrt (∑ v, (iso_L2_to_std pi_dist h_pos f v)^2) := by
+  unfold norm_pi
+  rw [norm_sq_pi_eq_euclidean]
+
+/-- Key isometry: norm_pi f equals the EuclideanSpace norm of iso(f). -/
+lemma norm_pi_eq_euclidean_norm (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (f : V → ℝ) :
+    norm_pi pi_dist f = ‖(WithLp.equiv 2 (V → ℝ)).symm (iso_L2_to_std pi_dist h_pos f)‖ := by
+  rw [norm_pi_eq_sqrt_sum_sq pi_dist h_pos]
+  -- The EuclideanSpace norm is sqrt(Σ ‖g v‖²) = sqrt(Σ (g v)²) for real values
+  rw [EuclideanSpace.norm_eq]
+  congr 1
+  apply Finset.sum_congr rfl
+  intro v _
+  -- Need: (iso f v)^2 = ‖(WithLp.equiv.symm (iso f)) v‖^2
+  -- The coercion through WithLp is the identity at data level
+  -- .ofLp unwraps, so (WithLp.equiv.symm g).ofLp = g
+  rw [Real.norm_eq_abs, sq_abs]
+  -- Now just need: (iso f v)^2 = ((WithLp.equiv.symm (iso f)).ofLp v)^2
+  -- which is rfl since PiLp.ofLp is just the identity coercion
+  rfl
+
+/-- The operator norm set is nonempty.
+    Uses Euclidean transport to show that a finite constant exists.
+    This is the ONLY place where we appeal to the conjugated operator norm. -/
+lemma opNorm_set_nonempty (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) 
+    (A : (V → ℝ) →ₗ[ℝ] (V → ℝ)) : (opNorm_set pi_dist h_pos A).Nonempty := by
+  -- Strategy: Transport to EuclideanSpace, use finite-dim operator norm bound, transport back.
+  let iso := iso_L2_to_std pi_dist h_pos
+  
+  -- Define the EuclideanSpace type and transport map
+  -- Note: WithLp.equiv is an equivalence at the data level (same underlying type, different norm)
+  let E := EuclideanSpace ℝ V
+  let toE : (V → ℝ) → E := (WithLp.equiv 2 (V → ℝ)).symm
+  let fromE : E → (V → ℝ) := WithLp.equiv 2 (V → ℝ)
+  
+  -- The conjugated operator on EuclideanSpace
+  -- This is well-defined because iso and A are linear, and WithLp.equiv preserves linearity
+  let A_E : E →ₗ[ℝ] E := 
+    { toFun := fun g => toE (iso (A (iso.symm (fromE g))))
+      map_add' := fun x y => by
+        -- WithLp.equiv is an AddEquiv, so it preserves addition
+        change toE (iso (A (iso.symm (fromE (x + y))))) = 
+               toE (iso (A (iso.symm (fromE x)))) + toE (iso (A (iso.symm (fromE y))))
+        -- fromE (x + y) = fromE x + fromE y (definitionally for WithLp)
+        have h1 : fromE (x + y) = fromE x + fromE y := rfl
+        rw [h1, map_add, map_add, map_add]
+        -- toE (a + b) = toE a + toE b (definitionally for WithLp)
+        rfl
+      map_smul' := fun m x => by
+        change toE (iso (A (iso.symm (fromE (m • x))))) = 
+               m • toE (iso (A (iso.symm (fromE x))))
+        -- fromE (m • x) = m • fromE x (definitionally for WithLp)
+        have h1 : fromE (m • x) = m • fromE x := rfl
+        rw [h1, map_smul, map_smul, map_smul]
+        -- toE (m • a) = m • toE a (definitionally for WithLp)
+        rfl }
+  
+  -- Get the operator norm bound from finite-dimensionality
+  let C := ‖A_E.toContinuousLinearMap‖
+  
+  use C
+  refine ⟨norm_nonneg _, ?_⟩
+  intro f
+  
+  -- Show: norm_pi(A f) ≤ C * norm_pi(f)
+  have h_Af : norm_pi pi_dist (A f) = ‖toE (iso (A f))‖ := 
+    norm_pi_eq_euclidean_norm pi_dist h_pos (A f)
+  
+  have h_f : norm_pi pi_dist f = ‖toE (iso f)‖ := 
+    norm_pi_eq_euclidean_norm pi_dist h_pos f
+  
+  -- The conjugation identity: toE(iso(A f)) = A_E(toE(iso f))
+  have h_conj : toE (iso (A f)) = A_E (toE (iso f)) := by
+    simp only [A_E, LinearMap.coe_mk, AddHom.coe_mk, iso, fromE, toE]
+    congr 1
+    rw [Equiv.apply_symm_apply, LinearEquiv.symm_apply_apply]
+  
+  -- Apply the operator norm bound
+  have h_bound : ‖A_E (toE (iso f))‖ ≤ C * ‖toE (iso f)‖ := 
+    ContinuousLinearMap.le_opNorm A_E.toContinuousLinearMap (toE (iso f))
+  
+  calc norm_pi pi_dist (A f) 
+      = ‖toE (iso (A f))‖ := h_Af
+    _ = ‖A_E (toE (iso f))‖ := by rw [h_conj]
+    _ ≤ C * ‖toE (iso f)‖ := h_bound
+    _ = C * norm_pi pi_dist f := by rw [h_f]
+
+/-- The operator norm set is bounded below by 0. -/
+lemma opNorm_set_bddBelow (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) 
+    (A : (V → ℝ) →ₗ[ℝ] (V → ℝ)) : BddBelow (opNorm_set pi_dist h_pos A) :=
+  ⟨0, fun _ hc => hc.1⟩
+
+/-- Zero is a lower bound of opNorm_set. -/
+lemma opNorm_set_zero_le_mem (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) 
+    (A : (V → ℝ) →ₗ[ℝ] (V → ℝ)) (c : ℝ) (hc : c ∈ opNorm_set pi_dist h_pos A) : 0 ≤ c :=
+  hc.1
+
+/-- Helper: norm_pi f = 0 implies f = 0 (pointwise). -/
+lemma norm_pi_eq_zero_iff (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (f : V → ℝ) :
+    norm_pi pi_dist f = 0 ↔ f = 0 := by
+  constructor
+  · intro hf
+    ext v
+    have h_sq : norm_sq_pi pi_dist f = 0 := by
+      unfold norm_pi at hf
+      have := Real.sqrt_eq_zero (norm_sq_pi_nonneg pi_dist h_pos f)
+      exact this.mp hf
+    exact (norm_sq_pi_eq_zero_iff pi_dist h_pos f).mp h_sq v
+  · intro hf
+    simp [hf, norm_pi, norm_sq_pi, inner_pi]
+
+/-- Helper: norm_pi is positive for nonzero functions. -/
+lemma norm_pi_pos_of_ne_zero (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (f : V → ℝ) 
+    (hf : f ≠ 0) : 0 < norm_pi pi_dist f := by
+  unfold norm_pi
+  apply Real.sqrt_pos_of_pos
+  have : norm_sq_pi pi_dist f ≠ 0 := by
+    intro h_eq
+    exact hf ((norm_sq_pi_eq_zero_iff pi_dist h_pos f).mp h_eq |> funext)
+  exact (norm_sq_pi_nonneg pi_dist h_pos f).lt_of_ne' this
+
+/-- **The Bound Lemma.** ‖A f‖_π ≤ ‖A‖_π * ‖f‖_π.
+    Follows directly from the sInf definition: opNorm_pi is the greatest lower bound
+    of all valid constants, and any such constant satisfies the bound. -/
+lemma opNorm_pi_bound (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) 
+    (A : (V → ℝ) →ₗ[ℝ] (V → ℝ)) (f : V → ℝ) :
+    norm_pi pi_dist (A f) ≤ opNorm_pi pi_dist h_pos A * norm_pi pi_dist f := by
+  unfold opNorm_pi
+  -- Strategy: Every c in opNorm_set satisfies the bound, so sInf also does.
+  -- We use that the bound holds for all c in the set, and pass to the limit.
+  
+  by_cases hf : f = 0
+  · -- If f = 0, both sides are 0
+    simp [hf, norm_pi, norm_sq_pi, inner_pi]
+  · -- f ≠ 0, so norm_pi f > 0
+    have hf_pos : 0 < norm_pi pi_dist f := norm_pi_pos_of_ne_zero pi_dist h_pos f hf
+    
+    -- Key: for all c in opNorm_set, norm_pi(Af) ≤ c * norm_pi(f)
+    -- Therefore: norm_pi(Af) / norm_pi(f) ≤ c for all c in opNorm_set
+    -- So: norm_pi(Af) / norm_pi(f) ≤ sInf(opNorm_set)
+    -- Rearranging: norm_pi(Af) ≤ sInf(opNorm_set) * norm_pi(f)
+    
+    have h_ratio_le : ∀ c ∈ opNorm_set pi_dist h_pos A, 
+        norm_pi pi_dist (A f) / norm_pi pi_dist f ≤ c := by
+      intro c hc
+      rw [div_le_iff₀ hf_pos]
+      exact hc.2 f
+    
+    have h_ratio_le_sInf : norm_pi pi_dist (A f) / norm_pi pi_dist f ≤ 
+        sInf (opNorm_set pi_dist h_pos A) := by
+      apply le_csInf (opNorm_set_nonempty pi_dist h_pos A)
+      exact h_ratio_le
+    
+    calc norm_pi pi_dist (A f) 
+        = (norm_pi pi_dist (A f) / norm_pi pi_dist f) * norm_pi pi_dist f := by
+            field_simp
+      _ ≤ sInf (opNorm_set pi_dist h_pos A) * norm_pi pi_dist f := by
+            apply mul_le_mul_of_nonneg_right h_ratio_le_sInf (le_of_lt hf_pos)
 
 --------------------------------------------------------------------------------
 -- 3. Projector (Standard)
@@ -229,38 +394,54 @@ def P_ortho_pi (pi_dist : V → ℝ) (h_sum : ∑ v, pi_dist v = 1) (h_pos : ∀
   LinearMap.id - (LinearMap.smulRight P_inner (fun _ => 1))
 
 -- Required lemmas
-lemma opNorm_pi_nonneg (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (A : (V → ℝ) →ₗ[ℝ] (V → ℝ)) :
-  0 ≤ opNorm_pi pi_dist h_pos A := by
-  unfold opNorm_pi
-  exact norm_nonneg _
 
-lemma opNorm_pi_comp (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (A B : (V → ℝ) →ₗ[ℝ] (V → ℝ)) :
-  opNorm_pi pi_dist h_pos (A ∘ₗ B) ≤ opNorm_pi pi_dist h_pos A * opNorm_pi pi_dist h_pos B := by
-  -- Define the conjugation
-  let iso := iso_L2_to_std pi_dist h_pos
-  let conj (T : (V → ℝ) →ₗ[ℝ] (V → ℝ)) := iso.toLinearMap ∘ₗ T ∘ₗ iso.symm.toLinearMap
-  
-  -- Show algebraically that conj(A ∘ B) = conj(A) ∘ conj(B)
-  have h_alg : conj (A ∘ₗ B) = conj A ∘ₗ conj B := by
-    ext v
-    unfold conj
-    simp only [LinearMap.comp_apply]
-    -- Need to show: A(B(iso⁻¹ v)) = A(iso⁻¹(iso(B(iso⁻¹ v))))
-    -- Which follows from iso⁻¹(iso x) = x
-    simp [LinearEquiv.apply_symm_apply]
-  
-  -- Unfold opNorm_pi definitions
+/-- The L²(π) operator norm is nonnegative.
+    Follows from the sInf definition: all elements of opNorm_set are ≥ 0. -/
+lemma opNorm_pi_nonneg (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (A : (V → ℝ) →ₗ[ℝ] (V → ℝ)) :
+    0 ≤ opNorm_pi pi_dist h_pos A := by
   unfold opNorm_pi
-  simp only [conj]
-  
-  -- Convert to continuous linear maps
-  have h_eq : (conj (A ∘ₗ B)).toContinuousLinearMap =
-      (conj A).toContinuousLinearMap.comp (conj B).toContinuousLinearMap := by
-    rw [h_alg]
-    rfl
-  
-  rw [h_eq]
-  -- Apply the standard submultiplicativity of operator norms
-  exact opNorm_comp_le _ _
+  apply Real.sInf_nonneg
+  intro c hc
+  exact hc.1
+
+/-- Submultiplicativity: ‖A ∘ B‖_π ≤ ‖A‖_π * ‖B‖_π.
+    Proven via the sInf definition: if c bounds A and d bounds B, then c*d bounds A∘B. -/
+lemma opNorm_pi_comp (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (A B : (V → ℝ) →ₗ[ℝ] (V → ℝ)) :
+    opNorm_pi pi_dist h_pos (A ∘ₗ B) ≤ opNorm_pi pi_dist h_pos A * opNorm_pi pi_dist h_pos B := by
+  unfold opNorm_pi
+  -- Show that ‖A‖_π * ‖B‖_π is in opNorm_set(A∘B), then use sInf ≤ element
+  apply csInf_le (opNorm_set_bddBelow pi_dist h_pos (A ∘ₗ B))
+  -- Need to show: sInf(A) * sInf(B) ∈ opNorm_set(A∘B)
+  constructor
+  · -- Nonnegativity
+    apply mul_nonneg
+    · apply Real.sInf_nonneg; intro c hc; exact hc.1
+    · apply Real.sInf_nonneg; intro c hc; exact hc.1
+  · -- Bound property: ‖(A∘B)f‖_π ≤ ‖A‖_π * ‖B‖_π * ‖f‖_π
+    intro f
+    calc norm_pi pi_dist ((A ∘ₗ B) f)
+        = norm_pi pi_dist (A (B f)) := rfl
+      _ ≤ sInf (opNorm_set pi_dist h_pos A) * norm_pi pi_dist (B f) := by
+          have := opNorm_pi_bound pi_dist h_pos A (B f)
+          unfold opNorm_pi at this
+          exact this
+      _ ≤ sInf (opNorm_set pi_dist h_pos A) * (sInf (opNorm_set pi_dist h_pos B) * norm_pi pi_dist f) := by
+          apply mul_le_mul_of_nonneg_left
+          · have := opNorm_pi_bound pi_dist h_pos B f
+            unfold opNorm_pi at this
+            exact this
+          · apply Real.sInf_nonneg; intro c hc; exact hc.1
+      _ = sInf (opNorm_set pi_dist h_pos A) * sInf (opNorm_set pi_dist h_pos B) * norm_pi pi_dist f := by ring
+
+/-- If c ≥ 0 and ‖A f‖_π ≤ c * ‖f‖_π for all f, then ‖A‖_π ≤ c.
+    This is the converse direction: from a pointwise bound to an operator norm bound. -/
+lemma opNorm_pi_le_of_bound (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) 
+    (A : (V → ℝ) →ₗ[ℝ] (V → ℝ)) (c : ℝ) (hc : 0 ≤ c)
+    (h_bound : ∀ f, norm_pi pi_dist (A f) ≤ c * norm_pi pi_dist f) :
+    opNorm_pi pi_dist h_pos A ≤ c := by
+  unfold opNorm_pi
+  -- c ∈ opNorm_set, so sInf ≤ c
+  apply csInf_le (opNorm_set_bddBelow pi_dist h_pos A)
+  exact ⟨hc, h_bound⟩
 
 end FHDT
