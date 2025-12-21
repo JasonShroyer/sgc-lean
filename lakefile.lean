@@ -10,6 +10,9 @@ require "mathlib" from git "https://github.com/leanprover-community/mathlib4" @ 
 lean_lib «FHDT» where
   srcDir := "src"
 
+lean_lib «UPAT» where
+  srcDir := "src"
+
 lean_exe «test» where
   root := `test.Main
   
