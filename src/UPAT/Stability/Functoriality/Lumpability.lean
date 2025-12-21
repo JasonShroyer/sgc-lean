@@ -438,68 +438,47 @@ lemma backward_quadratic_form_eq (L : Matrix V V ℝ) (P : Partition V) (pi_dist
     inner_pi (pi_bar P pi_dist) (QuotientGeneratorSimple L P *ᵥ f) f := by
   rw [inner_pi_comm, forward_quadratic_form_eq L P pi_dist hL f, inner_pi_comm]
 
-/-- **Key Identity for Symmetric Forms**: ⟨u, Lᵀu⟩_π = ⟨Lu, u⟩_π.
-    This is the transpose property for quadratic forms. -/
-lemma transpose_quadratic_eq (L : Matrix V V ℝ) (pi_dist : V → ℝ) (u : V → ℝ) :
-    inner_pi pi_dist u (Lᵀ *ᵥ u) = inner_pi pi_dist (L *ᵥ u) u := by
-  -- ⟨u, Lᵀu⟩_π = Σ_x Σ_y π_x L_{yx} u_x u_y
-  -- Swap indices x ↔ y: = Σ_y Σ_x π_y L_{xy} u_y u_x = Σ_x Σ_y π_y L_{xy} u_x u_y
-  -- ⟨Lu, u⟩_π = Σ_x Σ_y π_x L_{xy} u_y u_x = Σ_x Σ_y π_x L_{xy} u_x u_y
-  -- These are NOT equal in general (π_y vs π_x).
-  -- However, this identity holds when the double sum is symmetric in x,y.
-  -- Direct algebraic proof via sum manipulation.
-  sorry
+/-! ### 7. Dirichlet Form (Quadratic Definition Path)
 
-/-- **Symmetric Quadratic Form (via Forward + Backward)**: 
-    The symmetric form ⟨u, (L+Lᵀ)u⟩ = ⟨u, Lu⟩ + ⟨Lu, u⟩ = 2⟨u, Lu⟩ by inner_pi_comm.
+The key insight (Grok): Instead of defining H as a matrix -(L + Lᵀ)/2 and proving transpose
+identities that don't hold for π-weighted inner products, we define the **Dirichlet form**
+directly as the symmetric part of the quadratic form:
+
+  ℰ(u) := (1/2)[⟨u, Lu⟩_π + ⟨Lu, u⟩_π]
+
+This is physically motivated: the energy decay rate is d/dt ‖u‖²_π = 2⟨u, Lu⟩_π.
+
+Since ⟨u, Lu⟩_π = ⟨Lu, u⟩_π by inner_pi_comm, we have ℰ(u) = ⟨u, Lu⟩_π.
+-/
+
+/-- **Dirichlet Form**: The symmetric quadratic form ℰ(u) = (1/2)[⟨u, Lu⟩ + ⟨Lu, u⟩].
+    By inner_pi_comm, this equals ⟨u, Lu⟩_π. -/
+def DirichletForm (L : Matrix V V ℝ) (pi_dist : V → ℝ) (u : V → ℝ) : ℝ :=
+  (1/2 : ℝ) * (inner_pi pi_dist u (L *ᵥ u) + inner_pi pi_dist (L *ᵥ u) u)
+
+/-- **Dirichlet Form Simplification**: ℰ(u) = ⟨u, Lu⟩_π by inner_pi_comm. -/
+lemma dirichlet_form_eq (L : Matrix V V ℝ) (pi_dist : V → ℝ) (u : V → ℝ) :
+    DirichletForm L pi_dist u = inner_pi pi_dist u (L *ᵥ u) := by
+  simp only [DirichletForm]
+  rw [inner_pi_comm (L *ᵥ u) u]
+  ring
+
+/-- **Dirichlet Form on Quotient** -/
+def DirichletForm_bar (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (f : P.Quot → ℝ) : ℝ :=
+  DirichletForm (QuotientGeneratorSimple L P) (pi_bar P pi_dist) f
+
+/-- **Dirichlet Form Lift Equality**: ℰ(lift(f)) = ℰ̄(f).
     
-    For block-constant functions, this descends to the quotient. -/
-theorem symmetric_quadratic_form_eq (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    This is THE key lemma that enables gap_non_decrease.
+    Proof: immediate from forward_quadratic_form_eq + backward_quadratic_form_eq. -/
+theorem dirichlet_form_lift_eq (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hL : IsStronglyLumpable L P) (f : P.Quot → ℝ) :
-    inner_pi pi_dist (lift_fun P f) ((L + Lᵀ) *ᵥ lift_fun P f) =
-    inner_pi (pi_bar P pi_dist) f ((QuotientGeneratorSimple L P + (QuotientGeneratorSimple L P)ᵀ) *ᵥ f) := by
-  -- Expand (L + Lᵀ)
-  rw [Matrix.add_mulVec, Matrix.add_mulVec]
-  rw [inner_pi_add_right, inner_pi_add_right]
-  -- For L term: use forward_quadratic_form_eq
+    DirichletForm L pi_dist (lift_fun P f) = DirichletForm_bar L P pi_dist f := by
+  simp only [DirichletForm, DirichletForm_bar]
+  -- (1/2)[⟨lift(f), L·lift(f)⟩_π + ⟨L·lift(f), lift(f)⟩_π]
+  -- = (1/2)[⟨f, M·f⟩_π̄ + ⟨M·f, f⟩_π̄] by forward + backward quadratic form eqs
   rw [forward_quadratic_form_eq L P pi_dist hL f]
-  -- For Lᵀ term: use transpose_quadratic_eq + backward_quadratic_form_eq
-  -- ⟨lift(f), Lᵀ·lift(f)⟩_π = ⟨L·lift(f), lift(f)⟩_π (by transpose_quadratic_eq)
-  --                         = ⟨M·f, f⟩_π̄ (by backward_quadratic_form_eq)
-  -- Similarly on quotient: ⟨f, Mᵀ·f⟩_π̄ = ⟨M·f, f⟩_π̄ (by transpose_quadratic_eq on quotient)
-  rw [transpose_quadratic_eq L pi_dist (lift_fun P f)]
   rw [backward_quadratic_form_eq L P pi_dist hL f]
-  rw [transpose_quadratic_eq (QuotientGeneratorSimple L P) (pi_bar P pi_dist) f]
-
-/-- Symmetric part of generator. -/
-def symmetricPart (L : Matrix V V ℝ) : Matrix V V ℝ := (1/2 : ℝ) • (L + Lᵀ)
-
-/-- The symmetric part of the quotient generator. -/
-def symmetricPart_bar (L : Matrix V V ℝ) (P : Partition V) : Matrix P.Quot P.Quot ℝ := 
-  (1/2 : ℝ) • (QuotientGeneratorSimple L P + (QuotientGeneratorSimple L P)ᵀ)
-
-/-- **Quadratic Form Preservation**: ⟨lift(f), H·lift(f)⟩_π = ⟨f, H̄·f⟩_π̄ for symmetric H.
-    
-    This is the key lemma that enables gap_non_decrease without proving L† lumpability.
-    Uses the quadratic form expansion: H = (L + Lᵀ)/2. -/
-theorem quadratic_form_lift_eq (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
-    (hL : IsStronglyLumpable L P) (f : P.Quot → ℝ) :
-    inner_pi pi_dist (lift_fun P f) (symmetricPart L *ᵥ lift_fun P f) =
-    inner_pi (pi_bar P pi_dist) f (symmetricPart_bar L P *ᵥ f) := by
-  -- H = (1/2)(L + Lᵀ), so H·v = (1/2)(L·v + Lᵀ·v)
-  simp only [symmetricPart, symmetricPart_bar, Matrix.smul_mulVec_assoc, Matrix.add_mulVec]
-  -- ⟨lift(f), (1/2)(L + Lᵀ)·lift(f)⟩ = (1/2)[⟨lift(f), L·lift(f)⟩ + ⟨lift(f), Lᵀ·lift(f)⟩]
-  rw [inner_pi_smul_right, inner_pi_add_right]
-  rw [inner_pi_smul_right, inner_pi_add_right]
-  -- For L part: use forward_quadratic_form_eq
-  rw [forward_quadratic_form_eq L P pi_dist hL f]
-  -- For Lᵀ part: use symmetry of inner_pi and forward_quadratic_form_eq
-  -- ⟨lift(f), Lᵀ·lift(f)⟩ = ⟨Lᵀ·lift(f), lift(f)⟩ (by inner_pi_comm)
-  --                       = ⟨lift(f), L·lift(f)⟩ (by ... - NOT directly!)
-  -- Actually, for the transpose we need: ⟨u, Aᵀv⟩ = ⟨Au, v⟩ (standard adjoint property)
-  -- But this is for standard inner product, not π-weighted
-  -- Use direct computation via lift_inner_pi_eq' after showing Lᵀ also intertwines
-  sorry
 
 /-! ### 8. Heat Kernel Commutation -/
 
@@ -542,22 +521,35 @@ theorem heat_kernel_quot_commute (L : Matrix V V ℝ) (P : Partition V) (pi_dist
   -- between Q, K, and the weighted/simple quotient generators
   sorry
 
-/-! ### 8. Spectrum Containment -/
+/-! ### 8. Spectrum Containment (Dirichlet Form Approach)
+
+Using the Dirichlet form ℰ(u) = ⟨u, Lu⟩_π (proven to descend via dirichlet_form_lift_eq),
+we define Rayleigh quotients and spectral gaps without needing matrix transpose. -/
+
+/-- **Rayleigh Quotient** using Dirichlet form: R(u) = ℰ(u) / ‖u‖²_π -/
+def RayleighQuotient (L : Matrix V V ℝ) (pi_dist : V → ℝ) (u : V → ℝ) : ℝ :=
+  DirichletForm L pi_dist u / inner_pi pi_dist u u
 
 /-- The set of Rayleigh quotients over all non-zero functions orthogonal to constants. -/
-def RayleighSet (H : Matrix V V ℝ) (pi_dist : V → ℝ) : Set ℝ :=
+def RayleighSet (L : Matrix V V ℝ) (pi_dist : V → ℝ) : Set ℝ :=
   { r | ∃ v : V → ℝ, v ≠ 0 ∧ inner_pi pi_dist v constant_vec_one = 0 ∧
-    r = inner_pi pi_dist (H *ᵥ v) v / inner_pi pi_dist v v }
+    r = RayleighQuotient L pi_dist v }
 
 /-- The set of Rayleigh quotients restricted to block-constant functions. -/
-def RayleighSetBlockConstant (H : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) : Set ℝ :=
+def RayleighSetBlockConstant (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) : Set ℝ :=
   { r | ∃ v : V → ℝ, v ≠ 0 ∧ IsBlockConstant P v ∧ 
     inner_pi pi_dist v constant_vec_one = 0 ∧
-    r = inner_pi pi_dist (H *ᵥ v) v / inner_pi pi_dist v v }
+    r = RayleighQuotient L pi_dist v }
+
+/-- The set of Rayleigh quotients on the quotient space. -/
+def RayleighSetQuot (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) : Set ℝ :=
+  { r | ∃ f : P.Quot → ℝ, f ≠ 0 ∧ 
+    inner_pi (pi_bar P pi_dist) f (fun _ => 1) = 0 ∧
+    r = RayleighQuotient (QuotientGeneratorSimple L P) (pi_bar P pi_dist) f }
 
 /-- Block-constant Rayleigh set is a subset of the full Rayleigh set. -/
-lemma rayleigh_block_subset (H : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) :
-    RayleighSetBlockConstant H P pi_dist ⊆ RayleighSet H pi_dist := by
+lemma rayleigh_block_subset (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) :
+    RayleighSetBlockConstant L P pi_dist ⊆ RayleighSet L pi_dist := by
   intro r ⟨v, hv_ne, _, hv_orth, hv_eq⟩
   exact ⟨v, hv_ne, hv_orth, hv_eq⟩
 
@@ -566,64 +558,100 @@ lemma sInf_subset_ge {S T : Set ℝ} (hST : S ⊆ T) (hS : S.Nonempty) (hT_bdd :
     sInf T ≤ sInf S := by
   apply csInf_le_csInf hT_bdd hS hST
 
-/-- The spectral gap on the quotient. -/
-def SpectralGap_bar (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) 
-    (hπ : ∀ v, 0 < pi_dist v) : ℝ :=
-  let L_bar : Matrix P.Quot P.Quot ℝ := QuotientGenerator L P pi_dist hπ
-  let H_bar : Matrix P.Quot P.Quot ℝ := (1/2 : ℝ) • (L_bar + L_barᵀ)
-  let pi_bar' : P.Quot → ℝ := pi_bar P pi_dist
-  sInf { r | ∃ g : P.Quot → ℝ, g ≠ 0 ∧ 
-    inner_pi pi_bar' g (fun _ => 1) = 0 ∧
-    r = inner_pi pi_bar' (H_bar *ᵥ g) g / inner_pi pi_bar' g g }
-
-/-- **Spectral Gap Non-Decrease (Simple Form)**: inf over block-constant ≥ inf over all.
+/-- **Rayleigh Quotient Lift Equality**: R(lift(f)) = R̄(f).
     
-    This is the direct subset argument without needing quadratic form preservation. -/
-theorem gap_block_ge_gap_all (H : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
-    (hS : (RayleighSetBlockConstant H P pi_dist).Nonempty) 
-    (hT_bdd : BddBelow (RayleighSet H pi_dist)) :
-    sInf (RayleighSet H pi_dist) ≤ sInf (RayleighSetBlockConstant H P pi_dist) := by
-  exact sInf_subset_ge (rayleigh_block_subset H P pi_dist) hS hT_bdd
+    Key lemma: For block-constant u = lift(f), the Rayleigh quotient on V equals
+    the Rayleigh quotient on V̄. Uses dirichlet_form_lift_eq and lift_inner_pi_eq'. -/
+lemma rayleigh_quotient_lift_eq (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    (hL : IsStronglyLumpable L P) (f : P.Quot → ℝ) :
+    RayleighQuotient L pi_dist (lift_fun P f) = 
+    RayleighQuotient (QuotientGeneratorSimple L P) (pi_bar P pi_dist) f := by
+  simp only [RayleighQuotient, DirichletForm_bar] at *
+  -- Numerator: ℰ(lift(f)) = ℰ̄(f) by dirichlet_form_lift_eq
+  have h_num : DirichletForm L pi_dist (lift_fun P f) = 
+               DirichletForm (QuotientGeneratorSimple L P) (pi_bar P pi_dist) f := by
+    rw [← DirichletForm_bar]
+    exact dirichlet_form_lift_eq L P pi_dist hL f
+  -- Denominator: ‖lift(f)‖²_π = ‖f‖²_π̄ by lift_inner_pi_eq'
+  have h_denom : inner_pi pi_dist (lift_fun P f) (lift_fun P f) = 
+                 inner_pi (pi_bar P pi_dist) f f := 
+    lift_inner_pi_eq' P pi_dist f f
+  rw [h_num, h_denom]
+
+/-- **Spectral Gap** (using Dirichlet form): inf of Rayleigh quotients over u ⊥ π. -/
+def SpectralGap (L : Matrix V V ℝ) (pi_dist : V → ℝ) : ℝ :=
+  sInf (RayleighSet L pi_dist)
+
+/-- **Spectral Gap on Quotient** -/
+def SpectralGap_bar (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) : ℝ :=
+  sInf (RayleighSetQuot L P pi_dist)
+
+/-- **Spectral Gap Non-Decrease (Simple Form)**: inf over block-constant ≥ inf over all. -/
+theorem gap_block_ge_gap_all (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    (hS : (RayleighSetBlockConstant L P pi_dist).Nonempty) 
+    (hT_bdd : BddBelow (RayleighSet L pi_dist)) :
+    SpectralGap L pi_dist ≤ sInf (RayleighSetBlockConstant L P pi_dist) := by
+  exact sInf_subset_ge (rayleigh_block_subset L P pi_dist) hS hT_bdd
+
+/-- **Rayleigh Set Quotient = Rayleigh Set Block-Constant** via lift bijection.
+    
+    Every block-constant function u is lift(f) for some f, and R(u) = R̄(f). -/
+lemma rayleigh_set_quot_eq_block (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    (hL : IsStronglyLumpable L P) :
+    RayleighSetQuot L P pi_dist = 
+    { r | ∃ f : P.Quot → ℝ, f ≠ 0 ∧ 
+      inner_pi (pi_bar P pi_dist) f (fun _ => 1) = 0 ∧
+      r = RayleighQuotient L pi_dist (lift_fun P f) } := by
+  ext r
+  constructor
+  · intro ⟨f, hf_ne, hf_orth, hr⟩
+    refine ⟨f, hf_ne, hf_orth, ?_⟩
+    rw [hr, rayleigh_quotient_lift_eq L P pi_dist hL f]
+  · intro ⟨f, hf_ne, hf_orth, hr⟩
+    refine ⟨f, hf_ne, hf_orth, ?_⟩
+    rw [← rayleigh_quotient_lift_eq L P pi_dist hL f, hr]
 
 /-- **Spectral Gap Non-Decrease**: λ̄_gap ≥ λ_gap.
     
     Coarse-graining cannot decrease the spectral gap because:
     - λ_gap(L) = inf over ALL u ⊥ π of R(u)
-    - λ_gap(L̄) corresponds to inf over BLOCK-CONSTANT u ⊥ π of R(u)  
-    - Since block-constant functions form a subset: inf(subset) ≥ inf(total)
-    
-    Following FHDT pattern: H is assumed self-adjoint (h_sa) and PSD (h_psd).
-    The full proof requires showing SpectralGap_bar = inf over block-constant Rayleigh. -/
-theorem gap_non_decrease (L H : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
-    (hπ : ∀ v, 0 < pi_dist v) (h_sum : ∑ v, pi_dist v = 1)
+    - λ_gap(L̄) = inf over quotient functions f ⊥ π̄ = inf over BLOCK-CONSTANT u ⊥ π
+    - Since block-constant functions form a subset: inf(subset) ≥ inf(total) -/
+theorem gap_non_decrease (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hL : IsStronglyLumpable L P)
-    (h_sa : ∀ u v, inner_pi pi_dist (H *ᵥ u) v = inner_pi pi_dist u (H *ᵥ v))
-    (h_psd : ∀ u, 0 ≤ inner_pi pi_dist (H *ᵥ u) u) :
-    SpectralGap_bar L P pi_dist hπ ≥ sInf (RayleighSet H pi_dist) := by
-  -- The full proof requires:
-  -- 1. Show SpectralGap_bar = sInf (RayleighSetBlockConstant H P pi_dist)
-  --    via the quadratic form preservation (symmetric_quadratic_form_eq)
-  -- 2. Apply gap_block_ge_gap_all
-  -- 
-  -- Step 1 requires the Lᵀ column sum property which needs additional structure
-  sorry
+    (hS : (RayleighSetBlockConstant L P pi_dist).Nonempty) 
+    (hT_bdd : BddBelow (RayleighSet L pi_dist)) :
+    SpectralGap_bar L P pi_dist ≥ SpectralGap L pi_dist := by
+  -- SpectralGap_bar = sInf (RayleighSetQuot)
+  -- RayleighSetQuot corresponds to block-constant functions via lift
+  -- By rayleigh_quotient_lift_eq, R̄(f) = R(lift(f))
+  -- So SpectralGap_bar = sInf over block-constant Rayleigh quotients
+  -- By gap_block_ge_gap_all, this is ≥ SpectralGap (inf over all)
+  simp only [SpectralGap_bar, SpectralGap]
+  -- The quotient Rayleigh set equals the block-constant Rayleigh set (via lift)
+  -- This follows from rayleigh_set_quot_eq_block and the bijection properties
+  -- The inequality then follows from gap_block_ge_gap_all
+  have h_eq : sInf (RayleighSetQuot L P pi_dist) = sInf (RayleighSetBlockConstant L P pi_dist) := by
+    -- The sets have the same infimum because they are in bijection via lift
+    -- with R(lift(f)) = R̄(f)
+    sorry -- Need to show sets have same values, not just structure
+  rw [h_eq]
+  exact gap_block_ge_gap_all L P pi_dist hS hT_bdd
 
 /-! ### 8. Functorial FHDT -/
 
 /-- **Functorial Heat Dominance Theorem (UFHDT)**:
     The stability bound descends to the quotient with preserved structure. -/
-theorem fhdt_functorial (L H : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+theorem fhdt_functorial (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v) (h_sum : ∑ v, pi_dist v = 1)
     (hL : IsStronglyLumpable L P)
-    (h_gap_pos : 0 < sInf { r | ∃ v : V → ℝ, v ≠ 0 ∧ 
-      inner_pi pi_dist v constant_vec_one = 0 ∧
-      r = inner_pi pi_dist (H *ᵥ v) v / inner_pi pi_dist v v })
+    (h_gap_pos : 0 < SpectralGap L pi_dist)
     (t : ℝ) (ht : 0 ≤ t) :
     ∃ C_bar ≥ 0, 
       opNorm_pi (pi_bar P pi_dist) (pi_bar_pos P hπ) 
         (toLin' (HeatKernel_bar L P pi_dist hπ t) ∘ₗ 
          P_ortho_pi (pi_bar P pi_dist) (pi_bar_sum_one P h_sum) (pi_bar_pos P hπ)) ≤ 
-      C_bar * exp (-(SpectralGap_bar L P pi_dist hπ) * t) := by
+      C_bar * Real.exp (-(SpectralGap_bar L P pi_dist) * t) := by
   -- The bound on V̄ follows from:
   -- 1. The intertwining Q K(t) = K̄(t) Q
   -- 2. The gap non-decrease λ̄_gap ≥ λ_gap
