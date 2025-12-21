@@ -372,11 +372,22 @@ def lift_fun (P : Partition V) (f : P.Quot → ℝ) : V → ℝ := fun x => f (P
 /-- lift_fun equals lift_matrix applied to f. 
     
     The sum Σ_B (if ⟦i⟧ = B then 1 else 0) * f(B) has only one non-zero term 
-    when B = ⟦i⟧, giving f(⟦i⟧). Standard indicator sum pattern. -/
+    when B = ⟦i⟧, giving f(⟦i⟧). Uses Finset.sum_eq_single pattern. -/
 lemma lift_fun_eq_mulVec (P : Partition V) (f : P.Quot → ℝ) : 
     lift_fun P f = lift_matrix P *ᵥ f := by
-  -- Standard indicator sum: Σ_B (if ⟦i⟧ = B then 1 else 0) * f(B) = f(⟦i⟧)
-  sorry
+  ext i
+  simp only [lift_fun, Matrix.mulVec, lift_matrix, Partition.quot_map]
+  -- Goal: f(⟦i⟧) = Σ_B K_{iB} * f(B) where K = Matrix.of (indicator)
+  -- Use sum_eq_single: only B = ⟦i⟧ contributes
+  have goal_eq : (∑ j : P.Quot, Matrix.of (fun x B => if Quotient.mk P.rel x = B then (1:ℝ) else 0) i j * f j) = 
+      f (Quotient.mk P.rel i) := by
+    rw [Finset.sum_eq_single (Quotient.mk P.rel i)]
+    · simp only [Matrix.of_apply, ite_true, one_mul]
+    · intro B _ hB
+      simp only [Matrix.of_apply]
+      rw [if_neg (Ne.symm hB), zero_mul]
+    · intro h; exact absurd (Finset.mem_univ _) h
+  exact goal_eq.symm
 
 /-- **Step 1: Vector Intertwining** - L *ᵥ (lift f) = lift (M *ᵥ f).
     
@@ -386,29 +397,29 @@ theorem L_lift_eq (L : Matrix V V ℝ) (P : Partition V) (hL : IsStronglyLumpabl
     (f : P.Quot → ℝ) : L *ᵥ (lift_fun P f) = lift_fun P (QuotientGeneratorSimple L P *ᵥ f) := by
   simp only [lift_fun_eq_mulVec, Matrix.mulVec_mulVec, intertwining L P hL]
 
+/-- **Forward Quadratic Form**: ⟨lift(f), L·lift(f)⟩_π = ⟨f, M·f⟩_π̄.
+    Combines L_lift_eq with lift_inner_pi_eq. Uses Finset.sum_fiberwise pattern. -/
+lemma forward_quadratic_form_eq (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    (hL : IsStronglyLumpable L P) (f : P.Quot → ℝ) :
+    inner_pi pi_dist (lift_fun P f) (L *ᵥ lift_fun P f) =
+    inner_pi (pi_bar P pi_dist) f (QuotientGeneratorSimple L P *ᵥ f) := by
+  rw [L_lift_eq L P hL f]
+  -- Now: ⟨lift(f), lift(M·f)⟩_π = ⟨f, M·f⟩_π̄
+  -- Fiberwise sum pattern: group by equivalence class
+  sorry
+
 /-- **Step 2: Adjoint Scalar Preservation** - The key lemma bypassing the adjoint trap.
     
     ⟨L† *ᵥ lift(f), lift(f)⟩_π = ⟨M† *ᵥ f, f⟩_π̄
     
-    Proof: Move the adjoint to the other side using self-adjointness of inner product,
-    then apply L_lift_eq and lift_inner_pi_eq. -/
+    For the π-weighted inner product, this requires showing that the quadratic form
+    is preserved when we apply the transpose. Uses forward_quadratic_form_eq. -/
 theorem adjoint_lift_scalar_eq (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hL : IsStronglyLumpable L P) (f : P.Quot → ℝ) :
     inner_pi pi_dist (Lᵀ *ᵥ lift_fun P f) (lift_fun P f) =
     inner_pi (pi_bar P pi_dist) ((QuotientGeneratorSimple L P)ᵀ *ᵥ f) f := by
-  -- ⟨L† lift(f), lift(f)⟩ = ⟨lift(f), L lift(f)⟩  (move adjoint)
-  --                       = ⟨lift(f), lift(M f)⟩   (by L_lift_eq)
-  --                       = ⟨f, M f⟩_π̄             (by lift_inner_pi_eq)
-  --                       = ⟨M† f, f⟩_π̄            (move adjoint back)
-  -- 
-  -- Note: This uses that inner_pi is symmetric: ⟨u, v⟩ = ⟨v, u⟩
-  -- And L† w.r.t. inner_pi means: ⟨L† u, v⟩ = ⟨u, L v⟩
-  -- For matrices with transpose: ⟨Lᵀ u, v⟩_π ≠ ⟨u, L v⟩_π in general (need π-symmetry)
-  -- 
-  -- Actually, the transpose is the adjoint w.r.t. the standard inner product.
-  -- For the π-weighted inner product, the adjoint of L is diag(π)⁻¹ Lᵀ diag(π).
-  -- 
-  -- Simpler approach: use that for symmetric H = (L + Lᵀ)/2, the quadratic forms match.
+  -- This requires either transpose lumpability or a different approach
+  -- Using Grok's strategy: work with symmetric part directly in gap_non_decrease
   sorry
 
 /-- Symmetric part of generator. -/
