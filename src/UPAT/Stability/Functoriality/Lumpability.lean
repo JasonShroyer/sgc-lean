@@ -438,19 +438,22 @@ lemma backward_quadratic_form_eq (L : Matrix V V ℝ) (P : Partition V) (pi_dist
     inner_pi (pi_bar P pi_dist) (QuotientGeneratorSimple L P *ᵥ f) f := by
   rw [inner_pi_comm, forward_quadratic_form_eq L P pi_dist hL f, inner_pi_comm]
 
-/-- **Symmetric Quadratic Form**: ⟨lift(f), (L + Lᵀ)·lift(f)⟩_π = ⟨f, (M + Mᵀ)·f⟩_π̄.
-    
-    Key insight from FHDT: For the SYMMETRIC combination L + Lᵀ, we can use
-    the fact that ⟨u, (L+Lᵀ)u⟩ = 2⟨u, Lu⟩ when L+Lᵀ is applied to the same vector.
-    
-    Proof: ⟨u, (L+Lᵀ)u⟩ = ⟨u, Lu⟩ + ⟨u, Lᵀu⟩
-                        = ⟨u, Lu⟩ + ⟨Lᵀu, u⟩  (by inner_pi_comm)
-    And ⟨Lᵀu, u⟩ = Σ_x π_x (Lᵀu)_x u_x = Σ_x Σ_y π_x L_{yx} u_y u_x
-                 = Σ_y Σ_x π_x L_{yx} u_x u_y  (swap order)
-                 = ⟨u, Lu⟩ when expanded symmetrically.
-    
-    This is NOT true in general, but for the quadratic form with the SAME vector
-    on both sides, we use a direct fiberwise calculation. -/
+/-- **Reversibility (Detailed Balance)**: π_i L_{ij} = π_j L_{ji}.
+    This ensures the process is time-reversible with respect to π. -/
+def IsReversible (L : Matrix V V ℝ) (pi_dist : V → ℝ) : Prop :=
+  ∀ i j, pi_dist i * L i j = pi_dist j * L j i
+
+/-- For a reversible generator, Lᵀ is strongly lumpable iff L is. -/
+lemma transpose_strongly_lumpable_of_reversible (L : Matrix V V ℝ) (P : Partition V) 
+    (pi_dist : V → ℝ) (hL : IsStronglyLumpable L P) (hRev : IsReversible L pi_dist) :
+    IsStronglyLumpable Lᵀ P := by
+  -- Reversibility: π_i L_{ij} = π_j L_{ji}
+  -- Strong lumpability of L: Σ_{k∈B} L_{ik} is constant for i in the same class
+  -- Need: Σ_{k∈B} (Lᵀ)_{ik} = Σ_{k∈B} L_{ki} is constant for i in the same class
+  -- 
+  -- This follows from reversibility + strong lumpability, but requires careful proof
+  sorry
+
 theorem symmetric_quadratic_form_eq (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hL : IsStronglyLumpable L P) (f : P.Quot → ℝ) :
     inner_pi pi_dist (lift_fun P f) ((L + Lᵀ) *ᵥ lift_fun P f) =
@@ -460,17 +463,8 @@ theorem symmetric_quadratic_form_eq (L : Matrix V V ℝ) (P : Partition V) (pi_d
   rw [inner_pi_add_right, inner_pi_add_right]
   -- For L part: use forward_quadratic_form_eq
   rw [forward_quadratic_form_eq L P pi_dist hL f]
-  -- For Lᵀ part: The key insight from FHDT is that for the QUADRATIC form
-  -- ⟨u, Lᵀu⟩ = ⟨Lᵀu, u⟩ (by inner_pi_comm), and this sum has the same
-  -- fiberwise structure as ⟨u, Lu⟩ when u is block-constant.
-  --
-  -- Direct calculation: ⟨lift(f), Lᵀ·lift(f)⟩_π = Σ_x π_x f([x]) Σ_y L_{yx} f([y])
-  --                                              = Σ_x Σ_y π_x L_{yx} f([x]) f([y])
-  -- For block-constant f, this groups by equivalence classes.
-  -- The challenge is that L_{yx} sums over COLUMNS, not rows.
-  --
-  -- For now, this requires additional structure (e.g., reversibility)
-  -- or a reformulation of the spectral gap theorem.
+  -- For Lᵀ part: requires either reversibility or direct fiberwise computation
+  -- The column sum structure doesn't match row sum structure without additional assumptions
   sorry
 
 /-- Symmetric part of generator. -/
