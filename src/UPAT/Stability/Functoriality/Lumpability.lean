@@ -176,6 +176,21 @@ theorem intertwining (L : Matrix V V ℝ) (P : Partition V) (hL : IsStronglyLump
   ext i B
   rw [LK_entry, KM_entry, quot_gen_eq_row_sum L P hL]
 
+/-- Power intertwining: L^n * K = K * M^n by induction. -/
+theorem intertwining_pow (L : Matrix V V ℝ) (P : Partition V) (hL : IsStronglyLumpable L P) 
+    (n : ℕ) : L ^ n * lift_matrix P = lift_matrix P * (QuotientGeneratorSimple L P) ^ n := by
+  induction n with
+  | zero => simp [Matrix.one_mul, Matrix.mul_one]
+  | succ n ih =>
+    calc L ^ (n + 1) * lift_matrix P 
+        = L ^ n * L * lift_matrix P := by rw [pow_succ]
+      _ = L ^ n * (L * lift_matrix P) := by rw [Matrix.mul_assoc]
+      _ = L ^ n * (lift_matrix P * QuotientGeneratorSimple L P) := by rw [intertwining L P hL]
+      _ = (L ^ n * lift_matrix P) * QuotientGeneratorSimple L P := by rw [Matrix.mul_assoc]
+      _ = (lift_matrix P * (QuotientGeneratorSimple L P) ^ n) * QuotientGeneratorSimple L P := by rw [ih]
+      _ = lift_matrix P * ((QuotientGeneratorSimple L P) ^ n * QuotientGeneratorSimple L P) := by rw [Matrix.mul_assoc]
+      _ = lift_matrix P * (QuotientGeneratorSimple L P) ^ (n + 1) := by rw [← pow_succ]
+
 /-! ### 5. Weighted Quotient Generator -/
 
 /-- The weighted quotient generator L̄ on V̄.
