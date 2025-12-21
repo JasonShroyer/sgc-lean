@@ -95,29 +95,140 @@ def IsStronglyLumpable (L : Matrix V V ℝ) (P : Partition V) : Prop :=
     (∑ z : V, if P.quot_map z = b_bar then L x z else 0) =
     (∑ z : V, if P.quot_map z = b_bar then L y z else 0)
 
-/-! ### 3. Quotient Generator -/
+/-! ### 3. Quotient Generator (Simple Form) -/
 
-/-- The quotient generator L̄ on V̄.
+/-- Row sum over a block: Σ_{k∈B} L_{i,k}. -/
+def row_sum_block (L : Matrix V V ℝ) (P : Partition V) (i : V) (B : P.Quot) : ℝ :=
+  ∑ k : V, if P.quot_map k = B then L i k else 0
+
+/-- Under strong lumpability, row_sum_block is constant on equivalence classes. -/
+lemma row_sum_block_const (L : Matrix V V ℝ) (P : Partition V)
+    (hL : IsStronglyLumpable L P) (i j : V) (hij : P.rel.r i j) (B : P.Quot) :
+    row_sum_block L P i B = row_sum_block L P j B :=
+  hL i j hij B
+
+/-- The quotient generator M on Q (simple form using any representative).
+    M_{A,B} = Σ_{k∈B} L_{u,k} for any u ∈ A.
+    
+    Under strong lumpability, this is well-defined. -/
+def QuotientGeneratorSimple (L : Matrix V V ℝ) (P : Partition V) : Matrix P.Quot P.Quot ℝ :=
+  fun A B => row_sum_block L P (Quotient.out A) B
+
+/-- The lift matrix K : V × Q where K_{i,B} = 1 if i ∈ B, else 0. -/
+def lift_matrix (P : Partition V) : Matrix V P.Quot ℝ :=
+  fun i B => if P.quot_map i = B then 1 else 0
+
+/-! ### 4. The Intertwining Theorem -/
+
+/-- LHS of intertwining: (L * K)_{i,B} = Σ_k L_{ik} * K_{kB} = Σ_{k∈B} L_{ik}. -/
+lemma LK_entry (L : Matrix V V ℝ) (P : Partition V) (i : V) (B : P.Quot) :
+    (L * lift_matrix P) i B = row_sum_block L P i B := by
+  simp only [Matrix.mul_apply, lift_matrix]
+  apply Finset.sum_congr rfl
+  intro k _
+  by_cases h : P.quot_map k = B
+  · simp [h]
+  · simp [h]
+
+/-- RHS of intertwining: (K * M)_{i,B} = Σ_C K_{iC} * M_{CB} = M_{⟦i⟧,B}. -/
+lemma KM_entry (L : Matrix V V ℝ) (P : Partition V) (i : V) (B : P.Quot) :
+    (lift_matrix P * QuotientGeneratorSimple L P) i B = 
+    QuotientGeneratorSimple L P (P.quot_map i) B := by
+  simp only [Matrix.mul_apply, lift_matrix, QuotientGeneratorSimple]
+  -- Sum over C: if P.quot_map i = C then 1 * row_sum else 0
+  -- Only C = P.quot_map i contributes
+  have h_sum : (∑ C : P.Quot, (if P.quot_map i = C then (1 : ℝ) else 0) * 
+      row_sum_block L P (Quotient.out C) B) = 
+      row_sum_block L P (Quotient.out (P.quot_map i)) B := by
+    -- Only the term where C = P.quot_map i contributes
+    rw [Finset.sum_eq_single (P.quot_map i)]
+    · -- When C = P.quot_map i: the condition is true
+      simp only [↓reduceIte, one_mul]
+    · -- When C ≠ P.quot_map i: the term is 0
+      intro C _ hC
+      rw [if_neg (Ne.symm hC), zero_mul]
+    · -- P.quot_map i is in univ
+      intro h
+      exact (h (Finset.mem_univ _)).elim
+  exact h_sum
+
+/-- Under strong lumpability, the quotient generator at ⟦i⟧ equals row_sum at i. -/
+lemma quot_gen_eq_row_sum (L : Matrix V V ℝ) (P : Partition V)
+    (hL : IsStronglyLumpable L P) (i : V) (B : P.Quot) :
+    QuotientGeneratorSimple L P (P.quot_map i) B = row_sum_block L P i B := by
+  simp only [QuotientGeneratorSimple]
+  -- Need: row_sum_block L P (Quotient.out (P.quot_map i)) B = row_sum_block L P i B
+  -- Since Quotient.out (P.quot_map i) ≈ i
+  have h_out_eq : Quotient.mk P.rel (Quotient.out (P.quot_map i)) = P.quot_map i := 
+    Quotient.out_eq (P.quot_map i)
+  have h_i_eq : Quotient.mk P.rel i = P.quot_map i := rfl
+  have h_equiv : P.rel.r (Quotient.out (P.quot_map i)) i := by
+    have h := h_out_eq.trans h_i_eq.symm
+    exact Quotient.eq'.mp h
+  exact row_sum_block_const L P hL _ i h_equiv B
+
+/-- **The Intertwining Theorem (Dynkin Formula)**: L * K = K * M.
+    
+    The original dynamics L and quotient dynamics M are related by the lift operator.
+    This is the fundamental algebraic property of strong lumpability. -/
+theorem intertwining (L : Matrix V V ℝ) (P : Partition V) (hL : IsStronglyLumpable L P) :
+    L * lift_matrix P = lift_matrix P * QuotientGeneratorSimple L P := by
+  ext i B
+  rw [LK_entry, KM_entry, quot_gen_eq_row_sum L P hL]
+
+/-! ### 5. Weighted Quotient Generator -/
+
+/-- The weighted quotient generator L̄ on V̄.
     L̄_{āb̄} = (1/π̄(ā)) * Σ_{x∈ā} π(x) * (Σ_{z∈b̄} L_{xz})
     
-    Under strong lumpability, this is independent of representative choice. -/
+    Under strong lumpability, this equals the simple form. -/
 def QuotientGenerator (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v) : Matrix P.Quot P.Quot ℝ :=
   fun a_bar b_bar =>
     let sum_over_a := ∑ x : V, if P.quot_map x = a_bar 
-      then pi_dist x * (∑ z : V, if P.quot_map z = b_bar then L x z else 0)
+      then pi_dist x * row_sum_block L P x b_bar
       else 0
     sum_over_a / pi_bar P pi_dist a_bar
 
-/-- Helper: The inner sum for quotient generator. -/
-def inner_sum_L (L : Matrix V V ℝ) (P : Partition V) (x : V) (b_bar : P.Quot) : ℝ :=
-  ∑ z : V, if P.quot_map z = b_bar then L x z else 0
-
-/-- Under strong lumpability, the inner sum is constant on equivalence classes. -/
-lemma inner_sum_L_const_on_class (L : Matrix V V ℝ) (P : Partition V)
-    (hL : IsStronglyLumpable L P) (x y : V) (hxy : P.rel.r x y) (b_bar : P.Quot) :
-    inner_sum_L L P x b_bar = inner_sum_L L P y b_bar :=
-  hL x y hxy b_bar
+/-- Under strong lumpability, weighted and simple quotient generators agree. -/
+lemma quotient_generator_eq_simple (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) (hL : IsStronglyLumpable L P) (A B : P.Quot) :
+    QuotientGenerator L P pi_dist hπ A B = QuotientGeneratorSimple L P A B := by
+  simp only [QuotientGenerator, QuotientGeneratorSimple]
+  -- The sum is Σ_{x∈A} π(x) * row_sum_block = row_sum_block(rep) * Σ_{x∈A} π(x)
+  -- since row_sum_block is constant on A by lumpability
+  obtain ⟨a, ha⟩ := Quotient.exists_rep A
+  have h_const : ∀ x, P.quot_map x = A → row_sum_block L P x B = row_sum_block L P a B := by
+    intro x hx
+    have h_eq : P.rel.r x a := by
+      simp only [Partition.quot_map] at hx
+      rw [← ha] at hx
+      exact Quotient.eq'.mp hx
+    exact row_sum_block_const L P hL x a h_eq B
+  have h_sum : (∑ x, if P.quot_map x = A then pi_dist x * row_sum_block L P x B else 0) =
+      row_sum_block L P a B * (∑ x, if P.quot_map x = A then pi_dist x else 0) := by
+    rw [Finset.mul_sum]
+    apply Finset.sum_congr rfl
+    intro x _
+    by_cases hx : P.quot_map x = A
+    · simp only [hx, ↓reduceIte]
+      rw [h_const x hx]
+      ring
+    · simp [hx]
+  rw [h_sum]
+  have h_pi_bar_eq : (∑ x, if P.quot_map x = A then pi_dist x else 0) = pi_bar P pi_dist A := rfl
+  rw [h_pi_bar_eq]
+  have hπ_bar_pos : 0 < pi_bar P pi_dist A := pi_bar_pos P hπ A
+  have hπ_bar_ne : pi_bar P pi_dist A ≠ 0 := ne_of_gt hπ_bar_pos
+  rw [mul_div_assoc, div_self hπ_bar_ne, mul_one]
+  -- Now show: row_sum_block L P a B = row_sum_block L P (Quotient.out A) B
+  have h_a_in_A : P.quot_map a = A := ha
+  have h_out_in_A : Quotient.mk P.rel (Quotient.out A) = A := Quotient.out_eq A
+  have h_equiv : P.rel.r a (Quotient.out A) := by
+    have h1 : Quotient.mk P.rel a = A := h_a_in_A
+    have h2 := h1.trans h_out_in_A.symm
+    exact Quotient.eq'.mp h2
+  exact row_sum_block_const L P hL a _ h_equiv B
 
 /-! ### 4. Quotient Map as Linear Operator -/
 
