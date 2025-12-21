@@ -308,12 +308,92 @@ theorem intertwining_QL (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → 
   -- This is a non-trivial calculation involving Fubini and the lumpability condition
   sorry
 
-/-! ### 6. Heat Kernel Commutation -/
+/-! ### 6. Block-Constant Functions and Lift Isometry -/
+
+/-- A function is block-constant if it's constant on equivalence classes. -/
+def IsBlockConstant (P : Partition V) (f : V → ℝ) : Prop :=
+  ∀ x y : V, P.rel.r x y → f x = f y
+
+/-- The lift of a function on Q to V is block-constant. -/
+lemma lift_is_block_constant (P : Partition V) (g : P.Quot → ℝ) :
+    IsBlockConstant P (fun x => g (P.quot_map x)) := fun x y hxy => by
+  simp only [Partition.quot_map]
+  congr 1
+  exact Quotient.sound hxy
+
+/-- **Lift Isometry**: ⟨lift(f), lift(f)⟩_π = ⟨f, f⟩_π̄.
+    The lift preserves the weighted L² norm. -/
+lemma lift_inner_pi_eq (P : Partition V) (pi_dist : V → ℝ) (g : P.Quot → ℝ) :
+    inner_pi pi_dist (fun x => g (P.quot_map x)) (fun x => g (P.quot_map x)) =
+    inner_pi (pi_bar P pi_dist) g g := by
+  simp only [inner_pi, pi_bar]
+  -- LHS: Σ_x π(x) * g([x])²
+  -- RHS: Σ_A (Σ_{x∈A} π(x)) * g(A)²
+  -- Rewrite LHS by grouping by equivalence class
+  have h_group : ∀ x : V, pi_dist x * g (P.quot_map x) * g (P.quot_map x) = 
+      ∑ A : P.Quot, if P.quot_map x = A then pi_dist x * g A * g A else 0 := fun x => by
+    rw [Finset.sum_ite_eq, if_pos (Finset.mem_univ _)]
+  simp_rw [h_group]
+  rw [Finset.sum_comm]
+  apply Finset.sum_congr rfl
+  intro A _
+  have h_factor : (∑ x, if P.quot_map x = A then pi_dist x * g A * g A else 0) = 
+      (∑ x, if P.quot_map x = A then pi_dist x else 0) * g A * g A := by
+    rw [Finset.sum_mul, Finset.sum_mul]
+    apply Finset.sum_congr rfl
+    intro x _
+    by_cases h : P.quot_map x = A
+    · simp [h]
+    · simp [h]
+  rw [h_factor]
+
+/-- Block-constant functions correspond exactly to lifted functions. -/
+lemma block_constant_iff_lift (P : Partition V) (f : V → ℝ) :
+    IsBlockConstant P f ↔ ∃ g : P.Quot → ℝ, f = fun x => g (P.quot_map x) := by
+  constructor
+  · intro hf
+    -- Define g on representatives
+    use fun A => f (Quotient.out A)
+    ext x
+    simp only [Partition.quot_map]
+    have h_eq : P.rel.r x (Quotient.out (Quotient.mk P.rel x)) := by
+      have := Quotient.out_eq (Quotient.mk P.rel x)
+      exact Quotient.eq'.mp this.symm
+    exact hf x _ h_eq
+  · intro ⟨g, hg⟩
+    rw [hg]
+    exact lift_is_block_constant P g
+
+/-! ### 7. Heat Kernel Commutation -/
 
 /-- The heat kernel on the quotient space. -/
 def HeatKernel_bar (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) 
     (hπ : ∀ v, 0 < pi_dist v) (t : ℝ) : Matrix P.Quot P.Quot ℝ :=
   exp ℝ (t • QuotientGenerator L P pi_dist hπ)
+
+/-- **Heat Kernel Matrix Commutation**: exp(tL) * K = K * exp(tM).
+    
+    Proof via ODE uniqueness: Both Y₁(t) = exp(tL)·K and Y₂(t) = K·exp(tM) satisfy
+    the ODE Ẏ = L·Y with Y(0) = K. Since Ẏ₂ = K·M·exp(tM) = L·K·exp(tM) = L·Y₂
+    (using intertwining L·K = K·M), and ODE solutions are unique, Y₁ = Y₂. -/
+theorem heat_kernel_matrix_commute (L : Matrix V V ℝ) (P : Partition V) 
+    (hL : IsStronglyLumpable L P) (t : ℝ) :
+    exp ℝ (t • L) * lift_matrix P = 
+    lift_matrix P * exp ℝ (t • QuotientGeneratorSimple L P) := by
+  -- The matrix exponential exp(tA) satisfies d/dt exp(tA) = A * exp(tA)
+  -- Both sides satisfy Y' = L * Y with Y(0) = K
+  -- By uniqueness of ODE solutions, they are equal
+  -- 
+  -- For a formal Lean proof, we use that exp(tA) * B = B * exp(tC) 
+  -- when A * B = B * C (similarity/intertwining)
+  -- This follows from the power series: (tA)^n * B = B * (tC)^n by intertwining_pow
+  have h_pow : ∀ n : ℕ, (t • L) ^ n * lift_matrix P = 
+      lift_matrix P * (t • QuotientGeneratorSimple L P) ^ n := fun n => by
+    rw [smul_pow, smul_pow]
+    rw [Matrix.smul_mul, intertwining_pow L P hL n, Matrix.mul_smul]
+  -- The full proof would use that exp is the limit of partial sums
+  -- and the intertwining passes through the limit
+  sorry
 
 /-- **Heat Kernel Commutation**: e^{tL̄} ∘ Q = Q ∘ e^{tL}.
     The semigroup intertwines with the quotient map. -/
@@ -321,11 +401,33 @@ theorem heat_kernel_quot_commute (L : Matrix V V ℝ) (P : Partition V) (pi_dist
     (hπ : ∀ v, 0 < pi_dist v) (hL : IsStronglyLumpable L P) (t : ℝ) :
     toLin' (HeatKernel_bar L P pi_dist hπ t) ∘ₗ Q_map P pi_dist hπ = 
     Q_map P pi_dist hπ ∘ₗ toLin' (exp ℝ (t • L)) := by
-  -- Strategy: Use that intertwining Q L = L̄ Q implies Q L^n = L̄^n Q by induction
-  -- Then by linearity of exp series: Q exp(tL) = exp(tL̄) Q
+  -- This follows from heat_kernel_matrix_commute and the relationship
+  -- between Q, K, and the weighted/simple quotient generators
   sorry
 
-/-! ### 7. Spectrum Containment -/
+/-! ### 8. Spectrum Containment -/
+
+/-- The set of Rayleigh quotients over all non-zero functions orthogonal to constants. -/
+def RayleighSet (H : Matrix V V ℝ) (pi_dist : V → ℝ) : Set ℝ :=
+  { r | ∃ v : V → ℝ, v ≠ 0 ∧ inner_pi pi_dist v constant_vec_one = 0 ∧
+    r = inner_pi pi_dist (H *ᵥ v) v / inner_pi pi_dist v v }
+
+/-- The set of Rayleigh quotients restricted to block-constant functions. -/
+def RayleighSetBlockConstant (H : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) : Set ℝ :=
+  { r | ∃ v : V → ℝ, v ≠ 0 ∧ IsBlockConstant P v ∧ 
+    inner_pi pi_dist v constant_vec_one = 0 ∧
+    r = inner_pi pi_dist (H *ᵥ v) v / inner_pi pi_dist v v }
+
+/-- Block-constant Rayleigh set is a subset of the full Rayleigh set. -/
+lemma rayleigh_block_subset (H : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) :
+    RayleighSetBlockConstant H P pi_dist ⊆ RayleighSet H pi_dist := by
+  intro r ⟨v, hv_ne, _, hv_orth, hv_eq⟩
+  exact ⟨v, hv_ne, hv_orth, hv_eq⟩
+
+/-- **Subset Infimum Monotonicity**: inf over a subset ≥ inf over the whole set. -/
+lemma sInf_subset_ge {S T : Set ℝ} (hST : S ⊆ T) (hS : S.Nonempty) (hT_bdd : BddBelow T) :
+    sInf T ≤ sInf S := by
+  apply csInf_le_csInf hT_bdd hS hST
 
 /-- The spectral gap on the quotient. -/
 def SpectralGap_bar (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) 
@@ -338,18 +440,25 @@ def SpectralGap_bar (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     r = inner_pi pi_bar' (H_bar *ᵥ g) g / inner_pi pi_bar' g g }
 
 /-- **Spectral Gap Non-Decrease**: λ̄_gap ≥ λ_gap.
-    Coarse-graining cannot decrease the spectral gap. -/
+    
+    Coarse-graining cannot decrease the spectral gap because:
+    - λ_gap(L) = inf over ALL u ⊥ π of R(u)
+    - λ_gap(L̄) corresponds to inf over BLOCK-CONSTANT u ⊥ π of R(u)  
+    - Since block-constant functions form a subset: inf(subset) ≥ inf(total) -/
 theorem gap_non_decrease (L H : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v) (h_sum : ∑ v, pi_dist v = 1)
     (hL : IsStronglyLumpable L P)
     (h_sa : ∀ u v, inner_pi pi_dist (H *ᵥ u) v = inner_pi pi_dist u (H *ᵥ v))
     (h_psd : ∀ u, 0 ≤ inner_pi pi_dist (H *ᵥ u) u) :
-    SpectralGap_bar L P pi_dist hπ ≥ 
-    sInf { r | ∃ v : V → ℝ, v ≠ 0 ∧ inner_pi pi_dist v constant_vec_one = 0 ∧
-      r = inner_pi pi_dist (H *ᵥ v) v / inner_pi pi_dist v v } := by
-  -- Strategy: Every test function on V̄ lifts to a test function on V
-  -- The Rayleigh quotient of the lift is ≤ the quotient Rayleigh quotient
-  -- Therefore the infimum over V̄ is ≥ the infimum over V
+    SpectralGap_bar L P pi_dist hπ ≥ sInf (RayleighSet H pi_dist) := by
+  -- The quotient spectral gap is computed over functions on Q
+  -- These correspond to block-constant functions on V via lift
+  -- By subset monotonicity: inf over block-constant ≥ inf over all
+  -- 
+  -- The formal proof requires showing:
+  -- 1. SpectralGap_bar equals the inf over block-constant functions (via lift isometry)
+  -- 2. Block-constant functions are a subset
+  -- 3. Apply csInf_le_csInf
   sorry
 
 /-! ### 8. Functorial FHDT -/
