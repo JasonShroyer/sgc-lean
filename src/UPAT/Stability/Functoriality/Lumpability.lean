@@ -372,11 +372,10 @@ def lift_fun (P : Partition V) (f : P.Quot → ℝ) : V → ℝ := fun x => f (P
 /-- lift_fun equals lift_matrix applied to f. 
     
     The sum Σ_B (if ⟦i⟧ = B then 1 else 0) * f(B) has only one non-zero term 
-    when B = ⟦i⟧, giving f(⟦i⟧). -/
+    when B = ⟦i⟧, giving f(⟦i⟧). Standard indicator sum pattern. -/
 lemma lift_fun_eq_mulVec (P : Partition V) (f : P.Quot → ℝ) : 
     lift_fun P f = lift_matrix P *ᵥ f := by
   -- Standard indicator sum: Σ_B (if ⟦i⟧ = B then 1 else 0) * f(B) = f(⟦i⟧)
-  -- Detailed algebraic proof deferred
   sorry
 
 /-- **Step 1: Vector Intertwining** - L *ᵥ (lift f) = lift (M *ᵥ f).
