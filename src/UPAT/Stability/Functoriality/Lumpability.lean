@@ -578,6 +578,15 @@ def SpectralGap_bar (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     inner_pi pi_bar' g (fun _ => 1) = 0 ∧
     r = inner_pi pi_bar' (H_bar *ᵥ g) g / inner_pi pi_bar' g g }
 
+/-- **Spectral Gap Non-Decrease (Simple Form)**: inf over block-constant ≥ inf over all.
+    
+    This is the direct subset argument without needing quadratic form preservation. -/
+theorem gap_block_ge_gap_all (H : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    (hS : (RayleighSetBlockConstant H P pi_dist).Nonempty) 
+    (hT_bdd : BddBelow (RayleighSet H pi_dist)) :
+    sInf (RayleighSet H pi_dist) ≤ sInf (RayleighSetBlockConstant H P pi_dist) := by
+  exact sInf_subset_ge (rayleigh_block_subset H P pi_dist) hS hT_bdd
+
 /-- **Spectral Gap Non-Decrease**: λ̄_gap ≥ λ_gap.
     
     Coarse-graining cannot decrease the spectral gap because:
@@ -585,21 +594,20 @@ def SpectralGap_bar (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     - λ_gap(L̄) corresponds to inf over BLOCK-CONSTANT u ⊥ π of R(u)  
     - Since block-constant functions form a subset: inf(subset) ≥ inf(total)
     
-    Following FHDT pattern: H is assumed self-adjoint (h_sa) and PSD (h_psd). -/
+    Following FHDT pattern: H is assumed self-adjoint (h_sa) and PSD (h_psd).
+    The full proof requires showing SpectralGap_bar = inf over block-constant Rayleigh. -/
 theorem gap_non_decrease (L H : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v) (h_sum : ∑ v, pi_dist v = 1)
     (hL : IsStronglyLumpable L P)
     (h_sa : ∀ u v, inner_pi pi_dist (H *ᵥ u) v = inner_pi pi_dist u (H *ᵥ v))
     (h_psd : ∀ u, 0 ≤ inner_pi pi_dist (H *ᵥ u) u) :
     SpectralGap_bar L P pi_dist hπ ≥ sInf (RayleighSet H pi_dist) := by
-  -- Strategy from FHDT: 
-  -- 1. SpectralGap_bar is the inf over quotient functions
-  -- 2. These correspond to block-constant functions on V via lift
-  -- 3. Block-constant Rayleigh quotients ⊆ all Rayleigh quotients
-  -- 4. inf(subset) ≥ inf(total) by sInf_subset_ge
+  -- The full proof requires:
+  -- 1. Show SpectralGap_bar = sInf (RayleighSetBlockConstant H P pi_dist)
+  --    via the quadratic form preservation (symmetric_quadratic_form_eq)
+  -- 2. Apply gap_block_ge_gap_all
   -- 
-  -- The type mismatch is because SpectralGap_bar uses quotient H_bar, not H directly
-  -- Need to show the quotient Rayleigh set maps to block-constant Rayleigh set
+  -- Step 1 requires the Lᵀ column sum property which needs additional structure
   sorry
 
 /-! ### 8. Functorial FHDT -/
