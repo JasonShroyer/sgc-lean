@@ -397,16 +397,38 @@ theorem L_lift_eq (L : Matrix V V ℝ) (P : Partition V) (hL : IsStronglyLumpabl
     (f : P.Quot → ℝ) : L *ᵥ (lift_fun P f) = lift_fun P (QuotientGeneratorSimple L P *ᵥ f) := by
   simp only [lift_fun_eq_mulVec, Matrix.mulVec_mulVec, intertwining L P hL]
 
+/-- Generalized lift inner product for two different functions. -/
+lemma lift_inner_pi_eq' (P : Partition V) (pi_dist : V → ℝ) (f g : P.Quot → ℝ) :
+    inner_pi pi_dist (fun x => f (P.quot_map x)) (fun x => g (P.quot_map x)) =
+    inner_pi (pi_bar P pi_dist) f g := by
+  simp only [inner_pi, pi_bar]
+  -- LHS: Σ_x π(x) * f([x]) * g([x])
+  -- RHS: Σ_A (Σ_{x∈A} π(x)) * f(A) * g(A)
+  -- Fiberwise sum pattern: group by equivalence class
+  have h_group : ∀ x : V, pi_dist x * f (P.quot_map x) * g (P.quot_map x) = 
+      ∑ A : P.Quot, if P.quot_map x = A then pi_dist x * f A * g A else 0 := fun x => by
+    rw [Finset.sum_ite_eq, if_pos (Finset.mem_univ _)]
+  simp_rw [h_group]
+  rw [Finset.sum_comm]
+  apply Finset.sum_congr rfl
+  intro A _
+  have h_factor : (∑ x, if P.quot_map x = A then pi_dist x * f A * g A else 0) = 
+      (∑ x, if P.quot_map x = A then pi_dist x else 0) * f A * g A := by
+    rw [Finset.sum_mul, Finset.sum_mul]
+    apply Finset.sum_congr rfl
+    intro x _
+    by_cases h : P.quot_map x = A <;> simp [h]
+  rw [h_factor]
+
 /-- **Forward Quadratic Form**: ⟨lift(f), L·lift(f)⟩_π = ⟨f, M·f⟩_π̄.
-    Combines L_lift_eq with lift_inner_pi_eq. Uses Finset.sum_fiberwise pattern. -/
+    Combines L_lift_eq with lift_inner_pi_eq'. Uses Finset.sum_fiberwise pattern. -/
 lemma forward_quadratic_form_eq (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hL : IsStronglyLumpable L P) (f : P.Quot → ℝ) :
     inner_pi pi_dist (lift_fun P f) (L *ᵥ lift_fun P f) =
     inner_pi (pi_bar P pi_dist) f (QuotientGeneratorSimple L P *ᵥ f) := by
   rw [L_lift_eq L P hL f]
   -- Now: ⟨lift(f), lift(M·f)⟩_π = ⟨f, M·f⟩_π̄
-  -- Fiberwise sum pattern: group by equivalence class
-  sorry
+  exact lift_inner_pi_eq' P pi_dist f (QuotientGeneratorSimple L P *ᵥ f)
 
 /-- **Step 2: Adjoint Scalar Preservation** - The key lemma bypassing the adjoint trap.
     
@@ -431,14 +453,25 @@ def symmetricPart_bar (L : Matrix V V ℝ) (P : Partition V) : Matrix P.Quot P.Q
 
 /-- **Quadratic Form Preservation**: ⟨lift(f), H·lift(f)⟩_π = ⟨f, H̄·f⟩_π̄ for symmetric H.
     
-    This is the key lemma that enables gap_non_decrease without proving L† lumpability. -/
+    This is the key lemma that enables gap_non_decrease without proving L† lumpability.
+    Uses the quadratic form expansion: H = (L + Lᵀ)/2. -/
 theorem quadratic_form_lift_eq (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hL : IsStronglyLumpable L P) (f : P.Quot → ℝ) :
     inner_pi pi_dist (lift_fun P f) (symmetricPart L *ᵥ lift_fun P f) =
     inner_pi (pi_bar P pi_dist) f (symmetricPart_bar L P *ᵥ f) := by
-  -- ⟨lift(f), H·lift(f)⟩ = ⟨lift(f), (L+Lᵀ)/2 · lift(f)⟩
-  -- Use L_lift_eq for the L part
-  -- The Lᵀ part requires more care - use symmetry of inner product
+  -- H = (1/2)(L + Lᵀ), so H·v = (1/2)(L·v + Lᵀ·v)
+  simp only [symmetricPart, symmetricPart_bar, Matrix.smul_mulVec_assoc, Matrix.add_mulVec]
+  -- ⟨lift(f), (1/2)(L + Lᵀ)·lift(f)⟩ = (1/2)[⟨lift(f), L·lift(f)⟩ + ⟨lift(f), Lᵀ·lift(f)⟩]
+  rw [inner_pi_smul_right, inner_pi_add_right]
+  rw [inner_pi_smul_right, inner_pi_add_right]
+  -- For L part: use forward_quadratic_form_eq
+  rw [forward_quadratic_form_eq L P pi_dist hL f]
+  -- For Lᵀ part: use symmetry of inner_pi and forward_quadratic_form_eq
+  -- ⟨lift(f), Lᵀ·lift(f)⟩ = ⟨Lᵀ·lift(f), lift(f)⟩ (by inner_pi_comm)
+  --                       = ⟨lift(f), L·lift(f)⟩ (by ... - NOT directly!)
+  -- Actually, for the transpose we need: ⟨u, Aᵀv⟩ = ⟨Au, v⟩ (standard adjoint property)
+  -- But this is for standard inner product, not π-weighted
+  -- Use direct computation via lift_inner_pi_eq' after showing Lᵀ also intertwines
   sorry
 
 /-! ### 8. Heat Kernel Commutation -/
