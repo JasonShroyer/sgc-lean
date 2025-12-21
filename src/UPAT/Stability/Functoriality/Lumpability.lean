@@ -460,13 +460,17 @@ theorem symmetric_quadratic_form_eq (L : Matrix V V ℝ) (P : Partition V) (pi_d
   rw [inner_pi_add_right, inner_pi_add_right]
   -- For L part: use forward_quadratic_form_eq
   rw [forward_quadratic_form_eq L P pi_dist hL f]
-  -- For Lᵀ part: direct calculation via inner_pi expansion
-  -- ⟨lift(f), Lᵀ·lift(f)⟩_π = ⟨Lᵀ·lift(f), lift(f)⟩_π (by inner_pi_comm)
-  rw [inner_pi_comm (lift_fun P f) (Lᵀ *ᵥ lift_fun P f)]
-  rw [inner_pi_comm f ((QuotientGeneratorSimple L P)ᵀ *ᵥ f)]
-  -- Now need: ⟨Lᵀ·lift(f), lift(f)⟩_π = ⟨Mᵀ·f, f⟩_π̄
-  -- Use backward_quadratic_form_eq with Lᵀ... but Lᵀ may not be strongly lumpable
-  -- Alternative: direct fiberwise sum calculation
+  -- For Lᵀ part: The key insight from FHDT is that for the QUADRATIC form
+  -- ⟨u, Lᵀu⟩ = ⟨Lᵀu, u⟩ (by inner_pi_comm), and this sum has the same
+  -- fiberwise structure as ⟨u, Lu⟩ when u is block-constant.
+  --
+  -- Direct calculation: ⟨lift(f), Lᵀ·lift(f)⟩_π = Σ_x π_x f([x]) Σ_y L_{yx} f([y])
+  --                                              = Σ_x Σ_y π_x L_{yx} f([x]) f([y])
+  -- For block-constant f, this groups by equivalence classes.
+  -- The challenge is that L_{yx} sums over COLUMNS, not rows.
+  --
+  -- For now, this requires additional structure (e.g., reversibility)
+  -- or a reformulation of the spectral gap theorem.
   sorry
 
 /-- Symmetric part of generator. -/
