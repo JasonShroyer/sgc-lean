@@ -438,20 +438,35 @@ lemma backward_quadratic_form_eq (L : Matrix V V ℝ) (P : Partition V) (pi_dist
     inner_pi (pi_bar P pi_dist) (QuotientGeneratorSimple L P *ᵥ f) f := by
   rw [inner_pi_comm, forward_quadratic_form_eq L P pi_dist hL f, inner_pi_comm]
 
-/-- **Step 2: Adjoint Scalar Preservation** - The key lemma bypassing the adjoint trap.
+/-- **Symmetric Quadratic Form**: ⟨lift(f), (L + Lᵀ)·lift(f)⟩_π = ⟨f, (M + Mᵀ)·f⟩_π̄.
     
-    For the symmetric part H = (L + Lᵀ)/2, the quadratic form is preserved.
-    This uses both forward and backward quadratic form equalities.
+    Key insight from FHDT: For the SYMMETRIC combination L + Lᵀ, we can use
+    the fact that ⟨u, (L+Lᵀ)u⟩ = 2⟨u, Lu⟩ when L+Lᵀ is applied to the same vector.
     
-    Note: Lᵀ (matrix transpose) is NOT the π-weighted adjoint, so we cannot
-    directly apply the adjoint property. Instead, we prove this for the 
-    symmetric combination (L + Lᵀ) which appears in the Rayleigh quotient. -/
-theorem adjoint_lift_scalar_eq (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    Proof: ⟨u, (L+Lᵀ)u⟩ = ⟨u, Lu⟩ + ⟨u, Lᵀu⟩
+                        = ⟨u, Lu⟩ + ⟨Lᵀu, u⟩  (by inner_pi_comm)
+    And ⟨Lᵀu, u⟩ = Σ_x π_x (Lᵀu)_x u_x = Σ_x Σ_y π_x L_{yx} u_y u_x
+                 = Σ_y Σ_x π_x L_{yx} u_x u_y  (swap order)
+                 = ⟨u, Lu⟩ when expanded symmetrically.
+    
+    This is NOT true in general, but for the quadratic form with the SAME vector
+    on both sides, we use a direct fiberwise calculation. -/
+theorem symmetric_quadratic_form_eq (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hL : IsStronglyLumpable L P) (f : P.Quot → ℝ) :
-    inner_pi pi_dist (Lᵀ *ᵥ lift_fun P f) (lift_fun P f) =
-    inner_pi (pi_bar P pi_dist) ((QuotientGeneratorSimple L P)ᵀ *ᵥ f) f := by
-  -- For general Lᵀ without π-weighted adjoint structure, use direct computation
-  -- This requires showing that Lᵀ also satisfies a fiberwise sum identity
+    inner_pi pi_dist (lift_fun P f) ((L + Lᵀ) *ᵥ lift_fun P f) =
+    inner_pi (pi_bar P pi_dist) f ((QuotientGeneratorSimple L P + (QuotientGeneratorSimple L P)ᵀ) *ᵥ f) := by
+  -- Expand using Matrix.add_mulVec
+  rw [Matrix.add_mulVec, Matrix.add_mulVec]
+  rw [inner_pi_add_right, inner_pi_add_right]
+  -- For L part: use forward_quadratic_form_eq
+  rw [forward_quadratic_form_eq L P pi_dist hL f]
+  -- For Lᵀ part: direct calculation via inner_pi expansion
+  -- ⟨lift(f), Lᵀ·lift(f)⟩_π = ⟨Lᵀ·lift(f), lift(f)⟩_π (by inner_pi_comm)
+  rw [inner_pi_comm (lift_fun P f) (Lᵀ *ᵥ lift_fun P f)]
+  rw [inner_pi_comm f ((QuotientGeneratorSimple L P)ᵀ *ᵥ f)]
+  -- Now need: ⟨Lᵀ·lift(f), lift(f)⟩_π = ⟨Mᵀ·f, f⟩_π̄
+  -- Use backward_quadratic_form_eq with Lᵀ... but Lᵀ may not be strongly lumpable
+  -- Alternative: direct fiberwise sum calculation
   sorry
 
 /-- Symmetric part of generator. -/
@@ -564,21 +579,23 @@ def SpectralGap_bar (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     Coarse-graining cannot decrease the spectral gap because:
     - λ_gap(L) = inf over ALL u ⊥ π of R(u)
     - λ_gap(L̄) corresponds to inf over BLOCK-CONSTANT u ⊥ π of R(u)  
-    - Since block-constant functions form a subset: inf(subset) ≥ inf(total) -/
+    - Since block-constant functions form a subset: inf(subset) ≥ inf(total)
+    
+    Following FHDT pattern: H is assumed self-adjoint (h_sa) and PSD (h_psd). -/
 theorem gap_non_decrease (L H : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v) (h_sum : ∑ v, pi_dist v = 1)
     (hL : IsStronglyLumpable L P)
     (h_sa : ∀ u v, inner_pi pi_dist (H *ᵥ u) v = inner_pi pi_dist u (H *ᵥ v))
     (h_psd : ∀ u, 0 ≤ inner_pi pi_dist (H *ᵥ u) u) :
     SpectralGap_bar L P pi_dist hπ ≥ sInf (RayleighSet H pi_dist) := by
-  -- The quotient spectral gap is computed over functions on Q
-  -- These correspond to block-constant functions on V via lift
-  -- By subset monotonicity: inf over block-constant ≥ inf over all
+  -- Strategy from FHDT: 
+  -- 1. SpectralGap_bar is the inf over quotient functions
+  -- 2. These correspond to block-constant functions on V via lift
+  -- 3. Block-constant Rayleigh quotients ⊆ all Rayleigh quotients
+  -- 4. inf(subset) ≥ inf(total) by sInf_subset_ge
   -- 
-  -- The formal proof requires showing:
-  -- 1. SpectralGap_bar equals the inf over block-constant functions (via lift isometry)
-  -- 2. Block-constant functions are a subset
-  -- 3. Apply csInf_le_csInf
+  -- The type mismatch is because SpectralGap_bar uses quotient H_bar, not H directly
+  -- Need to show the quotient Rayleigh set maps to block-constant Rayleigh set
   sorry
 
 /-! ### 8. Functorial FHDT -/
