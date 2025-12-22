@@ -1,4 +1,11 @@
-FHDT Final Submission Package.txt
-FHDT Lean4 Implementation Plan.txt
+# Build artifacts
 build/
 lake-packages/
+.lake/
+
+# Theoretical context (local AI reference only)
+theory_context/
+
+# Legacy ignored files
+FHDT Final Submission Package.txt
+FHDT Lean4 Implementation Plan.txt

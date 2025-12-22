@@ -1,174 +1,0 @@
-Heat Dominance in Non-Reversible Systems: A Formally Verified Spectral Bound
-Abstract
-This manuscript presents a rigorous, formally verified analysis of stability in non-reversible Markov processes, distinguishing between a set of mechanically proven theorems (the "Verified Core") and a broader theoretical interpretation (the "Universal Framework"). Central to this work is the Functorial Heat Dominance Theorem, which establishes a universal upper bound on the stability flow $\beta(t)$—a logarithmic derivative of the normalized return probability—governed by the spectral gap of a sectorial constraint operator. We utilize the Lean 4 theorem prover to verify the derivation of this bound from first principles of real analysis and linear algebra. In the verified regime, we demonstrate that $|\beta(t)| \leq C(|V|) \cdot e^{-\lambda_{\text{gap}} t}$, where the prefactor $C$ is strictly dependent on the cardinality of the state space $|V|$, the minimum stationary probability $\pi_{\min}$, and the operator norm of the generator. This dependence on system size motivates the subsequent discussion of the conjectural Universal Framework. In this unverified theoretical extension, we introduce the "Invariant Quadruplet," the "Admissible Window," and the principle of "RG Invariance" as physical conjectures. These concepts suggest a pathway toward a scale-invariant law of stability, positing that under renormalization group coarse-graining, the effective stability parameters remain bounded independent of microscopic granularity. This work bridges the gap between the absolute certainty of computer-verified mathematics and the heuristic power of Dynamic Assembly Theory.
-1. Introduction
-1.1 The Stability Crisis in Non-Reversible Systems
-The analysis of stability in complex dynamical systems has historically been bifurcated by the property of reversibility. In the domain of reversible systems—typified by equilibrium thermodynamics, undirected networks, and self-adjoint quantum Hamiltonians—stability analysis rests on a firm spectral foundation.1 The governing operators are self-adjoint (or normal), guaranteeing a spectrum of real eigenvalues and an orthogonal basis of eigenvectors. In this regime, the relaxation to equilibrium is monotonic: the energy of any perturbation decays as a sum of independent exponential modes, and the spectral gap $\lambda_{\text{gap}}$ provides a uniform, scale-free bound on convergence times.
-However, the vast majority of natural and engineered systems—from metabolic flux networks and neural circuits to directed social interactions and non-equilibrium chemical assemblies—are fundamentally non-reversible.1 Their dynamics are governed by non-normal operators $L$ (where $L L^* \neq L^* L$), leading to a breakdown of standard spectral intuition. The eigenvectors of such operators are non-orthogonal, permitting a phenomenon known as transient growth or "emergence friction".1 Even if all eigenvalues lie strictly in the stable half-plane, the norm of the evolution semigroup $\|e^{tL}\|$ can amplify transiently, sometimes by orders of magnitude, before the asymptotic decay dictated by the spectral abscissa takes over.2
-This transient regime poses a profound challenge for stability analysis. Eigenvalue analysis, being asymptotic in nature, is blind to these finite-time excursions. A system may be asymptotically stable yet transiently excitable to the point of systemic failure or radical reconfiguration. To capture this behavior requires a shift from the spectrum to the pseudospectrum—the set of complex numbers $z$ for which the resolvent $(zI - L)^{-1}$ is large.3 While powerful, pseudospectral techniques often lack the clean, geometric universality of the spectral gap bounds available for reversible systems.
-1.2 Formal Verification as a Necessity
-The mathematical complexity of non-normal operators, combined with the subtleties of infinite-dimensional limits and the intricate inequalities required to bound transient growth, creates a high risk of analytical error in pen-and-paper proofs. In the context of "Dynamic Assembly Theory" (DAT) and "Unified Predictive Assembly Theory" (UPAT), where these bounds are purported to serve as universal laws of emergence, the standard for rigor must be absolute.
-To address this, we adopt a methodology of formal verification. The core mathematical results presented in this paper have not merely been derived; they have been implemented and checked using the Lean 4 theorem prover.1 This "Verified Core" ensures that the derived bounds follow logically from the axioms of real analysis and linear algebra without relying on unstated assumptions or heuristic approximations. We present the structure of the definitions, the statements of the lemmas, and the logic of the proofs exactly as they exist in the formal library.
-1.3 The Structure of the Investigation
-This manuscript is structured to rigorously distinguish between what has been mechanically verified and what is proposed as physical theory.
-Part I: The Verified Core (Sections 2–5)
-We construct the mathematical object $\beta(t)$, the stability flow, and prove the Functorial Heat Dominance Theorem. We establish that $\beta(t)$ is bounded by an exponential envelope controlled by the spectral gap of a symmetrized companion operator $H$. Crucially, we derive the explicit form of the constant $C$ in this bound, showing it to be a function of the system size $|V|$, the minimum stationary probability $\pi_{\min}$, and the regularization parameter $\epsilon$.1 This section relies strictly on the content of the uploaded Lean code files.
-Part II: The Universal Framework (Section 6)
-We pivot to a physical discussion of these results. We interpret the size-dependent constant $C$ as a "microscopic" bound that must be regularized in the thermodynamic limit. We introduce the Invariant Quadruplet ($\kappa_{\text{Ric}}$, $h$, $\pi_{\min}$, $\kappa(V)$) and the Admissible Window $[t_-, t_+]$ as the physical parameters that effectively control $C$ and the relevant timescales.1 We conclude with the RG Invariance Conjecture, proposing that the functorial nature of the bound allows it to persist under renormalization, rendering the effective constant $C$ independent of $|V|$ at macroscopic scales.1
-Part I: The Verified Core
-In this section, we establish the definitions and geometric structures formally verified in the FHDT Lean library. These definitions underpin the rigorous proof of the main theorem.
-2. Geometric Foundations
-2.1 The Probability Space and Weighted Geometry
-We consider a system defined on a finite set of states $V$. In the Lean formalization, $V$ is instantiated as a Fintype with decidable equality.1 The geometry of the state space is defined by a stationary distribution $\pi: V \to \mathbb{R}$, which acts as a probability measure.
-Definition 2.1 (Positive Measure).
-We assume the existence of a distribution pi_dist such that:
-1. Positivity: $\forall x \in V, \pi(x) > 0$.
-2. Normalization: $\sum_{x \in V} \pi(x) = 1$.1
-This measure induces a weighted inner product space, $L^2(\pi)$, which is the natural setting for analyzing the relaxation of probability densities relative to the steady state. The inner product is defined formally as:
-$$\langle u, v \rangle_\pi = \sum_{x \in V} \pi(x) u(x) v(x)$$
-The associated norm is $\|u\|_\pi = \sqrt{\langle u, u \rangle_\pi}$.
-The choice of this weighted inner product is non-trivial. In standard Euclidean space, the non-normality of $L$ is exacerbated by the disparate scales of the stationary probabilities. By working in $L^2(\pi)$, we effectively "flatten" the stationary distribution, ensuring that the constant vector $\mathbf{1}$ represents the equilibrium state. The formal library includes verified proofs of the Cauchy-Schwarz inequality (cauchy_schwarz_pi) and the non-negativity of the squared norm (norm_sq_pi_nonneg) within this specific weighted space 1, ensuring the topological vector space axioms hold.
-2.2 The Generator and the Sector Condition
-The dynamics of the system are governed by a linear operator $L: \mathbb{R}^V \to \mathbb{R}^V$, represented as a matrix. Unlike simple graph Laplacians, $L$ is not assumed to be symmetric. Instead, we impose a set of formally verified assumptions that define the class of Sectorial Markov Generators.
-Assumption 2.1 (Stationarity).
-The operator $L$ must annihilate constant vectors. Formally, L *? constant_vec_one = 0.1 This reflects the conservation of probability in the master equation: if the system reaches the uniform state (relative to the stationary measure), the probability mass ceases to flow.
-Assumption 2.2 (The Sector Condition).
-To control the non-reversible dynamics, we introduce a symmetric companion operator $H$. We do not assume $L$ is normal; rather, we assume it satisfies a specific relationship with $H$, encoded in the h_rel hypothesis 1:
-$$ \forall u, v, \quad \langle Lu, v \rangle_\pi + \langle u, Lv \rangle_\pi = -2 \langle Hu, v \rangle_\pi $$
-This relation is the verified core's substitute for the real part of the spectrum. If $L$ were a symmetric generator of a reversible process, we would have $\langle Lu, u \rangle_\pi = - \mathcal{E}(u,u)$, where $\mathcal{E}$ is the Dirichlet form. Here, $H$ plays the role of the symmetric dissipation. We further assume:
-1. Self-Adjointness of H: $\langle Hu, v \rangle_\pi = \langle u, Hv \rangle_\pi$.
-2. Positive Semi-Definiteness: $\langle Hu, u \rangle_\pi \geq 0$.
-3. Stationarity of H: $H \mathbf{1} = 0$.
-The Spectral Gap is then defined not on $L$, but on $H$. We assume $\lambda_{\text{gap}} = \text{SpectralGap}_\pi(H) > 0$. This gap quantifies the coercivity of the dissipation: for any vector $u$ orthogonal to the stationary state, the system dissipates energy at a rate proportional to $\lambda_{\text{gap}}$.
-2.3 The Orthogonal Projector $P_\perp$
-Stability analysis concerns the decay of deviations from equilibrium. We explicitly construct the projection operator onto the subspace orthogonal to the constant vector $\mathbf{1}$ in the $L^2(\pi)$ geometry.
-Definition 2.2 (Projector).
-The operator P_ortho_pi is defined as:
-$$P_\perp f = f - \langle f, \mathbf{1} \rangle_\pi \mathbf{1}$$
-Using the formal properties of inner_pi, we verify in Projector.txt 1 that this operator is:
-* Idempotent: $P_\perp \circ P_\perp = P_\perp$.
-* Self-Adjoint: $\langle P_\perp u, v \rangle_\pi = \langle u, P_\perp v \rangle_\pi$.
-* Orthogonalizing: $\langle P_\perp f, \mathbf{1} \rangle_\pi = 0$.
-Crucially, we verify that this projector is a contraction in the $L^2(\pi)$ norm: $\|P_\perp f\|_\pi \leq \|f\|_\pi$. This ensures that isolating the fluctuations does not artificially amplify the state vector.1
-3. Dynamics and Conservation
-With the static geometry established, we turn to the rigorous verification of the system's time evolution.
-3.1 The Heat Semigroup ODE
-The time evolution is defined by the matrix exponential HeatKernel L t, denoted $K(t) = e^{tL}$. While standard in physics, the differentiability and algebraic properties of this object must be reconstructed from axioms for formal verification.
-In Envelope.txt 1, we prove heat_semigroup_deriv: for any initial vector $g$, the trajectory $u(t) = K(t)g$ satisfies the linear ODE:
-$$\frac{d}{dt} u(t) = L u(t)$$
-The proof leverages the HasDerivAt calculus in Lean's Mathlib, composing the derivative of the matrix exponential $\frac{d}{dt} e^{tL} = L e^{tL}$ with the linear map of vector multiplication. We further verify HeatKernel_coord_differentiable, ensuring that this relationship holds pointwise for every coordinate $x \in V$, a necessary step for differentiating the stability flow observable later.
-3.2 Invariance of the Steady State
-A critical requirement for the stability analysis is that the dynamics do not re-introduce the stationary mode once it has been removed. We prove HeatKernel_maps_one_orth_to_one_orth 1: if an initial vector $g$ is orthogonal to $\mathbf{1}$ ($\langle g, \mathbf{1} \rangle_\pi = 0$), then the evolved vector $K(t)g$ remains orthogonal to $\mathbf{1}$ for all $t \geq 0$.
-Proof Logic:
-1. Define $\phi(t) = \langle K(t)g, \mathbf{1} \rangle_\pi$.
-2. Observe $\phi(0) = 0$ by assumption.
-3. Compute $\phi'(t) = \langle L K(t)g, \mathbf{1} \rangle_\pi$.
-4. By the sector relation and the assumption $H\mathbf{1}=0$, we derive a lemma L_maps_into_one_orth showing $\langle Lu, \mathbf{1} \rangle_\pi = 0$ for any $u$.
-5. Thus, $\phi'(t) = 0$ identically. The verified Grönwall lemma implies $\phi(t) = 0$ for all $t$.
-This invariance allows us to confine our analysis of transient growth entirely to the subspace $\mathbf{1}^\perp$, simplifying the problem to bounding the norm of the restricted operator $K(t) P_\perp$.
-4. The Energy Envelope
-We now derive the central dynamical bound: the Canonical Sector Envelope. This result connects the sector condition on $L$ and $H$ to the exponential decay of the semigroup norm.
-4.1 Lyapunov Analysis of Energy
-Let $f$ be an arbitrary perturbation. We track the energy of its projection, $E(t) = \|e^{tL} P_\perp f\|_\pi^2$. The derivative of this energy is computed in E_traj_deriv_eq_inner_L 1:
-$$\frac{d}{dt} E(t) = 2 \langle u(t), L u(t) \rangle_\pi$$
-where $u(t) = e^{tL} P_\perp f$.
-To bound this derivative, we invoke the sector condition h_rel. Setting $v = u(t)$, the relation reads:
-$$\langle L u, u \rangle_\pi + \langle u, L u \rangle_\pi = -2 \langle H u, u \rangle_\pi$$
-By the symmetry of the real inner product, the left-hand side is exactly $2 \langle u, L u \rangle_\pi$. Therefore:
-$$\frac{d}{dt} E(t) = -2 \langle H u(t), u(t) \rangle_\pi$$
-This equation is the verified manifestation of the dissipation relation. It relates the rate of change of the "non-reversible energy" (norm under $L$) directly to the "reversible dissipation" (quadratic form of $H$).
-4.2 The Grönwall-Type Bound
-We assume the operator $H$ satisfies a Spectral Gap Condition: for all $v \perp \mathbf{1}$, $\langle Hv, v \rangle_\pi \geq \lambda_{\text{gap}} \|v\|_\pi^2$. Since $u(t)$ is verified to be orthogonal to $\mathbf{1}$, we have:
-$$\frac{d}{dt} E(t) \leq -2 \lambda_{\text{gap}} E(t)$$
-To rigorously conclude exponential decay from this differential inequality, we implemented a custom, verified ODE solver module ODE.txt.1 The central lemma, gronwall_decay, proves that if a differentiable function $f$ satisfies $f' \leq -c f$ with $c > 0$, then $f(t) \leq f(0) e^{-ct}$.
-Proof Logic of Verified Grönwall:
-1. Construct the auxiliary function $g(t) = f(t) e^{ct}$.
-2. Differentiate: $g'(t) = (f'(t) + c f(t)) e^{ct}$.
-3. By hypothesis $f' \leq -cf$, so $f' + cf \leq 0$. Since the exponential is strictly positive, $g'(t) \leq 0$.
-4. By the Mean Value Theorem (formalized in Mathlib), a function with a non-positive derivative is non-increasing. Thus $g(t) \leq g(0)$.
-5. Unpacking the definition: $f(t) e^{ct} \leq f(0)$, yielding $f(t) \leq f(0) e^{-ct}$.
-Applying this to $E(t)$ with $c = 2\lambda_{\text{gap}}$, we obtain $E(t) \leq E(0) e^{-2\lambda_{\text{gap}} t}$. Taking the square root and using the contraction of the projector ($E(0) = \|P_\perp f\|_\pi^2 \leq \|f\|_\pi^2$), we derive the operator norm bound:
-$$\|e^{tL} P_\perp\|_{\text{op},\pi} \leq e^{-\lambda_{\text{gap}} t}$$
-This result, sector_envelope_bound_canonical in Sector.txt 1, is the bedrock of the heat dominance theorem. It confirms that under the sector condition, the transient growth is completely suppressed by the spectral gap of $H$.
-5. The Functorial Heat Dominance Theorem
-The culmination of the verified library is the bound on the stability flow $\beta(t)$. This section walks through the construction of the theorem FunctorialHeatDominanceTheorem in Assumptions.txt.1
-5.1 The Log-Observable and Stability Flow
-We define the normalized return probability observable:
-$$K_{\text{norm}}(x, t) = 1 - \frac{(e^{tL})_{xx}}{\pi(x)}$$
-This quantity represents the deviation of the local return probability from its equilibrium value $\pi(x)$. Note that at $t=0$, $K(0) = I$, so $(e^{0})_{xx} = 1$, and $K_{\text{norm}}$ is typically non-zero. As $t \to \infty$, $(e^{tL})_{xx} \to \pi(x)$, so $K_{\text{norm}} \to 0$.
-The stability flow $\beta(t)$ is defined as the time derivative of the expected logarithm of this observable. Crucially, we verify that this definition includes the explicit regularization parameter $\epsilon$ used in the theorem statement 1:
-$$E_{\log K}(t) = \sum_{x \in V} \pi(x) \log(K_{\text{norm}}(x, t) + \epsilon)$$
-$$\beta(t) = \frac{d}{dt} E_{\log K}(t)$$
-Here, $\epsilon > 0$ is a verified regularization parameter ensuring the argument of the logarithm remains strictly positive.
-5.2 The Diagonal Bridge
-To bound $\beta(t)$, we must control the diagonal elements of the generator's action. We utilize Pillar 3: The Diagonal Bridge, verified in Diagonal.txt.1
-Lemma (Diagonal Sum Bound).
-$$\sum_{x \in V} |A_{xx}| \leq |V| \cdot \|A\|_{\text{op},\pi}$$
-Proof:
-1. Express the diagonal element as an inner product: $A_{xx} = \langle \delta_x^\pi, A \delta_x^\pi \rangle_\pi$, where $\delta_x^\pi$ is the appropriately scaled unit vector.
-2. Apply the verified cauchy_schwarz_pi: $|A_{xx}| \leq \|\delta_x^\pi\|_\pi \|A \delta_x^\pi\|_\pi$.
-3. By definition of the operator norm, $\|A \delta_x^\pi\|_\pi \leq \|A\|_{\text{op},\pi} \|\delta_x^\pi\|_\pi$.
-4. Since $\|\delta_x^\pi\|_\pi = 1$ (verified construction), $|A_{xx}| \leq \|A\|_{\text{op},\pi}$.
-5. Summing over the finite type $V$ yields the factor $|V|$ (Fintype.card V).
-This lemma is the specific point where the system size $|V|$ enters the bound. It reflects the potentially constructive interference of diagonal modes in a finite discrete basis.
-5.3 Derivation of the Bound
-We now assemble the proof of the main theorem.
-Step 1: Differentiation.
-Using the chain rule (verified via deriv_sum and deriv_log), we compute $\beta(t)$:
-$$ \beta(t) = \sum_{x \in V} \pi(x) \frac{\frac{d}{dt} K_{\text{norm}}(x,t)}{K_{\text{norm}}(x,t) + \epsilon} $$
-Using deriv_K_norm 1, we substitute the derivative of the heat kernel: $\frac{d}{dt} K_{\text{norm}} = - \frac{(L e^{tL})_{xx}}{\pi(x)}$.
-Crucially, the $\pi(x)$ in the numerator cancels with the $1/\pi(x)$ from the derivative:
-$$\beta(t) = \sum_{x \in V} \frac{-(L e^{tL})_{xx}}{K_{\text{norm}}(x,t) + \epsilon}$$
-Step 2: Absolute Estimation.
-We assume a lower bound on the denominator: $\exists \epsilon_{\min} > 0$ such that $K_{\text{norm}}(x,t) + \epsilon \geq \epsilon_{\min}$ for all $x, t$. Taking absolute values:
-$$|\beta(t)| \leq \frac{1}{\epsilon_{\min}} \sum_{x \in V} |(L e^{tL})_{xx}|$$
-Step 3: Operator Norm Control.
-We apply the Diagonal Bridge lemma with $A = L e^{tL}$:
-$$\sum_{x \in V} |(L e^{tL})_{xx}| \leq |V| \cdot \|L e^{tL}\|_{\text{op},\pi}$$
-Step 4: Factorization and Decay.
-We decompose the operator $L e^{tL}$. Since $L$ annihilates constants, $L = L P_\perp$. Thus $L e^{tL} = L (e^{tL} P_\perp)$. Using submultiplicativity (opNorm_pi_comp) and the Sector Envelope bound:
-$$ |L e^{tL}|{\text{op},\pi} \leq |L|{\text{op},\pi} |e^{tL} P_\perp|{\text{op},\pi} \leq |L|{\text{op},\pi} e^{-\lambda_{\text{gap}} t} $$
-Step 5: The Verified Constant.
-Combining these steps, we arrive at the formally verified bound:
-$$ |\beta(t)| \leq \left[ \frac{|V|}{\epsilon_{\min}} |L|{\text{op},\pi} \right] e^{-\lambda{\text{gap}} t} $$
-In Assumptions.txt 1, the constant $C$ is constructed explicitly to satisfy this inequality, incorporating an additional factor of $1/\pi_{\min}$ to handle worst-case scalings in the formal type system:
-$$C = \left( \frac{|V|}{\epsilon_{\min} \pi_{\min}} \right) \|L\|_{\text{op},\pi} + 1$$
-This proves the Functorial Heat Dominance Theorem: the stability flow is bounded by an exponential envelope strictly controlled by the spectral gap, with a prefactor that depends linearly on system size $|V|$.
-Part II: The Universal Framework (Conjectural)
-The Verified Core establishes a rigorous mathematical baseline: for any finite system satisfying the sector condition, $\beta(t)$ decays exponentially. However, the prefactor $C$ derived in Section 5.3 depends linearly on the system size $|V|$. In the thermodynamic limit ($|V| \to \infty$), this bound would diverge, rendering it physically vacuous.
-The Universal Framework addresses this limitation. We now transition from proven theorems to physical interpretation, interpreting the verified result through the lens of Dynamic Assembly Theory and Renormalization Group (RG) physics. We propose that the size dependence of $C$ is a "representational artifact" that vanishes when the system is viewed through the correct set of physical invariants.
-6.1 The Invariant Quadruplet
-To replace the raw system parameters ($|V|, L, \pi$) with meaningful physical quantities, we introduce the Invariant Quadruplet. These four parameters are hypothesized to constitute a sufficient state vector for describing the stability lifecycle of non-reversible systems.1
-InvariantSymbolDomainPhysical InterpretationConnection to Verified CoreRicci Curvature$\kappa_{\text{Ric}}$Local GeometryGlobal lower bound on Ollivier-Ricci curvature. Controls local mixing times.Provides a geometric bound on $\|L\|_{\text{op},\p$, preventing it from scaling with $Cheeger Constant$h$Global TopologyReweighted Cheeger constant for directed graphs. Measures bottleneck severity.Provides a topological lower bound for $\lambda_{\text{gap}}(H)$, connecting geometry to the sector condition.Min. Stationary Prob.$\pi_{\min}$Asymptotics$\min_v \pi(v)$. Sets the timescale for ergodic exploration.Explicitly appears in $C$. Small $\pi_{\min}$ indicates "rare" states that can trap probability.Condition Number$\kappa(V)$Transient Dynamics$\|V\|\|V^{-$. Bounds transient amplification due to non-normality.Controls the "Pseudospectral Barrier" $B(t)$, refining the sector envelope for general non-normal $L$.In the Universal Framework, we conjecture that for physical systems, the operator norm $\|L\|_{\text{op},\pi}$ does not grow with $|V|$, but is instead bounded by functions of the local geometry ($\kappa_{\text{Ric}}$) and the maximum degree. This would stabilize one component of $C$.
-6.2 The Admissible Window
-The verified theorem holds for all $t \geq 0$. However, the Universal Framework posits that the bound is physically predictive only within a calibrated Admissible Window $[t_-, t_+]$.1 Outside this window, other physical processes dominate.
-The Lower Bound ($t_-$): Onset of Global Dynamics.
-$$t_{-} \geq \frac{c_{1}}{d_{\max}(1-\kappa_{\text{Ric}})}$$
-Interpretation: For $t < t_-$, the dynamics are dominated by local diffusion. The heat kernel $K(t)$ is well-approximated by its Taylor expansion $I + tL + \dots$.1 In this regime, the global spectral gap $\lambda_{\text{gap}}$ is irrelevant; the flow is driven by local curvature. The inequality suggests that $t_-$ marks the time required for probability to diffuse beyond the local neighborhood, "feeling" the global topology.
-The Upper Bound ($t_+$): End of Transient Amplification.
-$$t_{+} \leq \frac{\log(\kappa(V)) + c_{2}}{\lambda_{\text{gap}}}$$
-Interpretation: For $t > t_+$, the system enters the asymptotic regime where the dominant eigenmode prevails. The interval $[t_-, t_+]$ is the regime of Emergence Friction.1 Here, the transient amplification (controlled by $\kappa(V)$) competes with the asymptotic decay. This window represents the phase where the system is actively exploring state space, potentially constructing complex assemblies, before relaxing to the steady state.
-6.3 RG Invariance and the Functorial Conjecture
-The resolution to the $|V|$ dependency in the constant $C$ lies in the principle of RG Invariance. We propose that the stability flow $\beta(t)$ behaves functorially under coarse-graining.
-The Conjecture: There exists a Renormalization Group functor $F$ (instantiated as an equitable partition of the graph) such that:
-1. Gap Preservation: $\lambda_{\text{gap}}(F(G)) \geq \lambda_{\text{gap}}(G)$. (Coarse-graining does not destroy stability).
-2. Constant Stabilization: The effective constant $C_{eff}$ for the coarse-grained system converges to a value independent of the original size $|V_0|$.
-Lemma 2 (Preservation of Reweighted Gap) 1:
-While not formally verified in the current Lean core, the framework cites a proof that under an equitable partition, the spectrum of the quotient graph's Laplacian is a subset of the original reweighted Laplacian. This implies $\lambda_{\text{gap}}(G', w) \geq \lambda_{\text{gap}}(G')$, providing a theoretical basis for the claim that stability is a scale-invariant property.
-This implies that the factor $|V|$ in the verified constant is an artifact of the fine-grained representation. As we renormalize the system, $|V|$ decreases, but the global "trace" of the stability flow—the summation of diagonal elements—remains invariant, suggesting that $\sum |(L e^{tL})_{xx}|$ is an extensive quantity that should be normalized by volume in the thermodynamic limit.
-6.4 Emergence Friction
-We interpret the phenomenon bounded by this theorem as Emergence Friction. In the verified core, the energy $E(t)$ can decay non-monotonically if the sector condition is relaxed (though our strict sector condition forces monotonicity). In the general Universal Framework, where $\kappa(V)$ is large, the "barrier" $B(t)$ in Lemma 1 1 allows for a transient rise in $\|e^{tL}\|$.
-This transient growth is the physical signature of a system performing work to assemble structure. The negative stability flow ($\beta(t) < 0$) permitted within the admissible window corresponds to the system moving away from the immediate entropic equilibrium to access a subspace of lower entropy (higher complexity). The Functorial Heat Dominance Theorem places a hard limit on this process: no matter how complex the assembly, the rate of this exploration is ultimately capped by the system's fundamental dissipation rate $\lambda_{\text{gap}}$.
-7. Conclusion
-This work presents a unified approach to the stability of non-reversible systems, combining the unyielding rigor of formal verification with the interpretive depth of physical theory.
-The Verified Core has successfully established:
-1. The mathematical well-posedness of the stability flow $\beta(t)$ in $L^2(\pi)$.
-2. The rigorous derivation of the energy decay envelope $\|e^{tL} P_\perp\| \leq e^{-\lambda_{\text{gap}} t}$ under the sector condition.
-3. The explicit, computable upper bound $|\beta(t)| \leq C(|V|) e^{-\lambda_{\text{gap}} t}$.
-The Universal Framework has contextualized these results, proposing:
-1. The Invariant Quadruplet as the natural physical coordinates for stability analysis.
-2. The Admissible Window as the temporal domain of relevant transient dynamics.
-3. RG Invariance as the mechanism that resolves the size-dependence of the bound, elevating it to a universal law.
-By explicitly separating proof from conjecture, we provide a foundation for "Unified Predictive Assembly Theory" that is both mathematically unassailable in its logic and physically rich in its implications. The verified bounds serve as a safety guarantee for engineered systems (such as non-normal neural networks), while the universal framework opens new avenues for understanding the thermodynamics of emergence in biological and social complexity.
-
-
