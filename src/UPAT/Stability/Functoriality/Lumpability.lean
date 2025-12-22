@@ -489,19 +489,12 @@ theorem heat_kernel_matrix_commute (L : Matrix V V ℝ) (P : Partition V)
     (hL : IsStronglyLumpable L P) (t : ℝ) :
     exp ℝ (t • L) * lift_matrix P = 
     lift_matrix P * exp ℝ (t • QuotientGeneratorSimple L P) := by
-  -- The matrix exponential exp(tA) satisfies d/dt exp(tA) = A * exp(tA)
-  -- Both sides satisfy Y' = L * Y with Y(0) = K
-  -- By uniqueness of ODE solutions, they are equal
-  -- 
-  -- For a formal Lean proof, we use that exp(tA) * B = B * exp(tC) 
-  -- when A * B = B * C (similarity/intertwining)
-  -- This follows from the power series: (tA)^n * B = B * (tC)^n by intertwining_pow
-  have h_pow : ∀ n : ℕ, (t • L) ^ n * lift_matrix P = 
-      lift_matrix P * (t • QuotientGeneratorSimple L P) ^ n := fun n => by
-    rw [smul_pow, smul_pow]
-    rw [Matrix.smul_mul, intertwining_pow L P hL n, Matrix.mul_smul]
-  -- The full proof would use that exp is the limit of partial sums
-  -- and the intertwining passes through the limit
+  -- Use the intertwining property L * K = K * M to show exp(tL) * K = K * exp(tM)
+  -- Key: (tL)^n * K = K * (tM)^n for all n (intertwining_pow)
+  -- The matrix exponential exp(A) = Σ_n (1/n!) A^n
+  -- Since partial sums commute with K via h_pow, the limit (exp) also commutes
+  -- This requires showing tsum commutes with matrix multiplication
+  -- In finite dimensions with Fintype, this follows from continuity of multiplication
   sorry
 
 /-- **Heat Kernel Commutation**: e^{tL̄} ∘ Q = Q ∘ e^{tL}.
