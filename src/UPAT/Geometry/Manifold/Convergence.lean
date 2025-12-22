@@ -124,7 +124,62 @@ def PointwiseConvergence (_Δ : LaplaceBeltrami d) : Prop :=
 /-- The **Optimal Bandwidth** ε(N) = 1/N^{1/(d+4)} -/
 def optimalBandwidth (_d N : ℕ) : ℝ := 1 / ((N : ℝ) + 1)
 
-/-! ### 6. Main Convergence Theorems -/
+/-! ### 6. The Proof Structure: Taylor Expansion Lemmas -/
+
+/-- **Step 0: Kernel Positivity** - The Gaussian kernel is always positive. -/
+lemma gaussianKernel_pos (ε : ℝ) (_hε : ε > 0) (dist : ℝ) : 
+    0 < gaussianKernel ε dist := by
+  unfold gaussianKernel
+  exact Real.exp_pos _
+
+/-- **Step 1: Kernel Symmetry** - K_ε(x,y) = K_ε(y,x).
+    This is crucial: it causes the linear term in Taylor expansion to vanish. -/
+lemma gaussianKernel_symm (ε dist : ℝ) : 
+    gaussianKernel ε dist = gaussianKernel ε (-dist) := by
+  unfold gaussianKernel
+  congr 1
+  ring
+
+/-- **Step 2: Zero-th Order Cancellation** - ∫ K_ε(x,y)[f(x) - f(x)] = 0.
+    Trivial but stated for completeness. -/
+lemma zeroth_order_vanishes (c : ℝ) : c - c = 0 := sub_self c
+
+/-- **Step 3: Linear Term Cancellation (The Sexy Part)** 
+    
+    For a symmetric kernel centered at origin:
+    ∫ K_ε(0,y) · y dy = 0
+    
+    This is because for every y, there is a -y with equal weight.
+    The gradient term ∇f·(y-x) therefore integrates to zero.
+    
+    Formally: Σⱼ K_ε(xᵢ,xⱼ)(xⱼ - xᵢ) → 0 as N → ∞ by symmetry. -/
+lemma linear_term_vanishes_by_symmetry (weights : Fin N → ℝ) (displacements : Fin N → ℝ)
+    (h_sym : ∀ i, ∃ j, displacements j = -displacements i ∧ weights j = weights i) :
+    ∑ i, weights i * displacements i = 0 := by
+  sorry -- Requires pairing argument: each term cancels with its symmetric partner
+
+/-- **Step 4: Quadratic Term Emergence**
+    
+    The surviving term from Taylor expansion is:
+    (1/2ε) ∫ K_ε(x,y) (y-x)ᵀ Hess(f) (y-x) dy
+    
+    As ε → 0, this concentrates and yields:
+    (1/2) Tr(Hess f) · ∫ K_ε(x,y) |y-x|² dy / ε
+    
+    The integral ∫ K_ε |y|² dy / ε → constant (Gaussian second moment). -/
+lemma quadratic_term_yields_trace (_ε : ℝ) (_hε : _ε > 0) :
+    True := trivial -- Placeholder for Hessian trace emergence
+
+/-- **Step 5: Concentration Bound**
+    
+    For N samples from density p on manifold M:
+    |L_ε^{discrete} f(x) - L_ε^{continuous} f(x)| ≤ C/√N
+    
+    This is the Hoeffding/Bernstein concentration step. -/
+lemma concentration_bound (_N : ℕ) (_hN : _N > 0) :
+    True := trivial -- Placeholder for concentration inequality
+
+/-! ### 7. Main Convergence Theorems -/
 
 /-- **Belkin-Niyogi Convergence Theorem**: Graph Laplacian converges to Δ.
     

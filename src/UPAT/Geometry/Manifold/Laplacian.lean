@@ -133,7 +133,7 @@ def heatKernelSpectral (Δ : LaplaceBeltrami n) (eigenfunctions : ℕ → Eigenf
 /-- **Consistency Principle**: Discrete Laplacians approximate Δ on sampled points.
     This is made precise in `Convergence.lean`. -/
 axiom discrete_approximates_continuous : 
-  ∀ (Δ : LaplaceBeltrami n) (ε : ℝ), ε > 0 → 
+  ∀ (_Δ : LaplaceBeltrami n) (ε : ℝ), ε > 0 → 
   ∃ (N : ℕ), ∀ (m : ℕ), m > N → True
 
 end UPAT.Geometry.Manifold
