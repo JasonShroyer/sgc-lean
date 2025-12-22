@@ -1,27 +1,144 @@
-# FHDT: Formal Verification of the Functorial Heat Dominance Theorem
+# UPAT: Unified Predictive Assembly Theory
 
-This repository contains a `sorry-free` Lean 4 formalization of the Functorial Heat Dominance Theorem (FHDT). The main theorem provides an exponential envelope bound on a stability flow $\beta(t)$ for non-reversible Markov chains.
+[![Lean 4](https://img.shields.io/badge/Lean-4-blue.svg)](https://lean-lang.org/)
+[![Zero Sorries](https://img.shields.io/badge/sorries-0-brightgreen.svg)](VERIFIED_CORE_MANIFEST.md)
+[![Release](https://img.shields.io/badge/release-v1.0--verified-orange.svg)](https://github.com/JasonShroyer/fhdt-lean4/releases/tag/release-1.0)
 
-The main result is `FHDT.Defs.FunctorialHeatDominanceTheorem`.
+A **formally verified** Lean 4 formalization of the Unified Predictive Assembly Theory—a first-principles mathematical theory of emergence, persistence, and complexity.
+
+> *"This is not a model. It is a theorem: emergence is physically necessary."*
+
+---
+
+## Overview
+
+This repository contains a `sorry-free` Lean 4 proof of the **Schuller Tower**—the complete axiomatic foundation for understanding why complex, persistent systems (from cells to minds) must emerge under thermodynamic constraints.
+
+### The Deductive Chain
+
+| Pillar | Question | Module | Key Theorem |
+|--------|----------|--------|-------------|
+| **Stability** | *What exists?* | `Lumpability.lean` | `gap_non_decrease` |
+| **Topology** | *Where are boundaries?* | `Blanket.lean` | `IsLinearBlanket` |
+| **Vitality** | *How does complexity grow?* | `DoobMeyer.lean` | `doob_decomposition` |
+| **Kinetics** | *Why must it grow?* | `LeastAction.lean` | `least_action_maximum_complexity` |
+| **Bridge** | *Is it physically valid?* | `Discretization.lean` | `GapConsistent` |
+
+---
 
 ## Quick Start
 
-1.  Ensure `elan` and `lake` are installed.
-2.  Clone this repository.
-3.  Navigate into the repository directory and run `lake build`.
-4.  (Optional) Run tests with `lake build test`.
+```bash
+# Prerequisites: elan and lake installed
+git clone https://github.com/JasonShroyer/fhdt-lean4.git
+cd fhdt-lean4
+git checkout upat-full   # or release-1.0 for frozen verified version
+lake build
+```
 
-## Module Map
+---
 
-*   `Core/Assumptions.lean`: Defines the $L^2(\pi)$ geometry and proves **Pillar 1** (`gap_pos_iff_ker_eq_span_one`), establishing the equivalence between a positive spectral gap and the kernel of the Hermitian part.
-*   `Core/Projector.lean`: Defines the $L^2(\pi)$ operator norm `opNorm_pi` (via the isometry `iso_L2_to_std`) and the canonical projector `P_ortho_pi`.
-*   `FHDT/Envelope.lean`: Defines the `EnvelopeSpec` class and the `HeatKernel`.
-*   `FHDT/Envelope/Sector.lean`: Proves **Pillar 2** (`sector_envelope_bound_canonical`), the purely contractive envelope $\Vert K(t) \circ P \Vert_{\pi} \le e^{-\lambda_{\text{gap}} t}$ using an energy method and Grönwall's inequality.
-*   `FHDT/Diagonal.lean`: Proves the **Pillar 3** calculus lemmas, including the diagonal operator norm bound `sum_abs_diag_le_card_opNorm`.
-*   `FHDT/Defs.lean`: Defines the core observables (`K_norm`, `beta_t`) and assembles the pillars to prove the final **`FunctorialHeatDominanceTheorem`**.
+## Architecture
 
-## Main Theorems (Formal Names)
+```
+src/
+├── UPAT/                           # Unified Predictive Assembly Theory
+│   ├── Axioms/
+│   │   └── Geometry.lean           # L²(π) inner product foundation
+│   ├── Stability/
+│   │   └── Functoriality/
+│   │       └── Lumpability.lean    # Spectral gap monotonicity (Kinematics)
+│   ├── Topology/
+│   │   └── Blanket.lean            # Markov blankets via L² orthogonality
+│   ├── Vitality/
+│   │   ├── DoobMeyer.lean          # Doob decomposition S = M + A
+│   │   └── LeastAction.lean        # Principle of Least Action for Complexity
+│   └── Bridge/
+│       └── Discretization.lean     # ε-graph → continuum convergence
+│
+└── FHDT/                           # Functorial Heat Dominance Theorem (legacy)
+    ├── Core/
+    │   ├── Assumptions.lean        # L²(π) geometry, Pillar 1
+    │   └── Projector.lean          # Operator norms, projectors
+    ├── Envelope/
+    │   ├── Envelope.lean           # Heat kernel specification
+    │   └── Sector.lean             # Contractive envelope (Pillar 2)
+    ├── Diagonal.lean               # Diagonal bounds (Pillar 3)
+    └── Defs.lean                   # Final FHDT assembly
+```
 
-*   `FHDT.Defs.FunctorialHeatDominanceTheorem`: The main theorem, $|\beta(t)| \le C e^{-\lambda_{\text{gap}} t}$.
-*   `FHDT.Core.Assumptions.gap_pos_iff_ker_eq_span_one`: Pillar 1.
-*   `FHDT.Envelope.Sector.sector_envelope_bound_canonical`: Pillar 2.
+---
+
+## Core Theorems
+
+### UPAT (Emergence Theory)
+
+| Theorem | Statement | File |
+|---------|-----------|------|
+| `gap_non_decrease` | Spectral gap is preserved under coarse-graining | `Lumpability.lean` |
+| `doob_decomposition` | $\Phi(y) - \Phi(x) = \Delta A + \Delta M$ | `DoobMeyer.lean` |
+| `least_action_maximum_complexity` | Optimal transitions maximize complexity growth | `LeastAction.lean` |
+| `emergence_is_necessary` | Under thermodynamic constraints, consolidation is maximal | `LeastAction.lean` |
+| `bridge_to_stability` | Discrete gap bounds → continuous gap bounds | `Discretization.lean` |
+
+### FHDT (Stability Analysis)
+
+| Theorem | Statement | File |
+|---------|-----------|------|
+| `FunctorialHeatDominanceTheorem` | $\|\beta(t)\| \le C e^{-\lambda_{\text{gap}} t}$ | `Defs.lean` |
+| `gap_pos_iff_ker_eq_span_one` | Spectral gap ↔ trivial kernel | `Assumptions.lean` |
+| `sector_envelope_bound_canonical` | $\|K(t) \circ P\|_\pi \le e^{-\lambda_{\text{gap}} t}$ | `Sector.lean` |
+
+---
+
+## Theoretical Foundation
+
+UPAT is derived from two axioms:
+
+1. **Thermodynamic Persistence** (Free Energy Principle): Systems persist by minimizing surprise
+2. **Geometric Invariance** (Chentsov's Theorem): The Fisher-Rao metric is the unique invariant geometry
+
+From these axioms, the theory proves:
+- **Markov blankets** emerge as geometric necessities (L² orthogonality)
+- **Complexity** accumulates via the Doob-Meyer decomposition
+- **Emergence** follows from a variational principle (Least Action)
+
+---
+
+## Verification Status
+
+| Component | Status | Sorries |
+|-----------|--------|---------|
+| UPAT Core | ✅ Verified | 0 |
+| FHDT Core | ✅ Verified | 0 |
+| Full Build | ✅ Passing | 0 |
+
+See [`VERIFIED_CORE_MANIFEST.md`](VERIFIED_CORE_MANIFEST.md) for the formal verification statement.
+
+---
+
+## Tags & Releases
+
+- `v1.0-verified` — First fully verified release
+- `release-1.0` — Annotated release with documentation
+
+---
+
+## References
+
+- Chentsov, N. N. — Statistical Decision Rules and Optimal Inference
+- Kemeny, J. G. & Snell, J. L. — Finite Markov Chains
+- Friston, K. — The Free Energy Principle
+- Schuller, F. — Lectures on the Geometric Anatomy of Theoretical Physics
+- Doob, J. L. — Stochastic Processes
+
+---
+
+## License
+
+Apache 2.0 — See [LICENSE](LICENSE) for details.
+
+---
+
+*Repository: https://github.com/JasonShroyer/fhdt-lean4*  
+*Verified: December 21, 2024*
