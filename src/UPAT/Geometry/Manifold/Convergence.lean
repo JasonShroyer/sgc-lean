@@ -152,11 +152,40 @@ lemma zeroth_order_vanishes (c : ℝ) : c - c = 0 := sub_self c
     This is because for every y, there is a -y with equal weight.
     The gradient term ∇f·(y-x) therefore integrates to zero.
     
-    Formally: Σⱼ K_ε(xᵢ,xⱼ)(xⱼ - xᵢ) → 0 as N → ∞ by symmetry. -/
-lemma linear_term_vanishes_by_symmetry (weights : Fin N → ℝ) (displacements : Fin N → ℝ)
-    (h_sym : ∀ i, ∃ j, displacements j = -displacements i ∧ weights j = weights i) :
+    Formally: Σⱼ K_ε(xᵢ,xⱼ)(xⱼ - xᵢ) → 0 as N → ∞ by symmetry.
+    
+    **Proof Strategy (Change of Variables):**
+    Let S = Σᵢ wᵢ · dᵢ. By the symmetry hypothesis, for each i there exists j 
+    with dⱼ = -dᵢ and wⱼ = wᵢ. Summing over all such j:
+    S = Σⱼ wⱼ · dⱼ = Σᵢ wᵢ · (-dᵢ) = -S
+    Therefore 2S = 0, so S = 0. -/
+lemma linear_term_vanishes_by_symmetry_weak (weights : Fin N → ℝ) (displacements : Fin N → ℝ)
+    (σ : Fin N ≃ Fin N)
+    (h_disp : ∀ i, displacements (σ i) = -displacements i)
+    (h_wt : ∀ i, weights (σ i) = weights i) :
     ∑ i, weights i * displacements i = 0 := by
-  sorry -- Requires pairing argument: each term cancels with its symmetric partner
+  have h_neg : ∑ i, weights (σ i) * displacements (σ i) = 
+               -∑ i, weights i * displacements i := by
+    simp only [h_disp, h_wt, mul_neg, Finset.sum_neg_distrib]
+  have h_reindex : ∑ i, weights (σ i) * displacements (σ i) = 
+                   ∑ i, weights i * displacements i := by
+    rw [← Equiv.sum_comp σ (fun i => weights i * displacements i)]
+  linarith
+
+/-- **Simplified version**: When displacements sum to zero directly. -/
+lemma linear_term_vanishes_direct (weights : Fin N → ℝ) (displacements : Fin N → ℝ)
+    (h_antisym : ∑ i, displacements i = 0)
+    (h_const : ∀ i j, weights i = weights j) :
+    ∑ i, weights i * displacements i = 0 := by
+  by_cases hN : N = 0
+  · subst hN; simp
+  · obtain ⟨k⟩ := Fin.pos_iff_nonempty.mp (Nat.pos_of_ne_zero hN)
+    calc ∑ i, weights i * displacements i 
+        = ∑ i, weights k * displacements i := by
+          apply Finset.sum_congr rfl; intro i _; rw [h_const i k]
+      _ = weights k * ∑ i, displacements i := by rw [← Finset.mul_sum]
+      _ = weights k * 0 := by rw [h_antisym]
+      _ = 0 := mul_zero _
 
 /-- **Step 4: Quadratic Term Emergence**
     
