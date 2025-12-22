@@ -295,7 +295,7 @@ theorem intertwining_QL (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → 
     (hπ : ∀ v, 0 < pi_dist v) (hL : IsStronglyLumpable L P) :
     Q_map P pi_dist hπ ∘ₗ toLin' L = 
     toLin' (QuotientGenerator L P pi_dist hπ) ∘ₗ Q_map P pi_dist hπ := by
-  -- The intertwining Q ∘ L = L̄ ∘ Q follows from:
+  -- The intertwining Q ∘ L = L̄ ∘ Q 
   -- LHS: (Q (L f))(ā) = (Σ_{x∈ā} π(x) * (Σ_y L_{xy} f(y))) / π̄(ā)
   -- RHS: (L̄ (Q f))(ā) = Σ_b̄ L̄_{āb̄} * (Q f)(b̄)
   -- By Fubini and strong lumpability, these are equal
