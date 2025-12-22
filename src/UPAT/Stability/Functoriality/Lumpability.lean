@@ -198,7 +198,7 @@ theorem intertwining_pow (L : Matrix V V ℝ) (P : Partition V) (hL : IsStrongly
     
     Under strong lumpability, this equals the simple form. -/
 def QuotientGenerator (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
-    (hπ : ∀ v, 0 < pi_dist v) : Matrix P.Quot P.Quot ℝ :=
+    (_hπ : ∀ v, 0 < pi_dist v) : Matrix P.Quot P.Quot ℝ :=
   fun a_bar b_bar =>
     let sum_over_a := ∑ x : V, if P.quot_map x = a_bar 
       then pi_dist x * row_sum_block L P x b_bar
@@ -249,7 +249,7 @@ lemma quotient_generator_eq_simple (L : Matrix V V ℝ) (P : Partition V) (pi_di
 
 /-- The averaging/quotient map Q : (V → ℝ) → (V̄ → ℝ).
     (Q f)(ā) = (1/π̄(ā)) * Σ_{x∈ā} π(x) * f(x) -/
-def Q_map (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) : 
+def Q_map (P : Partition V) (pi_dist : V → ℝ) (_hπ : ∀ v, 0 < pi_dist v) : 
     (V → ℝ) →ₗ[ℝ] (P.Quot → ℝ) where
   toFun f a_bar := 
     (∑ x : V, if P.quot_map x = a_bar then pi_dist x * f x else 0) / pi_bar P pi_dist a_bar

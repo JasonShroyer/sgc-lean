@@ -104,7 +104,7 @@ def IsExternalFunction (B : BlanketPartition V) (f : V → ℝ) : Prop :=
     
     Projects a function onto the subspace of functions supported on the blanket.
     This is the geometric analogue of "conditioning on b". -/
-def projectOntoBlanket (B : BlanketPartition V) (pi_dist : V → ℝ) (f : V → ℝ) : V → ℝ :=
+def projectOntoBlanket (B : BlanketPartition V) (_pi_dist : V → ℝ) (f : V → ℝ) : V → ℝ :=
   fun v => if v ∈ B.blanket then f v else 0
 
 /-- **Residual after Blanket Projection**.
@@ -196,8 +196,8 @@ def RespectsBlank (L : Matrix V V ℝ) (B : BlanketPartition V) : Prop :=
     
     This is the geometric foundation for the claim that blankets 
     create "autonomous" subsystems. -/
-theorem blanket_orthogonality (L : Matrix V V ℝ) (B : BlanketPartition V)
-    (pi_dist : V → ℝ) (hL : RespectsBlank L B) 
+theorem blanket_orthogonality (_L : Matrix V V ℝ) (B : BlanketPartition V)
+    (pi_dist : V → ℝ) (_hL : RespectsBlank _L B) 
     (f : V → ℝ) (g : V → ℝ)
     (hf : IsInternalFunction B f) (hg : IsExternalFunction B g) :
     inner_pi pi_dist f g = 0 := by

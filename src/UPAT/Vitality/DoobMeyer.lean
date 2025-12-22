@@ -81,7 +81,7 @@ def IsDetailedBalance (P : Matrix V V ℝ) (pi_dist : V → ℝ) : Prop :=
     Lower probability states have higher surprise.
     
     We require π(x) > 0 for all x to ensure this is well-defined. -/
-noncomputable def SurprisePotential (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x) : V → ℝ :=
+noncomputable def SurprisePotential (pi_dist : V → ℝ) (_hπ : ∀ x, 0 < pi_dist x) : V → ℝ :=
   fun x => -Real.log (pi_dist x)
 
 /-- Surprise is non-negative when π(x) ≤ 1. -/
@@ -239,7 +239,7 @@ Systems evolving toward equilibrium have decreasing expected surprise
     This formalizes the "Rate of Consolidation" - systems naturally evolve
     toward lower surprise (higher probability) states. -/
 theorem contraction_implies_supermartingale (P : Matrix V V ℝ) (pi_dist : V → ℝ)
-    (hπ : ∀ x, 0 < pi_dist x) (hP : IsStochastic P)
+    (hπ : ∀ x, 0 < pi_dist x) (_hP : IsStochastic P)
     (h_contract : ∀ x, condExp P (SurprisePotential pi_dist hπ) x ≤ 
                        SurprisePotential pi_dist hπ x) :
     IsSupermartingale P (SurprisePotential pi_dist hπ) := h_contract
@@ -252,7 +252,7 @@ theorem contraction_implies_supermartingale (P : Matrix V V ℝ) (pi_dist : V �
     For x ∈ internal, y ∈ external (or vice versa), this measures
     the unpredictable information flow across the boundary. -/
 def blanketLeakage (P : Matrix V V ℝ) (B : BlanketPartition V) (Φ : V → ℝ) 
-    (x : V) (hx : x ∈ B.internal) : ℝ :=
+    (x : V) (_hx : x ∈ B.internal) : ℝ :=
   ∑ y ∈ B.external, P x y * martingaleIncrement P Φ x y
 
 /-- **Bottleneck Variance Bound**: If the blanket is small (bottleneck),
@@ -261,7 +261,7 @@ def blanketLeakage (P : Matrix V V ℝ) (B : BlanketPartition V) (Φ : V → ℝ
     Intuition: A small blanket restricts information flow, bounding
     the unpredictable component of cross-boundary dynamics. -/
 theorem bottleneck_bounds_leakage_variance (P : Matrix V V ℝ) (B : BlanketPartition V) 
-    (Φ : V → ℝ) (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x)
+    (Φ : V → ℝ) (_pi_dist : V → ℝ) (_hπ : ∀ x, 0 < _pi_dist x)
     (hResp : RespectsBlank P B) (x : V) (hx : x ∈ B.internal) :
     blanketLeakage P B Φ x hx = 0 := by
   -- If P respects the blanket, there are no direct internal → external transitions
@@ -285,7 +285,7 @@ theorem bottleneck_bounds_leakage_variance (P : Matrix V V ℝ) (B : BlanketPart
     5. Away from equilibrium: ΔA < 0 (contraction)
     6. Blanket structure bounds cross-boundary leakage -/
 theorem doob_structure (P : Matrix V V ℝ) (pi_dist : V → ℝ)
-    (hπ : ∀ x, 0 < pi_dist x) (hP : IsStochastic P) :
+    (hπ : ∀ x, 0 < pi_dist x) (_hP : IsStochastic P) :
     ∀ x y, (SurprisePotential pi_dist hπ y - SurprisePotential pi_dist hπ x) = 
            predictableIncrement P (SurprisePotential pi_dist hπ) x + 
            martingaleIncrement P (SurprisePotential pi_dist hπ) x y := by

@@ -182,7 +182,7 @@ lemma norm_pi_pos_of_ne_zero (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v
 /-! ### 4. Cauchy-Schwarz -/
 
 /-- Helper: discriminant inequality from squares. -/
-lemma sqrt_ineq_of_sq_le (a b c : ℝ) (ha : 0 ≤ a) (hc : 0 ≤ c) (h : b^2 ≤ a * c) :
+lemma sqrt_ineq_of_sq_le (a b c : ℝ) (ha : 0 ≤ a) (_hc : 0 ≤ c) (h : b^2 ≤ a * c) :
     |b| ≤ Real.sqrt a * Real.sqrt c := by
   have : Real.sqrt (b^2) ≤ Real.sqrt (a * c) := Real.sqrt_le_sqrt h
   rw [Real.sqrt_sq_eq_abs] at this
@@ -278,7 +278,7 @@ lemma cauchy_schwarz_pi (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (f 
 /-! ### 5. Operator Norm -/
 
 /-- The set of constants bounding ‖A f‖_π / ‖f‖_π. -/
-def opNorm_set (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (A : (V → ℝ) →ₗ[ℝ] (V → ℝ)) : Set ℝ :=
+def opNorm_set (pi_dist : V → ℝ) (_h_pos : ∀ v, 0 < pi_dist v) (A : (V → ℝ) →ₗ[ℝ] (V → ℝ)) : Set ℝ :=
   { c | 0 ≤ c ∧ ∀ f, norm_pi pi_dist (A f) ≤ c * norm_pi pi_dist f }
 
 /-- **L²(π) Operator Norm**.
@@ -436,7 +436,7 @@ lemma opNorm_pi_le_of_bound (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v)
 
 /-- **Orthogonal Projector onto 1⊥**.
     P f = f - ⟨f, 1⟩_π · 1 projects onto the orthogonal complement of constants. -/
-def P_ortho_pi (pi_dist : V → ℝ) (h_sum : ∑ v, pi_dist v = 1) (h_pos : ∀ v, 0 < pi_dist v) :
+def P_ortho_pi (pi_dist : V → ℝ) (_h_sum : ∑ v, pi_dist v = 1) (_h_pos : ∀ v, 0 < pi_dist v) :
     (V → ℝ) →ₗ[ℝ] (V → ℝ) :=
   let P_inner : (V → ℝ) →ₗ[ℝ] ℝ :=
     { toFun := fun f => inner_pi pi_dist f (fun _ => 1)

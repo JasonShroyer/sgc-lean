@@ -88,7 +88,7 @@ noncomputable def GaussianKernel : KernelFunction where
     
     This constructs the adjacency weights of the ε-graph. -/
 noncomputable def EpsilonWeight (d : GraphDistance V) (k : KernelFunction) 
-    (ε : ℝ) (hε : 0 < ε) : Matrix V V ℝ :=
+    (ε : ℝ) (_hε : 0 < ε) : Matrix V V ℝ :=
   fun i j => if i = j then 0 else k.toFun (d.dist i j / ε)
 
 /-- The **degree matrix** D(i,i) = Σⱼ W(i,j).

@@ -222,7 +222,7 @@ theorem least_action_maximum_complexity (P Q : Matrix V V ℝ) (Φ : V → ℝ)
     
     This follows from the variational structure of the expected surprise functional. -/
 theorem upat_kinetics_complete (P Q : Matrix V V ℝ) (pi_dist : V → ℝ) 
-    (hπ : ∀ x, 0 < pi_dist x) (hP : IsStochastic P) (hQ : IsStochastic Q)
+    (hπ : ∀ x, 0 < pi_dist x) (_hP : IsStochastic P) (_hQ : IsStochastic Q)
     (hP_super : IsSupermartingale P (SurprisePotential pi_dist hπ))
     (hQ_super : IsSupermartingale Q (SurprisePotential pi_dist hπ))
     (h_P_optimal : ∀ x, IsLocallyOptimal P Q (SurprisePotential pi_dist hπ) x) :
@@ -255,7 +255,7 @@ theorem upat_kinetics_complete (P Q : Matrix V V ℝ) (pi_dist : V → ℝ)
     
     This establishes that consolidation rate equals the local gradient magnitude. -/
 theorem gradient_drift_equivalence (P : Matrix V V ℝ) (pi_dist : V → ℝ)
-    (hπ : ∀ x, 0 < pi_dist x) (hP : IsStochastic P)
+    (hπ : ∀ x, 0 < pi_dist x) (_hP : IsStochastic P)
     (h_super : IsSupermartingale P (SurprisePotential pi_dist hπ)) :
     ∀ x, surpriseGradient P pi_dist hπ x = driftMagnitude P (SurprisePotential pi_dist hπ) x := by
   intro x
