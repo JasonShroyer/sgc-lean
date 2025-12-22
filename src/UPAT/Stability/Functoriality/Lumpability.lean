@@ -611,6 +611,45 @@ lemma rayleigh_set_quot_eq_block (L : Matrix V V ℝ) (P : Partition V) (pi_dist
     refine ⟨f, hf_ne, hf_orth, ?_⟩
     rw [← rayleigh_quotient_lift_eq L P pi_dist hL f, hr]
 
+/-- Lift preserves orthogonality to constants: f ⊥ π̄ iff lift(f) ⊥ π. -/
+lemma lift_orthog_iff (P : Partition V) (pi_dist : V → ℝ) (f : P.Quot → ℝ) :
+    inner_pi (pi_bar P pi_dist) f (fun _ => 1) = 0 ↔ 
+    inner_pi pi_dist (lift_fun P f) constant_vec_one = 0 := by
+  -- ⟨lift(f), 1⟩_π = Σ_x π_x * f([x]) = Σ_A π̄_A * f(A) = ⟨f, 1⟩_π̄
+  simp only [inner_pi, constant_vec_one, dotProduct, lift_fun, pi_bar]
+  -- Both sides equal Σ_A (Σ_{x∈A} π_x) * f(A)
+  -- Direct computation via sum manipulation
+  constructor <;> intro h
+  · -- f ⊥ π̄ → lift(f) ⊥ π
+    convert h using 1
+    rw [← Finset.sum_fiberwise (s := Finset.univ) (g := P.quot_map)]
+    apply Finset.sum_congr rfl
+    intro A _
+    simp only [Finset.filter_filter, Finset.sum_mul, Function.comp]
+    apply Finset.sum_congr rfl
+    intro x hx
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hx
+    rw [hx]; ring
+  · -- lift(f) ⊥ π → f ⊥ π̄
+    convert h using 1
+    rw [← Finset.sum_fiberwise (s := Finset.univ) (g := P.quot_map)]
+    apply Finset.sum_congr rfl
+    intro A _
+    simp only [Finset.filter_filter, Finset.sum_mul, Function.comp]
+    apply Finset.sum_congr rfl
+    intro x hx
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hx
+    rw [hx]; ring
+
+/-- lift_fun is block-constant. -/
+lemma lift_fun_is_block_constant (P : Partition V) (f : P.Quot → ℝ) :
+    IsBlockConstant P (lift_fun P f) := by
+  intro x y hxy
+  simp only [lift_fun]
+  -- x and y are in the same class, so quot_map x = quot_map y
+  have h_eq : P.quot_map x = P.quot_map y := Quotient.eq'.mpr hxy
+  rw [h_eq]
+
 /-- **Spectral Gap Non-Decrease**: λ̄_gap ≥ λ_gap.
     
     Coarse-graining cannot decrease the spectral gap because:
@@ -622,19 +661,15 @@ theorem gap_non_decrease (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V →
     (hS : (RayleighSetBlockConstant L P pi_dist).Nonempty) 
     (hT_bdd : BddBelow (RayleighSet L pi_dist)) :
     SpectralGap_bar L P pi_dist ≥ SpectralGap L pi_dist := by
-  -- SpectralGap_bar = sInf (RayleighSetQuot)
-  -- RayleighSetQuot corresponds to block-constant functions via lift
-  -- By rayleigh_quotient_lift_eq, R̄(f) = R(lift(f))
-  -- So SpectralGap_bar = sInf over block-constant Rayleigh quotients
-  -- By gap_block_ge_gap_all, this is ≥ SpectralGap (inf over all)
   simp only [SpectralGap_bar, SpectralGap]
-  -- The quotient Rayleigh set equals the block-constant Rayleigh set (via lift)
-  -- This follows from rayleigh_set_quot_eq_block and the bijection properties
-  -- The inequality then follows from gap_block_ge_gap_all
+  -- Key: RayleighSetQuot and RayleighSetBlockConstant have the same infimum
+  -- because every block-constant u = lift(f) for unique f, and R(lift(f)) = R̄(f)
   have h_eq : sInf (RayleighSetQuot L P pi_dist) = sInf (RayleighSetBlockConstant L P pi_dist) := by
-    -- The sets have the same infimum because they are in bijection via lift
-    -- with R(lift(f)) = R̄(f)
-    sorry -- Need to show sets have same values, not just structure
+    -- The sets have the same values via the lift bijection
+    -- RayleighSetQuot = { R̄(f) | f ≠ 0, f ⊥ π̄ }
+    -- RayleighSetBlockConstant = { R(u) | u ≠ 0, u block-const, u ⊥ π }
+    -- Since u block-const iff u = lift(f), and R(lift(f)) = R̄(f), the sets are equal
+    sorry
   rw [h_eq]
   exact gap_block_ge_gap_all L P pi_dist hS hT_bdd
 
