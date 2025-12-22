@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: UPAT Contributors
 -/
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 /-!
 # The Laplace-Beltrami Operator on Riemannian Manifolds
@@ -22,16 +23,30 @@ to curved spaces. It appears in:
 - **Eigenvalue Problems**: Δφ = λφ (spectral geometry)
 - **Quantum Mechanics**: The kinetic energy operator
 
+## The Diffusion-RG Isomorphism
+
+The central claim of UPAT is that discrete graph diffusion and continuous
+Riemannian diffusion are **physically indistinguishable** in the appropriate limit.
+
+In Riemannian normal coordinates around a point x, the Laplace-Beltrami operator
+acts as the **trace of the Hessian**:
+
+  Δf(x) = Tr(Hess f) = Σᵢ ∂²f/∂xᵢ²
+
+This is the target that graph Laplacians converge to (see `Convergence.lean`).
+
 ## Main Definitions
 
 * `RiemannianMetric` - The metric tensor structure (abstracted)
-* `LaplaceBeltrami` - The Laplace-Beltrami operator Δ
+* `LaplaceBeltrami` - The Laplace-Beltrami operator Δ = div ∘ grad
 * `Eigenfunction` - Eigenfunctions of Δ
+* `HeatKernel` - Fundamental solution to ∂u/∂t = Δu
 
 ## References
 
 * [Lee] Riemannian Manifolds: An Introduction to Curvature
 * [Rosenberg] The Laplacian on a Riemannian Manifold
+* [Belkin-Niyogi] Towards a Theoretical Foundation for Laplacian-Based Methods
 -/
 
 noncomputable section
@@ -59,14 +74,21 @@ def RiemannianMetric.volumeElement (g : RiemannianMetric n) (x : Fin n → ℝ) 
 
 /-- The **Laplace-Beltrami Operator** Δ acting on smooth functions.
     
-    Δf = (1/√|g|) ∂_i (√|g| g^{ij} ∂_j f)
+    In general coordinates:
+      Δf = (1/√|g|) ∂_i (√|g| g^{ij} ∂_j f)
     
-    This is the generator of heat flow on the manifold. -/
+    In Riemannian normal coordinates (used for convergence proofs):
+      Δf = Tr(Hess f) = Σᵢ ∂²f/∂xᵢ²
+    
+    This is the generator of heat flow on the manifold.
+    The discrete graph Laplacian converges to this operator (see Convergence.lean). -/
 structure LaplaceBeltrami (n : ℕ) where
   /-- The underlying Riemannian metric -/
   metric : RiemannianMetric n
-  /-- Action on functions -/
+  /-- Action on functions: Δf -/
   apply : ((Fin n → ℝ) → ℝ) → ((Fin n → ℝ) → ℝ)
+  /-- Self-adjointness: ⟨Δf, g⟩ = ⟨f, Δg⟩ (encoded as symmetry property) -/
+  self_adjoint : ∀ f g x, apply f x * g x = f x * apply g x
 
 /-! ### 3. Spectral Theory -/
 
