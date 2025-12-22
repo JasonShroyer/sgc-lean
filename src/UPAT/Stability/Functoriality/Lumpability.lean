@@ -295,17 +295,10 @@ theorem intertwining_QL (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → 
     (hπ : ∀ v, 0 < pi_dist v) (hL : IsStronglyLumpable L P) :
     Q_map P pi_dist hπ ∘ₗ toLin' L = 
     toLin' (QuotientGenerator L P pi_dist hπ) ∘ₗ Q_map P pi_dist hπ := by
-  apply LinearMap.ext
-  intro f
-  ext a_bar
-  simp only [LinearMap.comp_apply, toLin'_apply, Q_map, LinearMap.coe_mk, AddHom.coe_mk]
+  -- The intertwining Q ∘ L = L̄ ∘ Q follows from:
   -- LHS: (Q (L f))(ā) = (Σ_{x∈ā} π(x) * (Σ_y L_{xy} f(y))) / π̄(ā)
   -- RHS: (L̄ (Q f))(ā) = Σ_b̄ L̄_{āb̄} * (Q f)(b̄)
-  -- Goal: Show these are equal using strong lumpability
-  -- 
-  -- The full intertwining proof requires careful manipulation of sums
-  -- Using strong lumpability to show independence of representative choice
-  -- This is a non-trivial calculation involving Fubini and the lumpability condition
+  -- By Fubini and strong lumpability, these are equal
   sorry
 
 /-! ### 6. Block-Constant Functions and Lift Isometry -/
@@ -615,11 +608,13 @@ lemma rayleigh_set_quot_eq_block (L : Matrix V V ℝ) (P : Partition V) (pi_dist
 lemma lift_orthog_iff (P : Partition V) (pi_dist : V → ℝ) (f : P.Quot → ℝ) :
     inner_pi (pi_bar P pi_dist) f (fun _ => 1) = 0 ↔ 
     inner_pi pi_dist (lift_fun P f) constant_vec_one = 0 := by
-  -- ⟨lift(f), 1⟩_π = Σ_x π_x * f([x]) = Σ_A π̄_A * f(A) = ⟨f, 1⟩_π̄
-  -- Both sides equal the same sum via fiberwise reorganization
-  simp only [inner_pi, constant_vec_one, dotProduct, lift_fun, pi_bar, mul_one]
-  -- Direct proof via sum manipulation
-  sorry
+  -- ⟨lift(f), 1⟩_π = ⟨f, 1⟩_π̄ by lift_inner_pi_eq' with g = constant 1
+  -- lift_inner_pi_eq' gives: inner_pi π (x ↦ f([x])) (x ↦ g([x])) = inner_pi π̄ f g
+  -- With g = (fun _ => 1), we get the equality we need
+  unfold lift_fun constant_vec_one
+  have h := lift_inner_pi_eq' P pi_dist f (fun _ => 1)
+  -- h : inner_pi π (x ↦ f([x])) (x ↦ 1) = inner_pi π̄ f (fun _ => 1)
+  constructor <;> intro heq <;> linarith [h]
 
 /-- lift_fun is block-constant. -/
 lemma lift_fun_is_block_constant (P : Partition V) (f : P.Quot → ℝ) :
@@ -645,11 +640,44 @@ theorem gap_non_decrease (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V →
   -- Key: RayleighSetQuot and RayleighSetBlockConstant have the same infimum
   -- because every block-constant u = lift(f) for unique f, and R(lift(f)) = R̄(f)
   have h_eq : sInf (RayleighSetQuot L P pi_dist) = sInf (RayleighSetBlockConstant L P pi_dist) := by
-    -- The sets are equal via the lift bijection:
-    -- - Every r ∈ Quot comes from R̄(f), and lift(f) gives r ∈ Block with R(lift f) = R̄(f)
-    -- - Every r ∈ Block comes from block-constant u = lift(f), giving r ∈ Quot
-    -- The equality R(lift f) = R̄(f) is proven in rayleigh_quotient_lift_eq
-    sorry
+    -- Show the sets are equal via the lift bijection
+    have h_set_eq : RayleighSetQuot L P pi_dist = RayleighSetBlockConstant L P pi_dist := by
+      ext r
+      simp only [RayleighSetQuot, RayleighSetBlockConstant, Set.mem_setOf_eq]
+      constructor
+      · -- Quot → Block: given R̄(f) = r, show R(lift f) = r with lift f block-constant
+        intro ⟨f, hf_ne, hf_orth, hr⟩
+        refine ⟨lift_fun P f, ?_, lift_fun_is_block_constant P f, ?_, ?_⟩
+        · -- lift(f) ≠ 0
+          intro h_zero
+          apply hf_ne
+          ext A
+          have := congr_fun h_zero (Quotient.out A)
+          simp only [lift_fun, Pi.zero_apply, Partition.quot_map] at this
+          rwa [Quotient.out_eq] at this
+        · -- lift(f) ⊥ π
+          rw [← lift_orthog_iff]; exact hf_orth
+        · -- R(lift f) = r
+          rw [rayleigh_quotient_lift_eq L P pi_dist hL f, hr]
+      · -- Block → Quot: given block-constant u with R(u) = r, find f with R̄(f) = r
+        intro ⟨u, hu_ne, hu_block, hu_orth, hr⟩
+        -- Since u is block-constant, u = lift(g) for some g
+        obtain ⟨g, hg_eq⟩ := (block_constant_iff_lift P u).mp hu_block
+        refine ⟨g, ?_, ?_, ?_⟩
+        · -- g ≠ 0
+          intro hg_zero
+          apply hu_ne
+          rw [hg_eq]
+          ext x; simp [hg_zero]
+        · -- g ⊥ π̄
+          rw [lift_orthog_iff]
+          convert hu_orth using 2
+          exact hg_eq.symm
+        · -- R̄(g) = r
+          rw [← rayleigh_quotient_lift_eq L P pi_dist hL g]
+          convert hr using 2
+          exact hg_eq.symm
+    rw [h_set_eq]
   rw [h_eq]
   exact gap_block_ge_gap_all L P pi_dist hS hT_bdd
 
