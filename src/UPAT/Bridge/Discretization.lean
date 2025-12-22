@@ -11,8 +11,8 @@ import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 # The Bridge Pillar: Discretization and Continuum Limits
 
 This module formalizes the connection between discrete graph Laplacians and 
-continuous Laplace-Beltrami operators, following Schuller's "Geometric Anatomy" 
-philosophy.
+continuous Laplace-Beltrami operators, following a constructive geometric 
+approach where the continuum is treated as the limit of discrete structures.
 
 ## Mathematical Background
 
@@ -43,7 +43,6 @@ Following UPAT constraints:
 
 ## References
 
-* [Schuller] Lectures on Geometric Anatomy of Theoretical Physics
 * [Coifman-Lafon] Diffusion Maps
 * [Belkin-Niyogi] Laplacian Eigenmaps
 
@@ -245,8 +244,8 @@ The discretization framework establishes:
 3. **Consistency**: Discrete spectral gap → continuous spectral gap
 4. **Stability Bridge**: gap_non_decrease survives the continuum limit
 
-This justifies our discrete formalization as a valid approximation
-of continuous physics, following Schuller's geometric philosophy. -/
+This establishes the consistency of the discrete formalization 
+with continuous manifold physics. -/
 
 /-- Extract gap consistency from a discretization theorem. -/
 theorem discretization_implies_gap_consistency (dt : DiscretizationTheorem V) :

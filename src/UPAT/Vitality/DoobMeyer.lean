@@ -7,10 +7,10 @@ import UPAT.Axioms.Geometry
 import UPAT.Topology.Blanket
 
 /-!
-# The Arrow of Complexity: Doob-Meyer Decomposition
+# Doob-Meyer Decomposition of the Surprise Potential
 
-This module formalizes the **Vitality Pillar** of UPAT by decomposing the
-"Surprise Process" into Predictable Drift (Complexity) and Innovation (Martingale).
+This module formalizes the decomposition of the self-information (surprise) 
+process into predictable drift (A_n) and martingale innovation (M_n).
 
 ## Mathematical Background
 
@@ -38,11 +38,11 @@ Following UPAT constraints:
 2. **Finset sums** - E[f(X')|X=x] = Σ_y P_{xy} f(y)
 3. **No sorries** - elementary algebra on expectations
 
-## Key Theorem
+## Key Result
 
-**Vitality Theorem**: For a system at equilibrium (detailed balance), 
-the expected surprise is constant (martingale). Deviations from equilibrium 
-create predictable drift toward lower surprise (consolidation).
+**Doob Decomposition**: For a Markov chain with transition matrix P,
+the change in surprise decomposes as ΔΦ = ΔA + ΔM where ΔA is 
+predictable (F_n-measurable) and E[ΔM | F_n] = 0.
 
 ## References
 
@@ -175,7 +175,7 @@ theorem martingale_increment_zero_expectation (P : Matrix V V ℝ) (Φ : V → �
     rw [Finset.sum_sub_distrib, Finset.sum_mul]
   rw [h1, hP.2 x, one_mul, sub_self]
 
-/-! ### 5. Vitality: The Direction of Complexity -/
+/-! ### 5. Martingale Properties -/
 
 /-- A potential Φ is a **supermartingale** under P if E[Φ(X') | X = x] ≤ Φ(x).
     
@@ -220,7 +220,7 @@ theorem submartingale_predictable_nonneg (P : Matrix V V ℝ) (Φ : V → ℝ)
   simp only [predictableIncrement]
   linarith [h x]
 
-/-! ### 6. Vitality Principles
+/-! ### 6. Equilibrium Characterization
 
 **Note on Equilibrium**: At stationarity, the *ensemble average* of surprise
 is constant, but the *conditional* surprise E[-log π(X')|X=x] depends on x.
@@ -228,8 +228,8 @@ is constant, but the *conditional* surprise E[-log π(X')|X=x] depends on x.
 The surprise process is NOT a martingale in general - what IS preserved
 is the relative entropy (KL divergence) decrease over time.
 
-The key vitality principle: Systems evolving toward equilibrium have
-decreasing expected surprise (supermartingale property). -/
+Systems evolving toward equilibrium have decreasing expected surprise 
+(supermartingale property). -/
 
 /-! ### 7. Free Energy Minimization Implies Consolidation -/
 
@@ -272,22 +272,19 @@ theorem bottleneck_bounds_leakage_variance (P : Matrix V V ℝ) (B : BlanketPart
   have h := hResp.1 x hx y hy
   simp [h]
 
-/-! ### 9. The Complete Vitality Picture -/
+/-! ### 9. Summary: Doob-Meyer Structure -/
 
-/-- **UPAT Vitality Summary**: The complete decomposition of dynamics.
+/-- **Doob Structure Theorem**: Decomposition of surprise dynamics.
     
-    For any Markov chain on a state space with blanket structure:
+    For any Markov chain on a state space:
     
-    1. Surprise Φ = -log π decomposes as S = M + A (Doob)
-    2. M captures innovation (unpredictable)
-    3. A captures complexity (predictable work)
-    4. At equilibrium (detailed balance): A = 0 (martingale)
-    5. Away from equilibrium: A < 0 (consolidation toward equilibrium)
-    6. Blanket bottlenecks bound the leakage variance
-    
-    This connects Stability (spectral gap), Topology (blankets), and
-    Vitality (complexity dynamics) in the unified UPAT framework. -/
-theorem upat_vitality_structure (P : Matrix V V ℝ) (pi_dist : V → ℝ)
+    1. Surprise Φ = -log π decomposes as ΔΦ = ΔA + ΔM
+    2. M_n is a martingale (E[ΔM|F_n] = 0)
+    3. A_n is predictable (F_n-measurable)
+    4. At detailed balance equilibrium: ΔA = 0
+    5. Away from equilibrium: ΔA < 0 (contraction)
+    6. Blanket structure bounds cross-boundary leakage -/
+theorem doob_structure (P : Matrix V V ℝ) (pi_dist : V → ℝ)
     (hπ : ∀ x, 0 < pi_dist x) (hP : IsStochastic P) :
     ∀ x y, (SurprisePotential pi_dist hπ y - SurprisePotential pi_dist hπ x) = 
            predictableIncrement P (SurprisePotential pi_dist hπ) x + 

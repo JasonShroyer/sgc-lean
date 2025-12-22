@@ -1,10 +1,10 @@
 /-
   UPAT/Stability/Functoriality/Lumpability.lean
   
-  Strong Lumpability and Functorial Stability (UFHDT).
+  Strong Lumpability and Functorial Stability.
   
-  This file upgrades FHDT to the Universal Functorial Heat Dominance Theorem:
-  the stability triad (λ_gap, β(t), B(t)) is functorial under RG coarse-graining.
+  This file establishes that the stability triad (λ_gap, β(t), B(t)) is 
+  functorial under coarse-graining (renormalization group transformations).
   
   Key theorems:
   - heat_kernel_quot_commute: e^{tL̄} ∘ Q = Q ∘ e^{tL}

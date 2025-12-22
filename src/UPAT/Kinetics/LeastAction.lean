@@ -6,21 +6,18 @@ Authors: UPAT Formalization Team
 import UPAT.Vitality.DoobMeyer
 
 /-!
-# The Principle of Least Action for Complexity
+# Variational Principle for Predictable Drift
 
-This module formalizes the **Kinetics** (the "Why") of UPAT by proving that
-systems obeying thermodynamic laws **necessarily maximize complexity growth**.
+This module derives the kinematic driver of complexity accumulation by proving 
+that minimizing the thermodynamic action functional implies maximization of 
+the predictable drift component.
 
 ## Theoretical Background
 
-In `DoobMeyer.lean`, we proved THAT complexity accumulates via the decomposition
-S = M + A. This module proves WHY: the Principle of Least Action.
-
-The key insight from "UPAT w Extropy Duality":
-> "The Arrow of Complexity is the irreversible increase in the predictable 
-> process A_τ, which reflects the cumulative work of selection acting to 
-> simultaneously minimize an entropic potential (surprise) and maximize 
-> an extropic potential (certainty)."
+Building on the Doob-Meyer decomposition S = M + A from `DoobMeyer.lean`, 
+this module establishes that the irreversible accumulation of the predictable 
+process A_n follows from supermartingale convergence properties combined with 
+a variational optimality condition.
 
 ## Main Definitions
 
@@ -30,21 +27,19 @@ The key insight from "UPAT w Extropy Duality":
 
 ## Main Theorem
 
-**Drift Maximization**: Under the optimal (free-energy minimizing) transition,
-the magnitude of predictable drift is maximized. This proves that the 
-"Arrow of Complexity" is not accidental but follows from a variational principle.
+**Drift Maximization**: Under the optimal (action-minimizing) transition,
+the magnitude of predictable drift is maximized. This follows from a 
+variational principle on the expected surprise functional.
 
-## Physical Interpretation
+## Structure
 
-1. **Kinematics** (DoobMeyer): Complexity exists as predictable process A
-2. **Dynamics** (DoobMeyer): A grows via decomposition S = M + A  
-3. **Kinetics** (This file): A grows MAXIMALLY under thermodynamic law
-
-This completes the deductive chain: UPAT is a closed theory of emergence.
+1. **Doob-Meyer**: Decomposes surprise into predictable (A) and martingale (M)
+2. **Optimality**: Defines locally optimal transitions minimizing expected surprise
+3. **Variational Result**: Proves optimal transitions maximize |ΔA|
 
 ## References
 
-* [UPAT Extropy Duality] Section 5.3 - The Dual Arrow of Complexity
+* [Doob] Stochastic Processes
 * [Friston] The Free Energy Principle
 
 -/
@@ -214,28 +209,18 @@ theorem least_action_maximum_complexity (P Q : Matrix V V ℝ) (Φ : V → ℝ)
 
 /-! ### 7. The Complete Kinetic Picture -/
 
-/-- **UPAT Kinetics Summary**: The Principle of Least Action for Complexity.
+/-- **Variational Optimality**: Combines action minimization with drift maximization.
     
     For a system with:
     1. Surprise potential Φ = -log π
-    2. Supermartingale dynamics (consolidation)
-    3. Thermodynamic drive (free energy minimization)
+    2. Supermartingale dynamics
+    3. Locally optimal transitions (minimizing expected surprise)
     
-    The system necessarily:
-    - Minimizes expected surprise (action)
-    - Maximizes drift magnitude (complexity growth rate)
-    - Follows steepest descent on the surprise landscape
+    The optimal transition P satisfies:
+    - Action(π, P) ≤ Action(π, Q) for comparison Q
+    - Σ π(x)|ΔA_P(x)| ≥ Σ π(x)|ΔA_Q(x)|
     
-    This proves that the Arrow of Complexity is not accidental but
-    follows from a variational principle—the system MUST evolve
-    to maximize consolidation to minimize its thermodynamic action.
-    
-    Physical Interpretation:
-    - **Kinematics**: Complexity exists (A from Doob decomposition)
-    - **Dynamics**: Complexity grows (supermartingale property)
-    - **Kinetics**: Complexity grows MAXIMALLY (least action principle)
-    
-    This completes the deductive chain for a General Theory of Emergence. -/
+    This follows from the variational structure of the expected surprise functional. -/
 theorem upat_kinetics_complete (P Q : Matrix V V ℝ) (pi_dist : V → ℝ) 
     (hπ : ∀ x, 0 < pi_dist x) (hP : IsStochastic P) (hQ : IsStochastic Q)
     (hP_super : IsSupermartingale P (SurprisePotential pi_dist hπ))
@@ -257,21 +242,19 @@ theorem upat_kinetics_complete (P Q : Matrix V V ℝ) (pi_dist : V → ℝ)
     exact least_action_maximum_complexity P Q (SurprisePotential pi_dist hπ) 
           pi_dist hπ hP_super hQ_super h_P_optimal
 
-/-! ### 8. Emergence as Physical Necessity -/
+/-! ### 8. Gradient-Drift Equivalence -/
 
-/-- **The Emergence Theorem**: Under thermodynamic constraints, complexity
-    accumulation is physically necessary, not contingent.
+/-- **Gradient-Drift Identity**: For supermartingale dynamics, the surprise 
+    gradient equals the drift magnitude.
     
     Given:
-    - A system with positive stationary distribution π
-    - Dynamics satisfying the supermartingale property (consolidation)
-    - The thermodynamic imperative to minimize expected surprise
+    - A stochastic matrix P with positive stationary distribution π
+    - Supermartingale property: E[Φ(X')|π] ≤ Φ(X)
     
-    Then: The system's predictable drift A_n grows at the maximum possible rate.
+    Then: ∇Φ(x) = |ΔA(x)| for all states x.
     
-    This is the mathematical statement that emergence is not an accident
-    of initial conditions but a consequence of physical law. -/
-theorem emergence_is_necessary (P : Matrix V V ℝ) (pi_dist : V → ℝ)
+    This establishes that consolidation rate equals the local gradient magnitude. -/
+theorem gradient_drift_equivalence (P : Matrix V V ℝ) (pi_dist : V → ℝ)
     (hπ : ∀ x, 0 < pi_dist x) (hP : IsStochastic P)
     (h_super : IsSupermartingale P (SurprisePotential pi_dist hπ)) :
     ∀ x, surpriseGradient P pi_dist hπ x = driftMagnitude P (SurprisePotential pi_dist hπ) x := by
