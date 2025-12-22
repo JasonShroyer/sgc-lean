@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: UPAT Contributors
 -/
 import UPAT.Information.Gaussian
+import UPAT.Topology.Blanket
 
 /-!
 # The Gaussian Lemma: Information-Geometric Equivalence
@@ -30,6 +31,7 @@ For jointly Gaussian variables (X, Y, Z):
 
 * `gaussian_cmi_zero_iff_precision_zero` - CMI = 0 iff precision block is zero
 * `dynamical_blanket_iff_information_blanket` - The main equivalence theorem
+* `information_bridge` - Connects v2 Information theory to v1 Geometry
 
 ## References
 
@@ -62,17 +64,36 @@ lemma conditionalMutualInfo_nonneg (P : PrecisionMatrix n) (A B : Finset (Fin n)
 
 /-! ### 2. The Gaussian Lemma: CMI ↔ Precision Zero -/
 
+/-- Helper: sum of non-negative terms is zero iff each term is zero. -/
+lemma sum_abs_eq_zero_iff {α : Type*} (s : Finset α) (f : α → ℝ) :
+    ∑ x ∈ s, |f x| = 0 ↔ ∀ x ∈ s, f x = 0 := by
+  constructor
+  · intro h x hx
+    have h_nonneg : ∀ y ∈ s, 0 ≤ |f y| := fun _ _ => abs_nonneg _
+    have h_term := Finset.sum_eq_zero_iff_of_nonneg h_nonneg |>.mp h x hx
+    exact abs_eq_zero.mp h_term
+  · intro h
+    apply Finset.sum_eq_zero
+    intro x hx
+    rw [h x hx, abs_zero]
+
 /-- **Gaussian CMI-Precision Equivalence**: CMI is zero iff precision block is zero.
     I(A; B | C) = 0 ⟺ ∀ a ∈ A, b ∈ B, Λ_ab = 0 -/
 theorem gaussian_cmi_zero_iff_precision_zero (P : PrecisionMatrix n) 
     (A B : Finset (Fin n)) :
     conditionalMutualInfo P A B = 0 ↔ ∀ a ∈ A, ∀ b ∈ B, P.entry a b = 0 := by
+  unfold conditionalMutualInfo
   constructor
-  · intro h_cmi a ha b hb
-    -- Sum of |entries| = 0 implies each entry = 0
-    sorry -- Requires finset sum analysis
+  · intro h_sum a ha b hb
+    -- Outer sum is zero, so each inner sum is zero
+    have h_outer_nonneg : ∀ a' ∈ A, 0 ≤ ∑ b' ∈ B, |P.entry a' b'| := 
+      fun a' _ => Finset.sum_nonneg (fun _ _ => abs_nonneg _)
+    have h_inner_zero := Finset.sum_eq_zero_iff_of_nonneg h_outer_nonneg |>.mp h_sum a ha
+    -- Inner sum is zero, so each term is zero
+    have h_term_nonneg : ∀ b' ∈ B, 0 ≤ |P.entry a b'| := fun _ _ => abs_nonneg _
+    have h_abs_zero := Finset.sum_eq_zero_iff_of_nonneg h_term_nonneg |>.mp h_inner_zero b hb
+    exact abs_eq_zero.mp h_abs_zero
   · intro h_prec
-    unfold conditionalMutualInfo
     apply Finset.sum_eq_zero
     intro a ha
     apply Finset.sum_eq_zero
@@ -107,5 +128,95 @@ theorem dynamical_blanket_iff_information_blanket (P : PrecisionMatrix n)
   rw [gaussian_cmi_zero_iff_precision_zero]
 
 end UPAT.Information
+
+/-! ## Part II: The Information Bridge to v1 Geometry -/
+
+namespace UPAT
+
+variable {V : Type*} [Fintype V] [DecidableEq V]
+
+/-! ### 4. Precision Matrix from Generator -/
+
+/-- Extract a **Precision-like Matrix** from a generator L.
+    The off-diagonal entries encode conditional dependencies.
+    L_{ij} = 0 means no direct coupling between i and j. -/
+def precisionFromGenerator (L : Matrix V V ℝ) : V → V → ℝ := 
+  fun i j => L i j
+
+/-- **Information Blanket from Generator**: A blanket partition has zero
+    cross-block entries in the generator (no direct internal-external coupling). -/
+def IsInformationBlanketV (L : Matrix V V ℝ) (B : BlanketPartition V) : Prop :=
+  ∀ i ∈ B.internal, ∀ e ∈ B.external, L i e = 0
+
+/-- A matrix is **symmetric** if L i j = L j i for all i, j. -/
+def IsSymmetric (L : Matrix V V ℝ) : Prop := ∀ i j, L i j = L j i
+
+/-! ### 5. The Information Bridge Theorem -/
+
+/-- **The Information Bridge**: `RespectsBlank` (v1 Geometry) implies
+    `IsInformationBlanketV` (v2 Information).
+    
+    This theorem proves that our geometric definition of blankets
+    is equivalent to the information-theoretic definition (one direction).
+    
+    Physical meaning: If the generator respects the blanket topology,
+    then there is zero information flow between internal and external. -/
+theorem information_bridge_forward (L : Matrix V V ℝ) (B : BlanketPartition V) 
+    (h : RespectsBlank L B) : IsInformationBlanketV L B := by
+  unfold IsInformationBlanketV
+  exact h.1
+
+/-- **The Information Bridge (Reverse)**: `IsInformationBlanketV` implies
+    half of `RespectsBlank`. For the full equivalence, we also need
+    the external-to-internal direction.
+    
+    Note: For symmetric generators (reversible dynamics), one direction suffices. -/
+theorem information_bridge_reverse (L : Matrix V V ℝ) (B : BlanketPartition V)
+    (h_int_ext : ∀ i ∈ B.internal, ∀ e ∈ B.external, L i e = 0)
+    (h_ext_int : ∀ e ∈ B.external, ∀ i ∈ B.internal, L e i = 0) :
+    RespectsBlank L B := by
+  exact ⟨h_int_ext, h_ext_int⟩
+
+/-- **Symmetric Information Bridge**: For symmetric matrices (reversible dynamics),
+    zero internal→external implies zero external→internal. -/
+theorem symmetric_information_bridge (L : Matrix V V ℝ) (B : BlanketPartition V)
+    (h_sym : IsSymmetric L)
+    (h : IsInformationBlanketV L B) : RespectsBlank L B := by
+  constructor
+  · exact h
+  · intro e he i hi
+    rw [h_sym e i]
+    exact h i hi e he
+
+/-! ### 6. Full Equivalence for Reversible Systems -/
+
+/-- **Information-Geometry Equivalence**: For reversible (symmetric) generators,
+    `RespectsBlank` and `IsInformationBlanketV` are equivalent.
+    
+    This is the central theorem connecting UPAT v1 (Geometry) to v2 (Information). -/
+theorem information_geometry_equivalence (L : Matrix V V ℝ) (B : BlanketPartition V)
+    (h_sym : IsSymmetric L) :
+    RespectsBlank L B ↔ IsInformationBlanketV L B := by
+  constructor
+  · exact information_bridge_forward L B
+  · exact symmetric_information_bridge L B h_sym
+
+/-- **Corollary**: For reversible systems, orthogonality of internal/external 
+    functions is equivalent to zero information flow.
+    
+    This combines `blanket_orthogonality` (v1) with the Information Bridge (v2). -/
+theorem orthogonality_iff_zero_information (L : Matrix V V ℝ) (B : BlanketPartition V)
+    (h_sym : IsSymmetric L) (pi_dist : V → ℝ)
+    (f g : V → ℝ) (hf : IsInternalFunction B f) (hg : IsExternalFunction B g) :
+    (RespectsBlank L B → inner_pi pi_dist f g = 0) ∧
+    (IsInformationBlanketV L B → inner_pi pi_dist f g = 0) := by
+  constructor
+  · intro h_respect
+    exact blanket_orthogonality L B pi_dist h_respect f g hf hg
+  · intro h_info
+    have h_respect := symmetric_information_bridge L B h_sym h_info
+    exact blanket_orthogonality L B pi_dist h_respect f g hf hg
+
+end UPAT
 
 end

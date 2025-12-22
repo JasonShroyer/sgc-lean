@@ -65,7 +65,7 @@ lemma differentialEntropy_mono (n : ℕ) {Cov1 Cov2 : GaussianCovariance n}
 
 /-- **Mutual Information** I(X;Y) = (1/2) log(det_XX / det_schur).
     This measures information that Y provides about X. -/
-def mutualInformation (det_XX det_schur : ℝ) (h_pos : 0 < det_schur) : ℝ :=
+def mutualInformation (det_XX det_schur : ℝ) (_h_pos : 0 < det_schur) : ℝ :=
   (1 / 2) * Real.log (det_XX / det_schur)
 
 /-- Mutual information is non-negative when det_XX ≥ det_schur. -/
