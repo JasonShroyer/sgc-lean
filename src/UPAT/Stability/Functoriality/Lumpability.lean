@@ -287,21 +287,7 @@ def lift_map (P : Partition V) : (P.Quot → ℝ) →ₗ[ℝ] (V → ℝ) where
   map_add' f g := by ext x; simp [Pi.add_apply]
   map_smul' c f := by ext x; simp [Pi.smul_apply, smul_eq_mul]
 
-/-! ### 5. Intertwining Relation -/
-
-/-- The intertwining relation: Q ∘ L = L̄ ∘ Q.
-    This is the key algebraic property of strong lumpability. -/
-theorem intertwining_QL (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
-    (hπ : ∀ v, 0 < pi_dist v) (hL : IsStronglyLumpable L P) :
-    Q_map P pi_dist hπ ∘ₗ toLin' L = 
-    toLin' (QuotientGenerator L P pi_dist hπ) ∘ₗ Q_map P pi_dist hπ := by
-  -- The intertwining Q ∘ L = L̄ ∘ Q 
-  -- LHS: (Q (L f))(ā) = (Σ_{x∈ā} π(x) * (Σ_y L_{xy} f(y))) / π̄(ā)
-  -- RHS: (L̄ (Q f))(ā) = Σ_b̄ L̄_{āb̄} * (Q f)(b̄)
-  -- By Fubini and strong lumpability, these are equal
-  sorry
-
-/-! ### 6. Block-Constant Functions and Lift Isometry -/
+/-! ### 5. Block-Constant Functions and Lift Isometry -/
 
 /-- A function is block-constant if it's constant on equivalence classes. -/
 def IsBlockConstant (P : Partition V) (f : V → ℝ) : Prop :=
@@ -473,41 +459,7 @@ theorem dirichlet_form_lift_eq (L : Matrix V V ℝ) (P : Partition V) (pi_dist :
   rw [forward_quadratic_form_eq L P pi_dist hL f]
   rw [backward_quadratic_form_eq L P pi_dist hL f]
 
-/-! ### 8. Heat Kernel Commutation -/
-
-/-- The heat kernel on the quotient space. -/
-def HeatKernel_bar (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) 
-    (hπ : ∀ v, 0 < pi_dist v) (t : ℝ) : Matrix P.Quot P.Quot ℝ :=
-  exp ℝ (t • QuotientGenerator L P pi_dist hπ)
-
-/-- **Heat Kernel Matrix Commutation**: exp(tL) * K = K * exp(tM).
-    
-    Proof via ODE uniqueness: Both Y₁(t) = exp(tL)·K and Y₂(t) = K·exp(tM) satisfy
-    the ODE Ẏ = L·Y with Y(0) = K. Since Ẏ₂ = K·M·exp(tM) = L·K·exp(tM) = L·Y₂
-    (using intertwining L·K = K·M), and ODE solutions are unique, Y₁ = Y₂. -/
-theorem heat_kernel_matrix_commute (L : Matrix V V ℝ) (P : Partition V) 
-    (hL : IsStronglyLumpable L P) (t : ℝ) :
-    exp ℝ (t • L) * lift_matrix P = 
-    lift_matrix P * exp ℝ (t • QuotientGeneratorSimple L P) := by
-  -- Use the intertwining property L * K = K * M to show exp(tL) * K = K * exp(tM)
-  -- Key: (tL)^n * K = K * (tM)^n for all n (intertwining_pow)
-  -- The matrix exponential exp(A) = Σ_n (1/n!) A^n
-  -- Since partial sums commute with K via h_pow, the limit (exp) also commutes
-  -- This requires showing tsum commutes with matrix multiplication
-  -- In finite dimensions with Fintype, this follows from continuity of multiplication
-  sorry
-
-/-- **Heat Kernel Commutation**: e^{tL̄} ∘ Q = Q ∘ e^{tL}.
-    The semigroup intertwines with the quotient map. -/
-theorem heat_kernel_quot_commute (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
-    (hπ : ∀ v, 0 < pi_dist v) (hL : IsStronglyLumpable L P) (t : ℝ) :
-    toLin' (HeatKernel_bar L P pi_dist hπ t) ∘ₗ Q_map P pi_dist hπ = 
-    Q_map P pi_dist hπ ∘ₗ toLin' (exp ℝ (t • L)) := by
-  -- This follows from heat_kernel_matrix_commute and the relationship
-  -- between Q, K, and the weighted/simple quotient generators
-  sorry
-
-/-! ### 8. Spectrum Containment (Dirichlet Form Approach)
+/-! ### 7. Spectrum Containment (Dirichlet Form Approach)
 
 Using the Dirichlet form ℰ(u) = ⟨u, Lu⟩_π (proven to descend via dirichlet_form_lift_eq),
 we define Rayleigh quotients and spectral gaps without needing matrix transpose. -/
@@ -673,25 +625,5 @@ theorem gap_non_decrease (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V →
     rw [h_set_eq]
   rw [h_eq]
   exact gap_block_ge_gap_all L P pi_dist hS hT_bdd
-
-/-! ### 8. Functorial FHDT -/
-
-/-- **Functorial Heat Dominance Theorem (UFHDT)**:
-    The stability bound descends to the quotient with preserved structure. -/
-theorem fhdt_functorial (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
-    (hπ : ∀ v, 0 < pi_dist v) (h_sum : ∑ v, pi_dist v = 1)
-    (hL : IsStronglyLumpable L P)
-    (h_gap_pos : 0 < SpectralGap L pi_dist)
-    (t : ℝ) (ht : 0 ≤ t) :
-    ∃ C_bar ≥ 0, 
-      opNorm_pi (pi_bar P pi_dist) (pi_bar_pos P hπ) 
-        (toLin' (HeatKernel_bar L P pi_dist hπ t) ∘ₗ 
-         P_ortho_pi (pi_bar P pi_dist) (pi_bar_sum_one P h_sum) (pi_bar_pos P hπ)) ≤ 
-      C_bar * Real.exp (-(SpectralGap_bar L P pi_dist) * t) := by
-  -- The bound on V̄ follows from:
-  -- 1. The intertwining Q K(t) = K̄(t) Q
-  -- 2. The gap non-decrease λ̄_gap ≥ λ_gap
-  -- 3. The FHDT bound on V descends via Q
-  sorry
 
 end UPAT
