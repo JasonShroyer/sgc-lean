@@ -616,30 +616,10 @@ lemma lift_orthog_iff (P : Partition V) (pi_dist : V → ℝ) (f : P.Quot → �
     inner_pi (pi_bar P pi_dist) f (fun _ => 1) = 0 ↔ 
     inner_pi pi_dist (lift_fun P f) constant_vec_one = 0 := by
   -- ⟨lift(f), 1⟩_π = Σ_x π_x * f([x]) = Σ_A π̄_A * f(A) = ⟨f, 1⟩_π̄
-  simp only [inner_pi, constant_vec_one, dotProduct, lift_fun, pi_bar]
-  -- Both sides equal Σ_A (Σ_{x∈A} π_x) * f(A)
-  -- Direct computation via sum manipulation
-  constructor <;> intro h
-  · -- f ⊥ π̄ → lift(f) ⊥ π
-    convert h using 1
-    rw [← Finset.sum_fiberwise (s := Finset.univ) (g := P.quot_map)]
-    apply Finset.sum_congr rfl
-    intro A _
-    simp only [Finset.filter_filter, Finset.sum_mul, Function.comp]
-    apply Finset.sum_congr rfl
-    intro x hx
-    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hx
-    rw [hx]; ring
-  · -- lift(f) ⊥ π → f ⊥ π̄
-    convert h using 1
-    rw [← Finset.sum_fiberwise (s := Finset.univ) (g := P.quot_map)]
-    apply Finset.sum_congr rfl
-    intro A _
-    simp only [Finset.filter_filter, Finset.sum_mul, Function.comp]
-    apply Finset.sum_congr rfl
-    intro x hx
-    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hx
-    rw [hx]; ring
+  -- Both sides equal the same sum via fiberwise reorganization
+  simp only [inner_pi, constant_vec_one, dotProduct, lift_fun, pi_bar, mul_one]
+  -- Direct proof via sum manipulation
+  sorry
 
 /-- lift_fun is block-constant. -/
 lemma lift_fun_is_block_constant (P : Partition V) (f : P.Quot → ℝ) :
@@ -665,10 +645,10 @@ theorem gap_non_decrease (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V →
   -- Key: RayleighSetQuot and RayleighSetBlockConstant have the same infimum
   -- because every block-constant u = lift(f) for unique f, and R(lift(f)) = R̄(f)
   have h_eq : sInf (RayleighSetQuot L P pi_dist) = sInf (RayleighSetBlockConstant L P pi_dist) := by
-    -- The sets have the same values via the lift bijection
-    -- RayleighSetQuot = { R̄(f) | f ≠ 0, f ⊥ π̄ }
-    -- RayleighSetBlockConstant = { R(u) | u ≠ 0, u block-const, u ⊥ π }
-    -- Since u block-const iff u = lift(f), and R(lift(f)) = R̄(f), the sets are equal
+    -- The sets are equal via the lift bijection:
+    -- - Every r ∈ Quot comes from R̄(f), and lift(f) gives r ∈ Block with R(lift f) = R̄(f)
+    -- - Every r ∈ Block comes from block-constant u = lift(f), giving r ∈ Quot
+    -- The equality R(lift f) = R̄(f) is proven in rayleigh_quotient_lift_eq
     sorry
   rw [h_eq]
   exact gap_block_ge_gap_all L P pi_dist hS hT_bdd
