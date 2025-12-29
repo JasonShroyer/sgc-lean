@@ -12,7 +12,13 @@ lean_lib «UPAT» where
   srcDir := "src"
   -- Root: src/UPAT.lean
 
--- Legacy target (optional, keep if needed for old tests)
+-- ═══════════════════════════════════════════════════════════════════════════
+-- LEGACY: FHDT (Functorial Heat Dominance Theory)
+-- ═══════════════════════════════════════════════════════════════════════════
+-- This was the original name before the theory expanded into UPAT.
+-- Kept for backwards compatibility with early citations and tests.
+-- Users should import UPAT, not FHDT.
+-- ═══════════════════════════════════════════════════════════════════════════
 lean_lib «FHDT» where
   srcDir := "src"
 

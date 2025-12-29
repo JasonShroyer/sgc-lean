@@ -1,5 +1,6 @@
 # UPAT: Universal Predictive Assembly Theory
 
+[![Build](https://github.com/JasonShroyer/fhdt-lean4/actions/workflows/build.yml/badge.svg)](https://github.com/JasonShroyer/fhdt-lean4/actions/workflows/build.yml)
 [![Lean 4](https://img.shields.io/badge/Lean-4-blue.svg)](https://lean-lang.org/)
 [![Zero Sorries](https://img.shields.io/badge/sorries-0-brightgreen.svg)](VERIFIED_CORE_MANIFEST.md)
 [![Release](https://img.shields.io/badge/release-v2.0--dev-orange.svg)](https://github.com/JasonShroyer/fhdt-lean4)

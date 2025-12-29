@@ -30,11 +30,15 @@ This commit represents the **frozen, axiomatic core** of Unified Predictive Asse
 |--------|------|-----------------|
 | **Blanket** | `src/UPAT/Topology/Blanket.lean` | `BlanketPartition`, `IsLinearBlanket` |
 
-### Vitality Pillar (Dynamics & Kinetics)
+### Vitality Pillar (Dynamics)
 | Module | Path | Key Theorems |
 |--------|------|--------------|
 | **DoobMeyer** | `src/UPAT/Vitality/DoobMeyer.lean` | `doob_decomposition`, `upat_vitality_structure` |
-| **LeastAction** | `src/UPAT/Vitality/LeastAction.lean` | `least_action_maximum_complexity`, `emergence_is_necessary` |
+
+### Kinetics Pillar (Least Action)
+| Module | Path | Key Theorems |
+|--------|------|--------------|
+| **LeastAction** | `src/UPAT/Kinetics/LeastAction.lean` | `least_action_maximum_complexity`, `emergence_is_necessary` |
 
 ### Bridge Pillar (Continuum Validity)
 | Module | Path | Key Definitions |
@@ -86,6 +90,6 @@ UPAT Framework: A General Theory of Emergence
 
 ---
 
-*Generated: December 21, 2024*
+*Generated: December 28, 2024*
 *Repository: https://github.com/JasonShroyer/fhdt-lean4*
 *Branch: upat-full*
