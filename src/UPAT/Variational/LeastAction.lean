@@ -3,7 +3,7 @@ Copyright (c) 2024 UPAT Project. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: UPAT Formalization Team
 -/
-import UPAT.Vitality.DoobMeyer
+import UPAT.Thermodynamics.DoobMeyer
 
 /-!
 # Variational Principle for Predictable Drift

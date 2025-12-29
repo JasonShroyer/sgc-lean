@@ -34,102 +34,102 @@
       "description": "For symmetric L, IsInformationBlanketV implies RespectsBlank"
     },
     "thm:gap-pos-iff-ker": {
-      "lean_file": "UPAT/Stability/Core/Assumptions.lean",
+      "lean_file": "UPAT/Spectral/Core/Assumptions.lean",
       "lean_name": "gap_pos_iff_ker_eq_span_one",
       "description": "Gap > 0 iff Ker(H) = span{1}"
     },
     "thm:FHDT": {
-      "lean_file": "UPAT/Stability/Defs.lean",
+      "lean_file": "UPAT/Spectral/Defs.lean",
       "lean_name": "FunctorialHeatDominanceTheorem",
       "description": "|beta(t)| <= C * exp(-gap * t)"
     },
     "thm:doob-decomposition": {
-      "lean_file": "UPAT/Vitality/DoobMeyer.lean",
+      "lean_file": "UPAT/Thermodynamics/DoobMeyer.lean",
       "lean_name": "doob_decomposition",
       "description": "Phi(y) - Phi(x) = DeltaA + DeltaM"
     },
     "thm:martingale-increment-zero": {
-      "lean_file": "UPAT/Vitality/DoobMeyer.lean",
+      "lean_file": "UPAT/Thermodynamics/DoobMeyer.lean",
       "lean_name": "martingale_increment_zero_expectation",
       "description": "E[DeltaM | X=x] = 0"
     },
     "thm:contraction-supermartingale": {
-      "lean_file": "UPAT/Vitality/DoobMeyer.lean",
+      "lean_file": "UPAT/Thermodynamics/DoobMeyer.lean",
       "lean_name": "contraction_implies_supermartingale",
       "description": "Contraction implies supermartingale"
     },
     "thm:bottleneck-leakage": {
-      "lean_file": "UPAT/Vitality/DoobMeyer.lean",
+      "lean_file": "UPAT/Thermodynamics/DoobMeyer.lean",
       "lean_name": "bottleneck_bounds_leakage_variance",
       "description": "RespectsBlank implies zero leakage"
     },
     "thm:doob-structure": {
-      "lean_file": "UPAT/Vitality/DoobMeyer.lean",
+      "lean_file": "UPAT/Thermodynamics/DoobMeyer.lean",
       "lean_name": "doob_structure",
       "description": "Complete decomposition theorem"
     },
     "thm:gradient-neg-drift": {
-      "lean_file": "UPAT/Kinetics/LeastAction.lean",
+      "lean_file": "UPAT/Variational/LeastAction.lean",
       "lean_name": "surprise_gradient_eq_neg_drift",
       "description": "Gradient = -DeltaA"
     },
     "thm:supermartingale-pos-gradient": {
-      "lean_file": "UPAT/Kinetics/LeastAction.lean",
+      "lean_file": "UPAT/Variational/LeastAction.lean",
       "lean_name": "supermartingale_positive_gradient",
       "description": "Supermartingale implies positive gradient"
     },
     "thm:optimal-maximizes-drift": {
-      "lean_file": "UPAT/Kinetics/LeastAction.lean",
+      "lean_file": "UPAT/Variational/LeastAction.lean",
       "lean_name": "optimal_maximizes_drift",
       "description": "Optimal transition maximizes drift magnitude"
     },
     "thm:least-action-max-complexity": {
-      "lean_file": "UPAT/Kinetics/LeastAction.lean",
+      "lean_file": "UPAT/Variational/LeastAction.lean",
       "lean_name": "least_action_maximum_complexity",
       "description": "Min action <=> max complexity"
     },
     "thm:upat-kinetics-complete": {
-      "lean_file": "UPAT/Kinetics/LeastAction.lean",
+      "lean_file": "UPAT/Variational/LeastAction.lean",
       "lean_name": "upat_kinetics_complete",
       "description": "Action min AND complexity max"
     },
     "thm:gradient-drift-equivalence": {
-      "lean_file": "UPAT/Kinetics/LeastAction.lean",
+      "lean_file": "UPAT/Variational/LeastAction.lean",
       "lean_name": "gradient_drift_equivalence",
       "description": "Gradient = |DeltaA| for supermartingales"
     },
     "thm:intertwining": {
-      "lean_file": "UPAT/Stability/Functoriality/Lumpability.lean",
+      "lean_file": "UPAT/Renormalization/Lumpability.lean",
       "lean_name": "intertwining",
       "description": "L * K = K * L_bar (Dynkin formula)"
     },
     "thm:intertwining-pow": {
-      "lean_file": "UPAT/Stability/Functoriality/Lumpability.lean",
+      "lean_file": "UPAT/Renormalization/Lumpability.lean",
       "lean_name": "intertwining_pow",
       "description": "L^n * K = K * L_bar^n"
     },
     "thm:L-lift-eq": {
-      "lean_file": "UPAT/Stability/Functoriality/Lumpability.lean",
+      "lean_file": "UPAT/Renormalization/Lumpability.lean",
       "lean_name": "L_lift_eq",
       "description": "L * lift(f) = lift(L_bar * f)"
     },
     "thm:lift-isometry": {
-      "lean_file": "UPAT/Stability/Functoriality/Lumpability.lean",
+      "lean_file": "UPAT/Renormalization/Lumpability.lean",
       "lean_name": "lift_inner_pi_eq",
       "description": "<lift f, lift g>_pi = <f, g>_pi_bar"
     },
     "thm:dirichlet-lift": {
-      "lean_file": "UPAT/Stability/Functoriality/Lumpability.lean",
+      "lean_file": "UPAT/Renormalization/Lumpability.lean",
       "lean_name": "dirichlet_form_lift_eq",
       "description": "E(lift f) = E_bar(f)"
     },
     "thm:rayleigh-lift": {
-      "lean_file": "UPAT/Stability/Functoriality/Lumpability.lean",
+      "lean_file": "UPAT/Renormalization/Lumpability.lean",
       "lean_name": "rayleigh_quotient_lift_eq",
       "description": "R(lift f) = R_bar(f)"
     },
     "thm:gap-non-decrease": {
-      "lean_file": "UPAT/Stability/Functoriality/Lumpability.lean",
+      "lean_file": "UPAT/Renormalization/Lumpability.lean",
       "lean_name": "gap_non_decrease",
       "description": "gap_bar >= gap (RG monotonicity)"
     },
@@ -227,182 +227,182 @@
       "description": "Symmetric matrix"
     },
     "def:spectral-gap": {
-      "lean_file": "UPAT/Stability/Core/Assumptions.lean",
+      "lean_file": "UPAT/Spectral/Core/Assumptions.lean",
       "lean_name": "SpectralGap_pi",
       "description": "Spectral gap as infimum of Rayleigh quotients"
     },
     "def:dirichlet-form": {
-      "lean_file": "UPAT/Stability/Functoriality/Lumpability.lean",
+      "lean_file": "UPAT/Renormalization/Lumpability.lean",
       "lean_name": "DirichletForm",
       "description": "Symmetric quadratic form E(u) = (1/2)[<u,Lu> + <Lu,u>]"
     },
     "def:rayleigh-quotient": {
-      "lean_file": "UPAT/Stability/Functoriality/Lumpability.lean",
+      "lean_file": "UPAT/Renormalization/Lumpability.lean",
       "lean_name": "RayleighQuotient",
       "description": "R(u) = E(u) / ||u||^2"
     },
     "def:K-norm": {
-      "lean_file": "UPAT/Stability/Defs.lean",
+      "lean_file": "UPAT/Spectral/Defs.lean",
       "lean_name": "K_norm",
       "description": "Normalized return probability 1 - K_xx/pi_x"
     },
     "def:E-log-K-norm": {
-      "lean_file": "UPAT/Stability/Defs.lean",
+      "lean_file": "UPAT/Spectral/Defs.lean",
       "lean_name": "E_log_K_norm",
       "description": "Expected log-observable"
     },
     "def:beta-t": {
-      "lean_file": "UPAT/Stability/Defs.lean",
+      "lean_file": "UPAT/Spectral/Defs.lean",
       "lean_name": "beta_t",
       "description": "Stability flow d/dt E[log K_norm]"
     },
     "def:heat-kernel": {
-      "lean_file": "UPAT/Stability/Envelope.lean",
+      "lean_file": "UPAT/Spectral/Envelope.lean",
       "lean_name": "HeatKernel",
       "description": "Heat semigroup exp(tL)"
     },
     "def:is-stochastic": {
-      "lean_file": "UPAT/Vitality/DoobMeyer.lean",
+      "lean_file": "UPAT/Thermodynamics/DoobMeyer.lean",
       "lean_name": "IsStochastic",
       "description": "Stochastic matrix (rows sum to 1)"
     },
     "def:is-stationary": {
-      "lean_file": "UPAT/Vitality/DoobMeyer.lean",
+      "lean_file": "UPAT/Thermodynamics/DoobMeyer.lean",
       "lean_name": "IsStationary",
       "description": "Stationary distribution pi*P = pi"
     },
     "def:is-detailed-balance": {
-      "lean_file": "UPAT/Vitality/DoobMeyer.lean",
+      "lean_file": "UPAT/Thermodynamics/DoobMeyer.lean",
       "lean_name": "IsDetailedBalance",
       "description": "Detailed balance pi_x*P_xy = pi_y*P_yx"
     },
     "def:surprise-potential": {
-      "lean_file": "UPAT/Vitality/DoobMeyer.lean",
+      "lean_file": "UPAT/Thermodynamics/DoobMeyer.lean",
       "lean_name": "SurprisePotential",
       "description": "Phi(x) = -log pi(x)"
     },
     "def:cond-exp": {
-      "lean_file": "UPAT/Vitality/DoobMeyer.lean",
+      "lean_file": "UPAT/Thermodynamics/DoobMeyer.lean",
       "lean_name": "condExp",
       "description": "E[f(X') | X=x] = sum_y P_xy f(y)"
     },
     "def:predictable-increment": {
-      "lean_file": "UPAT/Vitality/DoobMeyer.lean",
+      "lean_file": "UPAT/Thermodynamics/DoobMeyer.lean",
       "lean_name": "predictableIncrement",
       "description": "DeltaA(x) = E[Phi|x] - Phi(x)"
     },
     "def:martingale-increment": {
-      "lean_file": "UPAT/Vitality/DoobMeyer.lean",
+      "lean_file": "UPAT/Thermodynamics/DoobMeyer.lean",
       "lean_name": "martingaleIncrement",
       "description": "DeltaM(x,y) = Phi(y) - E[Phi|x]"
     },
     "def:supermartingale": {
-      "lean_file": "UPAT/Vitality/DoobMeyer.lean",
+      "lean_file": "UPAT/Thermodynamics/DoobMeyer.lean",
       "lean_name": "IsSupermartingale",
       "description": "E[Phi(X')|X=x] <= Phi(x)"
     },
     "def:submartingale": {
-      "lean_file": "UPAT/Vitality/DoobMeyer.lean",
+      "lean_file": "UPAT/Thermodynamics/DoobMeyer.lean",
       "lean_name": "IsSubmartingale",
       "description": "Phi(x) <= E[Phi(X')|X=x]"
     },
     "def:martingale": {
-      "lean_file": "UPAT/Vitality/DoobMeyer.lean",
+      "lean_file": "UPAT/Thermodynamics/DoobMeyer.lean",
       "lean_name": "IsMartingale",
       "description": "E[Phi(X')|X=x] = Phi(x)"
     },
     "def:blanket-leakage": {
-      "lean_file": "UPAT/Vitality/DoobMeyer.lean",
+      "lean_file": "UPAT/Thermodynamics/DoobMeyer.lean",
       "lean_name": "blanketLeakage",
       "description": "Cross-boundary martingale increment"
     },
     "def:extropic-potential": {
-      "lean_file": "UPAT/Kinetics/LeastAction.lean",
+      "lean_file": "UPAT/Variational/LeastAction.lean",
       "lean_name": "ExtropicPotential",
       "description": "Psi(x) = pi(x), certainty measure"
     },
     "def:surprise-gradient": {
-      "lean_file": "UPAT/Kinetics/LeastAction.lean",
+      "lean_file": "UPAT/Variational/LeastAction.lean",
       "lean_name": "surpriseGradient",
       "description": "Phi(x) - E[Phi|x]"
     },
     "def:locally-optimal": {
-      "lean_file": "UPAT/Kinetics/LeastAction.lean",
+      "lean_file": "UPAT/Variational/LeastAction.lean",
       "lean_name": "IsLocallyOptimal",
       "description": "E_P[Phi|x] <= E_Q[Phi|x]"
     },
     "def:globally-optimal": {
-      "lean_file": "UPAT/Kinetics/LeastAction.lean",
+      "lean_file": "UPAT/Variational/LeastAction.lean",
       "lean_name": "IsGloballyOptimal",
       "description": "Locally optimal everywhere"
     },
     "def:greedy-transition": {
-      "lean_file": "UPAT/Kinetics/LeastAction.lean",
+      "lean_file": "UPAT/Variational/LeastAction.lean",
       "lean_name": "IsGreedyTransition",
       "description": "Steepest descent strategy"
     },
     "def:step-action": {
-      "lean_file": "UPAT/Kinetics/LeastAction.lean",
+      "lean_file": "UPAT/Variational/LeastAction.lean",
       "lean_name": "stepAction",
       "description": "A(x;P) = E[Phi|x]"
     },
     "def:total-action": {
-      "lean_file": "UPAT/Kinetics/LeastAction.lean",
+      "lean_file": "UPAT/Variational/LeastAction.lean",
       "lean_name": "totalAction",
       "description": "sum_x pi(x) * E[Phi|x]"
     },
     "def:drift-magnitude": {
-      "lean_file": "UPAT/Kinetics/LeastAction.lean",
+      "lean_file": "UPAT/Variational/LeastAction.lean",
       "lean_name": "driftMagnitude",
       "description": "|DeltaA(x)|"
     },
     "def:partition": {
-      "lean_file": "UPAT/Stability/Functoriality/Lumpability.lean",
+      "lean_file": "UPAT/Renormalization/Lumpability.lean",
       "lean_name": "Partition",
       "description": "Equivalence-based partition structure"
     },
     "def:quot-map": {
-      "lean_file": "UPAT/Stability/Functoriality/Lumpability.lean",
+      "lean_file": "UPAT/Renormalization/Lumpability.lean",
       "lean_name": "Partition.quot_map",
       "description": "q : V -> V_bar"
     },
     "def:pi-bar": {
-      "lean_file": "UPAT/Stability/Functoriality/Lumpability.lean",
+      "lean_file": "UPAT/Renormalization/Lumpability.lean",
       "lean_name": "pi_bar",
       "description": "Aggregated distribution on quotient"
     },
     "def:strongly-lumpable": {
-      "lean_file": "UPAT/Stability/Functoriality/Lumpability.lean",
+      "lean_file": "UPAT/Renormalization/Lumpability.lean",
       "lean_name": "IsStronglyLumpable",
       "description": "Row sums constant on equivalence classes"
     },
     "def:row-sum-block": {
-      "lean_file": "UPAT/Stability/Functoriality/Lumpability.lean",
+      "lean_file": "UPAT/Renormalization/Lumpability.lean",
       "lean_name": "row_sum_block",
       "description": "Sum of L_ik over block B"
     },
     "def:quotient-generator": {
-      "lean_file": "UPAT/Stability/Functoriality/Lumpability.lean",
+      "lean_file": "UPAT/Renormalization/Lumpability.lean",
       "lean_name": "QuotientGeneratorSimple",
       "description": "L_bar on quotient space"
     },
     "def:lift-matrix": {
-      "lean_file": "UPAT/Stability/Functoriality/Lumpability.lean",
+      "lean_file": "UPAT/Renormalization/Lumpability.lean",
       "lean_name": "lift_matrix",
       "description": "K : V x V_bar -> R, indicator"
     },
     "def:lift-fun": {
-      "lean_file": "UPAT/Stability/Functoriality/Lumpability.lean",
+      "lean_file": "UPAT/Renormalization/Lumpability.lean",
       "lean_name": "lift_fun",
       "description": "lift(f)(x) = f(q(x))"
     },
     "def:block-constant": {
-      "lean_file": "UPAT/Stability/Functoriality/Lumpability.lean",
+      "lean_file": "UPAT/Renormalization/Lumpability.lean",
       "lean_name": "IsBlockConstant",
       "description": "Constant on equivalence classes"
     },
     "def:Q-map": {
-      "lean_file": "UPAT/Stability/Functoriality/Lumpability.lean",
+      "lean_file": "UPAT/Renormalization/Lumpability.lean",
       "lean_name": "Q_map",
       "description": "Averaging/quotient map"
     },
@@ -535,72 +535,72 @@
       "description": "CMI is non-negative"
     },
     "lem:spectral-gap-coercivity": {
-      "lean_file": "UPAT/Stability/Core/Assumptions.lean",
+      "lean_file": "UPAT/Spectral/Core/Assumptions.lean",
       "lean_name": "SpectralGap_coercivity",
       "description": "Spectral gap coercivity"
     },
     "lem:dirichlet-form-eq": {
-      "lean_file": "UPAT/Stability/Functoriality/Lumpability.lean",
+      "lean_file": "UPAT/Renormalization/Lumpability.lean",
       "lean_name": "dirichlet_form_eq",
       "description": "E(u) = <u, Lu> by inner_pi_comm"
     },
     "lem:HeatKernel-diag-differentiable": {
-      "lean_file": "UPAT/Stability/Defs.lean",
+      "lean_file": "UPAT/Spectral/Defs.lean",
       "lean_name": "HeatKernel_diag_differentiable",
       "description": "Heat kernel diagonal is differentiable in t"
     },
     "lem:deriv-HeatKernel-diag": {
-      "lean_file": "UPAT/Stability/Defs.lean",
+      "lean_file": "UPAT/Spectral/Defs.lean",
       "lean_name": "deriv_HeatKernel_diag",
       "description": "d/dt K(t)_xx = (L*K(t))_xx"
     },
     "lem:deriv-K-norm": {
-      "lean_file": "UPAT/Stability/Defs.lean",
+      "lean_file": "UPAT/Spectral/Defs.lean",
       "lean_name": "deriv_K_norm",
       "description": "Derivative of normalized return probability"
     },
     "lem:surprise-nonneg": {
-      "lean_file": "UPAT/Vitality/DoobMeyer.lean",
+      "lean_file": "UPAT/Thermodynamics/DoobMeyer.lean",
       "lean_name": "surprise_nonneg",
       "description": "Phi(x) >= 0 when sum(pi) = 1"
     },
     "lem:condExp-add": {
-      "lean_file": "UPAT/Vitality/DoobMeyer.lean",
+      "lean_file": "UPAT/Thermodynamics/DoobMeyer.lean",
       "lean_name": "condExp_add",
       "description": "Conditional expectation is additive"
     },
     "lem:condExp-smul": {
-      "lean_file": "UPAT/Vitality/DoobMeyer.lean",
+      "lean_file": "UPAT/Thermodynamics/DoobMeyer.lean",
       "lean_name": "condExp_smul",
       "description": "Conditional expectation is linear"
     },
     "lem:condExp-one": {
-      "lean_file": "UPAT/Vitality/DoobMeyer.lean",
+      "lean_file": "UPAT/Thermodynamics/DoobMeyer.lean",
       "lean_name": "condExp_one",
       "description": "E[1|X=x] = 1 for stochastic P"
     },
     "lem:condExp-const": {
-      "lean_file": "UPAT/Vitality/DoobMeyer.lean",
+      "lean_file": "UPAT/Thermodynamics/DoobMeyer.lean",
       "lean_name": "condExp_const",
       "description": "E[c|X=x] = c for stochastic P"
     },
     "lem:extropic-pos": {
-      "lean_file": "UPAT/Kinetics/LeastAction.lean",
+      "lean_file": "UPAT/Variational/LeastAction.lean",
       "lean_name": "extropic_pos",
       "description": "Psi(x) > 0"
     },
     "lem:extropic-bounded": {
-      "lean_file": "UPAT/Kinetics/LeastAction.lean",
+      "lean_file": "UPAT/Variational/LeastAction.lean",
       "lean_name": "extropic_bounded",
       "description": "Psi(x) <= 1"
     },
     "lem:action-drift": {
-      "lean_file": "UPAT/Kinetics/LeastAction.lean",
+      "lean_file": "UPAT/Variational/LeastAction.lean",
       "lean_name": "lower_action_stronger_drift",
       "description": "A(x;P) = Phi(x) + DeltaA(x)"
     },
     "lem:drift-magnitude-super": {
-      "lean_file": "UPAT/Kinetics/LeastAction.lean",
+      "lean_file": "UPAT/Variational/LeastAction.lean",
       "lean_name": "drift_magnitude_supermartingale",
       "description": "|DeltaA| = -DeltaA for supermartingales"
     }
@@ -613,7 +613,7 @@
       "description": "Three-way partition V = μ ∪ b ∪ η"
     },
     "struct:irreducibility": {
-      "lean_file": "UPAT/Stability/Core/Assumptions.lean",
+      "lean_file": "UPAT/Spectral/Core/Assumptions.lean",
       "lean_name": "IrreducibilityAssumptions",
       "description": "Assumptions for irreducible lazy Markov chain"
     }

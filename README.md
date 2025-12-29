@@ -17,25 +17,25 @@ UPAT extends the spectral stability of Markov chains (FHDT) into a general theor
 
 The library is organized into four logical modules (`src/UPAT/`):
 
-### 1. Stability (The Foundation)
-- **Module:** `UPAT.Stability` 
-- **Physics:** Establishes that non-reversible Markov chains converge to equilibrium exponentially fast.
+### 1. Spectral Geometry (The Foundation)
+- **Module:** `UPAT.Spectral` 
+- **Physics:** Establishes that non-reversible Markov chains converge to equilibrium exponentially fast via spectral gap bounds.
 - **Key Theorem:** `FunctorialHeatDominanceTheorem` (Derived from the Sector Envelope and Diagonal Bridge).
 
-### 2. Scalability (Functoriality)
-- **Module:** `UPAT.Stability.Functoriality.Lumpability` 
-- **Physics:** Proves that stability is preserved under renormalization (coarse-graining).
+### 2. Renormalization (Scale Invariance)
+- **Module:** `UPAT.Renormalization.Lumpability` 
+- **Physics:** Proves that spectral stability is preserved under coarse-graining (renormalization group flow).
 - **Key Theorem:** `gap_non_decrease` (The spectral gap of a lumped chain is bounded below by the original gap).
 
-### 3. Vitality (Thermodynamics)
-- **Module:** `UPAT.Vitality.DoobMeyer` 
-- **Physics:** Decomposes the "Surprise" (Self-Information) process into predictable work and martingale innovation.
+### 3. Thermodynamics (Stochastic Heat)
+- **Module:** `UPAT.Thermodynamics.DoobMeyer` 
+- **Physics:** The stochastic thermodynamics of surprise. Decomposes self-information into predictable work and martingale heat.
 - **Key Theorem:** `doob_decomposition` ($S_n = M_n + A_n$).
 
-### 4. Kinetics (The "Why")
-- **Module:** `UPAT.Kinetics.LeastAction` 
-- **Physics:** Proves that thermodynamic systems naturally maximize the accumulation of complexity (Predictable Drift).
-- **Key Theorem:** `emergence_is_necessary` (Derived from the Principle of Least Action).
+### 4. Variational Mechanics (The "Why")
+- **Module:** `UPAT.Variational.LeastAction` 
+- **Physics:** Derives drift maximization from the Principle of Least Action.
+- **Key Theorem:** `emergence_is_necessary` (Variational derivation of complexity accumulation).
 
 ---
 
@@ -69,10 +69,10 @@ Recent work (v2) extends the core theory with constructive proofs linking the ge
 
 | Theorem | Module | Description |
 |---------|--------|-------------|
-| `FunctorialHeatDominanceTheorem` | `UPAT.Stability` | Spectral stability of non-reversible chains |
-| `gap_non_decrease` | `UPAT.Stability.Functoriality.Lumpability` | Functorial preservation under coarse-graining |
-| `doob_decomposition` | `UPAT.Vitality.DoobMeyer` | Thermodynamic decomposition of surprise |
-| `emergence_is_necessary` | `UPAT.Kinetics.LeastAction` | Least Action derivation of drift maximization |
+| `FunctorialHeatDominanceTheorem` | `UPAT.Spectral` | Spectral stability of non-reversible chains |
+| `gap_non_decrease` | `UPAT.Renormalization.Lumpability` | Spectral gap preservation under coarse-graining |
+| `doob_decomposition` | `UPAT.Thermodynamics.DoobMeyer` | Stochastic thermodynamic decomposition of surprise |
+| `emergence_is_necessary` | `UPAT.Variational.LeastAction` | Variational derivation of drift maximization |
 | `information_geometry_equivalence` | `UPAT.Information.Equivalence` | Geometry ⟺ Information equivalence |
 
 ---

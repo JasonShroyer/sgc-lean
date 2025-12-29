@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: UPAT Formalization Team
 -/
 import UPAT.Axioms.Geometry
-import UPAT.Stability.Functoriality.Lumpability
+import UPAT.Renormalization.Lumpability
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 /-!

@@ -20,25 +20,30 @@ This commit represents the **frozen, axiomatic core** of Unified Predictive Asse
 |--------|------|-------------|
 | **Geometry** | `src/UPAT/Axioms/Geometry.lean` | L²(π) inner product structure |
 
-### Stability Pillar (Kinematics)
+### Spectral Pillar (Geometry)
 | Module | Path | Key Theorem |
 |--------|------|-------------|
-| **Lumpability** | `src/UPAT/Stability/Functoriality/Lumpability.lean` | `gap_non_decrease` |
+| **Spectral** | `src/UPAT/Spectral/` | Heat kernel bounds, spectral gap theory |
+
+### Renormalization Pillar (Scale Invariance)
+| Module | Path | Key Theorem |
+|--------|------|-------------|
+| **Lumpability** | `src/UPAT/Renormalization/Lumpability.lean` | `gap_non_decrease` |
 
 ### Topology Pillar (Structure)
 | Module | Path | Key Definitions |
 |--------|------|-----------------|
 | **Blanket** | `src/UPAT/Topology/Blanket.lean` | `BlanketPartition`, `IsLinearBlanket` |
 
-### Vitality Pillar (Dynamics)
+### Thermodynamics Pillar (Stochastic Heat)
 | Module | Path | Key Theorems |
 |--------|------|--------------|
-| **DoobMeyer** | `src/UPAT/Vitality/DoobMeyer.lean` | `doob_decomposition`, `upat_vitality_structure` |
+| **DoobMeyer** | `src/UPAT/Thermodynamics/DoobMeyer.lean` | `doob_decomposition`, stochastic First Law |
 
-### Kinetics Pillar (Least Action)
+### Variational Pillar (Least Action)
 | Module | Path | Key Theorems |
 |--------|------|--------------|
-| **LeastAction** | `src/UPAT/Kinetics/LeastAction.lean` | `least_action_maximum_complexity`, `emergence_is_necessary` |
+| **LeastAction** | `src/UPAT/Variational/LeastAction.lean` | `least_action_maximum_complexity`, `emergence_is_necessary` |
 
 ### Bridge Pillar (Continuum Validity)
 | Module | Path | Key Definitions |
@@ -51,14 +56,16 @@ This commit represents the **frozen, axiomatic core** of Unified Predictive Asse
 
 ```
 UPAT Framework: A General Theory of Emergence
-├── Kinematics (What): Stable structures exist
-│   └── gap_non_decrease: Spectral gap preserved under coarse-graining
+├── Spectral (What): Stable structures exist via spectral geometry
+│   └── Heat kernel bounds, exponential mixing
+├── Renormalization (Scale): Stability preserved under coarse-graining
+│   └── gap_non_decrease: Spectral gap monotonicity
 ├── Topology (Where): Boundaries emerge via L²(π) orthogonality
 │   └── BlanketPartition: Geometric conditional independence
-├── Dynamics (How): Complexity accumulates via Doob decomposition
-│   └── S = M + A: Innovation + Predictable Drift
-├── Kinetics (Why): Least Action Principle for Complexity
-│   └── Systems MUST maximize consolidation rate
+├── Thermodynamics (How): Stochastic heat flow via Doob decomposition
+│   └── S = M + A: Martingale heat + Predictable work
+├── Variational (Why): Least Action Principle for Complexity
+│   └── Systems maximize consolidation rate
 └── Bridge (Validity): Discrete theory converges to continuum
     └── ε-graph Laplacian → Laplace-Beltrami operator
 ```
