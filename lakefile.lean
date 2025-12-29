@@ -2,8 +2,8 @@ import Lake
 open Lake DSL
 
 package «upat» where
-  -- Universal Predictive Assembly Theory
-  -- Academic Release
+  -- UPAT: The Spectral Geometry of Consolidation
+  -- Formal verification of structural persistence in stochastic systems
 
 require "mathlib" from git "https://github.com/leanprover-community/mathlib4" @ "v4.25.2"
 

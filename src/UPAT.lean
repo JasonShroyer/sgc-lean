@@ -35,7 +35,7 @@ import UPAT.Geometry.Manifold.Laplacian
 import UPAT.Geometry.Manifold.Convergence
 
 /-!
-# Universal Predictive Assembly Theory (UPAT)
+# UPAT: The Spectral Geometry of Consolidation
 
 This is the entry point for the formally verified UPAT library.
 

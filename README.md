@@ -1,15 +1,12 @@
-# UPAT: Universal Predictive Assembly Theory
+# UPAT: The Spectral Geometry of Consolidation
 
 [![Build](https://github.com/JasonShroyer/fhdt-lean4/actions/workflows/build.yml/badge.svg)](https://github.com/JasonShroyer/fhdt-lean4/actions/workflows/build.yml)
 [![Lean 4](https://img.shields.io/badge/Lean-4-blue.svg)](https://lean-lang.org/)
 [![Zero Sorries](https://img.shields.io/badge/sorries-0-brightgreen.svg)](VERIFIED_CORE_MANIFEST.md)
-[![Release](https://img.shields.io/badge/release-v2.0--dev-orange.svg)](https://github.com/JasonShroyer/fhdt-lean4)
 
-This repository contains the `sorry-free` Lean 4 formalization of **Universal Predictive Assembly Theory (UPAT)**. 
+This repository contains the `sorry-free` Lean 4 formalization of the **UPAT framework** — a rigorous mathematical treatment of structural persistence in stochastic systems.
 
-UPAT extends the spectral stability of Markov chains (FHDT) into a general theory of emergence, formalizing how complexity accumulates in thermodynamic systems via the **Four Pillars** architecture.
-
-**Current Status:** v2.0-dev — Core theory verified; Information Bridge complete.
+UPAT formalizes how stable structures emerge and persist in thermodynamic systems by combining spectral geometry, stochastic thermodynamics, and variational principles.
 
 ---
 
@@ -43,25 +40,21 @@ The library is organized into four logical modules (`src/UPAT/`):
 
 - **`UPAT.Axioms.Geometry`**: Defines the explicit $L^2(\pi)$ metric space structures without heavy typeclass overhead.
 - **`UPAT.Topology.Blanket`**: Formalizes Markov Blankets via geometric orthogonality rather than information theory.
-- **`UPAT.Bridge.Discretization`**: Connects the discrete graph operators to continuous manifold physics.
+- **`UPAT.Bridge.Discretization`**: Defines the **Axiomatic Interface** for the continuum limit. Proves that any discretization satisfying these axioms (Gap Consistency) inherits thermodynamic stability. This separates the thermodynamic logic from the geometric implementation.
 
 ---
 
-## v2 Extensions (The Constructive Turn)
+## Extensions
 
-Recent work (v2) extends the core theory with constructive proofs linking the geometric axioms to fundamental physics:
-
-### Information Geometry (Formalized)
+### Information Geometry
 - **Module:** `UPAT.Information`
-- **Status:** ✅ Verified (sorry-free)
 - **Physics:** Proves that geometric orthogonality is equivalent to conditional independence (vanishing Conditional Mutual Information) in the Gaussian limit.
 - **Key Theorem:** `information_geometry_equivalence` — For reversible systems, `RespectsBlank` (geometric) ⟺ `IsInformationBlanketV` (information-theoretic).
 
-### Continuum Limits (Scaffolding)
+### Continuum Limits
 - **Module:** `UPAT.Geometry.Manifold`
-- **Status:** 🚧 Under Construction
 - **Physics:** Scaffolding for the Belkin-Niyogi convergence theorem (graph Laplacians → Laplace-Beltrami operators).
-- **Goal:** Validate the `ContinuumTarget` axiom constructively.
+- **Goal:** Constructive validation of the `ContinuumTarget` axiom.
 
 ---
 

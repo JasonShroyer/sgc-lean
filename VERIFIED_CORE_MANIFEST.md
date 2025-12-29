@@ -13,22 +13,22 @@
 
 ## Core Modules
 
-This commit represents the **frozen, axiomatic core** of Unified Predictive Assembly Theory (UPAT).
+This commit represents the **frozen, axiomatic core** of the UPAT formalism.
 
 ### Foundation
-| Module | Path | Description |
-|--------|------|-------------|
-| **Geometry** | `src/UPAT/Axioms/Geometry.lean` | L²(π) inner product structure |
+| Module | Path | Description | Theoretical Basis |
+|--------|------|-------------|-------------------|
+| **Geometry** | `src/UPAT/Axioms/Geometry.lean` | L²(π) inner product structure | Chentsov (1982) |
 
 ### Spectral Pillar (Geometry)
-| Module | Path | Key Theorem |
-|--------|------|-------------|
-| **Spectral** | `src/UPAT/Spectral/` | Heat kernel bounds, spectral gap theory |
+| Module | Path | Key Theorem | Theoretical Basis |
+|--------|------|-------------|-------------------|
+| **Spectral** | `src/UPAT/Spectral/` | Heat kernel bounds, spectral gap theory | Levin & Peres (2017) |
 
 ### Renormalization Pillar (Scale Invariance)
-| Module | Path | Key Theorem |
-|--------|------|-------------|
-| **Lumpability** | `src/UPAT/Renormalization/Lumpability.lean` | `gap_non_decrease` |
+| Module | Path | Key Theorem | Theoretical Basis |
+|--------|------|-------------|-------------------|
+| **Lumpability** | `src/UPAT/Renormalization/Lumpability.lean` | `gap_non_decrease` | Kemeny & Snell (1976) |
 
 ### Topology Pillar (Structure)
 | Module | Path | Key Definitions |
@@ -36,9 +36,9 @@ This commit represents the **frozen, axiomatic core** of Unified Predictive Asse
 | **Blanket** | `src/UPAT/Topology/Blanket.lean` | `BlanketPartition`, `IsLinearBlanket` |
 
 ### Thermodynamics Pillar (Stochastic Heat)
-| Module | Path | Key Theorems |
-|--------|------|--------------|
-| **DoobMeyer** | `src/UPAT/Thermodynamics/DoobMeyer.lean` | `doob_decomposition`, stochastic First Law |
+| Module | Path | Key Theorems | Theoretical Basis |
+|--------|------|--------------|-------------------|
+| **DoobMeyer** | `src/UPAT/Thermodynamics/DoobMeyer.lean` | `doob_decomposition`, stochastic First Law | Doob (1953) |
 
 ### Variational Pillar (Least Action)
 | Module | Path | Key Theorems |
@@ -74,7 +74,7 @@ UPAT Framework: A General Theory of Emergence
 
 ## Verification Statement
 
-> **This commit represents the frozen, axiomatic core of Unified Predictive Assembly Theory (UPAT).**
+> **This commit represents the frozen, axiomatic core of the UPAT formalism.**
 >
 > All theorems in the core modules have been formally verified in Lean 4 with **zero `sorry` placeholders**. The proofs are machine-checked and constitute a rigorous mathematical foundation for the theory of emergence.
 
@@ -82,11 +82,13 @@ UPAT Framework: A General Theory of Emergence
 
 ## References
 
-- Chentsov's Theorem (Geometric Invariance)
-- Kemeny & Snell (Lumpability)
-- Friston (Free Energy Principle, Markov Blankets)
-- Doob-Meyer (Martingale Decomposition)
-- Schuller (Geometric Anatomy of Theoretical Physics)
+| Pillar | Primary Reference |
+|--------|------------------|
+| **Foundation** | Chentsov, N.N. (1982). *Statistical Decision Rules and Optimal Inference* |
+| **Spectral** | Levin, D.A. & Peres, Y. (2017). *Markov Chains and Mixing Times* |
+| **Renormalization** | Kemeny, J.G. & Snell, J.L. (1976). *Finite Markov Chains* |
+| **Thermodynamics** | Doob, J.L. (1953). *Stochastic Processes* |
+| **Topology** | Friston, K. (2010). *The free-energy principle* |
 
 ---
 
