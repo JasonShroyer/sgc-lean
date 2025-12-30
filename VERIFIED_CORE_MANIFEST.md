@@ -55,7 +55,7 @@ This commit represents the **frozen, axiomatic core** of the SGC formalism.
 ## Theoretical Architecture
 
 ```
-SGC Framework: A General Theory of Emergence
+SGC Framework: Structural Persistence in Stochastic Systems
 ├── Spectral (What): Stable structures exist via spectral geometry
 │   └── Heat kernel bounds, exponential mixing
 ├── Renormalization (Scale): Stability preserved under coarse-graining
@@ -89,6 +89,7 @@ SGC Framework: A General Theory of Emergence
 | **Renormalization** | Kemeny, J.G. & Snell, J.L. (1976). *Finite Markov Chains* |
 | **Thermodynamics** | Doob, J.L. (1953). *Stochastic Processes* |
 | **Topology** | Friston, K. (2010). *The free-energy principle* |
+| **Complexity** | Cronin, L. & Walker, S.I. (2021). *Assembly Theory* |
 
 ---
 
@@ -101,4 +102,4 @@ SGC Framework: A General Theory of Emergence
 
 *Generated: December 28, 2024*
 *Repository: https://github.com/JasonShroyer/fhdt-lean4*
-*Branch: upat-full*
+*Branch: refactor/clean_terminology*
