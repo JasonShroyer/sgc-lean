@@ -28,7 +28,7 @@ then `g' = (f' + c * f) * e^{ct} ≤ 0`, so `g` is non-increasing. Hence
 noncomputable section
 open Real Filter Topology Set
 
-namespace FHDT
+namespace SGC.Spectral
 
 /-- Scalar Grönwall decay lemma: if a differentiable function satisfies
     `deriv f t ≤ -c * f t` for all `t ≥ 0` and `c > 0`, then
@@ -211,6 +211,6 @@ lemma energy_decay_implies_norm_decay
   rw [h2, h3] at h1
   exact h1
 
-end FHDT
+end SGC.Spectral
 
 end

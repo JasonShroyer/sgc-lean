@@ -1,4 +1,4 @@
-import FHDT.Core.Projector
+import SGC.Spectral.Core.Projector
 import Mathlib.Data.Real.Basic
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.Analysis.Normed.Operator.Basic
@@ -8,7 +8,7 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 noncomputable section
 open Matrix Real LinearMap Finset
 
-namespace FHDT
+namespace SGC.Spectral
 
 variable {V : Type*} [Fintype V] [DecidableEq V] {pi_dist : V → ℝ}
 
@@ -78,4 +78,4 @@ lemma sum_abs_diag_le_card_opNorm [Nonempty V] (hπ : ∀ x, 0 < pi_dist x) (A_m
     _ = Fintype.card V * opNorm_pi pi_dist hπ (toLin' A_mat) := by
       simp [Finset.sum_const, Nat.card_eq_fintype_card]
 
-end FHDT
+end SGC.Spectral

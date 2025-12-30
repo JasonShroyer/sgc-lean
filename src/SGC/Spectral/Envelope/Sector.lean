@@ -1,6 +1,6 @@
-import FHDT.Envelope
-import FHDT.Envelope.ODE
-import FHDT.Core.Assumptions
+import SGC.Spectral.Envelope
+import SGC.Spectral.Envelope.ODE
+import SGC.Spectral.Core.Assumptions
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.Matrix.Spectrum
@@ -14,7 +14,7 @@ import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 noncomputable section
 open Matrix Real ContinuousLinearMap Filter Topology Finset LinearMap NormedSpace
 
-namespace FHDT
+namespace SGC.Spectral
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
 
@@ -573,4 +573,4 @@ lemma sector_envelope_bound_canonical
         apply mul_le_mul_of_nonneg_right h_P_contr (Real.exp_nonneg _)
     _ = Real.exp (-(SpectralGap_pi pi_dist H) * t) * norm_pi pi_dist f := by ring
 
-end FHDT
+end SGC.Spectral

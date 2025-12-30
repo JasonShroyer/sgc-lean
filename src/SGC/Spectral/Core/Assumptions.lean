@@ -9,7 +9,7 @@ import Mathlib.Tactic
 noncomputable section
 open Finset LinearMap Matrix Real ContinuousLinearMap Submodule Topology EuclideanSpace
 
-namespace FHDT
+namespace SGC.Spectral
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
 
@@ -584,4 +584,4 @@ theorem gap_pos_iff_ker_eq_span_one [Nontrivial V]
     -- But sInf S = 0, so R(v₀) ≤ 0, contradicting R(v₀) > 0
     linarith
 
-end FHDT
+end SGC.Spectral

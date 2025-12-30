@@ -1,8 +1,8 @@
-import FHDT.Envelope
-import FHDT.Envelope.Sector
-import FHDT.Core.Assumptions
-import FHDT.Core.Projector
-import FHDT.Diagonal
+import SGC.Spectral.Envelope
+import SGC.Spectral.Envelope.Sector
+import SGC.Spectral.Core.Assumptions
+import SGC.Spectral.Core.Projector
+import SGC.Spectral.Diagonal
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Normed.Operator.Basic
@@ -12,7 +12,7 @@ import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 noncomputable section
 open Matrix Real Finset LinearMap
 
-namespace FHDT
+namespace SGC.Spectral
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
 variable {L H : Matrix V V ℝ} {pi_dist : V → ℝ} {ε : ℝ}
@@ -502,4 +502,4 @@ theorem FunctorialHeatDominanceTheorem
       _ ≤ C * Real.exp (-(SpectralGap_pi pi_dist H) * t) := by
           apply mul_le_mul_of_nonneg_right h_C_bound (Real.exp_nonneg _)
 
-end FHDT
+end SGC.Spectral

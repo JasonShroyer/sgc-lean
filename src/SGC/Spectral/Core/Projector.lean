@@ -1,12 +1,12 @@
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.Normed.Operator.Basic
 import Mathlib.LinearAlgebra.Matrix.ToLin
-import FHDT.Core.Assumptions
+import SGC.Spectral.Core.Assumptions
 
 noncomputable section
 open Finset LinearMap Matrix Real ContinuousLinearMap
 
-namespace FHDT
+namespace SGC.Spectral
 variable {V : Type*} [Fintype V] [DecidableEq V]
 
 --------------------------------------------------------------------------------
@@ -444,4 +444,4 @@ lemma opNorm_pi_le_of_bound (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v)
   apply csInf_le (opNorm_set_bddBelow pi_dist h_pos A)
   exact ⟨hc, h_bound⟩
 
-end FHDT
+end SGC.Spectral

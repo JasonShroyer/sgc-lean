@@ -1,5 +1,5 @@
-import FHDT.Core.Assumptions
-import FHDT.Core.Projector
+import SGC.Spectral.Core.Assumptions
+import SGC.Spectral.Core.Projector
 import Mathlib.Analysis.Normed.Algebra.Exponential
 import Mathlib.Analysis.Normed.Algebra.MatrixExponential
 import Mathlib.Analysis.Calculus.MeanValue
@@ -10,7 +10,7 @@ import Mathlib.Analysis.SpecialFunctions.Exponential
 noncomputable section
 open Matrix Real NormedSpace
 
-namespace FHDT
+namespace SGC.Spectral
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
 variable {L H : Matrix V V ℝ} {pi_dist : V → ℝ}
@@ -676,4 +676,4 @@ class EnvelopeSpec (L H : Matrix V V ℝ) (pi_dist : V → ℝ) where
     ∀ t ≥ 0, ∀ (h_pos : ∀ v, 0 < pi_dist v) (P : (V → ℝ) →ₗ[ℝ] (V → ℝ)),
     opNorm_pi pi_dist h_pos (toLin' (HeatKernel L t) ∘ₗ P) ≤ B t * Real.exp (-r * t)
 
-end FHDT
+end SGC.Spectral
