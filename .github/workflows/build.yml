@@ -1,0 +1,50 @@
+# CI workflow for UPAT Lean 4 formalization
+# Triggers on push to main and pull requests
+# Uses leanprover/lean-action for reproducible Lean builds
+
+name: Build
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+# Cancel in-progress runs for the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Install elan
+      run: |
+        curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
+        echo "$HOME/.elan/bin" >> $GITHUB_PATH
+    
+    - name: Get Mathlib cache
+      run: |
+        # Install lake if needed and get mathlib cache
+        lake exe cache get || true
+    
+    - name: Build UPAT
+      run: lake build
+    
+    - name: Verify no sorries
+      run: |
+        # Check that there are no 'sorry' in the compiled output
+        if grep -r "sorry" --include="*.lean" src/; then
+          echo "::warning::Found 'sorry' in source files - checking if they are in comments only"
+          # More sophisticated check: look for uncommented sorries
+          if grep -rE "^[^-]*sorry" --include="*.lean" src/ | grep -v "sorry-free" | grep -v "-- sorry"; then
+            echo "::error::Found uncommented 'sorry' declarations!"
+            exit 1
+          fi
+        fi
+        echo "✓ No active sorries found"

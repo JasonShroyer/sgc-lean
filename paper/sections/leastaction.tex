@@ -1,0 +1,281 @@
+% ============================================================================
+% KINETICS: Variational Principle for Predictable Drift
+% ============================================================================
+% Literal translation from:
+%   - src/UPAT/Kinetics/LeastAction.lean
+% ============================================================================
+
+\section{Kinetics: Least Action Principle}
+\label{sec:kinetics}
+
+% ----------------------------------------------------------------------------
+\subsection{The Extropic Potential}
+% ----------------------------------------------------------------------------
+
+\begin{definition}[Extropic Potential]
+\label{def:extropic-potential}
+\leanlink{UPAT/Kinetics/LeastAction.lean}
+
+The \textbf{Extropic Potential} (certainty measure):
+\[
+\Psi(x) \coloneqq \pi_x
+\]
+This is the Bregman dual to Surprise:
+\begin{itemize}
+    \item Surprise $\Phi(x) = -\log \pi_x$ measures uncertainty
+    \item Extropy $\Psi(x) = \pi_x$ measures certainty/consolidation
+\end{itemize}
+Maximizing $\Psi$ is equivalent to minimizing $\Phi$ (for log-convex $\pi$).
+\end{definition}
+
+The Extropic potential $\Psi$ acts as a bounded certainty measure: $0 < \Psi(x) \le 1$ for all states (Appendix~\ref{sec:aux:extropy}).
+
+% ----------------------------------------------------------------------------
+\subsection{The Thermodynamic Gradient}
+% ----------------------------------------------------------------------------
+
+\begin{definition}[Surprise Gradient]
+\label{def:surprise-gradient}
+\leanlink{UPAT/Kinetics/LeastAction.lean}
+
+The \textbf{local surprise gradient} at state $x$:
+\[
+\nabla\Phi(x) \coloneqq \Phi(x) - \mathbb{E}[\Phi(X') \mid X = x]
+\]
+Positive gradient means surprise is expected to decrease (consolidation).
+\end{definition}
+
+\begin{theorem}[Gradient-Drift Relation]
+\label{thm:gradient-neg-drift}
+\leanlink{UPAT/Kinetics/LeastAction.lean}
+
+\[
+\nabla\Phi(x) = -\Delta A(x)
+\]
+
+\begin{proof}
+By definition:
+\begin{align*}
+\nabla\Phi(x) &= \Phi(x) - \mathbb{E}[\Phi \mid x] \\
+&= -(\mathbb{E}[\Phi \mid x] - \Phi(x)) \\
+&= -\Delta A(x)
+\end{align*}
+\end{proof}
+\end{theorem}
+
+\begin{theorem}[Supermartingale Implies Positive Gradient]
+\label{thm:supermartingale-pos-gradient}
+\leanlink{UPAT/Kinetics/LeastAction.lean}
+
+If $\Phi$ is a supermartingale under $P$:
+\[
+\nabla\Phi(x) \ge 0
+\]
+
+\begin{proof}
+By Theorem~\ref{thm:supermartingale-drift-nonpos}, $\Delta A(x) \le 0$.
+By Theorem~\ref{thm:gradient-neg-drift}, $\nabla\Phi(x) = -\Delta A(x) \ge 0$.
+\end{proof}
+\end{theorem}
+
+% ----------------------------------------------------------------------------
+\subsection{Optimal Transitions}
+% ----------------------------------------------------------------------------
+
+\begin{definition}[Locally Optimal Transition]
+\label{def:locally-optimal}
+\leanlink{UPAT/Kinetics/LeastAction.lean}
+
+$P$ is \textbf{locally optimal} at $x$ (vs $Q$) iff:
+\[
+\mathbb{E}_P[\Phi(X') \mid X = x] \le \mathbb{E}_Q[\Phi(X') \mid X = x]
+\]
+This formalizes the thermodynamic drive: at each state, the system 
+``chooses'' transitions that most rapidly decrease surprise.
+\end{definition}
+
+\begin{definition}[Globally Optimal Transition]
+\label{def:globally-optimal}
+\leanlink{UPAT/Kinetics/LeastAction.lean}
+
+$P$ is \textbf{globally optimal} over a set of transitions iff it is locally optimal against every comparison $Q$:
+\[
+\forall Q,\; \forall x,\quad \mathbb{E}_P[\Phi(X') \mid X = x] \le \mathbb{E}_Q[\Phi(X') \mid X = x]
+\]
+\end{definition}
+
+\begin{definition}[Greedy Transition]
+\label{def:greedy-transition}
+\leanlink{UPAT/Kinetics/LeastAction.lean}
+
+The \textbf{greedy transition} concentrates probability on the minimum-surprise successor:
+\[
+P^*_{xy} = \begin{cases}
+1 & \text{if } y = \arg\min_z \Phi(z) \text{ among neighbors} \\
+0 & \text{otherwise}
+\end{cases}
+\]
+This is the ``steepest descent'' strategy.
+\end{definition}
+
+% ----------------------------------------------------------------------------
+\subsection{The Action Functional}
+% ----------------------------------------------------------------------------
+
+\begin{definition}[Single-Step Action]
+\label{def:step-action}
+\leanlink{UPAT/Kinetics/LeastAction.lean}
+
+The \textbf{single-step action} at state $x$:
+\[
+\mathcal{A}(x; P) \coloneqq \mathbb{E}[\Phi(X') \mid X = x] = \sum_y P_{xy} \Phi(y)
+\]
+Lower action means more efficient consolidation.
+\end{definition}
+
+\begin{definition}[Total Action]
+\label{def:total-action}
+\leanlink{UPAT/Kinetics/LeastAction.lean}
+
+The \textbf{weighted total action} over the state space:
+\[
+\mathcal{A}(P) \coloneqq \sum_x \pi_x \cdot \mathbb{E}[\Phi(X') \mid X = x]
+\]
+This is the expected surprise under stationary distribution.
+\end{definition}
+
+\begin{theorem}[Action-Drift Relation]
+\label{thm:action-drift}
+\leanlink{UPAT/Kinetics/LeastAction.lean}
+
+\[
+\mathcal{A}(x; P) = \Phi(x) + \Delta A(x)
+\]
+
+\begin{proof}
+$\mathcal{A}(x; P) = \mathbb{E}[\Phi \mid x] = \Phi(x) + (\mathbb{E}[\Phi \mid x] - \Phi(x)) = \Phi(x) + \Delta A(x)$.
+\end{proof}
+\end{theorem}
+
+% ----------------------------------------------------------------------------
+\subsection{Drift Maximization}
+% ----------------------------------------------------------------------------
+
+\begin{definition}[Drift Magnitude]
+\label{def:drift-magnitude}
+\leanlink{UPAT/Kinetics/LeastAction.lean}
+
+The \textbf{drift magnitude} at $x$:
+\[
+|\Delta A(x)| = |\mathbb{E}[\Phi(X') \mid X = x] - \Phi(x)|
+\]
+For consolidating systems (supermartingale), this equals $-\Delta A$ since $\Delta A \le 0$.
+\end{definition}
+
+\begin{theorem}[Supermartingale Drift Magnitude]
+\label{thm:drift-magnitude-super}
+\leanlink{UPAT/Kinetics/LeastAction.lean}
+
+For supermartingales:
+\[
+|\Delta A(x)| = -\Delta A(x)
+\]
+
+\begin{proof}
+By Theorem~\ref{thm:supermartingale-drift-nonpos}, $\Delta A(x) \le 0$.
+Therefore $|\Delta A(x)| = -\Delta A(x)$.
+\end{proof}
+\end{theorem}
+
+\begin{theorem}[Optimal Maximizes Drift]
+\label{thm:optimal-maximizes-drift}
+\leanlink{UPAT/Kinetics/LeastAction.lean}
+
+If $P$ is locally optimal at $x$ (vs $Q$), and both are supermartingales:
+\[
+|\Delta A_Q(x)| \le |\Delta A_P(x)|
+\]
+
+\begin{proof}
+$P$ optimal means $\mathbb{E}_P[\Phi \mid x] \le \mathbb{E}_Q[\Phi \mid x]$.
+For supermartingales: $|\Delta A| = -\Delta A = \Phi(x) - \mathbb{E}[\Phi \mid x]$.
+Lower $\mathbb{E}[\Phi \mid x]$ gives larger $|\Delta A|$.
+\end{proof}
+\end{theorem}
+
+% ----------------------------------------------------------------------------
+\subsection{The Principle of Least Action}
+% ----------------------------------------------------------------------------
+
+\begin{theorem}[Least Action $\Leftrightarrow$ Maximum Complexity]
+\label{thm:least-action-max-complexity}
+\leanlink{UPAT/Kinetics/LeastAction.lean}
+
+Among supermartingale transitions, minimum action implies maximum consolidation:
+\[
+\sum_x \pi_x |\Delta A_Q(x)| \le \sum_x \pi_x |\Delta A_P(x)|
+\]
+when $P$ minimizes action.
+
+\begin{proof}
+By Theorem~\ref{thm:optimal-maximizes-drift} applied pointwise:
+\[
+\sum_x \pi_x |\Delta A_Q(x)| \le \sum_x \pi_x |\Delta A_P(x)|
+\]
+using $\pi_x > 0$ and monotonicity of sums.
+\end{proof}
+\end{theorem}
+
+% ----------------------------------------------------------------------------
+\subsection{The Complete Kinetic Picture}
+% ----------------------------------------------------------------------------
+
+\begin{theorem}[UPAT Kinetics Complete]
+\label{thm:upat-kinetics-complete}
+\leanlink{UPAT/Kinetics/LeastAction.lean}
+
+For a system with:
+\begin{enumerate}
+    \item Surprise potential $\Phi = -\log \pi$
+    \item Supermartingale dynamics
+    \item Locally optimal transitions (minimizing expected surprise)
+\end{enumerate}
+
+The optimal transition $P$ satisfies \textbf{both}:
+\begin{align}
+\mathcal{A}(\pi, P) &\le \mathcal{A}(\pi, Q) \tag{Action Minimization} \\
+\sum_x \pi_x |\Delta A_P(x)| &\ge \sum_x \pi_x |\Delta A_Q(x)| \tag{Complexity Maximization}
+\end{align}
+
+\begin{proof}
+\textbf{Action minimization}: By local optimality, $\mathbb{E}_P[\Phi \mid x] \le \mathbb{E}_Q[\Phi \mid x]$ for all $x$.
+Summing with weights $\pi_x > 0$ preserves the inequality.
+
+\textbf{Complexity maximization}: Direct application of Theorem~\ref{thm:least-action-max-complexity}.
+\end{proof}
+\end{theorem}
+
+% ----------------------------------------------------------------------------
+\subsection{Gradient-Drift Equivalence}
+% ----------------------------------------------------------------------------
+
+\begin{theorem}[Gradient-Drift Identity]
+\label{thm:gradient-drift-equivalence}
+\leanlink{UPAT/Kinetics/LeastAction.lean}
+
+For supermartingale dynamics:
+\[
+\nabla\Phi(x) = |\Delta A(x)|
+\]
+The consolidation rate equals the local gradient magnitude.
+
+\begin{proof}
+By Theorem~\ref{thm:gradient-neg-drift}: $\nabla\Phi(x) = -\Delta A(x)$.
+By Theorem~\ref{thm:drift-magnitude-super}: $|\Delta A(x)| = -\Delta A(x)$.
+Therefore $\nabla\Phi(x) = |\Delta A(x)|$.
+\end{proof}
+\end{theorem}
+
+% ============================================================================
+% END KINETICS
+% ============================================================================

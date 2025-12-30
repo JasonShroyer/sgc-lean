@@ -1,0 +1,557 @@
+% formalism.tex
+% Literal symbol-for-symbol translation of UPAT Lean 4 proofs
+% Generated from src/ — DO NOT EDIT MANUALLY
+
+\usepackage{physics}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
+
+% ============================================================================
+% THEOREM ENVIRONMENTS
+% ============================================================================
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{structure}[definition]{Structure}
+
+\theoremstyle{plain}
+\newtheorem{theorem}[definition]{Theorem}
+\newtheorem{lemma}[definition]{Lemma}
+\newtheorem{corollary}[definition]{Corollary}
+
+% ============================================================================
+% PART I: L²(π) GEOMETRY FOUNDATION
+% Source: UPAT/Axioms/Geometry.lean
+% ============================================================================
+
+\section{L²(π) Geometry Foundation}
+\label{sec:geometry}
+
+\leanlink{UPAT/Axioms/Geometry.lean}
+
+\subsection{Core Definitions}
+
+\begin{definition}[Constant Vector One]
+\label{def:constant-vec-one}
+\leanlink{UPAT/Axioms/Geometry.lean}
+
+Given $V$ a finite type,
+\[
+\mathbf{1} : V \to \mathbb{R}, \quad \mathbf{1}(v) \coloneqq 1
+\]
+\end{definition}
+
+\begin{definition}[Weighted $L^2(\pi)$ Inner Product]
+\label{def:inner-pi}
+\leanlink{UPAT/Axioms/Geometry.lean}
+
+Given $\pi : V \to \mathbb{R}$ (weight distribution) and $u, v : V \to \mathbb{R}$,
+\[
+\ip{u}{v}_\pi \coloneqq \sum_{x \in V} \pi(x) \cdot u(x) \cdot v(x)
+\]
+\end{definition}
+
+\begin{definition}[Weighted Squared Norm]
+\label{def:norm-sq-pi}
+\leanlink{UPAT/Axioms/Geometry.lean}
+
+\[
+\norm{v}^2_\pi \coloneqq \ip{v}{v}_\pi = \sum_{x \in V} \pi(x) \cdot v(x)^2
+\]
+\end{definition}
+
+\begin{definition}[Weighted Norm]
+\label{def:norm-pi}
+\leanlink{UPAT/Axioms/Geometry.lean}
+
+\[
+\norm{v}_\pi \coloneqq \sqrt{\norm{v}^2_\pi}
+\]
+\end{definition}
+
+\subsection{Bilinearity Lemmas}
+
+\begin{lemma}[Additivity in First Argument]
+\label{lem:inner-pi-add-left}
+\leanlink{UPAT/Axioms/Geometry.lean}
+
+\[
+\ip{u + v}{w}_\pi = \ip{u}{w}_\pi + \ip{v}{w}_\pi
+\]
+\begin{proof}
+By simplification on $\texttt{Pi.add\_apply}$. We rewrite using $\texttt{Finset.sum\_add\_distrib}$. Therefore, by algebraic manipulation, we obtain the result.
+\end{proof}
+\end{lemma}
+
+\begin{lemma}[Scalar Multiplication in First Argument]
+\label{lem:inner-pi-smul-left}
+\leanlink{UPAT/Axioms/Geometry.lean}
+
+\[
+\ip{c \cdot u}{v}_\pi = c \cdot \ip{u}{v}_\pi
+\]
+\begin{proof}
+By simplification on $\texttt{Pi.smul\_apply}$ and $\texttt{smul\_eq\_mul}$. We rewrite using $\texttt{Finset.mul\_sum}$. Therefore, by algebraic manipulation, we obtain the result.
+\end{proof}
+\end{lemma}
+
+\begin{lemma}[Symmetry]
+\label{lem:inner-pi-comm}
+\leanlink{UPAT/Axioms/Geometry.lean}
+
+\[
+\ip{u}{v}_\pi = \ip{v}{u}_\pi
+\]
+\begin{proof}
+By simplification using commutativity of multiplication.
+\end{proof}
+\end{lemma}
+
+\subsection{Norm Properties}
+
+\begin{lemma}[Norm Squared as Sum]
+\label{lem:norm-sq-pi-eq-sum}
+\leanlink{UPAT/Axioms/Geometry.lean}
+
+\[
+\norm{h}^2_\pi = \sum_{v \in V} \pi(v) \cdot h(v)^2
+\]
+\begin{proof}
+By unfolding $\texttt{norm\_sq\_pi}$ and $\texttt{inner\_pi}$. We have $h(v) \cdot h(v) = h(v)^2$.
+\end{proof}
+\end{lemma}
+
+\begin{lemma}[Positivity of Squared Norm]
+\label{lem:norm-sq-pi-pos}
+\leanlink{UPAT/Axioms/Geometry.lean}
+
+Given $\forall v,\, 0 < \pi(v)$ and $u \neq 0$,
+\[
+0 < \norm{u}^2_\pi
+\]
+\begin{proof}
+We first establish that there exists $v_0$ with $u(v_0) \neq 0$. Given $u \neq 0$, by contradiction and $\texttt{funext}$, such $v_0$ exists. We have $0 < \pi(v_0) \cdot u(v_0)^2$ since $\pi(v_0) > 0$ and $u(v_0)^2 > 0$. By $\texttt{Finset.sum\_pos'}$, the sum of non-negative terms with one positive term is positive.
+\end{proof}
+\end{lemma}
+
+\begin{lemma}[Zero Iff Zero Function]
+\label{lem:norm-sq-pi-eq-zero-iff}
+\leanlink{UPAT/Axioms/Geometry.lean}
+
+Given $\forall v,\, 0 < \pi(v)$,
+\[
+\norm{h}^2_\pi = 0 \iff \forall v,\, h(v) = 0
+\]
+\begin{proof}
+($\Rightarrow$) By $\texttt{Finset.sum\_eq\_zero\_iff\_of\_nonneg}$, each term $\pi(v) \cdot h(v)^2 = 0$. Since $\pi(v) > 0$, we have $h(v)^2 = 0$, hence $h(v) = 0$.
+
+($\Leftarrow$) If $h = 0$, then each term is zero.
+\end{proof}
+\end{lemma}
+
+\subsection{Cauchy-Schwarz Inequality}
+
+\begin{lemma}[Cauchy-Schwarz for $L^2(\pi)$]
+\label{lem:cauchy-schwarz-pi}
+\leanlink{UPAT/Axioms/Geometry.lean}
+
+Given $\forall v,\, 0 < \pi(v)$,
+\[
+\abs{\ip{f}{g}_\pi} \le \norm{f}_\pi \cdot \norm{g}_\pi
+\]
+\begin{proof}
+Let $a \coloneqq \norm{g}^2_\pi$, $b \coloneqq \ip{f}{g}_\pi$, $c \coloneqq \norm{f}^2_\pi$.
+
+Define $P(t) \coloneqq \norm{f + t \cdot g}^2_\pi$.
+
+We first establish that $P(t) \ge 0$ for all $t$. We have:
+\[
+P(t) = c + 2tb + t^2 a
+\]
+by expanding the quadratic.
+
+\textbf{Case} $a = 0$: Then $g = 0$, so $b = 0$, and the inequality holds trivially.
+
+\textbf{Case} $a > 0$: We have $P(-b/a) \ge 0$. By simplification:
+\[
+c - b^2/a \ge 0 \implies b^2 \le ac
+\]
+Therefore $\abs{b} \le \sqrt{a} \cdot \sqrt{c} = \norm{g}_\pi \cdot \norm{f}_\pi$.
+\end{proof}
+\end{lemma}
+
+\subsection{Operator Norm}
+
+\begin{definition}[$L^2(\pi)$ Operator Norm]
+\label{def:opnorm-pi}
+\leanlink{UPAT/Axioms/Geometry.lean}
+
+Given linear map $A : (V \to \mathbb{R}) \to_{\text{lin}} (V \to \mathbb{R})$,
+\[
+\norm{A}_\pi \coloneqq \inf \{ c \ge 0 \mid \forall f,\, \norm{Af}_\pi \le c \cdot \norm{f}_\pi \}
+\]
+\end{definition}
+
+\begin{lemma}[Operator Bound]
+\label{lem:opnorm-pi-bound}
+\leanlink{UPAT/Axioms/Geometry.lean}
+
+\[
+\norm{Af}_\pi \le \norm{A}_\pi \cdot \norm{f}_\pi
+\]
+\begin{proof}
+By definition of infimum and the operator norm set.
+\end{proof}
+\end{lemma}
+
+\begin{lemma}[Submultiplicativity]
+\label{lem:opnorm-pi-comp}
+\leanlink{UPAT/Axioms/Geometry.lean}
+
+\[
+\norm{A \circ B}_\pi \le \norm{A}_\pi \cdot \norm{B}_\pi
+\]
+\begin{proof}
+We have $\norm{(A \circ B)f}_\pi = \norm{A(Bf)}_\pi \le \norm{A}_\pi \cdot \norm{Bf}_\pi \le \norm{A}_\pi \cdot \norm{B}_\pi \cdot \norm{f}_\pi$.
+\end{proof}
+\end{lemma}
+
+\begin{definition}[Orthogonal Projector onto $\mathbf{1}^\perp$]
+\label{def:P-ortho-pi}
+\leanlink{UPAT/Axioms/Geometry.lean}
+
+Given $\sum_v \pi(v) = 1$,
+\[
+P_\perp f \coloneqq f - \ip{f}{\mathbf{1}}_\pi \cdot \mathbf{1}
+\]
+\end{definition}
+
+% ============================================================================
+% PART II: MARKOV BLANKET TOPOLOGY
+% Source: UPAT/Topology/Blanket.lean
+% ============================================================================
+
+\section{Markov Blanket Topology}
+\label{sec:blanket}
+
+\leanlink{UPAT/Topology/Blanket.lean}
+
+\subsection{Blanket Partition Structure}
+
+\begin{structure}[Blanket Partition]
+\label{struct:blanket-partition}
+\leanlink{UPAT/Topology/Blanket.lean}
+
+A \textbf{Blanket Partition} of $V$ consists of:
+\begin{itemize}
+    \item $\mu \subseteq V$ \quad (internal states)
+    \item $b \subseteq V$ \quad (blanket states)
+    \item $\eta \subseteq V$ \quad (external states)
+\end{itemize}
+satisfying:
+\begin{align}
+    \mu \cap b &= \emptyset \\
+    \mu \cap \eta &= \emptyset \\
+    b \cap \eta &= \emptyset \\
+    \mu \cup b \cup \eta &= V
+\end{align}
+\end{structure}
+
+\begin{definition}[Supported On]
+\label{def:is-supported-on}
+\leanlink{UPAT/Topology/Blanket.lean}
+
+A function $f : V \to \mathbb{R}$ is \textbf{supported on} $S \subseteq V$ iff:
+\[
+\forall v \notin S,\, f(v) = 0
+\]
+\end{definition}
+
+\begin{definition}[Internal Function]
+\label{def:is-internal-function}
+\leanlink{UPAT/Topology/Blanket.lean}
+
+$f$ is an \textbf{internal function} iff $f$ is supported on $\mu$.
+\end{definition}
+
+\begin{definition}[External Function]
+\label{def:is-external-function}
+\leanlink{UPAT/Topology/Blanket.lean}
+
+$g$ is an \textbf{external function} iff $g$ is supported on $\eta$.
+\end{definition}
+
+\begin{definition}[Linear Blanket]
+\label{def:is-linear-blanket}
+\leanlink{UPAT/Topology/Blanket.lean}
+
+A partition satisfies \textbf{Geometric Conditional Independence} iff all internal functions are orthogonal to all external functions:
+\[
+\forall f \in L^2(\mu),\, \forall g \in L^2(\eta),\quad \ip{f}{g}_\pi = 0
+\]
+\end{definition}
+
+\begin{definition}[Respects Blanket]
+\label{def:respects-blank}
+\leanlink{UPAT/Topology/Blanket.lean}
+
+A generator $L : V \times V \to \mathbb{R}$ \textbf{respects} a blanket partition iff:
+\[
+\forall i \in \mu,\, \forall e \in \eta,\, L_{ie} = 0 \quad \land \quad \forall e \in \eta,\, \forall i \in \mu,\, L_{ei} = 0
+\]
+\end{definition}
+
+\begin{theorem}[Blanket Orthogonality]
+\label{thm:blanket-orthogonality}
+\leanlink{UPAT/Topology/Blanket.lean}
+
+Given $L$ respects blanket $B$, and $f$ internal, $g$ external:
+\[
+\ip{f}{g}_\pi = 0
+\]
+\begin{proof}
+We have $f$ is zero outside $\mu$ and $g$ is zero outside $\eta$. Since $\mu \cap \eta = \emptyset$, for each $v$: if $v \in \mu$ then $g(v) = 0$; if $v \notin \mu$ then $f(v) = 0$. Therefore $f(v) \cdot g(v) = 0$ for all $v$. By $\texttt{Finset.sum\_eq\_zero}$, we obtain $\ip{f}{g}_\pi = 0$.
+\end{proof}
+\end{theorem}
+
+% ============================================================================
+% PART III: INFORMATION-GEOMETRY EQUIVALENCE
+% Source: UPAT/Information/Equivalence.lean
+% ============================================================================
+
+\section{Information-Geometry Equivalence}
+\label{sec:info-geometry}
+
+\leanlink{UPAT/Information/Equivalence.lean}
+
+\subsection{Conditional Mutual Information}
+
+\begin{definition}[Conditional Mutual Information]
+\label{def:cmi}
+\leanlink{UPAT/Information/Equivalence.lean}
+
+Given precision matrix $P$ and index sets $A, B$:
+\[
+I(A; B \mid C) \coloneqq \sum_{a \in A} \sum_{b \in B} \abs{P_{ab}}
+\]
+\end{definition}
+
+\begin{lemma}[CMI Non-negativity]
+\label{lem:cmi-nonneg}
+\leanlink{UPAT/Information/Equivalence.lean}
+
+\[
+I(A; B \mid C) \ge 0
+\]
+\begin{proof}
+By $\texttt{Finset.sum\_nonneg}$ and $\texttt{abs\_nonneg}$.
+\end{proof}
+\end{lemma}
+
+\subsection{The Gaussian Lemma}
+
+\begin{theorem}[Gaussian CMI-Precision Equivalence]
+\label{thm:gaussian-cmi-zero}
+\leanlink{UPAT/Information/Equivalence.lean}
+
+\[
+I(A; B \mid C) = 0 \iff \forall a \in A,\, \forall b \in B,\, P_{ab} = 0
+\]
+\begin{proof}
+($\Rightarrow$) By $\texttt{Finset.sum\_eq\_zero\_iff\_of\_nonneg}$ applied twice: outer sum zero implies each inner sum zero; inner sum zero implies each $\abs{P_{ab}} = 0$, hence $P_{ab} = 0$.
+
+($\Leftarrow$) If all $P_{ab} = 0$, then $\abs{P_{ab}} = 0$, so each term is zero.
+\end{proof}
+\end{theorem}
+
+\subsection{Blanket Definitions}
+
+\begin{definition}[Dynamical Blanket]
+\label{def:is-dynamical-blanket}
+\leanlink{UPAT/Information/Equivalence.lean}
+
+Zero precision between internal and external:
+\[
+\forall i \in \mu,\, \forall e \in \eta,\, P_{ie} = 0
+\]
+\end{definition}
+
+\begin{definition}[Information Blanket]
+\label{def:is-information-blanket}
+\leanlink{UPAT/Information/Equivalence.lean}
+
+Zero CMI between internal and external:
+\[
+I(\mu; \eta \mid b) = 0
+\]
+\end{definition}
+
+\begin{theorem}[Dynamical $\Leftrightarrow$ Information Blanket]
+\label{thm:dynamical-iff-information}
+\leanlink{UPAT/Information/Equivalence.lean}
+
+The dynamical blanket property (transition independence) is equivalent to the information blanket property (conditional independence).
+\begin{proof}
+By unfolding definitions and applying Theorem~\ref{thm:gaussian-cmi-zero}.
+\end{proof}
+\end{theorem}
+
+\subsection{The Information Bridge}
+
+\begin{definition}[Information Blanket from Generator]
+\label{def:is-information-blanket-v}
+\leanlink{UPAT/Information/Equivalence.lean}
+
+\[
+\forall i \in \mu,\, \forall e \in \eta,\, L_{ie} = 0
+\]
+\end{definition}
+
+\begin{definition}[Symmetric Matrix]
+\label{def:is-symmetric}
+\leanlink{UPAT/Information/Equivalence.lean}
+
+\[
+\forall i, j,\, L_{ij} = L_{ji}
+\]
+\end{definition}
+
+\begin{theorem}[Information Bridge (Forward)]
+\label{thm:info-bridge-forward}
+\leanlink{UPAT/Information/Equivalence.lean}
+
+If a generator $L$ respects a blanket partition $B$, then it satisfies the information blanket property.
+\begin{proof}
+Direct from the definition: the first conjunct of the respects-blanket property gives $L_{ie} = 0$.
+\end{proof}
+\end{theorem}
+
+\begin{theorem}[Symmetric Information Bridge]
+\label{thm:symmetric-info-bridge}
+\leanlink{UPAT/Information/Equivalence.lean}
+
+Given $L$ symmetric, if $L$ satisfies the information blanket property (i.e., $L_{ie} = 0$ for all $i \in \mu$, $e \in \eta$), then $L$ respects the blanket partition.
+\begin{proof}
+We construct both conjuncts:
+\begin{enumerate}
+    \item Internal$\to$External: Given by hypothesis $h$.
+    \item External$\to$Internal: Given $e \in \eta$, $i \in \mu$, we have $L_{ei} = L_{ie}$ by symmetry. By hypothesis, $L_{ie} = 0$.
+\end{enumerate}
+\end{proof}
+\end{theorem}
+
+\begin{theorem}[Information-Geometry Equivalence]
+\label{thm:info-geometry-equiv}
+\leanlink{UPAT/Information/Equivalence.lean}
+
+Given $L$ symmetric, the generator respects the blanket partition if and only if it satisfies the information blanket property:
+\[
+L_{ie} = 0 \;\forall i \in \mu, e \in \eta \quad \Longleftrightarrow \quad \text{(information blanket)}
+\]
+\begin{proof}
+($\Rightarrow$) By Theorem~\ref{thm:info-bridge-forward}.
+
+($\Leftarrow$) By Theorem~\ref{thm:symmetric-info-bridge}.
+\end{proof}
+\end{theorem}
+
+\begin{corollary}[Orthogonality $\Leftrightarrow$ Zero Information]
+\label{cor:orthog-iff-zero-info}
+\leanlink{UPAT/Information/Equivalence.lean}
+
+Given $L$ symmetric, $f$ internal, $g$ external:
+If $L$ respects the blanket partition, then $\ip{f}{g}_\pi = 0$. Equivalently, if $L$ satisfies the information blanket property, then $\ip{f}{g}_\pi = 0$.
+\begin{proof}
+First implication: By Theorem~\ref{thm:blanket-orthogonality}.
+
+Second implication: By Theorem~\ref{thm:symmetric-info-bridge}, $L$ respects the blanket. Then apply Theorem~\ref{thm:blanket-orthogonality}.
+\end{proof}
+\end{corollary}
+
+% ============================================================================
+% PART IV: SPECTRAL GAP THEORY
+% Source: UPAT/Stability/Core/Assumptions.lean
+% ============================================================================
+
+\section{Spectral Gap Theory}
+\label{sec:spectral-gap}
+
+\leanlink{UPAT/Stability/Core/Assumptions.lean}
+
+\subsection{Irreducibility Assumptions}
+
+\begin{structure}[Irreducibility Assumptions]
+\label{struct:irreducibility}
+\leanlink{UPAT/Stability/Core/Assumptions.lean}
+
+For a lazy, irreducible Markov chain with generator $L$, heat kernel $H$, and stationary distribution $\pi$:
+\begin{align}
+    \pi &: V \to \mathbb{R} \\
+    \forall v,\, &0 < \pi(v) \\
+    \sum_v &\pi(v) = 1
+\end{align}
+\end{structure}
+
+\begin{definition}[Spectral Gap]
+\label{def:spectral-gap}
+\leanlink{UPAT/Stability/Core/Assumptions.lean}
+
+\[
+\gamma \coloneqq \inf \left\{ \frac{\ip{Hv}{v}_\pi}{\ip{v}{v}_\pi} \;\middle|\; v \neq 0,\, \ip{v}{\mathbf{1}}_\pi = 0 \right\}
+\]
+\end{definition}
+
+\subsection{Spectral Gap Coercivity}
+
+\begin{lemma}[Spectral Gap Coercivity]
+\label{lem:spectral-gap-coercivity}
+\leanlink{UPAT/Stability/Core/Assumptions.lean}
+
+Given $V$ nontrivial, $H$ self-adjoint and PSD w.r.t.\ $\ip{\cdot}{\cdot}_\pi$, $H \mathbf{1} = 0$, and $\gamma > 0$:
+\[
+\forall v \perp_\pi \mathbf{1},\quad \ip{Hv}{v}_\pi \ge \gamma \cdot \norm{v}^2_\pi
+\]
+\begin{proof}
+\textbf{Case} $v = 0$: Both sides are zero.
+
+\textbf{Case} $v \neq 0$: We have $\norm{v}^2_\pi > 0$. The Rayleigh quotient $\ip{Hv}{v}_\pi / \norm{v}^2_\pi$ is in the defining set for $\gamma$. By definition of infimum:
+\[
+\gamma \le \frac{\ip{Hv}{v}_\pi}{\norm{v}^2_\pi}
+\]
+Multiplying both sides by $\norm{v}^2_\pi > 0$ yields the result.
+\end{proof}
+\end{lemma}
+
+\subsection{Main Spectral Theorem}
+
+\begin{theorem}[Gap Positive Iff Kernel Equals Span of One]
+\label{thm:gap-pos-iff-ker}
+\leanlink{UPAT/Stability/Core/Assumptions.lean}
+
+Given $V$ nontrivial, $H$ self-adjoint, PSD, with $H\mathbf{1} = 0$:
+\[
+\gamma > 0 \iff \ker(H) = \text{span}\{\mathbf{1}\}
+\]
+\begin{proof}
+($\Rightarrow$) Let $u \in \ker(H)$. Decompose $u = v + c\mathbf{1}$ where $v \perp_\pi \mathbf{1}$.
+
+We have $Hv = Hu - cH\mathbf{1} = 0 - 0 = 0$.
+
+If $v \neq 0$, by coercivity: $0 = \ip{Hv}{v}_\pi \ge \gamma \norm{v}^2_\pi > 0$, contradiction.
+
+Therefore $v = 0$, so $u = c\mathbf{1} \in \text{span}\{\mathbf{1}\}$.
+
+($\Leftarrow$) For $u \neq 0$ with $u \perp_\pi \mathbf{1}$:
+\begin{itemize}
+    \item $u \notin \ker(H)$ since $\ker(H) = \text{span}\{\mathbf{1}\}$ and $u \perp_\pi \mathbf{1}$.
+    \item By PSD: $\ip{Hu}{u}_\pi \ge 0$.
+    \item If $\ip{Hu}{u}_\pi = 0$, then $Hu = 0$ by the polarization lemma, contradicting $u \notin \ker(H)$.
+\end{itemize}
+Therefore $\ip{Hu}{u}_\pi > 0$ for all nonzero $u \perp_\pi \mathbf{1}$.
+
+By compactness of the normalized set $\{v : \norm{v}^2_\pi = 1,\, v \perp_\pi \mathbf{1}\}$ in finite dimension, the continuous function $v \mapsto \ip{Hv}{v}_\pi$ achieves a positive minimum. Hence $\gamma > 0$.
+\end{proof}
+\end{theorem}
+
+% ============================================================================
+% END OF FORMALISM
+% ============================================================================
