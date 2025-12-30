@@ -92,9 +92,7 @@ lake build
 | Component | Status | Sorries |
 |-----------|--------|---------|
 | SGC Core (v1) | ✅ Verified | 0 |
-| FHDT Core | ✅ Verified | 0 |
 | Information Bridge (v2) | ✅ Verified | 0 |
-| Manifold Scaffolding (v2) | 🚧 In Progress | — |
 | Full Build | ✅ Passing | 0 |
 
 See [`VERIFIED_CORE_MANIFEST.md`](VERIFIED_CORE_MANIFEST.md) for the formal verification statement.
