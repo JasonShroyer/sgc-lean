@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 UPAT Contributors. All rights reserved.
+Copyright (c) 2024 SGC Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: UPAT Contributors
+Authors: SGC Contributors
 -/
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
@@ -13,7 +13,7 @@ establishing the connection between Shannon information theory and matrix algebr
 
 ## Theoretical Context
 
-In UPAT v1, we used geometric orthogonality (`inner_pi f g = 0`) as a computational proxy
+In SGC v1, we used geometric orthogonality (`inner_pi f g = 0`) as a computational proxy
 for conditional independence. This module begins the construction that will justify this
 proxy by formalizing the information-theoretic foundations.
 
@@ -34,7 +34,7 @@ For a multivariate Gaussian with covariance matrix Σ, the differential entropy 
 
 noncomputable section
 
-namespace UPAT.Information
+namespace SGC.Information
 
 /-! ### 1. Covariance Matrix Structure -/
 
@@ -98,6 +98,6 @@ theorem precision_zero_implies_cond_indep (P : PrecisionMatrix n) (i j : Fin n)
   unfold partialCorrelation
   simp [h_zero]
 
-end UPAT.Information
+end SGC.Information
 
 end

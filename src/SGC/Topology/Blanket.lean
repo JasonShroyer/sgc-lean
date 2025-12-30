@@ -1,9 +1,9 @@
 /-
-Copyright (c) 2024 UPAT Project. All rights reserved.
+Copyright (c) 2024 SGC Project. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: UPAT Formalization Team
+Authors: SGC Formalization Team
 -/
-import UPAT.Axioms.Geometry
+import SGC.Axioms.Geometry
 import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
@@ -43,7 +43,7 @@ If f_μ ⊥ g_η | b, then knowing b makes internal and external information
 
 -/
 
-namespace UPAT
+namespace SGC
 
 open Finset BigOperators Matrix
 
@@ -214,4 +214,4 @@ theorem blanket_orthogonality (_L : Matrix V V ℝ) (B : BlanketPartition V)
     have hfv : f v = 0 := hf v hvi
     simp [hfv]
 
-end UPAT
+end SGC

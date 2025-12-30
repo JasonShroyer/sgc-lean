@@ -1,26 +1,26 @@
 /-
-Copyright (c) 2024 UPAT Contributors. All rights reserved.
+Copyright (c) 2024 SGC Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: UPAT Contributors
+Authors: SGC Contributors
 -/
-import UPAT.Geometry.Manifold.Laplacian
+import SGC.Geometry.Manifold.Laplacian
 import Mathlib.Order.Filter.Basic
 
 /-!
 # Belkin-Niyogi Convergence: Graphs to Manifolds
 
 This module formalizes the convergence of discrete graph Laplacians to the
-continuous Laplace-Beltrami operator, validating UPAT v1's discrete approach.
+continuous Laplace-Beltrami operator, validating SGC v1's discrete approach.
 
 ## Theoretical Context
 
-In UPAT v1, `Discretization.lean` axiomatically assumed via `ContinuumTarget`
+In SGC v1, `Discretization.lean` axiomatically assumed via `ContinuumTarget`
 that discrete thermodynamic results have continuous limits. This module
 *constructs* that limit, proving the Belkin-Niyogi convergence theorem.
 
 ## The Diffusion-RG Isomorphism
 
-The central claim of UPAT is that:
+The central claim of SGC is that:
 1. Diffusion on a causal graph (discrete Markov chain)
 2. Renormalization Group flow on a manifold (continuous PDE)
 
@@ -56,7 +56,7 @@ The key insight is that in Riemannian normal coordinates around x:
 
 noncomputable section
 
-namespace UPAT.Geometry.Manifold
+namespace SGC.Geometry.Manifold
 
 variable {d : ℕ}
 
@@ -215,7 +215,7 @@ lemma concentration_bound (_N : ℕ) (_hN : _N > 0) :
     As N → ∞ (sampling density increases) and ε → 0 (kernel localizes),
     L_ε f(x) → Δf(x) pointwise for smooth f.
     
-    This is the foundational result that justifies UPAT's discrete approach:
+    This is the foundational result that justifies SGC's discrete approach:
     graph-based computations approximate continuum physics. -/
 theorem belkin_niyogi_convergence (Δ : LaplaceBeltrami d) :
     PointwiseConvergence Δ := by
@@ -234,7 +234,7 @@ theorem spectral_convergence (_Δ : LaplaceBeltrami d) (_k : ℕ) :
 
 /-! ### 7. The Diffusion-RG Isomorphism -/
 
-/-- **The Diffusion-RG Isomorphism** (Central Claim of UPAT):
+/-- **The Diffusion-RG Isomorphism** (Central Claim of SGC):
     
     Discrete graph diffusion and continuous Wilsonian RG flow are
     **physically indistinguishable** in the thermodynamic limit.
@@ -257,7 +257,7 @@ theorem diffusion_rg_isomorphism (Δ : LaplaceBeltrami d) :
 
 /-- **Validation**: Belkin-Niyogi construction validates `Discretization.lean`.
     
-    This theorem shows that the `ContinuumTarget` axiom in UPAT v1 is not
+    This theorem shows that the `ContinuumTarget` axiom in SGC v1 is not
     merely a convenient assumption, but a theorem that can be constructed
     from first principles via the Taylor expansion argument.
     
@@ -273,6 +273,6 @@ theorem discretization_validated (Δ : LaplaceBeltrami d) :
 theorem fhdt_transfers_to_continuum (Δ : LaplaceBeltrami d) :
     PointwiseConvergence Δ → True := fun _ => trivial
 
-end UPAT.Geometry.Manifold
+end SGC.Geometry.Manifold
 
 end

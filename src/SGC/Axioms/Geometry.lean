@@ -1,10 +1,10 @@
 /-
-  UPAT/Axioms/Geometry.lean
+  SGC/Axioms/Geometry.lean
   
   Core L²(π) Geometry for the Unified Predictive Assembly Theory.
   
   This file provides the foundational weighted inner product space structure
-  used throughout UPAT. All geometry is explicit (no heavy typeclasses).
+  used throughout SGC. All geometry is explicit (no heavy typeclasses).
   
   Design Pattern: Explicit Weight Pattern
   - All geometry takes `pi_dist : V → ℝ` explicitly
@@ -24,7 +24,7 @@ import Mathlib.Tactic
 noncomputable section
 open Finset LinearMap Matrix Real ContinuousLinearMap Submodule Topology EuclideanSpace
 
-namespace UPAT
+namespace SGC
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
 
@@ -444,4 +444,4 @@ def P_ortho_pi (pi_dist : V → ℝ) (_h_sum : ∑ v, pi_dist v = 1) (_h_pos : �
       map_smul' := by intros; simp [inner_pi_smul_left] }
   LinearMap.id - (LinearMap.smulRight P_inner (fun _ => 1))
 
-end UPAT
+end SGC

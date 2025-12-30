@@ -1,9 +1,9 @@
 /-
-Copyright (c) 2024 UPAT Project. All rights reserved.
+Copyright (c) 2024 SGC Project. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: UPAT Formalization Team
+Authors: SGC Formalization Team
 -/
-import UPAT.Thermodynamics.DoobMeyer
+import SGC.Thermodynamics.DoobMeyer
 
 /-!
 # Variational Principle for Predictable Drift
@@ -44,7 +44,7 @@ variational principle on the expected surprise functional.
 
 -/
 
-namespace UPAT
+namespace SGC
 
 open Finset BigOperators Matrix
 
@@ -221,7 +221,7 @@ theorem least_action_maximum_complexity (P Q : Matrix V V ℝ) (Φ : V → ℝ)
     - Σ π(x)|ΔA_P(x)| ≥ Σ π(x)|ΔA_Q(x)|
     
     This follows from the variational structure of the expected surprise functional. -/
-theorem upat_kinetics_complete (P Q : Matrix V V ℝ) (pi_dist : V → ℝ) 
+theorem sgc_kinetics_complete (P Q : Matrix V V ℝ) (pi_dist : V → ℝ) 
     (hπ : ∀ x, 0 < pi_dist x) (_hP : IsStochastic P) (_hQ : IsStochastic Q)
     (hP_super : IsSupermartingale P (SurprisePotential pi_dist hπ))
     (hQ_super : IsSupermartingale Q (SurprisePotential pi_dist hπ))
@@ -261,4 +261,4 @@ theorem gradient_drift_equivalence (P : Matrix V V ℝ) (pi_dist : V → ℝ)
   intro x
   rw [surprise_gradient_eq_neg_drift, drift_magnitude_supermartingale P _ h_super x]
 
-end UPAT
+end SGC

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 UPAT Contributors. All rights reserved.
+Copyright (c) 2024 SGC Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: UPAT Contributors
+Authors: SGC Contributors
 -/
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
@@ -14,7 +14,7 @@ the continuous analogue of our discrete graph Laplacian.
 
 ## Theoretical Context
 
-In UPAT v1, `Discretization.lean` axiomatically assumed a continuum limit exists
+In SGC v1, `Discretization.lean` axiomatically assumed a continuum limit exists
 via `ContinuumTarget`. This module constructs that target explicitly.
 
 The Laplace-Beltrami operator Δ is the natural generalization of the Laplacian
@@ -25,7 +25,7 @@ to curved spaces. It appears in:
 
 ## The Diffusion-RG Isomorphism
 
-The central claim of UPAT is that discrete graph diffusion and continuous
+The central claim of SGC is that discrete graph diffusion and continuous
 Riemannian diffusion are **physically indistinguishable** in the appropriate limit.
 
 In Riemannian normal coordinates around a point x, the Laplace-Beltrami operator
@@ -51,7 +51,7 @@ This is the target that graph Laplacians converge to (see `Convergence.lean`).
 
 noncomputable section
 
-namespace UPAT.Geometry.Manifold
+namespace SGC.Geometry.Manifold
 
 variable {n : ℕ}
 
@@ -136,6 +136,6 @@ axiom discrete_approximates_continuous :
   ∀ (_Δ : LaplaceBeltrami n) (ε : ℝ), ε > 0 → 
   ∃ (N : ℕ), ∀ (m : ℕ), m > N → True
 
-end UPAT.Geometry.Manifold
+end SGC.Geometry.Manifold
 
 end

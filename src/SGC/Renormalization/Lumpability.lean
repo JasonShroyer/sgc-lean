@@ -1,5 +1,5 @@
 /-
-  UPAT/Stability/Functoriality/Lumpability.lean
+  SGC/Stability/Functoriality/Lumpability.lean
   
   Strong Lumpability and Functorial Stability.
   
@@ -15,7 +15,7 @@
   Design: Setoid-based partition with explicit quotient map Q.
 -/
 
-import UPAT.Axioms.Geometry
+import SGC.Axioms.Geometry
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.Analysis.Normed.Algebra.Exponential
 import Mathlib.Data.Setoid.Partition
@@ -24,7 +24,7 @@ import Mathlib.Tactic
 noncomputable section
 open Finset LinearMap Matrix Real NormedSpace
 
-namespace UPAT
+namespace SGC
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
 
@@ -626,4 +626,4 @@ theorem gap_non_decrease (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V →
   rw [h_eq]
   exact gap_block_ge_gap_all L P pi_dist hS hT_bdd
 
-end UPAT
+end SGC

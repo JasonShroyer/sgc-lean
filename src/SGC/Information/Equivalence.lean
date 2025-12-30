@@ -1,10 +1,10 @@
 /-
-Copyright (c) 2024 UPAT Contributors. All rights reserved.
+Copyright (c) 2024 SGC Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: UPAT Contributors
+Authors: SGC Contributors
 -/
-import UPAT.Information.Gaussian
-import UPAT.Topology.Blanket
+import SGC.Information.Gaussian
+import SGC.Topology.Blanket
 
 /-!
 # The Gaussian Lemma: Information-Geometric Equivalence
@@ -14,7 +14,7 @@ conditional independence and geometric orthogonality for Gaussian distributions.
 
 ## Theoretical Context
 
-In UPAT v1, we defined Markov Blankets using geometric orthogonality:
+In SGC v1, we defined Markov Blankets using geometric orthogonality:
   `inner_pi π f g = 0` for internal f and external g
 
 This was a computational proxy for the true information-theoretic definition:
@@ -41,7 +41,7 @@ For jointly Gaussian variables (X, Y, Z):
 
 noncomputable section
 
-namespace UPAT.Information
+namespace SGC.Information
 
 variable {n : ℕ}
 
@@ -119,7 +119,7 @@ def IsInformationBlanket (P : PrecisionMatrix n) (B : BlanketPartition n) : Prop
 
 /-- **The Gaussian Lemma**: Dynamical and information blankets are equivalent.
     
-    This justifies UPAT v1's use of geometric orthogonality as a proxy
+    This justifies SGC v1's use of geometric orthogonality as a proxy
     for information-theoretic conditional independence. -/
 theorem dynamical_blanket_iff_information_blanket (P : PrecisionMatrix n) 
     (B : BlanketPartition n) :
@@ -127,11 +127,11 @@ theorem dynamical_blanket_iff_information_blanket (P : PrecisionMatrix n)
   unfold IsDynamicalBlanket IsInformationBlanket
   rw [gaussian_cmi_zero_iff_precision_zero]
 
-end UPAT.Information
+end SGC.Information
 
 /-! ## Part II: The Information Bridge to v1 Geometry -/
 
-namespace UPAT
+namespace SGC
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
 
@@ -193,7 +193,7 @@ theorem symmetric_information_bridge (L : Matrix V V ℝ) (B : BlanketPartition 
 /-- **Information-Geometry Equivalence**: For reversible (symmetric) generators,
     `RespectsBlank` and `IsInformationBlanketV` are equivalent.
     
-    This is the central theorem connecting UPAT v1 (Geometry) to v2 (Information). -/
+    This is the central theorem connecting SGC v1 (Geometry) to v2 (Information). -/
 theorem information_geometry_equivalence (L : Matrix V V ℝ) (B : BlanketPartition V)
     (h_sym : IsSymmetric L) :
     RespectsBlank L B ↔ IsInformationBlanketV L B := by
@@ -217,6 +217,6 @@ theorem orthogonality_iff_zero_information (L : Matrix V V ℝ) (B : BlanketPart
     have h_respect := symmetric_information_bridge L B h_sym h_info
     exact blanket_orthogonality L B pi_dist h_respect f g hf hg
 
-end UPAT
+end SGC
 
 end

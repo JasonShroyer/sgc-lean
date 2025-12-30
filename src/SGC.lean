@@ -1,43 +1,43 @@
 /-
-Copyright (c) 2024 UPAT Project. All rights reserved.
+Copyright (c) 2024 SGC Project. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: UPAT Formalization Team
+Authors: SGC Formalization Team
 -/
 
 -- Foundation: The L²(π) Inner Product Structure
-import UPAT.Axioms.Geometry
+import SGC.Axioms.Geometry
 
 -- Spectral Pillar: Spectral Gap Monotonicity
-import UPAT.Renormalization.Lumpability
+import SGC.Renormalization.Lumpability
 
 -- Topology Pillar: Geometric Markov Blankets
-import UPAT.Topology.Blanket
+import SGC.Topology.Blanket
 
 -- Thermodynamics Pillar: Stochastic Thermodynamics of Surprise
-import UPAT.Thermodynamics.DoobMeyer
+import SGC.Thermodynamics.DoobMeyer
 
 -- Variational Pillar: Principle of Least Action
-import UPAT.Variational.LeastAction
+import SGC.Variational.LeastAction
 
 -- Bridge Pillar: Continuum Limits
-import UPAT.Bridge.Discretization
+import SGC.Bridge.Discretization
 
 -- ═══════════════════════════════════════════════════════════════════════════
--- UPAT v2 Extensions: The Constructive Physics Layer
+-- SGC Extensions: The Constructive Physics Layer
 -- ═══════════════════════════════════════════════════════════════════════════
 
 -- Information Bridge: Shannon Entropy ↔ Geometric Orthogonality
-import UPAT.Information.Gaussian
-import UPAT.Information.Equivalence
+import SGC.Information.Gaussian
+import SGC.Information.Equivalence
 
 -- Continuum Bridge: Graphs → Manifolds
-import UPAT.Geometry.Manifold.Laplacian
-import UPAT.Geometry.Manifold.Convergence
+import SGC.Geometry.Manifold.Laplacian
+import SGC.Geometry.Manifold.Convergence
 
 /-!
-# UPAT: The Spectral Geometry of Consolidation
+# SGC: The Spectral Geometry of Consolidation
 
-This is the entry point for the formally verified UPAT library.
+This is the entry point for the formally verified SGC library.
 
 ## The Four Pillars Architecture (v1 Core)
 

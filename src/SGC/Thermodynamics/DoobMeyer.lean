@@ -1,10 +1,10 @@
 /-
-Copyright (c) 2024 UPAT Project. All rights reserved.
+Copyright (c) 2024 SGC Project. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: UPAT Formalization Team
+Authors: SGC Formalization Team
 -/
-import UPAT.Axioms.Geometry
-import UPAT.Topology.Blanket
+import SGC.Axioms.Geometry
+import SGC.Topology.Blanket
 
 /-!
 # Doob-Meyer Decomposition of the Surprise Potential
@@ -33,7 +33,7 @@ where:
 
 ## Design Philosophy
 
-Following UPAT constraints:
+Following SGC constraints:
 1. **Discrete time only** - avoid SDEs and heavy measure theory
 2. **Finset sums** - E[f(X')|X=x] = Σ_y P_{xy} f(y)
 3. **No sorries** - elementary algebra on expectations
@@ -51,7 +51,7 @@ predictable (F_n-measurable) and E[ΔM | F_n] = 0.
 
 -/
 
-namespace UPAT
+namespace SGC
 
 open Finset BigOperators Matrix
 
@@ -292,4 +292,4 @@ theorem doob_structure (P : Matrix V V ℝ) (pi_dist : V → ℝ)
   intro x y
   exact doob_decomposition P (SurprisePotential pi_dist hπ) x y
 
-end UPAT
+end SGC

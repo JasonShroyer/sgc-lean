@@ -1,10 +1,10 @@
 /-
-Copyright (c) 2024 UPAT Project. All rights reserved.
+Copyright (c) 2024 SGC Project. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: UPAT Formalization Team
+Authors: SGC Formalization Team
 -/
-import UPAT.Axioms.Geometry
-import UPAT.Renormalization.Lumpability
+import SGC.Axioms.Geometry
+import SGC.Renormalization.Lumpability
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 /-!
@@ -27,7 +27,7 @@ Laplace-Beltrami operator.
 
 ## Design Philosophy
 
-Following UPAT constraints:
+Following SGC constraints:
 1. **Axiomatic Continuum**: Treat the continuous operator as an oracle
 2. **Taylor Expansion Focus**: Use algebraic Taylor properties
 3. **No Measure Theory**: Avoid Lebesgue integration on manifolds
@@ -48,7 +48,7 @@ Following UPAT constraints:
 
 -/
 
-namespace UPAT.Bridge
+namespace SGC.Bridge
 
 open Finset BigOperators Matrix
 
@@ -166,7 +166,7 @@ def IsIsotropic (W : Matrix V V ℝ) (pos : V → ℝ) : Prop :=
 
 /-- The **discrete spectral gap** of a Laplacian. -/
 noncomputable def DiscreteSpectralGap (L : Matrix V V ℝ) (pi_dist : V → ℝ) : ℝ :=
-  UPAT.SpectralGap L pi_dist
+  SGC.SpectralGap L pi_dist
 
 /-- **Gap Consistency**: The discrete gap converges to the continuous gap.
     
@@ -216,7 +216,7 @@ structure DiscretizationTheorem (V : Type*) [Fintype V] [DecidableEq V] where
   /-- Spectral gap consistency -/
   gap_consistent : GapConsistent target (fun n => GraphLaplacian (weights n)) pi_seq
 
-/-! ### 9. Connection to UPAT Stability -/
+/-! ### 9. Connection to SGC Stability -/
 
 /-- **Bridge to Stability**: The discrete stability results (gap_non_decrease)
     are consistent with continuous stability.
@@ -225,15 +225,15 @@ structure DiscretizationTheorem (V : Type*) [Fintype V] [DecidableEq V] where
     and the discrete gap converges to the continuous gap (gap_consistent),
     then coarse-graining respects the continuous physics.
     
-    This theorem references UPAT.gap_non_decrease which shows:
+    This theorem references SGC.gap_non_decrease which shows:
     SpectralGap_bar L P π ≥ SpectralGap L π -/
 theorem bridge_to_stability 
-    (L : Matrix V V ℝ) (pi_dist : V → ℝ) (P : UPAT.Partition V) 
-    (hL : UPAT.IsStronglyLumpable L P)
-    (hS : (UPAT.RayleighSetBlockConstant L P pi_dist).Nonempty)
-    (hT_bdd : BddBelow (UPAT.RayleighSet L pi_dist)) :
-    UPAT.SpectralGap_bar L P pi_dist ≥ UPAT.SpectralGap L pi_dist := 
-  UPAT.gap_non_decrease L P pi_dist hL hS hT_bdd
+    (L : Matrix V V ℝ) (pi_dist : V → ℝ) (P : SGC.Partition V) 
+    (hL : SGC.IsStronglyLumpable L P)
+    (hS : (SGC.RayleighSetBlockConstant L P pi_dist).Nonempty)
+    (hT_bdd : BddBelow (SGC.RayleighSet L pi_dist)) :
+    SGC.SpectralGap_bar L P pi_dist ≥ SGC.SpectralGap L pi_dist := 
+  SGC.gap_non_decrease L P pi_dist hL hS hT_bdd
 
 /-! ### 10. Summary: The Complete Bridge
 
@@ -252,4 +252,4 @@ theorem discretization_implies_gap_consistency (dt : DiscretizationTheorem V) :
     GapConsistent dt.target (fun n => GraphLaplacian (dt.weights n)) dt.pi_seq := 
   dt.gap_consistent
 
-end UPAT.Bridge
+end SGC.Bridge
