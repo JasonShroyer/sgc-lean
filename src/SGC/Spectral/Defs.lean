@@ -21,13 +21,19 @@ variable {L H : Matrix V V ℝ} {pi_dist : V → ℝ} {ε : ℝ}
 def K_norm (L : Matrix V V ℝ) (t : ℝ) (x : V) (pix : ℝ) : ℝ :=
   1 - (HeatKernel L t) x x / pix
 
-/-- The expected log-observable. -/
-def E_log_K_norm (L : Matrix V V ℝ) (pi_dist : V → ℝ) (ε : ℝ) (t : ℝ) : ℝ :=
+/-- The **expected log return probability**: E_π[log(1 - K_xx(t)/π_x + ε)].
+    
+    This observable tracks the expected logarithmic deviation of return 
+    probabilities from stationary values. -/
+def expected_log_return_prob (L : Matrix V V ℝ) (pi_dist : V → ℝ) (ε : ℝ) (t : ℝ) : ℝ :=
   ∑ x, pi_dist x * Real.log (K_norm L t x (pi_dist x) + ε)
 
-/-- The stability flow β(t) is the time derivative of the expected log-observable. -/
-def beta_t (L : Matrix V V ℝ) (pi_dist : V → ℝ) (ε : ℝ) (t : ℝ) : ℝ :=
-  deriv (E_log_K_norm L pi_dist ε) t
+/-- The **stability flow** β(t): time derivative of the expected log return probability.
+    
+    This flow measures the rate of change of the expected log-observable,
+    providing a measure of how quickly the system approaches stationarity. -/
+def stability_flow (L : Matrix V V ℝ) (pi_dist : V → ℝ) (ε : ℝ) (t : ℝ) : ℝ :=
+  deriv (expected_log_return_prob L pi_dist ε) t
 
 --------------------------------------------------------------------------------
 -- Helper: Differentiability of K_norm at a fixed state x
@@ -127,11 +133,15 @@ lemma deriv_HeatKernel_diag (L : Matrix V V ℝ) (x : V) (t : ℝ) :
 --------------------------------------------------------------------------------
 
 /--
-**The Functorial Heat Dominance Theorem (FHDT)**
-If the system has a spectral gap > 0, the stability flow β(t) is bounded by
+**Spectral Stability Bound**
+
+If the system has a spectral gap > 0, the stability flow is bounded by
 an exponential envelope determined by the spectral gap.
+
+**Historical Note:** This result was originally called the "Functorial Heat 
+Dominance Theorem (FHDT)" in earlier versions of this library.
 -/
-theorem FunctorialHeatDominanceTheorem
+theorem spectral_stability_bound
   [Nontrivial V]
   (h_irred : IrreducibilityAssumptions L H pi_dist)
   (h_gap_pos : SpectralGap_pi pi_dist H > 0)
@@ -147,7 +157,7 @@ theorem FunctorialHeatDominanceTheorem
   (hπ : ∀ x, 0 < pi_dist x)
   (h_sum : ∑ x, pi_dist x = 1)
   (t : ℝ) (ht : 0 ≤ t) :
-  ∃ C ≥ 0, |beta_t L pi_dist ε t| ≤ C * Real.exp (-(SpectralGap_pi pi_dist H) * t) := by
+  ∃ C ≥ 0, |stability_flow L pi_dist ε t| ≤ C * Real.exp (-(SpectralGap_pi pi_dist H) * t) := by
   -- ════════════════════════════════════════════════════════════════════════════
   -- Setup: We have positivity of pi_dist directly from hπ
   -- ════════════════════════════════════════════════════════════════════════════
@@ -156,7 +166,7 @@ theorem FunctorialHeatDominanceTheorem
   -- 
   -- ════════════════════════════════════════════════════════════════════════════
   -- Step 1: Bound the derivative of the log-observable
-  -- β(t) = deriv E_log_K_norm t = ∑_x π_x * (1/(K_norm + ε)) * deriv K_norm
+  -- β(t) = deriv expected_log_return_prob t = ∑_x π_x * (1/(K_norm + ε)) * deriv K_norm
   -- ════════════════════════════════════════════════════════════════════════════
   -- 
   -- The key bound: |β(t)| ≤ (1/ε_min) * ∑_x π_x * |deriv K_norm|
@@ -230,7 +240,7 @@ theorem FunctorialHeatDominanceTheorem
         · exact mul_pos hε_min_pos hpi_min_pos |>.le
       · exact opNorm_pi_nonneg pi_dist hπ (toLin' L)
     · linarith
-  · -- |beta_t| ≤ C * exp(-gap * t)
+  · -- |stability_flow| ≤ C * exp(-gap * t)
     -- 
     -- ══════════════════════════════════════════════════════════════════════════
     -- The proof uses the following key components (all now proved):
@@ -263,13 +273,13 @@ theorem FunctorialHeatDominanceTheorem
       rw [h1]; simp only [C]; linarith
     -- 
     -- Step 4: The final bound
-    -- The remaining computation connects beta_t to the diagonal sum via:
+    -- The remaining computation connects stability_flow to the diagonal sum via:
     -- - Chain rule for log: deriv log(g) = g'/g
     -- - deriv_K_norm and deriv_HeatKernel_diag
     -- - ε_min lower bound on denominators
     -- - π_min lower bound on weights
     -- 
-    -- This yields |beta_t| ≤ (|V|/ε_min/π_min) * ‖L‖ * exp(-gap*t) ≤ C * exp(-gap*t)
+    -- This yields |stability_flow| ≤ (|V|/ε_min/π_min) * ‖L‖ * exp(-gap*t) ≤ C * exp(-gap*t)
     -- ══════════════════════════════════════════════════════════════════════════
     -- Step 5: Factor L * K(t) through P_ortho_pi and bound opNorm
     -- ══════════════════════════════════════════════════════════════════════════
@@ -333,36 +343,36 @@ theorem FunctorialHeatDominanceTheorem
         _ = (Fintype.card V : ℝ) * L_opNorm * Real.exp (-(SpectralGap_pi pi_dist H) * t) := by ring
     -- 
     -- ══════════════════════════════════════════════════════════════════════════
-    -- Step 7: Bound |beta_t| using derivative formula and ε_min, π_min
+    -- Step 7: Bound |stability_flow| using derivative formula and ε_min, π_min
     -- ══════════════════════════════════════════════════════════════════════════
     -- 
     -- The derivative computation gives:
-    -- beta_t = ∑_x π_x * (deriv K_norm) / (K_norm + ε)
+    -- stability_flow = ∑_x π_x * (deriv K_norm) / (K_norm + ε)
     -- |deriv K_norm| ≤ |(L*K)_{xx}| / π_x
     -- 1/(K_norm + ε) ≤ 1/ε_min
     -- 
     -- After combining and using π_min:
-    -- |beta_t| ≤ (1/(ε_min * π_min)) * ∑_x |(L*K)_{xx}|
+    -- |stability_flow| ≤ (1/(ε_min * π_min)) * ∑_x |(L*K)_{xx}|
     -- 
     have h_pi_min_le : ∀ x, pi_min ≤ pi_dist x := by
       intro x
       simp only [pi_min]
       exact Finset.inf'_le _ (Finset.mem_univ x)
     -- 
-    have h_beta_bound : |beta_t L pi_dist ε t| ≤ 
+    have h_beta_bound : |stability_flow L pi_dist ε t| ≤ 
                         (1 / (ε_min * pi_min)) * ∑ x, |(L * HeatKernel L t) x x| := by
       -- ════════════════════════════════════════════════════════════════════════
-      -- Step A: Expand beta_t as a finite sum using chain rule for log
+      -- Step A: Expand stability_flow as a finite sum using chain rule for log
       -- ════════════════════════════════════════════════════════════════════════
       -- 
-      -- beta_t = deriv (∑_x π_x * log(K_norm + ε)) 
+      -- stability_flow = deriv (∑_x π_x * log(K_norm + ε)) 
       --        = ∑_x π_x * (deriv K_norm) / (K_norm + ε)
       -- 
       -- Define the summand function for each x
       let F (x : V) (s : ℝ) := pi_dist x * Real.log (K_norm L s x (pi_dist x) + ε)
-      -- E_log_K_norm = ∑_x F x
-      have hE_eq : E_log_K_norm L pi_dist ε = fun s => ∑ x, F x s := by
-        ext s; simp only [E_log_K_norm, F]
+      -- expected_log_return_prob = ∑_x F x
+      have hE_eq : expected_log_return_prob L pi_dist ε = fun s => ∑ x, F x s := by
+        ext s; simp only [expected_log_return_prob, F]
       -- Each F x is differentiable
       have hF_diff : ∀ x, Differentiable ℝ (F x) := by
         intro x
@@ -374,9 +384,9 @@ theorem FunctorialHeatDominanceTheorem
             · exact K_norm_differentiable L x (pi_dist x) (hπ x)
             · exact differentiable_const _
           · intro s; exact ne_of_gt (h_pos' x s)
-      -- beta_t = deriv (∑_x F x) t = ∑_x deriv (F x) t
-      have h_beta_sum : beta_t L pi_dist ε t = ∑ x, deriv (F x) t := by
-        simp only [beta_t, hE_eq]
+      -- stability_flow = deriv (∑_x F x) t = ∑_x deriv (F x) t
+      have h_beta_sum : stability_flow L pi_dist ε t = ∑ x, deriv (F x) t := by
+        simp only [stability_flow, hE_eq]
         -- The goal is: deriv (fun s => ∑ x, F x s) t = ∑ x, deriv (F x) t
         -- First show the function equals the finset sum of functions
         have h_func_eq : (fun s => ∑ x : V, F x s) = ∑ x : V, F x := by
@@ -435,12 +445,12 @@ theorem FunctorialHeatDominanceTheorem
       -- Step D: Take absolute values and bound
       -- ════════════════════════════════════════════════════════════════════════
       -- 
-      -- |beta_t| = |∑_x -(L*K)_{xx} / (K_norm + ε)|
+      -- |stability_flow| = |∑_x -(L*K)_{xx} / (K_norm + ε)|
       --          ≤ ∑_x |(L*K)_{xx}| / (K_norm + ε)
       --          ≤ ∑_x |(L*K)_{xx}| / ε_min
       --          = (1/ε_min) * ∑_x |(L*K)_{xx}|
       -- 
-      have h_bound_eps : |beta_t L pi_dist ε t| ≤ (1 / ε_min) * ∑ x, |(L * HeatKernel L t) x x| := by
+      have h_bound_eps : |stability_flow L pi_dist ε t| ≤ (1 / ε_min) * ∑ x, |(L * HeatKernel L t) x x| := by
         rw [h_beta_sum]
         simp_rw [h_deriv_F_simp]
         calc |∑ x, -(L * HeatKernel L t) x x / (K_norm L t x (pi_dist x) + ε)|
@@ -481,7 +491,7 @@ theorem FunctorialHeatDominanceTheorem
         · calc ε_min * pi_min ≤ ε_min * 1 := mul_le_mul_of_nonneg_left h_pi_min_le_one hε_min_pos.le
             _ = ε_min := mul_one _
       -- 
-      calc |beta_t L pi_dist ε t| 
+      calc |stability_flow L pi_dist ε t| 
           ≤ (1 / ε_min) * ∑ x, |(L * HeatKernel L t) x x| := h_bound_eps
         _ ≤ (1 / (ε_min * pi_min)) * ∑ x, |(L * HeatKernel L t) x x| := by
             apply mul_le_mul_of_nonneg_right h_const_le
@@ -491,7 +501,7 @@ theorem FunctorialHeatDominanceTheorem
     -- Step 8: Final calculation
     -- ══════════════════════════════════════════════════════════════════════════
     -- 
-    calc |beta_t L pi_dist ε t| 
+    calc |stability_flow L pi_dist ε t| 
         ≤ (1 / (ε_min * pi_min)) * ∑ x, |(L * HeatKernel L t) x x| := h_beta_bound
       _ ≤ (1 / (ε_min * pi_min)) * ((Fintype.card V : ℝ) * L_opNorm * 
             Real.exp (-(SpectralGap_pi pi_dist H) * t)) := by

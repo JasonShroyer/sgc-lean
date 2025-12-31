@@ -50,26 +50,27 @@ open Finset BigOperators Matrix
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
 
-/-! ### 1. The Extropic Potential (Certainty) -/
+/-! ### 1. The Stationary Density -/
 
-/-- The **Extropic Potential** Ψ(x) = π(x).
+/-- The **stationary density** π(x).
+
+    **Interpretation Note:** In the SGC framework, we interpret this function as the 
+    **Extropic Potential** or "Certainty". It serves as the Bregman dual to the 
+    entropic "Surprise" potential Φ(x) = -log π(x). Where Φ measures 
+    uncertainty, this function measures the system's consolidation.
     
-    This is the Bregman dual to Surprise:
-    - Surprise Φ(x) = -log π(x) measures uncertainty
-    - Extropy Ψ(x) = π(x) measures certainty/consolidation
-    
-    Maximizing Ψ is equivalent to minimizing Φ (for log-convex π). -/
-def ExtropicPotential (pi_dist : V → ℝ) : V → ℝ := pi_dist
+    Maximizing π is equivalent to minimizing Φ (for log-convex π). -/
+def stationary_density (pi_dist : V → ℝ) : V → ℝ := pi_dist
 
-/-- Extropy is positive for positive distributions. -/
-lemma extropic_pos (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x) (x : V) :
-    0 < ExtropicPotential pi_dist x := hπ x
+/-- Stationary density is positive for positive distributions. -/
+lemma stationary_density_pos (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x) (x : V) :
+    0 < stationary_density pi_dist x := hπ x
 
-/-- Extropy is bounded above by 1 for probability distributions. -/
-lemma extropic_bounded (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x) 
+/-- Stationary density is bounded above by 1 for probability distributions. -/
+lemma stationary_density_bounded (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x) 
     (h_sum : ∑ x, pi_dist x = 1) (x : V) :
-    ExtropicPotential pi_dist x ≤ 1 := by
-  simp only [ExtropicPotential]
+    stationary_density pi_dist x ≤ 1 := by
+  simp only [stationary_density]
   have h : pi_dist x ≤ ∑ y, pi_dist y := single_le_sum (fun y _ => le_of_lt (hπ y)) (mem_univ x)
   rw [h_sum] at h
   exact h
@@ -81,22 +82,22 @@ lemma extropic_bounded (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x)
     ∇Φ(x) = Φ(x) - E[Φ(X') | X = x] = -predictableIncrement
     
     Positive gradient means surprise is expected to decrease (consolidation). -/
-noncomputable def surpriseGradient (P : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x) 
+noncomputable def surprise_gradient (P : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x) 
     (x : V) : ℝ :=
   SurprisePotential pi_dist hπ x - condExp P (SurprisePotential pi_dist hπ) x
 
 /-- The surprise gradient is the negative of predictable increment. -/
 theorem surprise_gradient_eq_neg_drift (P : Matrix V V ℝ) (pi_dist : V → ℝ) 
     (hπ : ∀ x, 0 < pi_dist x) (x : V) :
-    surpriseGradient P pi_dist hπ x = -predictableIncrement P (SurprisePotential pi_dist hπ) x := by
-  simp only [surpriseGradient, predictableIncrement]
+    surprise_gradient P pi_dist hπ x = -predictableIncrement P (SurprisePotential pi_dist hπ) x := by
+  simp only [surprise_gradient, predictableIncrement]
   ring
 
 /-- Supermartingale property implies positive gradient (consolidation). -/
 theorem supermartingale_positive_gradient (P : Matrix V V ℝ) (pi_dist : V → ℝ) 
     (hπ : ∀ x, 0 < pi_dist x) 
     (h : IsSupermartingale P (SurprisePotential pi_dist hπ)) (x : V) :
-    0 ≤ surpriseGradient P pi_dist hπ x := by
+    0 ≤ surprise_gradient P pi_dist hπ x := by
   rw [surprise_gradient_eq_neg_drift]
   have h_nonpos := supermartingale_predictable_nonpos P (SurprisePotential pi_dist hπ) h x
   linarith
@@ -195,7 +196,7 @@ theorem optimal_maximizes_drift (P Q : Matrix V V ℝ) (Φ : V → ℝ) (x : V)
     minimum action implies maximum consolidation.
     
     Σ_x π(x) |ΔA_P(x)| ≥ Σ_x π(x) |ΔA_Q(x)| when P minimizes action. -/
-theorem least_action_maximum_complexity (P Q : Matrix V V ℝ) (Φ : V → ℝ) 
+theorem least_action_maximizes_drift (P Q : Matrix V V ℝ) (Φ : V → ℝ) 
     (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x)
     (hP_super : IsSupermartingale P Φ) (hQ_super : IsSupermartingale Q Φ)
     (h_opt : ∀ x, IsLocallyOptimal P Q Φ x) :
@@ -221,7 +222,7 @@ theorem least_action_maximum_complexity (P Q : Matrix V V ℝ) (Φ : V → ℝ)
     - Σ π(x)|ΔA_P(x)| ≥ Σ π(x)|ΔA_Q(x)|
     
     This follows from the variational structure of the expected surprise functional. -/
-theorem sgc_kinetics_complete (P Q : Matrix V V ℝ) (pi_dist : V → ℝ) 
+theorem variational_drift_optimality (P Q : Matrix V V ℝ) (pi_dist : V → ℝ) 
     (hπ : ∀ x, 0 < pi_dist x) (_hP : IsStochastic P) (_hQ : IsStochastic Q)
     (hP_super : IsSupermartingale P (SurprisePotential pi_dist hπ))
     (hQ_super : IsSupermartingale Q (SurprisePotential pi_dist hπ))
@@ -238,8 +239,8 @@ theorem sgc_kinetics_complete (P Q : Matrix V V ℝ) (pi_dist : V → ℝ)
     apply sum_le_sum
     intro x _
     apply mul_le_mul_of_nonneg_left (h_P_optimal x) (le_of_lt (hπ x))
-  · -- Complexity maximization
-    exact least_action_maximum_complexity P Q (SurprisePotential pi_dist hπ) 
+  · -- Drift maximization
+    exact least_action_maximizes_drift P Q (SurprisePotential pi_dist hπ) 
           pi_dist hπ hP_super hQ_super h_P_optimal
 
 /-! ### 8. Gradient-Drift Equivalence -/
@@ -257,7 +258,7 @@ theorem sgc_kinetics_complete (P Q : Matrix V V ℝ) (pi_dist : V → ℝ)
 theorem gradient_drift_equivalence (P : Matrix V V ℝ) (pi_dist : V → ℝ)
     (hπ : ∀ x, 0 < pi_dist x) (_hP : IsStochastic P)
     (h_super : IsSupermartingale P (SurprisePotential pi_dist hπ)) :
-    ∀ x, surpriseGradient P pi_dist hπ x = driftMagnitude P (SurprisePotential pi_dist hπ) x := by
+    ∀ x, surprise_gradient P pi_dist hπ x = driftMagnitude P (SurprisePotential pi_dist hπ) x := by
   intro x
   rw [surprise_gradient_eq_neg_drift, drift_magnitude_supermartingale P _ h_super x]
 

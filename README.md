@@ -4,9 +4,9 @@
 [![Lean 4](https://img.shields.io/badge/Lean-4-blue.svg)](https://lean-lang.org/)
 [![Zero Sorries](https://img.shields.io/badge/sorries-0-brightgreen.svg)](VERIFIED_CORE_MANIFEST.md)
 
-This repository contains the `sorry-free` Lean 4 formalization of the **SGC framework** — a rigorous mathematical treatment of structural persistence in stochastic systems.
+This repository contains a formally verified Lean 4 library characterizing **metastability in stochastic systems**. It integrates spectral geometry, stochastic thermodynamics, and variational methods to derive bounds on the stability of partitions in non-reversible Markov chains.
 
-SGC formalizes how stable structures emerge and persist in thermodynamic systems by combining spectral geometry, stochastic thermodynamics, and variational principles.
+The library is `sorry-free` with zero unproven assumptions in the verified core.
 
 ---
 
@@ -17,7 +17,7 @@ The library is organized into four logical modules (`src/SGC/`):
 ### 1. Spectral Geometry (The Foundation)
 - **Module:** `SGC.Spectral` 
 - **Physics:** Establishes that non-reversible Markov chains converge to equilibrium exponentially fast via spectral gap bounds.
-- **Key Theorem:** `FunctorialHeatDominanceTheorem` (Derived from the Sector Envelope and Diagonal Bridge).
+- **Key Theorem:** `spectral_stability_bound` (Exponential decay bound derived from the Sector Envelope).
 
 ### 2. Renormalization (Scale Invariance)
 - **Module:** `SGC.Renormalization.Lumpability` 
@@ -32,7 +32,7 @@ The library is organized into four logical modules (`src/SGC/`):
 ### 4. Variational Mechanics (The "Why")
 - **Module:** `SGC.Variational.LeastAction` 
 - **Physics:** Derives drift maximization from the Principle of Least Action.
-- **Key Theorem:** `emergence_is_necessary` (Variational derivation of complexity accumulation).
+- **Key Theorem:** `variational_drift_optimality` (Action minimization implies drift maximization).
 
 ---
 
