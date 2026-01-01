@@ -126,7 +126,22 @@ Inside proofs, `fun _ => 1` is used when it arises from computation.
 - `h_sum` — Normalization hypothesis (∑ π = 1)
 - `L`, `H` — Generator and its symmetric part
 
-We avoid single-letter Greek (`μ`, `π`) to prevent Unicode issues and maintain grep-ability.
+**Why `pi_dist` instead of `π`?**
+
+A reviewer suggested using Unicode `π` directly since Lean 4 supports it well. We deliberately 
+chose ASCII names for:
+
+1. **Grep-ability**: `grep -r "pi_dist"` works reliably across all terminals and editors.
+   Greek letters can have encoding issues in some toolchains.
+
+2. **Cross-platform consistency**: Windows PowerShell, Linux terminals, and macOS may render
+   Unicode differently. ASCII names are universally stable.
+
+3. **IDE compatibility**: Some older VSCode versions or alternative editors may not handle
+   Greek variable names in autocomplete/refactoring as smoothly.
+
+For a verified paper intended to be audited by diverse reviewers with varying toolchains,
+ASCII robustness outweighs the aesthetic benefit of matching paper notation.
 
 ### Namespace Opens
 
@@ -151,6 +166,18 @@ SGC restricts to finite state spaces. This is deliberate:
 
 3. **Sufficient for the Paper**: The physics results being verified concern finite
    Markov chains and their coarse-grainings.
+
+**Why bake `[Fintype V]` into variable declarations?**
+
+A reviewer noted that having `[Fintype V]` in file-level variable declarations makes
+generalization to infinite dimensions harder. This is intentional:
+
+- **Infinite dimensions are explicitly out of scope.** The goal is a verified paper for
+  discrete stochastic systems, not a general functional analysis library.
+- **Generalization would require different proof strategies** (measure theory, 
+  operator semigroups, etc.), not just removing the constraint.
+- **Clear scope prevents scope creep.** Future contributors know exactly what the
+  library covers without digging through proofs.
 
 ### Extension Path
 
@@ -185,6 +212,24 @@ If you're coming from Mathlib development:
 4. **The axioms are honest** — not hidden sorries
 
 The goal is a **verified physics paper**, readable by physicists, checkable by machines.
+
+---
+
+## Future Improvements
+
+### Proof Transport for Foundational Lemmas
+
+The current `cauchy_schwarz_pi` is proven from first principles using the polynomial 
+discriminant method (~50 lines). A reviewer suggested using the isometry `iso_L2_to_std` 
+to transport Mathlib's `abs_real_inner_le_norm` instead.
+
+This is a valid improvement that would:
+- Demonstrate tighter Mathlib integration
+- Reduce maintenance burden as Mathlib evolves
+
+**Status:** Deferred. The current proof is correct and educational. Proof transport 
+requires careful handling of Mathlib's `EuclideanSpace` inner product API. This is a 
+good first issue for contributors familiar with Mathlib's inner product infrastructure.
 
 ---
 

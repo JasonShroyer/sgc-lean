@@ -4,7 +4,9 @@
 [![Lean 4](https://img.shields.io/badge/Lean-4-blue.svg)](https://lean-lang.org/)
 [![Zero Sorries](https://img.shields.io/badge/sorries-0-brightgreen.svg)](VERIFIED_CORE_MANIFEST.md)
 
-This repository contains a formally verified Lean 4 library characterizing **metastability in stochastic systems**. It integrates spectral geometry, stochastic thermodynamics, and variational methods to derive bounds on the stability of partitions in non-reversible Markov chains.
+This repository contains a formally verified Lean 4 library characterizing the **algebraic structure of metastability** in discrete stochastic systems. It integrates spectral geometry, stochastic thermodynamics, and variational methods to derive bounds on the stability of partitions in finite-state Markov chains.
+
+**Scope:** The verified core establishes results for **finite state spaces** (`[Fintype V]`). Continuum limits are axiomatized via `SGC.Bridge.Discretization`, providing an honest interface for future formalization of analytic convergence results.
 
 The library is `sorry-free` with zero unproven assumptions in the verified core.
 
