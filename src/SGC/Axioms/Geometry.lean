@@ -1,17 +1,3 @@
-/-
-  SGC/Axioms/Geometry.lean
-  
-  Core L²(π) Geometry for the Unified Predictive Assembly Theory.
-  
-  This file provides the foundational weighted inner product space structure
-  used throughout SGC. All geometry is explicit (no heavy typeclasses).
-  
-  Design Pattern: Explicit Weight Pattern
-  - All geometry takes `pi_dist : V → ℝ` explicitly
-  - Positivity via `(hπ : ∀ v, 0 < pi_dist v)` hypothesis
-  - No custom wrapper types like WeightedSpace
--/
-
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.Topology.MetricSpace.Basic
@@ -21,10 +7,30 @@ import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Analysis.Normed.Operator.Basic
 import Mathlib.Tactic
 
+/-!
+  # SGC/Axioms/Geometry.lean
+  
+  Core L²(π) Geometry for the Stochastic Geometry of Consolidation.
+  
+  This file provides the foundational weighted inner product space structure
+  used throughout SGC. All geometry is explicit (no heavy typeclasses).
+  
+  ## Design Pattern: Explicit Weight Pattern
+  - All geometry takes `pi_dist : V → ℝ` explicitly
+  - Positivity via `(hπ : ∀ v, 0 < pi_dist v)` hypothesis
+  - No custom wrapper types like WeightedSpace
+  
+  **NOTE**: This module uses an **Explicit Weight Pattern** (`pi_dist` as an argument)
+  rather than Mathlib's `InnerProductSpace` typeclasses. This design supports measure
+  changes (e.g., π → π̄ in renormalization) without type-level gymnastics.
+  See `ARCHITECTURE.md` for the full rationale.
+-/
+
 noncomputable section
-open Finset LinearMap Matrix Real ContinuousLinearMap Submodule Topology EuclideanSpace
 
 namespace SGC
+section Geometry
+open Finset LinearMap Matrix Real ContinuousLinearMap Submodule Topology EuclideanSpace
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
 
@@ -445,4 +451,5 @@ def P_ortho_pi (pi_dist : V → ℝ) (_h_sum : ∑ v, pi_dist v = 1) (_h_pos : �
       map_smul' := by intros; simp [inner_pi_smul_left] }
   LinearMap.id - (LinearMap.smulRight P_inner (fun _ => 1))
 
+end Geometry
 end SGC

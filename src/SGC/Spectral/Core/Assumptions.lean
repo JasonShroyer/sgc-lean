@@ -6,10 +6,20 @@ import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Tactic
 
+/-!
+  # SGC/Spectral/Core/Assumptions.lean
+  
+  Core spectral assumptions and weighted inner product definitions.
+  
+  **NOTE**: This module uses the **Explicit Weight Pattern** (`pi_dist` as an argument)
+  rather than typeclasses. See `ARCHITECTURE.md` for the full rationale.
+-/
+
 noncomputable section
-open Finset LinearMap Matrix Real ContinuousLinearMap Submodule Topology EuclideanSpace
 
 namespace SGC.Spectral
+section Assumptions
+open Finset LinearMap Matrix Real ContinuousLinearMap Submodule Topology EuclideanSpace
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
 
@@ -584,4 +594,5 @@ theorem gap_pos_iff_ker_eq_span_one [Nontrivial V]
     -- But sInf S = 0, so R(v₀) ≤ 0, contradicting R(v₀) > 0
     linarith
 
+end Assumptions
 end SGC.Spectral

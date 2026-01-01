@@ -1,12 +1,11 @@
-/-
-Copyright (c) 2024 SGC Project. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: SGC Formalization Team
--/
 import SGC.Axioms.Geometry
 import SGC.Topology.Blanket
 
 /-!
+Copyright (c) 2024 SGC Project. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: SGC Formalization Team
+
 # Doob-Meyer Decomposition of the Surprise Potential
 
 This module formalizes the decomposition of the self-information (surprise) 
@@ -49,10 +48,13 @@ predictable (F_n-measurable) and E[ΔM | F_n] = 0.
 * [Doob] Stochastic Processes
 * [Friston] The free-energy principle
 
+**NOTE**: This module restricts thermodynamic analysis to **discrete time** and
+`[Fintype V]` state spaces to avoid measure-theoretic overhead. This is a deliberate
+scope decision. See `ARCHITECTURE.md` for the full rationale.
 -/
 
 namespace SGC
-
+section DoobMeyer
 open Finset BigOperators Matrix
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
@@ -292,4 +294,5 @@ theorem doob_structure (P : Matrix V V ℝ) (pi_dist : V → ℝ)
   intro x y
   exact doob_decomposition P (SurprisePotential pi_dist hπ) x y
 
+end DoobMeyer
 end SGC

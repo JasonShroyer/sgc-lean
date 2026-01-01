@@ -1,3 +1,13 @@
+/-!
+  # SGC/Spectral/Defs.lean
+  
+  Core spectral definitions and the main stability theorem.
+  
+  **NOTE**: The main theorem `spectral_stability_bound` uses a **monolithic proof
+  structure** (~370 lines) to mirror the physics literature (Steps 1-8). This is
+  intentional for reviewability. See `ARCHITECTURE.md` for the full rationale.
+-/
+
 import SGC.Spectral.Envelope
 import SGC.Spectral.Envelope.Sector
 import SGC.Spectral.Core.Assumptions
@@ -10,9 +20,10 @@ import Mathlib.Data.Real.Basic
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 
 noncomputable section
-open Matrix Real Finset LinearMap
 
 namespace SGC.Spectral
+section SpectralDefs
+open Matrix Real Finset LinearMap
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
 variable {L H : Matrix V V ℝ} {pi_dist : V → ℝ} {ε : ℝ}
@@ -512,4 +523,5 @@ theorem spectral_stability_bound
       _ ≤ C * Real.exp (-(SpectralGap_pi pi_dist H) * t) := by
           apply mul_le_mul_of_nonneg_right h_C_bound (Real.exp_nonneg _)
 
+end SpectralDefs
 end SGC.Spectral
