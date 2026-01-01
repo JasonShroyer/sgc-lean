@@ -128,13 +128,11 @@ def heatKernelSpectral (Δ : LaplaceBeltrami n) (eigenfunctions : ℕ → Eigenf
     Real.exp (-(eigenfunctions k).eigenvalue * t) * 
     (eigenfunctions k).φ x * (eigenfunctions k).φ y
 
-/-! ### 6. Discrete-Continuum Bridge -/
+/-! ### 6. Discrete-Continuum Bridge
 
-/-- **Consistency Principle**: Discrete Laplacians approximate Δ on sampled points.
-    This is made precise in `Convergence.lean`. -/
-axiom discrete_approximates_continuous : 
-  ∀ (_Δ : LaplaceBeltrami n) (ε : ℝ), ε > 0 → 
-  ∃ (N : ℕ), ∀ (m : ℕ), m > N → True
+The convergence of discrete graph Laplacians to Laplace-Beltrami is axiomatized
+in `SGC.Geometry.Manifold.Convergence` via the `manifold_hypothesis`. See that
+module for the rigorous type-theoretic interface and Mosco convergence roadmap. -/
 
 end SGC.Geometry.Manifold
 
