@@ -132,7 +132,7 @@ lemma norm_pi_u_traj {pi_dist : V → ℝ}
 
 -- Note: HeatKernel_differentiable as a matrix-valued function is not needed.
 -- We use the stronger coordinate-level differentiability via HeatKernel_coord_differentiable
--- which is already proved in FHDT.Envelope.
+-- which is already proved in SGC.Spectral.Envelope.
 
 /-- Each coordinate of u_traj is differentiable in t.
     u_traj t v = (HeatKernel L t *ᵥ P f) v is a composition of:
@@ -151,7 +151,7 @@ lemma u_traj_coord_differentiable {pi_dist : V → ℝ}
     ext t
     simp only [u_traj, toLin'_apply, g]
   rw [h_eq]
-  -- Now use HeatKernel_coord_differentiable from FHDT.Envelope
+  -- Now use HeatKernel_coord_differentiable from SGC.Spectral.Envelope
   intro t
   exact HeatKernel_coord_differentiable L g v t
 

@@ -1,4 +1,4 @@
-# CI workflow for UPAT Lean 4 formalization
+# CI workflow for SGC Lean 4 formalization
 # Triggers on push to main and pull requests
 # Uses leanprover/lean-action for reproducible Lean builds
 
@@ -33,7 +33,7 @@ jobs:
         # Install lake if needed and get mathlib cache
         lake exe cache get || true
     
-    - name: Build UPAT
+    - name: Build SGC
       run: lake build
     
     - name: Verify no sorries

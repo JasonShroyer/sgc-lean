@@ -1,6 +1,6 @@
 # SGC: The Spectral Geometry of Consolidation
 
-[![Build](https://github.com/JasonShroyer/fhdt-lean4/actions/workflows/build.yml/badge.svg)](https://github.com/JasonShroyer/fhdt-lean4/actions/workflows/build.yml)
+[![Build](https://github.com/JasonShroyer/sgc-lean/actions/workflows/build.yml/badge.svg)](https://github.com/JasonShroyer/sgc-lean/actions/workflows/build.yml)
 [![Lean 4](https://img.shields.io/badge/Lean-4-blue.svg)](https://lean-lang.org/)
 [![Zero Sorries](https://img.shields.io/badge/sorries-0-brightgreen.svg)](VERIFIED_CORE_MANIFEST.md)
 
@@ -76,8 +76,8 @@ Prerequisites: `elan`, `lake`.
 
 ```bash
 # Clone the repository
-git clone https://github.com/JasonShroyer/fhdt-lean4.git
-cd fhdt-lean4
+git clone https://github.com/JasonShroyer/sgc-lean.git
+cd sgc-lean
 
 # Build the library
 lake build

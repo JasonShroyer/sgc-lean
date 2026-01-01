@@ -1,4 +1,4 @@
-# Contributing to UPAT
+# Contributing to SGC
 
 This repository uses a **Living Paper** workflow where the LaTeX paper in `/paper` 
 is co-located with formally verified Lean 4 proofs in `/src`.
@@ -38,7 +38,7 @@ Located at `paper/lean_map.json`, this JSON file maps LaTeX labels to Lean names
 {
   "theorems": {
     "thm:info-geometry-equiv": {
-      "lean_file": "UPAT/Information/Equivalence.lean",
+      "lean_file": "SGC/Information/Equivalence.lean",
       "lean_name": "information_geometry_equivalence",
       "description": "For reversible systems, RespectsBlank ↔ IsInformationBlanketV"
     }
@@ -51,8 +51,8 @@ Located at `paper/lean_map.json`, this JSON file maps LaTeX labels to Lean names
 In your LaTeX, use these commands to reference Lean files:
 
 ```latex
-\leanlink{UPAT/Information/Equivalence.lean}          % File link
-\leanref{UPAT/Information/Equivalence.lean}{Theorem}  % Custom text
+\leanlink{SGC/Information/Equivalence.lean}          % File link
+\leanref{SGC/Information/Equivalence.lean}{Theorem}  % Custom text
 ```
 
 ### 3. Consistency checking

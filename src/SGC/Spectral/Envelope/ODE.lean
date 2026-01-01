@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 FHDT Project. All rights reserved.
+Copyright (c) 2024 SGC Project. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: FHDT Project
+Authors: SGC Project
 -/
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.Deriv.MeanValue

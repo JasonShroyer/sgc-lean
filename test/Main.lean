@@ -1,7 +1,7 @@
-import FHDT.Defs
+import SGC.Spectral.Envelope
 import Mathlib.LinearAlgebra.Matrix.Notation
 
-open Matrix FHDT Real
+open Matrix SGC Real
 
 /-- 
 Smoke Test: 

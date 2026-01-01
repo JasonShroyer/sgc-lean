@@ -150,4 +150,4 @@ SGC Framework: Structural Persistence in Stochastic Systems
 ---
 
 *Generated: December 31, 2024*
-*Repository: https://github.com/JasonShroyer/fhdt-lean4*
+*Repository: https://github.com/JasonShroyer/sgc-lean*
