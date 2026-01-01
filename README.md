@@ -96,6 +96,7 @@ lake build
 | Full Build | ✅ Passing | 0 |
 
 See [`VERIFIED_CORE_MANIFEST.md`](VERIFIED_CORE_MANIFEST.md) for the formal verification statement.
+See [`ARCHITECTURE.md`](ARCHITECTURE.md) for design decisions and rationale.
 See [`CHANGELOG.md`](CHANGELOG.md) for the project history.
 
 ---
