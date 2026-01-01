@@ -1,8 +1,26 @@
 # Changelog
 
-All notable changes to the UPAT formalization are documented in this file.
+All notable changes to the SGC formalization are documented in this file.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+
+---
+
+## [v2.1-rename] - 2026-01-01 — Repository Rename
+
+### Changed
+
+- Renamed repository from `fhdt-lean4` to `sgc-lean`.
+- Renamed project namespace from `UPAT` to `SGC`.
+- Updated all documentation, imports, and CI workflows to reflect new naming.
+- Removed paper directory from git tracking (kept in .gitignore).
+- Consolidated axioms: removed redundant `discrete_approximates_continuous`, 
+  centralized continuum interface in `Convergence.lean` with `manifold_hypothesis`.
+
+### Added
+
+- Mosco convergence roadmap in `Convergence.lean` documenting the path to 
+  formally proving the Belkin-Niyogi convergence theorem.
 
 ---
 
