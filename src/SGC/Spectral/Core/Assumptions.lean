@@ -19,7 +19,7 @@ structure IrreducibilityAssumptions (L H : Matrix V V ℝ) (pi_vec : V → ℝ) 
   pi_pos : ∀ v, 0 < pi_dist v
   pi_sum_one : ∑ v, pi_dist v = 1
 
-def constant_vec_one : V → ℝ := fun _ => 1
+abbrev constant_vec_one : V → ℝ := fun _ => 1
 
 /-- The weighted L2 inner product: <u, v>_π = Σ π(x) u(x) v(x). -/
 def inner_pi (pi_dist : V → ℝ) (u v : V → ℝ) : ℝ :=

@@ -116,7 +116,8 @@ Both appear in the codebase. `constant_vec_one` is used in theorem statements fo
 
 Inside proofs, `fun _ => 1` is used when it arises from computation.
 
-**Note**: These are definitionally equal: `constant_vec_one = fun _ => 1`.
+**Note**: `constant_vec_one` is defined as `abbrev`, ensuring definitional equality with 
+`fun _ => 1` is immediate for the elaborator without unfolding.
 
 ### Variable Naming
 
@@ -126,6 +127,12 @@ Inside proofs, `fun _ => 1` is used when it arises from computation.
 - `L`, `H` — Generator and its symmetric part
 
 We avoid single-letter Greek (`μ`, `π`) to prevent Unicode issues and maintain grep-ability.
+
+### Namespace Opens
+
+Several modules use `open Matrix Real Finset` globally. This is acceptable for a terminal
+artifact (verified paper) but would be problematic for a library meant to be imported.
+If SGC is ever refactored into a general-purpose library, these opens should be scoped.
 
 ---
 

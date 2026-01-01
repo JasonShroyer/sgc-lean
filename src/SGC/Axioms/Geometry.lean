@@ -30,8 +30,9 @@ variable {V : Type*} [Fintype V] [DecidableEq V]
 
 /-! ### 1. Weighted L²(π) Inner Product -/
 
-/-- The constant vector of ones. -/
-def constant_vec_one : V → ℝ := fun _ => 1
+/-- The constant vector of ones. Using `abbrev` ensures definitional equality 
+    with `fun _ => 1` is immediate for the elaborator. -/
+abbrev constant_vec_one : V → ℝ := fun _ => 1
 
 /-- The weighted L²(π) inner product: ⟨u, v⟩_π = Σ π(x) u(x) v(x). -/
 def inner_pi (pi_dist : V → ℝ) (u v : V → ℝ) : ℝ :=
