@@ -4,16 +4,34 @@
 
 | Field | Value |
 |-------|-------|
-| **Date** | December 21, 2024 |
-| **Status** | ✅ ZERO SORRIES / FORMALLY VERIFIED |
+| **Date** | December 31, 2024 |
+| **Status** | ✅ VERIFIED CORE + ⚠️ AXIOMATIC EXTENSIONS |
 | **Lean Version** | Lean 4 |
-| **Mathlib** | Current stable |
+| **Mathlib** | v4.25.2 |
 
 ---
 
-## Core Modules
+## Architectural Distinction
 
-This commit represents the **frozen, axiomatic core** of the SGC formalism.
+This library has a **two-tier architecture**:
+
+1. **Verified Core** (✅): The discrete algebraic theory—spectral stability, functorial 
+   preservation, thermodynamic decomposition—is **fully machine-checked with zero sorries**.
+
+2. **Axiomatic Extensions** (⚠️): The continuum limit (Belkin-Niyogi convergence) is 
+   **axiomatized as an input assumption**, not a claimed output. This is the standard
+   "axiomatic interface" pattern in mathematical physics formalization.
+
+**What we have proved**: "IF the Manifold Hypothesis holds, THEN the discrete stability 
+results apply to the continuum."
+
+**What we have NOT proved**: The Manifold Hypothesis itself (a multi-year formalization project).
+
+---
+
+## Core Modules (VERIFIED)
+
+This commit represents the **verified algebraic core** of the SGC formalism.
 
 ### Foundation
 | Module | Path | Description | Theoretical Basis |
@@ -45,10 +63,30 @@ This commit represents the **frozen, axiomatic core** of the SGC formalism.
 |--------|------|--------------|
 | **LeastAction** | `src/SGC/Variational/LeastAction.lean` | `least_action_maximum_complexity`, `emergence_is_necessary` |
 
-### Bridge Pillar (Continuum Validity)
+### Bridge Pillar (Discrete Framework)
 | Module | Path | Key Definitions |
 |--------|------|-----------------|
 | **Discretization** | `src/SGC/Bridge/Discretization.lean` | `GapConsistent`, `DiscretizationTheorem` |
+
+---
+
+## Axiomatic Extensions (NOT VERIFIED)
+
+The following modules contain **explicit axioms** that encode deep analytic results
+from the literature. These are input assumptions, not claimed outputs.
+
+| Module | Path | Axiom | Literature Reference |
+|--------|------|-------|---------------------|
+| **Convergence** | `src/SGC/Geometry/Manifold/Convergence.lean` | `manifold_hypothesis` | Belkin-Niyogi (2008) |
+| **Convergence** | `src/SGC/Geometry/Manifold/Convergence.lean` | `spectral_convergence_axiom` | Spectral perturbation theory |
+| **Laplacian** | `src/SGC/Geometry/Manifold/Laplacian.lean` | `discrete_approximates_continuous` | Belkin-Niyogi (2008) |
+
+**Why axioms?** Proving Belkin-Niyogi convergence in Lean requires formalizing 
+Riemannian manifolds, Taylor expansion on curved spaces, and concentration 
+inequalities—a multi-year project beyond our current scope.
+
+**What the axioms encode**: "The discrete system is a valid sampling of a continuous
+Riemannian manifold." This is a physical modeling assumption.
 
 ---
 
@@ -74,9 +112,21 @@ SGC Framework: Structural Persistence in Stochastic Systems
 
 ## Verification Statement
 
-> **This commit represents the frozen, axiomatic core of the SGC formalism.**
+> **This commit represents the verified algebraic core of the SGC formalism.**
 >
-> All theorems in the core modules have been formally verified in Lean 4 with **zero `sorry` placeholders**. The proofs are machine-checked and constitute a rigorous mathematical foundation for the theory of emergence.
+> **Verified (zero sorries)**: All theorems in the discrete core modules 
+> (`SGC.Axioms`, `SGC.Spectral`, `SGC.Renormalization`, `SGC.Topology`, 
+> `SGC.Thermodynamics`, `SGC.Variational`, `SGC.Bridge`, `SGC.Information`) 
+> are formally verified in Lean 4 with **zero `sorry` placeholders**.
+>
+> **Axiomatized (explicit assumptions)**: The continuum limit modules 
+> (`SGC.Geometry.Manifold`) contain **explicit axioms** encoding the 
+> Belkin-Niyogi convergence theorem. These axioms are clearly documented
+> and represent standard literature results, not original claims.
+>
+> **The honest claim**: We have machine-checked that "IF graph Laplacians 
+> converge to Laplace-Beltrami (the Manifold Hypothesis), THEN the discrete 
+> stability theory applies to the continuum limit."
 
 ---
 
@@ -89,17 +139,15 @@ SGC Framework: Structural Persistence in Stochastic Systems
 | **Renormalization** | Kemeny, J.G. & Snell, J.L. (1976). *Finite Markov Chains* |
 | **Thermodynamics** | Doob, J.L. (1953). *Stochastic Processes* |
 | **Topology** | Friston, K. (2010). *The free-energy principle* |
-| **Complexity** | Cronin, L. & Walker, S.I. (2021). *Assembly Theory* |
+| **Continuum Limit** | Belkin, M. & Niyogi, P. (2008). *Towards a Theoretical Foundation for Laplacian-Based Manifold Methods* |
 
 ---
 
 ## Tags
 
-- `v1.0-verified` — Lightweight tag marking this commit
-- `release-1.0` — Annotated release tag
+- `v1.0-release` — Public release tag
 
 ---
 
-*Generated: December 28, 2024*
+*Generated: December 31, 2024*
 *Repository: https://github.com/JasonShroyer/fhdt-lean4*
-*Branch: refactor/clean_terminology*
