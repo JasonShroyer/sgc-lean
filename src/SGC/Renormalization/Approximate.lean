@@ -72,6 +72,30 @@ lemma CoarseProjector_block_constant (P : Partition V) (pi_dist : V → ℝ) (h�
   have h_eq : P.quot_map x = P.quot_map y := Quotient.eq'.mpr hxy
   rw [h_eq]
 
+/-- Π fixes block-constant functions: if f is block-constant, Π f = f. -/
+lemma CoarseProjector_fixes_block_constant (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (f : V → ℝ) (hf : IsBlockConstant P f) : CoarseProjector P pi_dist hπ f = f := by
+  ext x
+  rw [CoarseProjector_apply]
+  have h_pos := pi_bar_pos P hπ (P.quot_map x)
+  have h_ne : pi_bar P pi_dist (P.quot_map x) ≠ 0 := ne_of_gt h_pos
+  -- f is constant on the class of x, so Σ_{y∈⟦x⟧} π(y) * f(y) = f(x) * Σ_{y∈⟦x⟧} π(y) = f(x) * π̄
+  have h_sum : (∑ y : V, if P.quot_map y = P.quot_map x then pi_dist y * f y else 0) =
+      f x * (∑ y : V, if P.quot_map y = P.quot_map x then pi_dist y else 0) := by
+    rw [Finset.mul_sum]
+    apply Finset.sum_congr rfl; intro y _
+    by_cases hy : P.quot_map y = P.quot_map x
+    · rw [if_pos hy, if_pos hy]
+      -- f y = f x since y and x are in the same class
+      have hxy : P.rel.r y x := Quotient.eq'.mp hy
+      rw [hf y x hxy, mul_comm]
+    · rw [if_neg hy, if_neg hy, mul_zero]
+  rw [h_sum]
+  have h_pi_bar : (∑ y : V, if P.quot_map y = P.quot_map x then pi_dist y else 0) = 
+      pi_bar P pi_dist (P.quot_map x) := by rw [pi_bar_eq_sum_class]
+  rw [h_pi_bar]
+  field_simp
+
 /-! ### 1b. Matrix Representation of Coarse Projector -/
 
 /-- The coarse projector as a matrix: Π_{xy} = π(y)/π̄(⟦x⟧) if ⟦x⟧ = ⟦y⟧, else 0.
@@ -121,8 +145,32 @@ lemma CoarseProjectorMatrix_idempotent (P : Partition V) (pi_dist : V → ℝ)
   · -- Case ⟦x⟧ = ⟦y⟧: Σ_z (π(z)/π̄)*(π(y)/π̄) = π(y)/π̄² * Σ_{z∈⟦x⟧} π(z) = π(y)/π̄
     rw [if_pos hxy]
     have h_pos := pi_bar_pos P hπ (P.quot_map x)
-    -- Verified algebraic identity: sum = π(y) * π̄(⟦x⟧) / (π̄(⟦x⟧))² = π(y)/π̄(⟦x⟧)
-    sorry
+    have h_ne : pi_bar P pi_dist (P.quot_map x) ≠ 0 := ne_of_gt h_pos
+    -- Step 1: Transform sum - only z with ⟦x⟧=⟦z⟧ contribute
+    have h_sum_transform : ∑ z, (if P.quot_map x = P.quot_map z then pi_dist z / pi_bar P pi_dist (P.quot_map x) else 0) *
+        (if P.quot_map z = P.quot_map y then pi_dist y / pi_bar P pi_dist (P.quot_map z) else 0) =
+        pi_dist y / (pi_bar P pi_dist (P.quot_map x))^2 * 
+        (∑ z : V, if P.quot_map x = P.quot_map z then pi_dist z else 0) := by
+      rw [Finset.mul_sum]
+      apply Finset.sum_congr rfl; intro z _
+      by_cases hxz : P.quot_map x = P.quot_map z
+      · -- ⟦x⟧ = ⟦z⟧, and since ⟦x⟧ = ⟦y⟧, we have ⟦z⟧ = ⟦y⟧
+        have hzy : P.quot_map z = P.quot_map y := hxz.symm.trans hxy
+        rw [if_pos hxz, if_pos hzy, if_pos hxz, hxz]
+        field_simp
+      · rw [if_neg hxz, if_neg hxz, zero_mul, mul_zero]
+    rw [h_sum_transform]
+    -- Step 2: Use pi_bar_eq_sum_class to recognize the sum
+    have h_sum_eq_pi_bar : (∑ z : V, if P.quot_map x = P.quot_map z then pi_dist z else 0) = 
+        pi_bar P pi_dist (P.quot_map x) := by
+      rw [pi_bar_eq_sum_class]
+      apply Finset.sum_congr rfl; intro z _
+      by_cases hxz : P.quot_map x = P.quot_map z
+      · rw [if_pos hxz, if_pos hxz.symm]
+      · rw [if_neg hxz, if_neg (Ne.symm hxz)]
+    rw [h_sum_eq_pi_bar]
+    -- Step 3: Simplify π(y)/π̄² * π̄ = π(y)/π̄
+    field_simp
   · -- Case ⟦x⟧ ≠ ⟦y⟧: sum = 0 (only terms with ⟦x⟧=⟦z⟧ and ⟦z⟧=⟦y⟧ contribute)
     rw [if_neg hxy]
     apply Finset.sum_eq_zero; intro z _
@@ -146,19 +194,33 @@ lemma CoarseProjector_idempotent (P : Partition V) (pi_dist : V → ℝ) (hπ : 
     CoarseProjector P pi_dist hπ := by
   apply LinearMap.ext
   intro f
-  have h_block := CoarseProjector_block_constant P pi_dist hπ f
   ext x
-  rw [LinearMap.comp_apply, CoarseProjector_apply, CoarseProjector_apply]
+  rw [LinearMap.comp_apply, CoarseProjector_apply]
   -- Π f is constant on the class of x
   have h_const : ∀ y, P.quot_map y = P.quot_map x → 
       CoarseProjector P pi_dist hπ f y = CoarseProjector P pi_dist hπ f x := by
     intro y hy
     rw [CoarseProjector_apply, CoarseProjector_apply, hy]
   have h_pos := pi_bar_pos P hπ (P.quot_map x)
+  have h_ne : pi_bar P pi_dist (P.quot_map x) ≠ 0 := ne_of_gt h_pos
   -- Key: weighted sum of constant = constant * class weight
-  -- Σ_y π(y)*(Πf)(y) = (Πf)(x) * Σ_y π(y) = (Πf)(x) * π̄(⟦x⟧)
-  -- So (Σ_y π(y)*(Πf)(y)) / π̄(⟦x⟧) = (Πf)(x)
-  sorry  -- Algebraic identity: weighted average of constant = constant
+  -- Factor out the constant (Πf)(x) from the sum
+  have h_sum_factor : (∑ y : V, if P.quot_map y = P.quot_map x then 
+      pi_dist y * (CoarseProjector P pi_dist hπ f y) else 0) =
+      (CoarseProjector P pi_dist hπ f x) * (∑ y : V, if P.quot_map y = P.quot_map x then pi_dist y else 0) := by
+    rw [Finset.mul_sum]
+    apply Finset.sum_congr rfl; intro y _
+    by_cases hy : P.quot_map y = P.quot_map x
+    · rw [if_pos hy, if_pos hy, h_const y hy, mul_comm]
+    · rw [if_neg hy, if_neg hy, mul_zero]
+  rw [h_sum_factor]
+  -- Use pi_bar_eq_sum_class: Σ_{y∈⟦x⟧} π(y) = π̄(⟦x⟧)
+  have h_sum_eq_pi_bar : (∑ y : V, if P.quot_map y = P.quot_map x then pi_dist y else 0) = 
+      pi_bar P pi_dist (P.quot_map x) := by
+    rw [pi_bar_eq_sum_class]
+  rw [h_sum_eq_pi_bar]
+  -- Simplify: (Πf)(x) * π̄ / π̄ = (Πf)(x)
+  field_simp
 
 /-! ### 2. Matrix-to-LinearMap and Coarse Generator -/
 
@@ -254,12 +316,27 @@ lemma strong_implies_approx (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V 
   have h_defect_zero : ∀ f, DefectOperator L P pi_dist hπ f = 0 := by
     intro f
     rw [DefectOperator_apply]
-    -- Key: under strong lumpability, L *ᵥ (Π f) is block-constant
-    -- so Π (L *ᵥ (Π f)) = L *ᵥ (Π f), making D f = 0
-    ext x
-    simp only [Pi.sub_apply, Pi.zero_apply]
-    -- This requires showing L preserves block-constant functions under strong lumpability
-    sorry -- TODO: Complete using L_lift_eq from Lumpability
+    -- Step 1: Π f is block-constant
+    have h_proj_block : IsBlockConstant P (CoarseProjector P pi_dist hπ f) := 
+      CoarseProjector_block_constant P pi_dist hπ f
+    -- Step 2: Block-constant functions can be written as lift_fun
+    obtain ⟨g, hg⟩ := block_constant_iff_lift P (CoarseProjector P pi_dist hπ f) |>.mp h_proj_block
+    -- Step 3: Under strong lumpability, L *ᵥ (lift_fun g) = lift_fun (M *ᵥ g)
+    have h_proj_eq_lift : CoarseProjector P pi_dist hπ f = lift_fun P g := by
+      ext x; rw [hg]; rfl
+    have h_L_lift : L *ᵥ (CoarseProjector P pi_dist hπ f) = 
+        lift_fun P (QuotientGeneratorSimple L P *ᵥ g) := by
+      rw [h_proj_eq_lift]
+      exact L_lift_eq L P hL g
+    -- Step 4: lift_fun is block-constant
+    have h_result_block : IsBlockConstant P (L *ᵥ (CoarseProjector P pi_dist hπ f)) := by
+      rw [h_L_lift]
+      exact lift_fun_is_block_constant P _
+    -- Step 5: Π fixes block-constant functions, so (I - Π)(L *ᵥ Π f) = 0
+    have h_proj_fix : CoarseProjector P pi_dist hπ (L *ᵥ (CoarseProjector P pi_dist hπ f)) = 
+        L *ᵥ (CoarseProjector P pi_dist hπ f) :=
+      CoarseProjector_fixes_block_constant P pi_dist hπ _ h_result_block
+    simp only [h_proj_fix, sub_self]
   -- If D = 0, then opNorm D = 0
   have h_norm_zero : opNorm_pi pi_dist hπ (DefectOperator L P pi_dist hπ) = 0 := by
     unfold opNorm_pi opNorm_set
