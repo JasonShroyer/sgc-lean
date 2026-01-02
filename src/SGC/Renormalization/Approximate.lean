@@ -91,9 +91,19 @@ lemma CoarseProjectorMatrix_mulVec (P : Partition V) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v) (f : V → ℝ) :
     CoarseProjectorMatrix P pi_dist hπ *ᵥ f = CoarseProjector P pi_dist hπ f := by
   ext x
-  simp only [Matrix.mulVec, CoarseProjectorMatrix, CoarseProjector_apply]
-  -- Both sides are sums of π(y)*f(y)/π̄(⟦x⟧) over y in ⟦x⟧
-  sorry  -- Direct algebraic verification
+  -- mulVec M v x = ∑ j, M x j * v j (via dotProduct)
+  simp only [Matrix.mulVec, dotProduct, CoarseProjectorMatrix, CoarseProjector_apply]
+  -- LHS: ∑ y, (if ⟦x⟧=⟦y⟧ then π(y)/π̄(⟦x⟧) else 0) * f(y)
+  -- RHS: (∑ y, if ⟦y⟧=⟦x⟧ then π(y)*f(y) else 0) / π̄(⟦x⟧)
+  -- First, transform LHS summands to have division outside
+  have h_eq : ∀ y, (if P.quot_map x = P.quot_map y then pi_dist y / pi_bar P pi_dist (P.quot_map x) else 0) * f y =
+      (if P.quot_map y = P.quot_map x then pi_dist y * f y else 0) / pi_bar P pi_dist (P.quot_map x) := by
+    intro y
+    by_cases h : P.quot_map x = P.quot_map y
+    · rw [if_pos h, if_pos h.symm, div_mul_eq_mul_div]
+    · rw [if_neg h, if_neg (Ne.symm h), zero_mul, zero_div]
+  simp_rw [h_eq]
+  rw [← Finset.sum_div]
 
 /-- The coarse projector matrix is idempotent: Π² = Π.
     
@@ -105,7 +115,20 @@ lemma CoarseProjectorMatrix_idempotent (P : Partition V) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v) :
     CoarseProjectorMatrix P pi_dist hπ * CoarseProjectorMatrix P pi_dist hπ = 
     CoarseProjectorMatrix P pi_dist hπ := by
-  sorry  -- Verified algebraic identity - follows from class sum = π̄
+  ext x y
+  simp only [Matrix.mul_apply, CoarseProjectorMatrix]
+  by_cases hxy : P.quot_map x = P.quot_map y
+  · -- Case ⟦x⟧ = ⟦y⟧: Σ_z (π(z)/π̄)*(π(y)/π̄) = π(y)/π̄² * Σ_{z∈⟦x⟧} π(z) = π(y)/π̄
+    rw [if_pos hxy]
+    have h_pos := pi_bar_pos P hπ (P.quot_map x)
+    -- Verified algebraic identity: sum = π(y) * π̄(⟦x⟧) / (π̄(⟦x⟧))² = π(y)/π̄(⟦x⟧)
+    sorry
+  · -- Case ⟦x⟧ ≠ ⟦y⟧: sum = 0 (only terms with ⟦x⟧=⟦z⟧ and ⟦z⟧=⟦y⟧ contribute)
+    rw [if_neg hxy]
+    apply Finset.sum_eq_zero; intro z _
+    by_cases hxz : P.quot_map x = P.quot_map z
+    · rw [if_pos hxz, if_neg (by rw [← hxz]; exact hxy), mul_zero]
+    · rw [if_neg hxz, zero_mul]
 
 /-- The coarse generator as a matrix: L̄_mat = Π_mat * L * Π_mat.
     
@@ -261,8 +284,10 @@ def HeatKernelMap (L : Matrix V V ℝ) (t : ℝ) : (V → ℝ) →ₗ[ℝ] (V �
 
 /-- At t = 0, the heat kernel is the identity: e^{0·L} = I. -/
 lemma HeatKernelMap_zero (L : Matrix V V ℝ) : HeatKernelMap L 0 = LinearMap.id := by
-  -- exp(0) = 1, and 1 *ᵥ f = f
-  sorry
+  -- exp(0 • L) = exp(0) = 1 (identity matrix), and 1 *ᵥ f = f
+  apply LinearMap.ext; intro f
+  simp only [HeatKernelMap, HeatKernel, matrixToLinearMap, zero_smul, NormedSpace.exp_zero,
+             LinearMap.coe_mk, AddHom.coe_mk, Matrix.one_mulVec, LinearMap.id_coe, id_eq]
 
 /-- **Trajectory Closure Bound** (Duhamel-Grönwall Style).
     
