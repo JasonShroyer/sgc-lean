@@ -349,7 +349,55 @@ lemma strong_implies_approx (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V 
     · exact opNorm_pi_nonneg pi_dist hπ _
   linarith [h_norm_zero]
 
-/-! ### 5. Trajectory Perturbation Bound (Duhamel's Principle) -/
+/-! ### 5. Analytic Helpers: Trajectory and Derivative Machinery -/
+
+/-- The trajectory u(t) = e^{tL} f₀ as a function of time.
+    This is the solution of du/dt = L u with u(0) = f₀. -/
+def trajectory (L : Matrix V V ℝ) (f₀ : V → ℝ) (t : ℝ) : V → ℝ :=
+  exp ℝ (t • L) *ᵥ f₀
+
+/-- The vertical defect v(t) = (I - Π) u(t) measures how much the trajectory
+    has "leaked" out of the coarse (block-constant) subspace. -/
+def vertical_defect (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) (f₀ : V → ℝ) (t : ℝ) : V → ℝ :=
+  trajectory L f₀ t - CoarseProjector P pi_dist hπ (trajectory L f₀ t)
+
+/-- v(0) = 0 when f₀ is block-constant. -/
+lemma vertical_defect_zero (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) (f₀ : V → ℝ)
+    (hf₀ : f₀ = CoarseProjector P pi_dist hπ f₀) :
+    vertical_defect L P pi_dist hπ f₀ 0 = 0 := by
+  unfold vertical_defect trajectory
+  simp only [zero_smul, NormedSpace.exp_zero, Matrix.one_mulVec]
+  rw [hf₀]
+  -- Need: Π f₀ - Π(Π f₀) = 0, which follows from Π² = Π (idempotence)
+  have h_idem := CoarseProjector_idempotent P pi_dist hπ
+  ext x
+  simp only [Pi.sub_apply, Pi.zero_apply]
+  have : (CoarseProjector P pi_dist hπ ∘ₗ CoarseProjector P pi_dist hπ) f₀ x = 
+         CoarseProjector P pi_dist hπ f₀ x := by rw [h_idem]
+  simp only [LinearMap.comp_apply] at this
+  linarith
+
+/-- The trajectory at t=0 equals f₀. -/
+lemma trajectory_zero (L : Matrix V V ℝ) (f₀ : V → ℝ) :
+    trajectory L f₀ 0 = f₀ := by
+  unfold trajectory
+  simp only [zero_smul, NormedSpace.exp_zero, Matrix.one_mulVec]
+
+/-- The coarse projection of the trajectory: Π u(t). -/
+def coarse_trajectory (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) (f₀ : V → ℝ) (t : ℝ) : V → ℝ :=
+  CoarseProjector P pi_dist hπ (trajectory L f₀ t)
+
+/-- The decomposition u(t) = Π u(t) + v(t). -/
+lemma trajectory_decomposition (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) (f₀ : V → ℝ) (t : ℝ) :
+    trajectory L f₀ t = coarse_trajectory L P pi_dist hπ f₀ t + vertical_defect L P pi_dist hπ f₀ t := by
+  unfold coarse_trajectory vertical_defect
+  simp only [add_sub_cancel]
+
+/-! ### 5b. Heat Kernel and Linear Map Definitions -/
 
 /-- The heat kernel (matrix exponential) at time t. -/
 def HeatKernel (L : Matrix V V ℝ) (t : ℝ) : Matrix V V ℝ :=
