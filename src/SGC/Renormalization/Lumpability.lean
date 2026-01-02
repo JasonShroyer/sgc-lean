@@ -565,25 +565,23 @@ def SpectralGap (L : Matrix V V ℝ) (pi_dist : V → ℝ) : ℝ :=
 def SpectralGap_bar (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) : ℝ :=
   sInf (RayleighSetQuot L P pi_dist)
 
-/-! ### 9b. Approximate Lumpability Leakage Bound -/
+/-! ### 9b. Approximate Lumpability Leakage Bound (DEPRECATED) -/
 
-/-- **Approximate Lumpability Leakage Bound** (Axiomatized)
+/-- **Approximate Lumpability Leakage Bound** (DEPRECATED)
 
-    When L is approximately lumpable with defect ε, the spectral gap of the
-    coarse-grained system satisfies:
+    **⚠️ DEPRECATED**: This axiom is superseded by the trajectory perturbation theorem
+    in `SGC.Renormalization.Approximate`. The new approach:
+    1. Defines `IsApproxLumpable` via operator norm of the defect D = L∘Π - Π∘L
+    2. Proves `approx_trajectory_closure_bound` via Duhamel's principle
     
+    The trajectory-based approach is more robust and physically meaningful than
+    spectral gap perturbation bounds, which require delicate eigenvalue analysis.
+    
+    **Original Statement**: When L is approximately lumpable with defect ε:
     SpectralGap_bar ≥ SpectralGap - C * ε
     
-    where C depends on the partition structure and matrix norms.
-    
-    **Physical Interpretation**: Small violations of partition symmetry
-    cause small degradation in exponential convergence rates. This validates
-    that real-world coarse-graining (with sensor noise, manufacturing tolerances)
-    preserves qualitative stability properties.
-    
-    **Status**: Axiomatized. Full proof requires perturbation theory for
-    Rayleigh quotients, which is substantial analysis. The statement captures
-    the engineering principle; discharge requires Mathlib's spectral theory.
+    **Migration**: Use `SGC.Approximate.IsApproxLumpable` and 
+    `SGC.Approximate.approx_trajectory_closure_bound` instead.
     
     **References**: 
     - Stewart & Sun, "Matrix Perturbation Theory" (1990)
