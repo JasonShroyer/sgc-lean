@@ -351,77 +351,7 @@ lemma strong_implies_approx (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V 
 
 /-! ### 5. Analytic Helpers: Trajectory and Derivative Machinery -/
 
-/-- The trajectory u(t) = e^{tL} f₀ as a function of time.
-    This is the solution of du/dt = L u with u(0) = f₀. -/
-def trajectory (L : Matrix V V ℝ) (f₀ : V → ℝ) (t : ℝ) : V → ℝ :=
-  exp ℝ (t • L) *ᵥ f₀
-
-/-- The vertical defect v(t) = (I - Π) u(t) measures how much the trajectory
-    has "leaked" out of the coarse (block-constant) subspace. -/
-def vertical_defect (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
-    (hπ : ∀ v, 0 < pi_dist v) (f₀ : V → ℝ) (t : ℝ) : V → ℝ :=
-  trajectory L f₀ t - CoarseProjector P pi_dist hπ (trajectory L f₀ t)
-
-/-- v(0) = 0 when f₀ is block-constant. -/
-lemma vertical_defect_zero (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
-    (hπ : ∀ v, 0 < pi_dist v) (f₀ : V → ℝ)
-    (hf₀ : f₀ = CoarseProjector P pi_dist hπ f₀) :
-    vertical_defect L P pi_dist hπ f₀ 0 = 0 := by
-  unfold vertical_defect trajectory
-  simp only [zero_smul, NormedSpace.exp_zero, Matrix.one_mulVec]
-  rw [hf₀]
-  -- Need: Π f₀ - Π(Π f₀) = 0, which follows from Π² = Π (idempotence)
-  have h_idem := CoarseProjector_idempotent P pi_dist hπ
-  ext x
-  simp only [Pi.sub_apply, Pi.zero_apply]
-  have : (CoarseProjector P pi_dist hπ ∘ₗ CoarseProjector P pi_dist hπ) f₀ x = 
-         CoarseProjector P pi_dist hπ f₀ x := by rw [h_idem]
-  simp only [LinearMap.comp_apply] at this
-  linarith
-
-/-- The trajectory at t=0 equals f₀. -/
-lemma trajectory_zero (L : Matrix V V ℝ) (f₀ : V → ℝ) :
-    trajectory L f₀ 0 = f₀ := by
-  unfold trajectory
-  simp only [zero_smul, NormedSpace.exp_zero, Matrix.one_mulVec]
-
-/-- The coarse projection of the trajectory: Π u(t). -/
-def coarse_trajectory (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
-    (hπ : ∀ v, 0 < pi_dist v) (f₀ : V → ℝ) (t : ℝ) : V → ℝ :=
-  CoarseProjector P pi_dist hπ (trajectory L f₀ t)
-
-/-- The decomposition u(t) = Π u(t) + v(t). -/
-lemma trajectory_decomposition (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
-    (hπ : ∀ v, 0 < pi_dist v) (f₀ : V → ℝ) (t : ℝ) :
-    trajectory L f₀ t = coarse_trajectory L P pi_dist hπ f₀ t + vertical_defect L P pi_dist hπ f₀ t := by
-  unfold coarse_trajectory vertical_defect
-  simp only [add_sub_cancel]
-
-/-- The vertical defect expressed as u - Π u. -/
-lemma vertical_defect_eq_sub (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
-    (hπ : ∀ v, 0 < pi_dist v) (f₀ : V → ℝ) (t : ℝ) :
-    vertical_defect L P pi_dist hπ f₀ t = 
-    trajectory L f₀ t - CoarseProjector P pi_dist hπ (trajectory L f₀ t) := rfl
-
-/-- **Key Structural Lemma**: (I - Π)(L u) decomposes into defect and drift terms.
-    
-    For any u, we have the algebraic identity:
-    (L u - Π(L u)) = D(Π u) + (L(u - Π u) - Π(L(u - Π u)))
-    
-    This enables the Coupled Grönwall approach for the vertical error.
-    
-    **Proof outline**: Decompose u = Π u + (I - Π) u, use linearity of L and Π,
-    plus Π² = Π (idempotence) to identify D(Π u) = (I - Π) L Π u. -/
-lemma vertical_dynamics_structure (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
-    (hπ : ∀ v, 0 < pi_dist v) (u : V → ℝ) :
-    L *ᵥ u - CoarseProjector P pi_dist hπ (L *ᵥ u) = 
-    DefectOperator L P pi_dist hπ (CoarseProjector P pi_dist hπ u) + 
-    (L *ᵥ (u - CoarseProjector P pi_dist hπ u) - 
-     CoarseProjector P pi_dist hπ (L *ᵥ (u - CoarseProjector P pi_dist hπ u))) := by
-  -- Pure algebra: decompose u = Π u + (u - Π u), use linearity + Π² = Π
-  sorry  -- Finite-dimensional algebraic identity
-
-/-! ### 5b. Heat Kernel and Linear Map Definitions -/
+/-! #### 5a. Heat Kernel Definitions -/
 
 /-- The heat kernel (matrix exponential) at time t. -/
 def HeatKernel (L : Matrix V V ℝ) (t : ℝ) : Matrix V V ℝ :=
@@ -433,10 +363,122 @@ def HeatKernelMap (L : Matrix V V ℝ) (t : ℝ) : (V → ℝ) →ₗ[ℝ] (V �
 
 /-- At t = 0, the heat kernel is the identity: e^{0·L} = I. -/
 lemma HeatKernelMap_zero (L : Matrix V V ℝ) : HeatKernelMap L 0 = LinearMap.id := by
-  -- exp(0 • L) = exp(0) = 1 (identity matrix), and 1 *ᵥ f = f
   apply LinearMap.ext; intro f
   simp only [HeatKernelMap, HeatKernel, matrixToLinearMap, zero_smul, NormedSpace.exp_zero,
              LinearMap.coe_mk, AddHom.coe_mk, Matrix.one_mulVec, LinearMap.id_coe, id_eq]
+
+/-! #### 5b. Trajectory Definitions -/
+
+/-- The trajectory u(t) = e^{tL} f₀ as a function of time.
+    This is the solution of du/dt = L u with u(0) = f₀. -/
+def trajectory (L : Matrix V V ℝ) (f₀ : V → ℝ) (t : ℝ) : V → ℝ :=
+  HeatKernelMap L t f₀
+
+/-- The trajectory at t=0 equals f₀. -/
+lemma trajectory_zero (L : Matrix V V ℝ) (f₀ : V → ℝ) :
+    trajectory L f₀ 0 = f₀ := by
+  unfold trajectory
+  rw [HeatKernelMap_zero]
+  simp only [LinearMap.id_coe, id_eq]
+
+/-- Trajectory expressed as matrix-vector multiplication. -/
+lemma trajectory_eq_mulVec (L : Matrix V V ℝ) (f₀ : V → ℝ) (t : ℝ) :
+    trajectory L f₀ t = exp ℝ (t • L) *ᵥ f₀ := by
+  unfold trajectory HeatKernelMap HeatKernel matrixToLinearMap
+  simp only [LinearMap.coe_mk, AddHom.coe_mk]
+
+/-! #### 5c. Vertical Defect Definitions -/
+
+/-- The vertical defect v(t) = (I - Π) u(t) measures how much the trajectory
+    has "leaked" out of the coarse (block-constant) subspace. -/
+def vertical_defect (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) (f₀ : V → ℝ) (t : ℝ) : V → ℝ :=
+  trajectory L f₀ t - CoarseProjector P pi_dist hπ (trajectory L f₀ t)
+
+/-- The coarse projection of the trajectory: Π u(t). -/
+def coarse_trajectory (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) (f₀ : V → ℝ) (t : ℝ) : V → ℝ :=
+  CoarseProjector P pi_dist hπ (trajectory L f₀ t)
+
+/-- v(0) = 0 when f₀ is block-constant. -/
+lemma vertical_defect_zero (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) (f₀ : V → ℝ)
+    (hf₀ : f₀ = CoarseProjector P pi_dist hπ f₀) :
+    vertical_defect L P pi_dist hπ f₀ 0 = 0 := by
+  unfold vertical_defect
+  rw [trajectory_zero, hf₀]
+  have h_idem := CoarseProjector_idempotent P pi_dist hπ
+  have : CoarseProjector P pi_dist hπ (CoarseProjector P pi_dist hπ f₀) = 
+         CoarseProjector P pi_dist hπ f₀ := by
+    have := congrFun (congrArg DFunLike.coe h_idem) f₀
+    simp only [LinearMap.comp_apply] at this
+    exact this
+  rw [this]
+  ext x; simp only [Pi.sub_apply, Pi.zero_apply, sub_self]
+
+/-- The decomposition u(t) = Π u(t) + v(t). -/
+lemma trajectory_decomposition (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) (f₀ : V → ℝ) (t : ℝ) :
+    trajectory L f₀ t = coarse_trajectory L P pi_dist hπ f₀ t + vertical_defect L P pi_dist hπ f₀ t := by
+  unfold coarse_trajectory vertical_defect
+  ext x; simp only [Pi.add_apply, Pi.sub_apply, add_sub_cancel]
+
+/-! #### 5d. Structural Lemma for Vertical Dynamics -/
+
+/-- **Key Structural Lemma**: (I - Π)(L u) decomposes into defect and drift terms.
+    
+    For any u, we have the algebraic identity:
+    (L u - Π(L u)) = D(Π u) + (L v - Π(L v))
+    
+    where v = u - Π u is the vertical component.
+    
+    This enables the Coupled Grönwall approach:
+    ‖v'(t)‖ ≤ ‖D‖ ‖Π u‖ + ‖(I-Π)L‖ ‖v‖ ≤ ε ‖u‖ + C ‖v‖
+    
+    **Proof**: Substitute u = Π u + v, expand LHS using linearity,
+    identify (I-Π) L Π = D (using Π² = Π). -/
+lemma vertical_dynamics_structure (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) (u : V → ℝ) :
+    L *ᵥ u - CoarseProjector P pi_dist hπ (L *ᵥ u) = 
+    DefectOperator L P pi_dist hπ (CoarseProjector P pi_dist hπ u) + 
+    (L *ᵥ (u - CoarseProjector P pi_dist hπ u) - 
+     CoarseProjector P pi_dist hπ (L *ᵥ (u - CoarseProjector P pi_dist hπ u))) := by
+  -- Pure algebra: decompose u = Π u + (u - Π u), use linearity, Π² = Π
+  -- The identity is: (I-Π)(Lu) = (I-Π)L(Πu) + (I-Π)L(u-Πu) = D(Πu) + (I-Π)L(v)
+  sorry
+
+/-! #### 5e. Differential Inequality for Vertical Error -/
+
+/-- **Vertical Derivative Bound** (Local Differential Inequality).
+    
+    Under approximate lumpability with defect ε, the vertical error satisfies:
+    ‖(I - Π)(L u)‖_π ≤ ε ‖u‖_π + C ‖v‖_π
+    
+    where v = (I - Π) u and C = ‖(I - Π) L‖_π.
+    
+    This is the local form of the differential inequality that feeds into Grönwall.
+    
+    **Proof Strategy**:
+    1. Use `vertical_dynamics_structure`: (I-Π)(Lu) = D(Πu) + (I-Π)L(v)
+    2. Triangle inequality: ‖D(Πu) + (I-Π)Lv‖ ≤ ‖D(Πu)‖ + ‖(I-Π)Lv‖
+    3. First term: ‖D(Πu)‖ ≤ ‖D‖ · ‖Πu‖ ≤ ε · ‖u‖ (using ‖Π‖ ≤ 1)
+    4. Second term: ‖(I-Π)Lv‖ ≤ ‖(I-Π)L‖ · ‖v‖ -/
+lemma vertical_deriv_bound (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) (ε : ℝ) (hε : 0 ≤ ε)
+    (hL : IsApproxLumpable L P pi_dist hπ ε) (u : V → ℝ) :
+    norm_pi pi_dist (L *ᵥ u - CoarseProjector P pi_dist hπ (L *ᵥ u)) ≤ 
+    ε * norm_pi pi_dist u + 
+    opNorm_pi pi_dist hπ (matrixToLinearMap L ∘ₗ (LinearMap.id - CoarseProjector P pi_dist hπ)) * 
+    norm_pi pi_dist (u - CoarseProjector P pi_dist hπ u) := by
+  -- Use vertical_dynamics_structure: (I-Π)(Lu) = D(Πu) + (I-Π)L(v)
+  rw [vertical_dynamics_structure L P pi_dist hπ u]
+  -- The rest requires:
+  -- 1. Triangle inequality for norm_pi (not yet in library)
+  -- 2. Operator norm bound ‖D(Πu)‖ ≤ ‖D‖·‖Πu‖ ≤ ε·‖u‖
+  -- 3. Operator norm bound for (I-Π)L
+  sorry
+
+/-! ### 6. Trajectory Perturbation Bounds (Duhamel's Principle) -/
 
 /-- **Trajectory Closure Bound** (Duhamel-Grönwall Style).
     
