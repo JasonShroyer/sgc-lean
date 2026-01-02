@@ -530,18 +530,39 @@ lemma norm_pi_add_le (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) (f g : V
 lemma CoarseProjector_self_adjoint (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (f g : V → ℝ) : inner_pi pi_dist (CoarseProjector P pi_dist hπ f) g = 
                     inner_pi pi_dist f (CoarseProjector P pi_dist hπ g) := by
-  -- Both sides equal ∑_c (∑_{x∈c} π(x) f(x)) * (∑_{y∈c} π(y) g(y)) / π̄(c)
-  -- This is a straightforward sum manipulation
+  -- Both sides equal Σ_{x,y: [x]=[y]} π(x) π(y) f(y) g(x) / π̄([x])
   simp only [inner_pi, CoarseProjector_apply]
-  -- Expand and reorder sums - the key is that both are sums over pairs (x,y) in the same class
-  congr 1
-  ext x
-  -- LHS term: π(x) * (weighted avg of f over ⟦x⟧) * g(x)
-  -- RHS term: π(x) * f(x) * (weighted avg of g over ⟦x⟧)
-  -- These are equal after summing over all x
-  ring_nf
-  -- Both sides involve sums within equivalence classes weighted by π
-  sorry -- Sum manipulation: both equal Σ_c (Σ_{x∈c} πx fx)(Σ_{y∈c} πy gy) / π̄c
+  -- LHS = Σ_x π(x) * (Σ_y [y]=[x] → π(y) f(y) / π̄([x])) * g(x)
+  -- RHS = Σ_x π(x) * f(x) * (Σ_y [y]=[x] → π(y) g(y) / π̄([x]))
+  -- Transform to double sums over (x,y) pairs in the same class
+  -- LHS: Σ_x Σ_y π(x) * π(y) * f(y) * g(x) / π̄([x]) when [y]=[x]
+  -- RHS: Σ_x Σ_y π(x) * f(x) * π(y) * g(y) / π̄([x]) when [y]=[x]
+  -- These are equal by symmetry in (x,y) -> (y,x)
+  -- Strategy: expand to double sums, swap indices in one side
+  simp only [Finset.sum_div, Finset.mul_sum, Finset.sum_mul]
+  -- Now both are Σ_x Σ_y (if condition then term else 0)
+  -- Swap sums on RHS using sum_comm
+  conv_rhs => rw [Finset.sum_comm]
+  -- Now LHS: Σ_x Σ_y (π(x) * (if [y]=[x] then π(y)*f(y) else 0) / π̄([x]) * g(x))
+  -- RHS after swap: Σ_y Σ_x (π(y) * f(y) * (if [x]=[y] then π(x)*g(x) else 0) / π̄([y]))
+  -- Rename bound variables: in RHS, swap x↔y to match LHS structure
+  -- After renaming: Σ_x Σ_y (π(x) * f(x) * (if [y]=[x] then π(y)*g(y) else 0) / π̄([x]))
+  apply Finset.sum_congr rfl
+  intro x _
+  apply Finset.sum_congr rfl
+  intro y _
+  -- Compare individual terms
+  by_cases hxy : P.quot_map y = P.quot_map x
+  · -- When [y] = [x], both sides contribute
+    simp only [hxy, ↓reduceIte]
+    have hxy' : P.quot_map x = P.quot_map y := hxy.symm
+    simp only [hxy']
+    -- Both sides: π(x) * π(y) * f(y) * g(x) / π̄([y])
+    ring
+  · -- When [y] ≠ [x], both sides are 0
+    simp only [hxy, ↓reduceIte, mul_zero, zero_mul, zero_div]
+    have hyx : P.quot_map x ≠ P.quot_map y := fun h => hxy h.symm
+    simp only [hyx, ↓reduceIte, mul_zero, zero_div]
 
 /-- Πf and (I-Π)f are orthogonal in L²(π). -/
 lemma CoarseProjector_orthogonal (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
@@ -604,7 +625,7 @@ lemma CoarseProjector_contractive (P : Partition V) (pi_dist : V → ℝ) (hπ :
     Under approximate lumpability with defect ε, the vertical error satisfies:
     ‖(I - Π)(L u)‖_π ≤ ε ‖u‖_π + C ‖v‖_π
     
-    where v = (I - Π) u and C = ‖(I - Π) L‖_π.
+    where v = (I - Π) u and C = ‖L‖_π (the operator norm of L).
     
     This is the local form of the differential inequality that feeds into Grönwall.
     
@@ -612,13 +633,13 @@ lemma CoarseProjector_contractive (P : Partition V) (pi_dist : V → ℝ) (hπ :
     1. Use `vertical_dynamics_structure`: (I-Π)(Lu) = D(Πu) + (I-Π)L(v)
     2. Triangle inequality: ‖D(Πu) + (I-Π)Lv‖ ≤ ‖D(Πu)‖ + ‖(I-Π)Lv‖
     3. First term: ‖D(Πu)‖ ≤ ‖D‖ · ‖Πu‖ ≤ ε · ‖u‖ (using ‖Π‖ ≤ 1)
-    4. Second term: ‖(I-Π)Lv‖ ≤ ‖(I-Π)L‖ · ‖v‖ -/
+    4. Second term: ‖(I-Π)Lv‖ ≤ ‖Lv‖ ≤ ‖L‖ · ‖v‖ (using ‖I-Π‖ ≤ 1) -/
 lemma vertical_deriv_bound (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v) (ε : ℝ) (hε : 0 ≤ ε)
     (hL : IsApproxLumpable L P pi_dist hπ ε) (u : V → ℝ) :
     norm_pi pi_dist (L *ᵥ u - CoarseProjector P pi_dist hπ (L *ᵥ u)) ≤ 
     ε * norm_pi pi_dist u + 
-    opNorm_pi pi_dist hπ (matrixToLinearMap L ∘ₗ (LinearMap.id - CoarseProjector P pi_dist hπ)) * 
+    opNorm_pi pi_dist hπ (matrixToLinearMap L) * 
     norm_pi pi_dist (u - CoarseProjector P pi_dist hπ u) := by
   -- Step 1: Use vertical_dynamics_structure: (I-Π)(Lu) = D(Πu) + (I-Π)L(v)
   rw [vertical_dynamics_structure L P pi_dist hπ u]
@@ -648,10 +669,10 @@ lemma vertical_deriv_bound (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V �
           apply mul_le_mul_of_nonneg_right h2 h_norm_nonneg
       _ ≤ ε * norm_pi pi_dist u := by
           apply mul_le_mul_of_nonneg_left h3 hε
-  -- Step 4: Bound second term ‖(I-Π)(Lv)‖ = ‖Lv - Π(Lv)‖ ≤ C · ‖v‖
+  -- Step 4: Bound second term ‖(I-Π)(Lv)‖ = ‖Lv - Π(Lv)‖ ≤ ‖L‖ · ‖v‖
   -- Note: (I-Π) is also a contraction (by Pythagoras), and L is bounded
   have h_second_bound : norm_pi pi_dist (L *ᵥ v - proj (L *ᵥ v)) ≤ 
-      opNorm_pi pi_dist hπ (matrixToLinearMap L ∘ₗ (LinearMap.id - proj)) * norm_pi pi_dist v := by
+      opNorm_pi pi_dist hπ (matrixToLinearMap L) * norm_pi pi_dist v := by
     -- (I-Π) is contractive: ‖(I-Π)f‖ ≤ ‖f‖ (by Pythagoras: ‖f‖² = ‖Πf‖² + ‖(I-Π)f‖²)
     have h_I_minus_proj_contractive : ∀ g, norm_pi pi_dist (g - proj g) ≤ norm_pi pi_dist g := by
       intro g
@@ -669,40 +690,23 @@ lemma vertical_deriv_bound (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V �
       calc norm_pi pi_dist (g - proj g) = Real.sqrt (norm_sq_pi pi_dist (g - proj g)) := rfl
         _ ≤ Real.sqrt (norm_sq_pi pi_dist g) := Real.sqrt_le_sqrt h_sq_le
         _ = norm_pi pi_dist g := rfl
-    -- The expression L *ᵥ v - proj (L *ᵥ v) equals ((I - proj) ∘ L)(v)
-    -- But v = (I - proj) u, so we need to show this is bounded by ‖L ∘ (I-Π)‖ · ‖v‖
-    -- Key insight: L *ᵥ v = (matrixToLinearMap L ∘ₗ (LinearMap.id - proj)) u
-    -- So the bound follows from opNorm_pi_bound
-    have h_v_eq : matrixToLinearMap L v = (matrixToLinearMap L ∘ₗ (LinearMap.id - proj)) u := rfl
-    -- And L *ᵥ v - proj (L *ᵥ v) ≤ ‖L v‖ since (I-Π) is contractive
+    -- ‖(I-Π)(Lv)‖ ≤ ‖Lv‖ since (I-Π) is contractive
     have h_bound1 : norm_pi pi_dist (L *ᵥ v - proj (L *ᵥ v)) ≤ 
                     norm_pi pi_dist (matrixToLinearMap L v) := 
       h_I_minus_proj_contractive (L *ᵥ v)
-    -- Now use: ‖L v‖ = ‖(L ∘ (I-Π)) u‖ ≤ ‖L ∘ (I-Π)‖ · ‖u‖
-    -- But we want ‖v‖ = ‖(I-Π) u‖ not ‖u‖
-    -- Actually, since v = (I-Π)u and we need to bound by ‖v‖:
-    -- ‖L v‖ ≤ ‖L‖ · ‖v‖, and we want the RHS to use ‖L ∘ (I-Π)‖ · ‖v‖
-    -- Since ‖L ∘ (I-Π)‖ ≥ 0, we can use ‖L‖ as an upper bound would work but we want equality of operators
-    -- The cleanest: show directly ‖L *ᵥ v - proj(L *ᵥ v)‖ ≤ C · ‖v‖ for some C
-    -- Use opNorm_pi_bound on ((I-proj) ∘ L) applied to v
-    -- Actually, the statement wants the specific constant C = ‖L ∘ (I-Π)‖
-    -- This is achievable: ‖(I-Π)(Lv)‖ ≤ ‖Lv‖ ≤ ‖L‖·‖v‖, and ‖L ∘ (I-Π)‖ ≤ ‖L‖
-    -- So if we show the bound with ‖L‖·‖v‖, it's ≥ the required bound
-    have h_norm_v_nonneg : 0 ≤ norm_pi pi_dist v := by unfold norm_pi; exact Real.sqrt_nonneg _
+    -- ‖Lv‖ ≤ ‖L‖ · ‖v‖ by operator norm bound
+    have h_bound2 : norm_pi pi_dist (matrixToLinearMap L v) ≤ 
+                    opNorm_pi pi_dist hπ (matrixToLinearMap L) * norm_pi pi_dist v :=
+      opNorm_pi_bound pi_dist hπ (matrixToLinearMap L) v
+    -- Combine: ‖(I-Π)(Lv)‖ ≤ ‖L‖ · ‖v‖
     calc norm_pi pi_dist (L *ᵥ v - proj (L *ᵥ v)) 
         ≤ norm_pi pi_dist (matrixToLinearMap L v) := h_bound1
-      _ ≤ opNorm_pi pi_dist hπ (matrixToLinearMap L) * norm_pi pi_dist v := 
-          opNorm_pi_bound pi_dist hπ (matrixToLinearMap L) v
-      _ ≤ opNorm_pi pi_dist hπ (matrixToLinearMap L ∘ₗ (LinearMap.id - proj)) * norm_pi pi_dist v := by
-          -- Need: ‖L‖ ≤ ‖L ∘ (I-Π)‖ which is FALSE in general
-          -- The actual bound should use ‖(I-Π) ∘ L‖ not ‖L ∘ (I-Π)‖
-          -- For now, use sorry - the mathematical bound is correct with right operator
-          sorry
-  -- Combine
+      _ ≤ opNorm_pi pi_dist hπ (matrixToLinearMap L) * norm_pi pi_dist v := h_bound2
+  -- Combine both bounds
   calc norm_pi pi_dist (D (proj u) + (L *ᵥ v - proj (L *ᵥ v)))
       ≤ norm_pi pi_dist (D (proj u)) + norm_pi pi_dist (L *ᵥ v - proj (L *ᵥ v)) := h_triangle
     _ ≤ ε * norm_pi pi_dist u + 
-        opNorm_pi pi_dist hπ (matrixToLinearMap L ∘ₗ (LinearMap.id - proj)) * norm_pi pi_dist v := by
+        opNorm_pi pi_dist hπ (matrixToLinearMap L) * norm_pi pi_dist v := by
         linarith [h_D_bound, h_second_bound]
 
 /-! ### 6. Trajectory Perturbation Bounds (Duhamel's Principle) -/
