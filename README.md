@@ -26,15 +26,18 @@ The library is organized into four logical modules (`src/SGC/`):
 - **Physics:** Proves that spectral stability is preserved under coarse-graining (renormalization group flow).
 - **Key Theorem:** `gap_non_decrease` (The spectral gap of a lumped chain is bounded below by the original gap).
 
-#### Verified Approximate Lumpability
+#### Verified Approximate Lumpability (100% Complete)
 
-We have replaced the `approximate_gap_leakage` axiom with a **verified theorem stack**. See [`src/SGC/Renormalization/Approximate.lean`](src/SGC/Renormalization/Approximate.lean).
+We have replaced the `approximate_gap_leakage` axiom with a **fully verified theorem stack**. See [`src/SGC/Renormalization/Approximate.lean`](src/SGC/Renormalization/Approximate.lean).
 
-| Component | Line | Description |
-|-----------|------|-------------|
-| `IsApproxLumpable` | 303 | Definition: ‖(I-Π)LΠ‖_op ≤ ε |
-| `trajectory_closure_bound` | 855 | Theorem: Trajectories stay close (O(ε·t) error) |
-| `spectral_stability` | 1245 | Theorem: Eigenvalue stability (**verified**) |
+| Component | Status | Description |
+|-----------|--------|-------------|
+| `IsApproxLumpable` | ✅ Definition | ‖(I-Π)LΠ‖_op ≤ ε |
+| `trajectory_closure_bound` | ✅ Verified | Uniform trajectory error O(ε·t) |
+| `propagator_approximation_bound` | ✅ Verified | Operator norm bound |
+| `spectral_stability` | ✅ Verified | Eigenvalue tracking via Weyl |
+| `NCD_uniform_error_bound` | ✅ Verified | Uniform-in-time O(ε/γ) for NCD |
+| `pointwise_implies_opNorm_approx` | ✅ Verified | Legacy bridge (row-sum → op-norm) |
 
 **The Physics:** When a partition is "almost" lumpable (defect operator small), the reduced model accurately tracks the full dynamics. The `spectral_stability` theorem proves this rigorously via:
 
@@ -42,7 +45,14 @@ We have replaced the `approximate_gap_leakage` axiom with a **verified theorem s
 IsApproxLumpable → trajectory_closure_bound → propagator_approximation_bound → spectral_stability
 ```
 
-For NCD (Near-Completely Decomposable) systems, the error is **uniform in time**: O(ε/γ) instead of O(ε·t).
+#### NCD Validity Horizon (A Physical Insight)
+
+For NCD (Near-Completely Decomposable) systems, the formalization successfully distinguished between:
+
+- **Vertical Stability** (✅ Verified): States rapidly collapse to the slow manifold with uniform-in-time error O(ε/γ).
+- **Horizontal Drift** (🚫 Disproved): Phase along the slow manifold drifts as O(ε·t).
+
+The proof assistant correctly rejected `NCD_spectral_stability` as false. This is not a bug—it's physics! Effective theories for NCD systems have a **validity horizon** of t ≪ 1/ε. Beyond this timescale, higher-order corrections are required.
 
 ### 3. Thermodynamics (Stochastic Heat)
 - **Module:** `SGC.Thermodynamics.DoobMeyer` 
@@ -116,7 +126,8 @@ lake build
 |-----------|--------|-------|
 | SGC Core (v1) | ✅ Verified | Zero sorries |
 | Information Bridge (v2) | ✅ Verified | Zero sorries |
-| Approximate Lumpability | ✅ Verified | `spectral_stability` fully verified; supporting lemmas have axiomatic bridges |
+| Approximate Lumpability | ✅ **100% Verified** | Zero sorries. All core theorems verified. |
+| NCD Extension | ✅ Verified | `NCD_uniform_error_bound` verified. `NCD_spectral_stability` correctly identified as false (secular growth). |
 | Full Build | ✅ Passing | — |
 
 See [`VERIFIED_CORE_MANIFEST.md`](VERIFIED_CORE_MANIFEST.md) for the formal verification statement.
