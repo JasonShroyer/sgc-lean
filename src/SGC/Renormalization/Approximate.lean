@@ -397,6 +397,30 @@ lemma trajectory_decomposition (L : Matrix V V ℝ) (P : Partition V) (pi_dist :
   unfold coarse_trajectory vertical_defect
   simp only [add_sub_cancel]
 
+/-- The vertical defect expressed as u - Π u. -/
+lemma vertical_defect_eq_sub (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) (f₀ : V → ℝ) (t : ℝ) :
+    vertical_defect L P pi_dist hπ f₀ t = 
+    trajectory L f₀ t - CoarseProjector P pi_dist hπ (trajectory L f₀ t) := rfl
+
+/-- **Key Structural Lemma**: (I - Π)(L u) decomposes into defect and drift terms.
+    
+    For any u, we have the algebraic identity:
+    (L u - Π(L u)) = D(Π u) + (L(u - Π u) - Π(L(u - Π u)))
+    
+    This enables the Coupled Grönwall approach for the vertical error.
+    
+    **Proof outline**: Decompose u = Π u + (I - Π) u, use linearity of L and Π,
+    plus Π² = Π (idempotence) to identify D(Π u) = (I - Π) L Π u. -/
+lemma vertical_dynamics_structure (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) (u : V → ℝ) :
+    L *ᵥ u - CoarseProjector P pi_dist hπ (L *ᵥ u) = 
+    DefectOperator L P pi_dist hπ (CoarseProjector P pi_dist hπ u) + 
+    (L *ᵥ (u - CoarseProjector P pi_dist hπ u) - 
+     CoarseProjector P pi_dist hπ (L *ᵥ (u - CoarseProjector P pi_dist hπ u))) := by
+  -- Pure algebra: decompose u = Π u + (u - Π u), use linearity + Π² = Π
+  sorry  -- Finite-dimensional algebraic identity
+
 /-! ### 5b. Heat Kernel and Linear Map Definitions -/
 
 /-- The heat kernel (matrix exponential) at time t. -/
