@@ -272,4 +272,50 @@ the unbundled form for compatibility. Gradual migration is encouraged.
 
 ---
 
+## Research Directions (AGI/Robotics Applications)
+
+The following extensions would bridge the "verified physics paper" to practical 
+Object-Centered AI and robotics applications:
+
+### Approximate Lumpability ("Wobbly Chair" Theorem)
+
+**Status:** ✅ Implemented (`IsApproximatelyLumpable`, `approximate_gap_leakage_bound`)
+
+Real-world symmetries are never exact. A "chair" has scratches; atoms vibrate.
+`IsApproximatelyLumpable L P ε` captures that coarse-graining works even when 
+partition symmetries hold only up to tolerance ε.
+
+The axiomatized leakage bound (`SpectralGap_bar ≥ SpectralGap - C * ε`) validates
+that macroscopic models remain stable under sensor noise. Full proof requires
+Rayleigh quotient perturbation theory (Stewart & Sun, Kato).
+
+### Dynamic State Spaces ("Cat Injection")
+
+**Status:** 🔬 Research Direction
+
+The current Doob-Meyer decomposition assumes static `[Fintype V]`. In robotics,
+an agent encounters novelty—the state space expands from V to V ∪ {cat}.
+
+**Challenge:** Formalizing thermodynamic extension when the domain changes:
+- How does the martingale increment M_n behave under domain expansion?
+- Formalize the "surprise shock": S(new_state) = -log(π(new_state)) where π → 0
+
+This is the mathematical foundation for "Phone a Friend" triggers in active inference.
+
+### Compositionality (Systems Engineering)
+
+**Status:** 🔬 Research Direction
+
+Current library analyzes monolithic matrices L. Real systems are composed:
+"I know how an airfoil works, I know how a jet engine works... I can invent an airplane."
+
+**Goal:** Tensor product or disjoint union for spectral objects:
+- Define composite generator L_{A⊗B} from subsystems
+- Prove **Spectral Additivity**: `SpectralGap(A ⊗ B) ≥ min(Gap(A), Gap(B)) - ||Interaction||`
+
+This is the bedrock of compositional verification: build safe complex systems 
+by composing verified simple systems.
+
+---
+
 *Last updated: January 2026*

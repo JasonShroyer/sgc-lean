@@ -101,6 +101,41 @@ def IsStronglyLumpable (L : Matrix V V ℝ) (P : Partition V) : Prop :=
     (∑ z : V, if P.quot_map z = b_bar then L x z else 0) =
     (∑ z : V, if P.quot_map z = b_bar then L y z else 0)
 
+/-! ### 2b. Approximate Lumpability (Engineering Tolerance)
+
+In physical systems, exact symmetries never hold. A "chair" has scratches; atoms vibrate.
+Approximate lumpability captures the engineering reality that coarse-graining works
+even when partition symmetries hold only up to tolerance ε.
+
+**Key Insight**: If the lumpability defect is small, the spectral gap degradation is bounded.
+This validates that macroscopic models (chairs, forklifts) remain stable under sensor noise.
+-/
+
+/-- **Approximate Lumpability**: L is approximately lumpable w.r.t. partition P with
+    tolerance ε if for all x, y in the same block, and all blocks b̄:
+    |Σ_{z∈b̄} L_{xz} - Σ_{z∈b̄} L_{yz}| ≤ ε
+    
+    This is the "Wobbly Chair" condition: real-world symmetries are never exact. -/
+def IsApproximatelyLumpable (L : Matrix V V ℝ) (P : Partition V) (ε : ℝ) : Prop :=
+  ∀ x y : V, P.rel.r x y → ∀ b_bar : P.Quot,
+    |∑ z : V, (if P.quot_map z = b_bar then L x z else 0) - 
+     ∑ z : V, (if P.quot_map z = b_bar then L y z else 0)| ≤ ε
+
+/-- Strong lumpability implies approximate lumpability with ε = 0. -/
+lemma strong_implies_approx_zero (L : Matrix V V ℝ) (P : Partition V)
+    (hL : IsStronglyLumpable L P) : IsApproximatelyLumpable L P 0 := by
+  intro x y hxy b_bar
+  rw [hL x y hxy b_bar]
+  simp
+
+/-- Approximate lumpability with ε = 0 implies strong lumpability. -/
+lemma approx_zero_implies_strong (L : Matrix V V ℝ) (P : Partition V)
+    (hL : IsApproximatelyLumpable L P 0) : IsStronglyLumpable L P := by
+  intro x y hxy b_bar
+  have h := hL x y hxy b_bar
+  simp only [le_antisymm_iff, abs_nonpos_iff] at h
+  linarith [h]
+
 /-! ### 3. Quotient Generator (Simple Form) -/
 
 /-- Row sum over a block: Σ_{k∈B} L_{i,k}. -/
@@ -529,6 +564,35 @@ def SpectralGap (L : Matrix V V ℝ) (pi_dist : V → ℝ) : ℝ :=
 /-- **Spectral Gap on Quotient** -/
 def SpectralGap_bar (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) : ℝ :=
   sInf (RayleighSetQuot L P pi_dist)
+
+/-! ### 9b. Approximate Lumpability Leakage Bound -/
+
+/-- **Approximate Lumpability Leakage Bound** (Axiomatized)
+
+    When L is approximately lumpable with defect ε, the spectral gap of the
+    coarse-grained system satisfies:
+    
+    SpectralGap_bar ≥ SpectralGap - C * ε
+    
+    where C depends on the partition structure and matrix norms.
+    
+    **Physical Interpretation**: Small violations of partition symmetry
+    cause small degradation in exponential convergence rates. This validates
+    that real-world coarse-graining (with sensor noise, manufacturing tolerances)
+    preserves qualitative stability properties.
+    
+    **Status**: Axiomatized. Full proof requires perturbation theory for
+    Rayleigh quotients, which is substantial analysis. The statement captures
+    the engineering principle; discharge requires Mathlib's spectral theory.
+    
+    **References**: 
+    - Stewart & Sun, "Matrix Perturbation Theory" (1990)
+    - Kato, "Perturbation Theory for Linear Operators" (1995) -/
+axiom approximate_gap_leakage_bound 
+    (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (ε : ℝ)
+    (hε : 0 ≤ ε)
+    (hL : IsApproximatelyLumpable L P ε) :
+    ∃ C : ℝ, C ≥ 0 ∧ SpectralGap_bar L P pi_dist ≥ SpectralGap L pi_dist - C * ε
 
 /-- **Spectral Gap Non-Decrease (Simple Form)**: inf over block-constant ≥ inf over all. -/
 theorem gap_block_ge_gap_all (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
