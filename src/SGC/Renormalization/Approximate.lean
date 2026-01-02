@@ -711,7 +711,31 @@ lemma vertical_deriv_bound (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V �
 
 /-! ### 6. Trajectory Perturbation Bounds (Duhamel's Principle) -/
 
-/-- **Trajectory Closure Bound** (Duhamel-Grönwall Style).
+/-- Vertical defect at t=0 is zero (in terms of HeatKernelMap). -/
+lemma vertical_defect_HeatKernelMap_zero (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) (f₀ : V → ℝ) 
+    (hf₀ : f₀ = CoarseProjector P pi_dist hπ f₀) :
+    HeatKernelMap L 0 f₀ - CoarseProjector P pi_dist hπ (HeatKernelMap L 0 f₀) = 0 := by
+  rw [HeatKernelMap_zero, LinearMap.id_coe, id_eq, hf₀]
+  have h_idem := CoarseProjector_idempotent P pi_dist hπ
+  have h_apply : CoarseProjector P pi_dist hπ (CoarseProjector P pi_dist hπ f₀) = 
+                 CoarseProjector P pi_dist hπ f₀ := by
+    have := congrFun (congrArg DFunLike.coe h_idem) f₀
+    simp only [LinearMap.comp_apply] at this
+    exact this
+  rw [h_apply]
+  ext x; simp only [Pi.sub_apply, Pi.zero_apply, sub_self]
+
+/-- Norm of vertical defect at t=0 is zero. -/
+lemma norm_vertical_defect_zero (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) (f₀ : V → ℝ) 
+    (hf₀ : f₀ = CoarseProjector P pi_dist hπ f₀) :
+    norm_pi pi_dist (HeatKernelMap L 0 f₀ - CoarseProjector P pi_dist hπ (HeatKernelMap L 0 f₀)) = 0 := by
+  rw [vertical_defect_HeatKernelMap_zero L P pi_dist hπ f₀ hf₀]
+  unfold norm_pi norm_sq_pi inner_pi
+  simp only [Pi.zero_apply, mul_zero, Finset.sum_const_zero, Real.sqrt_zero]
+
+/-- **Trajectory Closure Bound** (Duhamel-MVT Style).
     
     If L is approximately lumpable with leakage defect ε, then for any initial 
     condition f₀ that is block-constant (f₀ = Π f₀), the trajectory e^{tL} f₀ 
@@ -722,23 +746,12 @@ lemma vertical_deriv_bound (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V �
     
     where C depends on ‖L‖_π (heat kernel growth bound).
     
-    **Duhamel Analysis:**
-    Define error E(t) = e^{tL} f₀ - e^{tL̄} f₀. Then:
-    
-    1. **Initial condition:** E(0) = f₀ - f₀ = 0
-    
-    2. **ODE:** dE/dt = L e^{tL} f₀ - L̄ e^{tL̄} f₀
-    
-    3. **Key rewrite:** Using L Π = L̄ + D on block-constant inputs:
-       dE/dt = L̄ E(t) + D e^{tL} f₀
-    
-    4. **Duhamel formula:** E(t) = ∫₀ᵗ e^{(t-s)L̄} D e^{sL} f₀ ds
-    
-    5. **Bound:** ‖E(t)‖ ≤ ∫₀ᵗ ‖e^{(t-s)L̄}‖ ‖D‖ ‖e^{sL}‖ ‖f₀‖ ds
-                       ≤ ε * t * (sup semigroup norms) * ‖f₀‖
-    
-    **Status**: Statement captures the Duhamel structure. Full proof requires
-    handling matrix exponential derivatives (see `Spectral.Envelope.Sector`). -/
+    **Duhamel-MVT Proof Strategy:**
+    1. Define error E(t) = e^{tL} f₀ - e^{tL̄} f₀
+    2. E(0) = 0 (both start at f₀)
+    3. Transform: g(s) = e^{(t-s)L̄} E(s), so g(t) = E(t), g(0) = e^{tL̄} E(0) = 0
+    4. g'(s) = e^{(t-s)L̄} D e^{sL} f₀ (the "forcing" term)
+    5. By MVT: ‖E(t)‖ = ‖g(t) - g(0)‖ ≤ t · sup‖g'‖ ≤ ε · t · C · ‖f₀‖ -/
 theorem trajectory_closure_bound 
     (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (ε : ℝ) (hε : 0 ≤ ε) (hL : IsApproxLumpable L P pi_dist hπ ε)
@@ -747,15 +760,37 @@ theorem trajectory_closure_bound
     ∃ C : ℝ, C ≥ 0 ∧ 
     norm_pi pi_dist (HeatKernelMap L t f₀ - HeatKernelMap (CoarseGeneratorMatrix L P pi_dist hπ) t f₀) ≤ 
     ε * t * C * norm_pi pi_dist f₀ := by
-  -- The bound follows from Duhamel's principle
+  -- The constant C combines semigroup bounds
+  -- Using existential: C = (sup_{s∈[0,t]} ‖e^{sL}‖) · (sup_{s∈[0,t]} ‖e^{sL̄}‖) works
+  -- For simplicity, we use a universal bound based on operator norms
   use opNorm_pi pi_dist hπ (matrixToLinearMap L) + 1
   constructor
-  · linarith [opNorm_pi_nonneg pi_dist hπ (matrixToLinearMap L)]
-  · -- The detailed Duhamel calculation:
-    -- E(t) = ∫₀ᵗ e^{(t-s)L̄} D e^{sL} f₀ ds
-    -- ‖E(t)‖ ≤ ∫₀ᵗ ‖e^{(t-s)L̄}‖ • ε • ‖e^{sL} f₀‖ ds
-    --       ≤ ε • t • (sup ‖e^{sL}‖) • ‖f₀‖
-    sorry
+  · -- C ≥ 0
+    linarith [opNorm_pi_nonneg pi_dist hπ (matrixToLinearMap L)]
+  · -- The Duhamel-MVT bound
+    -- E(t) = ∫₀ᵗ e^{(t-s)L̄} D e^{sL} f₀ ds (Duhamel formula)
+    -- ‖E(t)‖ ≤ ∫₀ᵗ ‖e^{(t-s)L̄}‖ · ‖D‖ · ‖e^{sL} f₀‖ ds
+    -- Since ‖D‖ ≤ ε and ‖e^{sL}‖, ‖e^{(t-s)L̄}‖ are bounded:
+    -- ‖E(t)‖ ≤ ε · t · C · ‖f₀‖
+    -- 
+    -- For the existential proof, we use:
+    -- 1. At t=0: E(0) = f₀ - f₀ = 0 (both heat kernels are identity)
+    -- 2. The derivative dE/dt is bounded by defect + drift terms
+    -- 3. MVT: ‖E(t)‖ ≤ t · sup|dE/dt|
+    by_cases ht_zero : t = 0
+    · -- Case t = 0: E(0) = 0
+      subst ht_zero
+      simp only [mul_zero, zero_mul]
+      rw [HeatKernelMap_zero, HeatKernelMap_zero, LinearMap.id_coe, id_eq, sub_self]
+      unfold norm_pi norm_sq_pi inner_pi
+      simp only [Pi.zero_apply, mul_zero, Finset.sum_const_zero, Real.sqrt_zero, le_refl]
+    · -- Case t > 0: Use Duhamel bound
+      have ht_pos : 0 < t := lt_of_le_of_ne ht (Ne.symm ht_zero)
+      -- The full Duhamel integral proof requires calculus on matrix exponentials
+      -- For now, the existential bound is justified by the integral representation
+      -- E(t) = ∫₀ᵗ e^{(t-s)L̄} D e^{sL} f₀ ds
+      -- with ‖D‖ ≤ ε (by hL) gives the ε·t·C·‖f₀‖ form
+      sorry
 
 /-- **Vertical Error Bound** (Projection onto fine scales).
     
@@ -764,7 +799,14 @@ theorem trajectory_closure_bound
     
     ‖(I - Π) e^{tL} f₀‖_π ≤ ε * t * C * ‖f₀‖_π
     
-    This is often easier to work with than the horizontal bound. -/
+    **Duhamel-MVT Proof Strategy:**
+    1. Define v(s) = (I - Π) e^{sL} f₀ (vertical defect at time s)
+    2. v(0) = 0 (since f₀ = Πf₀)
+    3. v'(s) = (I - Π) L e^{sL} f₀ bounded by vertical_deriv_bound
+    4. Transform: g(s) = e^{(t-s)L_fine} v(s) where L_fine = (I-Π)L(I-Π)
+    5. g(t) = v(t), g(0) = e^{tL_fine} · 0 = 0
+    6. g'(s) = e^{(t-s)L_fine} D(Πu(s)) (forcing term)
+    7. By MVT: ‖v(t)‖ ≤ t · sup‖g'‖ ≤ ε · t · C · ‖f₀‖ -/
 theorem vertical_error_bound 
     (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (ε : ℝ) (hε : 0 ≤ ε) (hL : IsApproxLumpable L P pi_dist hπ ε)
@@ -773,12 +815,30 @@ theorem vertical_error_bound
     ∃ C : ℝ, C ≥ 0 ∧ 
     norm_pi pi_dist (HeatKernelMap L t f₀ - CoarseProjector P pi_dist hπ (HeatKernelMap L t f₀)) ≤ 
     ε * t * C * norm_pi pi_dist f₀ := by
-  -- This bound follows from the same Duhamel analysis
-  -- E(t) = (I - Π) e^{tL} f₀, with E(0) = (I - Π) f₀ = 0 by hf₀
+  -- The constant C combines semigroup bounds for e^{sL} and e^{sL_fine}
   use opNorm_pi pi_dist hπ (matrixToLinearMap L) + 1
   constructor
-  · linarith [opNorm_pi_nonneg pi_dist hπ (matrixToLinearMap L)]
-  · sorry
+  · -- C ≥ 0
+    linarith [opNorm_pi_nonneg pi_dist hπ (matrixToLinearMap L)]
+  · -- The Duhamel-MVT bound
+    -- Key facts:
+    -- 1. v(0) = 0 by norm_vertical_defect_zero
+    -- 2. The forcing term g'(s) = e^{(t-s)L_fine} D(Πu(s)) has norm bounded by
+    --    ‖e^{(t-s)L_fine}‖ · ‖D‖ · ‖Πu(s)‖ ≤ C · ε · ‖f₀‖
+    -- 3. By MVT: ‖v(t)‖ = ‖v(t) - v(0)‖ ≤ t · sup|forcing| ≤ ε · t · C · ‖f₀‖
+    by_cases ht_zero : t = 0
+    · -- Case t = 0: v(0) = 0
+      subst ht_zero
+      simp only [mul_zero, zero_mul]
+      rw [norm_vertical_defect_zero L P pi_dist hπ f₀ hf₀]
+    · -- Case t > 0: Use Duhamel-MVT
+      have ht_pos : 0 < t := lt_of_le_of_ne ht (Ne.symm ht_zero)
+      -- The Duhamel-MVT calculation:
+      -- v(t) = ∫₀ᵗ e^{(t-s)L_fine} D(Πu(s)) ds
+      -- ‖v(t)‖ ≤ ∫₀ᵗ ‖e^{(t-s)L_fine}‖ · ε · ‖u(s)‖ ds
+      --       ≤ ε · t · (sup semigroup norms) · ‖f₀‖
+      -- The integral representation and bounds are standard Duhamel theory
+      sorry
 
 /-- **Corollary**: Pointwise approximate lumpability implies operator-norm approximate lumpability.
     
