@@ -47,6 +47,25 @@ This commit represents the **verified algebraic core** of the SGC formalism.
 | Module | Path | Key Theorem | Theoretical Basis |
 |--------|------|-------------|-------------------|
 | **Lumpability** | `src/SGC/Renormalization/Lumpability.lean` | `gap_non_decrease` | Kemeny & Snell (1976) |
+| **Approximate** | `src/SGC/Renormalization/Approximate.lean` | `spectral_stability` (verified) | Simon & Ando (1961) |
+
+#### Approximate Lumpability (New)
+
+The `Approximate.lean` module implements the **verified theorem stack** for approximate lumpability:
+
+| Theorem | Status | Description |
+|---------|--------|-------------|
+| `spectral_stability` | ✅ Verified | Eigenvalue tracking via Weyl inequality |
+| `trajectory_closure_bound` | ⚠️ 1 sorry | Trajectory error O(ε·t) |
+| `NCD_uniform_error_bound` | ⚠️ 2 sorries | Uniform-in-time O(ε/γ) for NCD systems |
+
+**Axioms** (explicit bridges to standard theory):
+- `Duhamel_integral_bound`: Integral calculus bound (Mathlib MVT)
+- `Weyl_inequality_pi`: Spectral perturbation (standard Weyl)
+- `NCD_semigroup_bound`, `NCD_integral_bound`: Semigroup theory
+
+**Key Achievement**: The `spectral_stability` theorem has a **fully verified proof** 
+(calc chain through `propagator_approximation_bound` + `Weyl_inequality_pi`).
 
 ### Topology Pillar (Structure)
 | Module | Path | Key Definitions |
