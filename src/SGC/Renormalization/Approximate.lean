@@ -965,10 +965,10 @@ theorem vertical_error_bound
 /-- **Corollary**: Pointwise approximate lumpability implies operator-norm approximate lumpability.
     
     This connects our new leakage-defect definition back to the original 
-    `IsApproximatelyLumpable` (which uses pointwise row-sum bounds). -/
+    `IsRowSumApproxLumpable` (which uses pointwise row-sum bounds). -/
 lemma pointwise_implies_opNorm_approx (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v) (ε : ℝ) (hε : 0 ≤ ε)
-    (hL_pw : IsApproximatelyLumpable L P ε) :
+    (hL_pw : IsRowSumApproxLumpable L P ε) :
     ∃ C : ℝ, IsApproxLumpable L P pi_dist hπ (C * ε) := by
   -- The pointwise bound on row-sum differences implies a bound on the leakage defect norm
   -- The constant C depends on the partition structure and pi_dist

@@ -116,21 +116,21 @@ This validates that macroscopic models (chairs, forklifts) remain stable under s
     |Σ_{z∈b̄} L_{xz} - Σ_{z∈b̄} L_{yz}| ≤ ε
     
     This is the "Wobbly Chair" condition: real-world symmetries are never exact. -/
-def IsApproximatelyLumpable (L : Matrix V V ℝ) (P : Partition V) (ε : ℝ) : Prop :=
+def IsRowSumApproxLumpable (L : Matrix V V ℝ) (P : Partition V) (ε : ℝ) : Prop :=
   ∀ x y : V, P.rel.r x y → ∀ b_bar : P.Quot,
     |∑ z : V, (if P.quot_map z = b_bar then L x z else 0) - 
      ∑ z : V, (if P.quot_map z = b_bar then L y z else 0)| ≤ ε
 
 /-- Strong lumpability implies approximate lumpability with ε = 0. -/
 lemma strong_implies_approx_zero (L : Matrix V V ℝ) (P : Partition V)
-    (hL : IsStronglyLumpable L P) : IsApproximatelyLumpable L P 0 := by
+    (hL : IsStronglyLumpable L P) : IsRowSumApproxLumpable L P 0 := by
   intro x y hxy b_bar
   rw [hL x y hxy b_bar]
   simp
 
 /-- Approximate lumpability with ε = 0 implies strong lumpability. -/
 lemma approx_zero_implies_strong (L : Matrix V V ℝ) (P : Partition V)
-    (hL : IsApproximatelyLumpable L P 0) : IsStronglyLumpable L P := by
+    (hL : IsRowSumApproxLumpable L P 0) : IsStronglyLumpable L P := by
   intro x y hxy b_bar
   have h := hL x y hxy b_bar
   simp only [le_antisymm_iff, abs_nonpos_iff] at h
@@ -589,7 +589,7 @@ def SpectralGap_bar (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
 axiom approximate_gap_leakage_bound 
     (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (ε : ℝ)
     (hε : 0 ≤ ε)
-    (hL : IsApproximatelyLumpable L P ε) :
+    (hL : IsRowSumApproxLumpable L P ε) :
     ∃ C : ℝ, C ≥ 0 ∧ SpectralGap_bar L P pi_dist ≥ SpectralGap L pi_dist - C * ε
 
 /-- **Spectral Gap Non-Decrease (Simple Form)**: inf over block-constant ≥ inf over all. -/
