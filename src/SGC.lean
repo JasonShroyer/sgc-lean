@@ -10,6 +10,9 @@ import SGC.Axioms.Geometry
 -- Spectral Pillar: Spectral Gap Monotonicity
 import SGC.Renormalization.Lumpability
 
+-- Approximate Renormalization: Trajectory bounds for leakage defects
+import SGC.Renormalization.Approximate
+
 -- Topology Pillar: Geometric Markov Blankets
 import SGC.Topology.Blanket
 

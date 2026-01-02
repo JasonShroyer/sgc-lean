@@ -8,7 +8,7 @@ This repository contains a formally verified Lean 4 library characterizing the *
 
 **Scope:** The verified core establishes results for **finite state spaces** (`[Fintype V]`). Continuum limits are axiomatized via `SGC.Bridge.Discretization`, providing an honest interface for future formalization of analytic convergence results.
 
-The library is `sorry-free` with zero unproven assumptions in the verified core.
+**New in v2:** Approximate lumpability is now a *derived theorem*, not an axiom. We prove that small kinematic defects (leakage between blocks) lead to bounded trajectory errors. See `trajectory_closure_bound` and `spectral_stability`.
 
 ---
 
