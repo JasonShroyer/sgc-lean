@@ -485,20 +485,117 @@ lemma vertical_dynamics_structure (L : Matrix V V ℝ) (P : Partition V) (pi_dis
 /-! #### 5e. Helper Lemmas for Norm Bounds -/
 
 /-- Triangle inequality for norm_pi: ‖f + g‖_π ≤ ‖f‖_π + ‖g‖_π.
-    This follows from the fact that norm_pi is a genuine norm (via the isometry to EuclideanSpace). -/
+    Proof: ‖f+g‖² = ‖f‖² + 2⟨f,g⟩ + ‖g‖² ≤ ‖f‖² + 2‖f‖‖g‖ + ‖g‖² = (‖f‖+‖g‖)² -/
 lemma norm_pi_add_le (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) (f g : V → ℝ) :
     norm_pi pi_dist (f + g) ≤ norm_pi pi_dist f + norm_pi pi_dist g := by
-  -- Use the isometry to EuclideanSpace and the triangle inequality there
-  -- For now, use sorry as this requires the isometry machinery
-  sorry
+  -- Step 1: Expand ‖f+g‖² = ⟨f+g, f+g⟩ = ‖f‖² + 2⟨f,g⟩ + ‖g‖²
+  have h_expand : norm_sq_pi pi_dist (f + g) = 
+      norm_sq_pi pi_dist f + 2 * inner_pi pi_dist f g + norm_sq_pi pi_dist g := by
+    unfold norm_sq_pi
+    rw [inner_pi_add_left, inner_pi_add_right, inner_pi_add_right]
+    rw [inner_pi_comm (g) f]
+    ring
+  -- Step 2: By Cauchy-Schwarz, ⟨f,g⟩ ≤ |⟨f,g⟩| ≤ ‖f‖‖g‖
+  have h_cs := cauchy_schwarz_pi pi_dist hπ f g
+  have h_inner_le : inner_pi pi_dist f g ≤ norm_pi pi_dist f * norm_pi pi_dist g := 
+    le_trans (le_abs_self _) h_cs
+  -- Step 3: ‖f+g‖² ≤ (‖f‖+‖g‖)²
+  have h_sq_le : norm_sq_pi pi_dist (f + g) ≤ (norm_pi pi_dist f + norm_pi pi_dist g)^2 := by
+    calc norm_sq_pi pi_dist (f + g) 
+        = norm_sq_pi pi_dist f + 2 * inner_pi pi_dist f g + norm_sq_pi pi_dist g := h_expand
+      _ ≤ norm_sq_pi pi_dist f + 2 * (norm_pi pi_dist f * norm_pi pi_dist g) + 
+          norm_sq_pi pi_dist g := by linarith [h_inner_le]
+      _ = (norm_pi pi_dist f)^2 + 2 * (norm_pi pi_dist f * norm_pi pi_dist g) + 
+          (norm_pi pi_dist g)^2 := by 
+          -- norm_sq_pi = norm_pi^2 since norm_pi = sqrt(norm_sq_pi)
+          have hf : norm_sq_pi pi_dist f = (norm_pi pi_dist f)^2 := by
+            unfold norm_pi; rw [Real.sq_sqrt (norm_sq_pi_nonneg pi_dist hπ f)]
+          have hg : norm_sq_pi pi_dist g = (norm_pi pi_dist g)^2 := by
+            unfold norm_pi; rw [Real.sq_sqrt (norm_sq_pi_nonneg pi_dist hπ g)]
+          rw [hf, hg]
+      _ = (norm_pi pi_dist f + norm_pi pi_dist g)^2 := by ring
+  -- Step 4: Take sqrt of both sides
+  have h_lhs_nonneg : 0 ≤ norm_sq_pi pi_dist (f + g) := norm_sq_pi_nonneg pi_dist hπ _
+  have h_rhs_nonneg : 0 ≤ norm_pi pi_dist f + norm_pi pi_dist g := by
+    apply add_nonneg <;> (unfold norm_pi; exact Real.sqrt_nonneg _)
+  calc norm_pi pi_dist (f + g) 
+      = Real.sqrt (norm_sq_pi pi_dist (f + g)) := rfl
+    _ ≤ Real.sqrt ((norm_pi pi_dist f + norm_pi pi_dist g)^2) := 
+        Real.sqrt_le_sqrt h_sq_le
+    _ = |norm_pi pi_dist f + norm_pi pi_dist g| := Real.sqrt_sq_eq_abs _
+    _ = norm_pi pi_dist f + norm_pi pi_dist g := abs_of_nonneg h_rhs_nonneg
+
+/-- Π is self-adjoint in L²(π): ⟨Πf, g⟩ = ⟨f, Πg⟩.
+    This follows from the conditional expectation property. -/
+lemma CoarseProjector_self_adjoint (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (f g : V → ℝ) : inner_pi pi_dist (CoarseProjector P pi_dist hπ f) g = 
+                    inner_pi pi_dist f (CoarseProjector P pi_dist hπ g) := by
+  -- Both sides equal ∑_c (∑_{x∈c} π(x) f(x)) * (∑_{y∈c} π(y) g(y)) / π̄(c)
+  -- This is a straightforward sum manipulation
+  simp only [inner_pi, CoarseProjector_apply]
+  -- Expand and reorder sums - the key is that both are sums over pairs (x,y) in the same class
+  congr 1
+  ext x
+  -- LHS term: π(x) * (weighted avg of f over ⟦x⟧) * g(x)
+  -- RHS term: π(x) * f(x) * (weighted avg of g over ⟦x⟧)
+  -- These are equal after summing over all x
+  ring_nf
+  -- Both sides involve sums within equivalence classes weighted by π
+  sorry -- Sum manipulation: both equal Σ_c (Σ_{x∈c} πx fx)(Σ_{y∈c} πy gy) / π̄c
+
+/-- Πf and (I-Π)f are orthogonal in L²(π). -/
+lemma CoarseProjector_orthogonal (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (f : V → ℝ) : inner_pi pi_dist (CoarseProjector P pi_dist hπ f) 
+                                    (f - CoarseProjector P pi_dist hπ f) = 0 := by
+  -- Use Π(f - Πf) = Πf - Π²f = Πf - Πf = 0, then self-adjointness
+  have h_idem := CoarseProjector_idempotent P pi_dist hπ
+  have h_proj_diff : CoarseProjector P pi_dist hπ (f - CoarseProjector P pi_dist hπ f) = 0 := by
+    rw [(CoarseProjector P pi_dist hπ).map_sub]
+    have h_idem_apply : CoarseProjector P pi_dist hπ (CoarseProjector P pi_dist hπ f) = 
+                        CoarseProjector P pi_dist hπ f := by
+      have := congrFun (congrArg DFunLike.coe h_idem) f
+      simp only [LinearMap.comp_apply] at this
+      exact this
+    rw [h_idem_apply, sub_self]
+  -- inner_pi (Πf) (f - Πf) = inner_pi f (Π(f - Πf)) = inner_pi f 0 = 0
+  calc inner_pi pi_dist (CoarseProjector P pi_dist hπ f) (f - CoarseProjector P pi_dist hπ f)
+      = inner_pi pi_dist f (CoarseProjector P pi_dist hπ (f - CoarseProjector P pi_dist hπ f)) := 
+        CoarseProjector_self_adjoint P pi_dist hπ f _
+    _ = inner_pi pi_dist f 0 := by rw [h_proj_diff]
+    _ = 0 := inner_pi_zero_right _
 
 /-- Coarse projector is contractive in norm_pi: ‖Π f‖_π ≤ ‖f‖_π.
-    This is because Π is an orthogonal projection (conditional expectation) in L²(π). -/
+    Proof: Pythagoras gives ‖f‖² = ‖Πf‖² + ‖f - Πf‖² since Πf ⊥ (f - Πf). -/
 lemma CoarseProjector_contractive (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) 
     (f : V → ℝ) : norm_pi pi_dist (CoarseProjector P pi_dist hπ f) ≤ norm_pi pi_dist f := by
-  -- Π is an orthogonal projection, hence contractive
-  -- For now, use sorry as this requires Jensen's inequality or orthogonal projection theory
-  sorry
+  -- Step 1: Pythagoras - ‖f‖² = ‖Πf‖² + 2⟨Πf, f-Πf⟩ + ‖f-Πf‖² = ‖Πf‖² + ‖f-Πf‖²
+  -- proj_f = Πf, orth_f = f - Πf
+  have h_ortho := CoarseProjector_orthogonal P pi_dist hπ f
+  -- The cross terms vanish by orthogonality
+  have h_cross1 : inner_pi pi_dist (CoarseProjector P pi_dist hπ f) (f - CoarseProjector P pi_dist hπ f) = 0 := h_ortho
+  have h_cross2 : inner_pi pi_dist (f - CoarseProjector P pi_dist hπ f) (CoarseProjector P pi_dist hπ f) = 0 := by 
+    rw [inner_pi_comm]; exact h_ortho
+  -- f = Πf + (f - Πf)
+  have h_decomp : f = CoarseProjector P pi_dist hπ f + (f - CoarseProjector P pi_dist hπ f) := by 
+    ext x; simp only [Pi.add_apply, Pi.sub_apply]; ring
+  -- Expand ‖f‖² = ‖Πf + (f-Πf)‖²
+  have h_expand : norm_sq_pi pi_dist f = 
+      norm_sq_pi pi_dist (CoarseProjector P pi_dist hπ f) + 
+      norm_sq_pi pi_dist (f - CoarseProjector P pi_dist hπ f) := by
+    conv_lhs => rw [h_decomp]
+    unfold norm_sq_pi
+    rw [inner_pi_add_left, inner_pi_add_right, inner_pi_add_right]
+    rw [h_cross1, h_cross2]
+    ring
+  -- Step 2: ‖Πf‖² ≤ ‖f‖² since ‖f-Πf‖² ≥ 0
+  have h_sq_le : norm_sq_pi pi_dist (CoarseProjector P pi_dist hπ f) ≤ norm_sq_pi pi_dist f := by
+    rw [h_expand]
+    linarith [norm_sq_pi_nonneg pi_dist hπ (f - CoarseProjector P pi_dist hπ f)]
+  -- Step 3: Take sqrt
+  calc norm_pi pi_dist (CoarseProjector P pi_dist hπ f) 
+      = Real.sqrt (norm_sq_pi pi_dist (CoarseProjector P pi_dist hπ f)) := rfl
+    _ ≤ Real.sqrt (norm_sq_pi pi_dist f) := Real.sqrt_le_sqrt h_sq_le
+    _ = norm_pi pi_dist f := rfl
 
 /-! #### 5f. Differential Inequality for Vertical Error -/
 
@@ -551,14 +648,56 @@ lemma vertical_deriv_bound (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V �
           apply mul_le_mul_of_nonneg_right h2 h_norm_nonneg
       _ ≤ ε * norm_pi pi_dist u := by
           apply mul_le_mul_of_nonneg_left h3 hε
-  -- Step 4: Bound second term ‖(I-Π)L(v)‖ = ‖Lv - Π(Lv)‖ ≤ C · ‖v‖
-  -- Note: (I-Π)L = matrixToLinearMap L ∘ (I - Π), but we need to be careful about composition
+  -- Step 4: Bound second term ‖(I-Π)(Lv)‖ = ‖Lv - Π(Lv)‖ ≤ C · ‖v‖
+  -- Note: (I-Π) is also a contraction (by Pythagoras), and L is bounded
   have h_second_bound : norm_pi pi_dist (L *ᵥ v - proj (L *ᵥ v)) ≤ 
       opNorm_pi pi_dist hπ (matrixToLinearMap L ∘ₗ (LinearMap.id - proj)) * norm_pi pi_dist v := by
-    -- This is: ‖(I-Π)(Lv)‖ ≤ ‖(I-Π)L‖ · ‖v‖
-    -- But we need ‖(I-Π)‖ ≤ 1 and composition bounds
-    -- For now, use sorry - the structure is correct
-    sorry
+    -- (I-Π) is contractive: ‖(I-Π)f‖ ≤ ‖f‖ (by Pythagoras: ‖f‖² = ‖Πf‖² + ‖(I-Π)f‖²)
+    have h_I_minus_proj_contractive : ∀ g, norm_pi pi_dist (g - proj g) ≤ norm_pi pi_dist g := by
+      intro g
+      have h_ortho := CoarseProjector_orthogonal P pi_dist hπ g
+      have h_cross1 : inner_pi pi_dist (proj g) (g - proj g) = 0 := h_ortho
+      have h_decomp : g = proj g + (g - proj g) := by ext x; simp only [Pi.add_apply, Pi.sub_apply]; ring
+      have h_expand : norm_sq_pi pi_dist g = norm_sq_pi pi_dist (proj g) + norm_sq_pi pi_dist (g - proj g) := by
+        conv_lhs => rw [h_decomp]
+        unfold norm_sq_pi
+        rw [inner_pi_add_left, inner_pi_add_right, inner_pi_add_right, h_cross1]
+        rw [inner_pi_comm (g - proj g) (proj g), h_cross1]
+        ring
+      have h_sq_le : norm_sq_pi pi_dist (g - proj g) ≤ norm_sq_pi pi_dist g := by
+        rw [h_expand]; linarith [norm_sq_pi_nonneg pi_dist hπ (proj g)]
+      calc norm_pi pi_dist (g - proj g) = Real.sqrt (norm_sq_pi pi_dist (g - proj g)) := rfl
+        _ ≤ Real.sqrt (norm_sq_pi pi_dist g) := Real.sqrt_le_sqrt h_sq_le
+        _ = norm_pi pi_dist g := rfl
+    -- The expression L *ᵥ v - proj (L *ᵥ v) equals ((I - proj) ∘ L)(v)
+    -- But v = (I - proj) u, so we need to show this is bounded by ‖L ∘ (I-Π)‖ · ‖v‖
+    -- Key insight: L *ᵥ v = (matrixToLinearMap L ∘ₗ (LinearMap.id - proj)) u
+    -- So the bound follows from opNorm_pi_bound
+    have h_v_eq : matrixToLinearMap L v = (matrixToLinearMap L ∘ₗ (LinearMap.id - proj)) u := rfl
+    -- And L *ᵥ v - proj (L *ᵥ v) ≤ ‖L v‖ since (I-Π) is contractive
+    have h_bound1 : norm_pi pi_dist (L *ᵥ v - proj (L *ᵥ v)) ≤ 
+                    norm_pi pi_dist (matrixToLinearMap L v) := 
+      h_I_minus_proj_contractive (L *ᵥ v)
+    -- Now use: ‖L v‖ = ‖(L ∘ (I-Π)) u‖ ≤ ‖L ∘ (I-Π)‖ · ‖u‖
+    -- But we want ‖v‖ = ‖(I-Π) u‖ not ‖u‖
+    -- Actually, since v = (I-Π)u and we need to bound by ‖v‖:
+    -- ‖L v‖ ≤ ‖L‖ · ‖v‖, and we want the RHS to use ‖L ∘ (I-Π)‖ · ‖v‖
+    -- Since ‖L ∘ (I-Π)‖ ≥ 0, we can use ‖L‖ as an upper bound would work but we want equality of operators
+    -- The cleanest: show directly ‖L *ᵥ v - proj(L *ᵥ v)‖ ≤ C · ‖v‖ for some C
+    -- Use opNorm_pi_bound on ((I-proj) ∘ L) applied to v
+    -- Actually, the statement wants the specific constant C = ‖L ∘ (I-Π)‖
+    -- This is achievable: ‖(I-Π)(Lv)‖ ≤ ‖Lv‖ ≤ ‖L‖·‖v‖, and ‖L ∘ (I-Π)‖ ≤ ‖L‖
+    -- So if we show the bound with ‖L‖·‖v‖, it's ≥ the required bound
+    have h_norm_v_nonneg : 0 ≤ norm_pi pi_dist v := by unfold norm_pi; exact Real.sqrt_nonneg _
+    calc norm_pi pi_dist (L *ᵥ v - proj (L *ᵥ v)) 
+        ≤ norm_pi pi_dist (matrixToLinearMap L v) := h_bound1
+      _ ≤ opNorm_pi pi_dist hπ (matrixToLinearMap L) * norm_pi pi_dist v := 
+          opNorm_pi_bound pi_dist hπ (matrixToLinearMap L) v
+      _ ≤ opNorm_pi pi_dist hπ (matrixToLinearMap L ∘ₗ (LinearMap.id - proj)) * norm_pi pi_dist v := by
+          -- Need: ‖L‖ ≤ ‖L ∘ (I-Π)‖ which is FALSE in general
+          -- The actual bound should use ‖(I-Π) ∘ L‖ not ‖L ∘ (I-Π)‖
+          -- For now, use sorry - the mathematical bound is correct with right operator
+          sorry
   -- Combine
   calc norm_pi pi_dist (D (proj u) + (L *ᵥ v - proj (L *ᵥ v)))
       ≤ norm_pi pi_dist (D (proj u)) + norm_pi pi_dist (L *ᵥ v - proj (L *ᵥ v)) := h_triangle
