@@ -443,11 +443,64 @@ lemma vertical_dynamics_structure (L : Matrix V V ℝ) (P : Partition V) (pi_dis
     DefectOperator L P pi_dist hπ (CoarseProjector P pi_dist hπ u) + 
     (L *ᵥ (u - CoarseProjector P pi_dist hπ u) - 
      CoarseProjector P pi_dist hπ (L *ᵥ (u - CoarseProjector P pi_dist hπ u))) := by
-  -- Pure algebra: decompose u = Π u + (u - Π u), use linearity, Π² = Π
-  -- The identity is: (I-Π)(Lu) = (I-Π)L(Πu) + (I-Π)L(u-Πu) = D(Πu) + (I-Π)L(v)
+  -- Idempotence: proj^2 = proj
+  have h_idem := CoarseProjector_idempotent P pi_dist hπ
+  have h_idem_apply : ∀ f, CoarseProjector P pi_dist hπ (CoarseProjector P pi_dist hπ f) = 
+                          CoarseProjector P pi_dist hπ f := fun f => by
+    have := congrFun (congrArg DFunLike.coe h_idem) f
+    simp only [LinearMap.comp_apply] at this
+    exact this
+  -- D(proj u) = L(proj u) - proj(L(proj u)) by DefectOperator_apply and idempotence
+  have h_D : DefectOperator L P pi_dist hπ (CoarseProjector P pi_dist hπ u) = 
+             L *ᵥ (CoarseProjector P pi_dist hπ u) - 
+             CoarseProjector P pi_dist hπ (L *ᵥ (CoarseProjector P pi_dist hπ u)) := by
+    rw [DefectOperator_apply, h_idem_apply]
+  -- Direct pointwise proof using linearity
+  -- Key decomposition: L u = L(proj u) + L(u - proj u)
+  have h_L_split : L *ᵥ u = L *ᵥ (CoarseProjector P pi_dist hπ u) + 
+                            L *ᵥ (u - CoarseProjector P pi_dist hπ u) := by
+    have h_eq : u = CoarseProjector P pi_dist hπ u + (u - CoarseProjector P pi_dist hπ u) := by
+      ext y; simp only [Pi.add_apply, Pi.sub_apply]; ring
+    conv_lhs => rw [h_eq]
+    rw [Matrix.mulVec_add]
+  -- proj(L u) = proj(L proj u) + proj(L(u - proj u)) by linearity
+  have h_proj_split : CoarseProjector P pi_dist hπ (L *ᵥ u) = 
+                      CoarseProjector P pi_dist hπ (L *ᵥ CoarseProjector P pi_dist hπ u) +
+                      CoarseProjector P pi_dist hπ (L *ᵥ (u - CoarseProjector P pi_dist hπ u)) := by
+    rw [h_L_split, (CoarseProjector P pi_dist hπ).map_add]
+  -- Combine and show pointwise
+  ext x
+  simp only [Pi.sub_apply, Pi.add_apply]
+  -- Expand LHS and RHS
+  have h_L_x := congrFun h_L_split x
+  have h_proj_x := congrFun h_proj_split x  
+  have h_D_x := congrFun h_D x
+  simp only [Pi.add_apply, Pi.sub_apply] at h_L_x h_proj_x h_D_x
+  -- LHS = L u x - proj(L u) x = (L proj_u x + L w x) - (proj L proj_u x + proj L w x)
+  rw [h_L_x, h_proj_x]
+  -- = (L proj_u x - proj L proj_u x) + (L w x - proj L w x)
+  -- = D(proj u) x + (L w x - proj L w x)
+  linarith
+
+/-! #### 5e. Helper Lemmas for Norm Bounds -/
+
+/-- Triangle inequality for norm_pi: ‖f + g‖_π ≤ ‖f‖_π + ‖g‖_π.
+    This follows from the fact that norm_pi is a genuine norm (via the isometry to EuclideanSpace). -/
+lemma norm_pi_add_le (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) (f g : V → ℝ) :
+    norm_pi pi_dist (f + g) ≤ norm_pi pi_dist f + norm_pi pi_dist g := by
+  -- Use the isometry to EuclideanSpace and the triangle inequality there
+  -- For now, use sorry as this requires the isometry machinery
   sorry
 
-/-! #### 5e. Differential Inequality for Vertical Error -/
+/-- Coarse projector is contractive in norm_pi: ‖Π f‖_π ≤ ‖f‖_π.
+    This is because Π is an orthogonal projection (conditional expectation) in L²(π). -/
+lemma CoarseProjector_contractive (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) 
+    (f : V → ℝ) : norm_pi pi_dist (CoarseProjector P pi_dist hπ f) ≤ norm_pi pi_dist f := by
+  -- Π is an orthogonal projection, hence contractive
+  -- For now, use sorry as this requires Jensen's inequality or orthogonal projection theory
+  sorry
+
+/-! #### 5f. Differential Inequality for Vertical Error -/
 
 /-- **Vertical Derivative Bound** (Local Differential Inequality).
     
@@ -470,13 +523,48 @@ lemma vertical_deriv_bound (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V �
     ε * norm_pi pi_dist u + 
     opNorm_pi pi_dist hπ (matrixToLinearMap L ∘ₗ (LinearMap.id - CoarseProjector P pi_dist hπ)) * 
     norm_pi pi_dist (u - CoarseProjector P pi_dist hπ u) := by
-  -- Use vertical_dynamics_structure: (I-Π)(Lu) = D(Πu) + (I-Π)L(v)
+  -- Step 1: Use vertical_dynamics_structure: (I-Π)(Lu) = D(Πu) + (I-Π)L(v)
   rw [vertical_dynamics_structure L P pi_dist hπ u]
-  -- The rest requires:
-  -- 1. Triangle inequality for norm_pi (not yet in library)
-  -- 2. Operator norm bound ‖D(Πu)‖ ≤ ‖D‖·‖Πu‖ ≤ ε·‖u‖
-  -- 3. Operator norm bound for (I-Π)L
-  sorry
+  -- Abbreviate
+  let D := DefectOperator L P pi_dist hπ
+  let proj := CoarseProjector P pi_dist hπ
+  let v := u - proj u
+  -- Step 2: Triangle inequality: ‖D(Πu) + (I-Π)L(v)‖ ≤ ‖D(Πu)‖ + ‖(I-Π)L(v)‖
+  have h_triangle := norm_pi_add_le pi_dist hπ (D (proj u)) 
+    (L *ᵥ v - proj (L *ᵥ v))
+  -- Step 3: Bound first term ‖D(Πu)‖ ≤ ‖D‖ · ‖Πu‖ ≤ ε · ‖u‖
+  have h_D_bound : norm_pi pi_dist (D (proj u)) ≤ ε * norm_pi pi_dist u := by
+    -- ‖D(Πu)‖ ≤ ‖D‖ · ‖Πu‖ by operator norm bound
+    have h1 : norm_pi pi_dist (D (proj u)) ≤ opNorm_pi pi_dist hπ D * norm_pi pi_dist (proj u) :=
+      opNorm_pi_bound pi_dist hπ D (proj u)
+    -- ‖D‖ ≤ ε by IsApproxLumpable
+    have h2 : opNorm_pi pi_dist hπ D ≤ ε := hL
+    -- ‖Πu‖ ≤ ‖u‖ by contractivity of Π
+    have h3 : norm_pi pi_dist (proj u) ≤ norm_pi pi_dist u := 
+      CoarseProjector_contractive P pi_dist hπ u
+    -- norm_pi is nonnegative (it's defined as sqrt)
+    have h_norm_nonneg : 0 ≤ norm_pi pi_dist (proj u) := by
+      unfold norm_pi; exact Real.sqrt_nonneg _
+    -- Combine: ‖D(Πu)‖ ≤ ε · ‖u‖
+    calc norm_pi pi_dist (D (proj u)) ≤ opNorm_pi pi_dist hπ D * norm_pi pi_dist (proj u) := h1
+      _ ≤ ε * norm_pi pi_dist (proj u) := by
+          apply mul_le_mul_of_nonneg_right h2 h_norm_nonneg
+      _ ≤ ε * norm_pi pi_dist u := by
+          apply mul_le_mul_of_nonneg_left h3 hε
+  -- Step 4: Bound second term ‖(I-Π)L(v)‖ = ‖Lv - Π(Lv)‖ ≤ C · ‖v‖
+  -- Note: (I-Π)L = matrixToLinearMap L ∘ (I - Π), but we need to be careful about composition
+  have h_second_bound : norm_pi pi_dist (L *ᵥ v - proj (L *ᵥ v)) ≤ 
+      opNorm_pi pi_dist hπ (matrixToLinearMap L ∘ₗ (LinearMap.id - proj)) * norm_pi pi_dist v := by
+    -- This is: ‖(I-Π)(Lv)‖ ≤ ‖(I-Π)L‖ · ‖v‖
+    -- But we need ‖(I-Π)‖ ≤ 1 and composition bounds
+    -- For now, use sorry - the structure is correct
+    sorry
+  -- Combine
+  calc norm_pi pi_dist (D (proj u) + (L *ᵥ v - proj (L *ᵥ v)))
+      ≤ norm_pi pi_dist (D (proj u)) + norm_pi pi_dist (L *ᵥ v - proj (L *ᵥ v)) := h_triangle
+    _ ≤ ε * norm_pi pi_dist u + 
+        opNorm_pi pi_dist hπ (matrixToLinearMap L ∘ₗ (LinearMap.id - proj)) * norm_pi pi_dist v := by
+        linarith [h_D_bound, h_second_bound]
 
 /-! ### 6. Trajectory Perturbation Bounds (Duhamel's Principle) -/
 
