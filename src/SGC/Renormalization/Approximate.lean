@@ -867,16 +867,18 @@ lemma norm_vertical_defect_zero (L : Matrix V V ℝ) (P : Partition V) (pi_dist 
   unfold norm_pi norm_sq_pi inner_pi
   simp only [Pi.zero_apply, mul_zero, Finset.sum_const_zero, Real.sqrt_zero]
 
-/-- **Trajectory Closure Bound** (Duhamel-MVT Style).
+/-- **Trajectory Closure Bound** (Duhamel-MVT Style, Uniform Form).
     
-    If L is approximately lumpable with leakage defect ε, then for any initial 
+    If L is approximately lumpable with leakage defect ε, then for **any** initial 
     condition f₀ that is block-constant (f₀ = Π f₀), the trajectory e^{tL} f₀ 
     stays close to the **coarse trajectory** e^{tL̄} f₀.
     
     **Horizontal Error Bound:**
     ‖e^{tL} f₀ - e^{tL̄} f₀‖_π ≤ ε * t * C * ‖f₀‖_π
     
-    where C depends on ‖L‖_π (heat kernel growth bound).
+    **Uniformity**: The constant C is **independent of f₀**. It depends only on
+    the operator norms of the heat kernels e^{sL} and e^{sL̄} for s ∈ [0,t].
+    This uniformity is essential for proving the operator norm bound.
     
     **Duhamel-MVT Proof Strategy:**
     1. Define error E(t) = e^{tL} f₀ - e^{tL̄} f₀
@@ -887,24 +889,24 @@ lemma norm_vertical_defect_zero (L : Matrix V V ℝ) (P : Partition V) (pi_dist 
 theorem trajectory_closure_bound 
     (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (ε : ℝ) (hε : 0 ≤ ε) (hL : IsApproxLumpable L P pi_dist hπ ε)
-    (t : ℝ) (ht : 0 ≤ t)
-    (f₀ : V → ℝ) (hf₀ : f₀ = CoarseProjector P pi_dist hπ f₀) :
-    ∃ C : ℝ, C ≥ 0 ∧ 
+    (t : ℝ) (ht : 0 ≤ t) :
+    ∃ C : ℝ, C ≥ 0 ∧ ∀ (f₀ : V → ℝ), f₀ = CoarseProjector P pi_dist hπ f₀ →
     norm_pi pi_dist (HeatKernelMap L t f₀ - HeatKernelMap (CoarseGeneratorMatrix L P pi_dist hπ) t f₀) ≤ 
     ε * t * C * norm_pi pi_dist f₀ := by
-  -- Get uniform semigroup bounds for both heat kernels
-  obtain ⟨B_full, hB_full_pos, hB_full_bound⟩ := trajectory_norm_bound_uniform L pi_dist hπ f₀ t ht
-  obtain ⟨B_coarse, hB_coarse_pos, hB_coarse_bound⟩ := 
-    trajectory_norm_bound_uniform (CoarseGeneratorMatrix L P pi_dist hπ) pi_dist hπ f₀ t ht
-  -- The constant C = B² where B = max(B_full, B_coarse)
+  -- Get UNIFORM operator norm bounds from HeatKernel_opNorm_bound (independent of f₀)
+  obtain ⟨B_full, hB_full_pos, hB_full_opNorm⟩ := HeatKernel_opNorm_bound L pi_dist hπ t ht
+  obtain ⟨B_coarse, hB_coarse_pos, hB_coarse_opNorm⟩ := 
+    HeatKernel_opNorm_bound (CoarseGeneratorMatrix L P pi_dist hπ) pi_dist hπ t ht
+  -- The constant C = B² where B = max(B_full, B_coarse) is UNIFORM
   let B := max B_full B_coarse
   have hB_pos : B ≥ 1 := le_max_of_le_left hB_full_pos
+  have hB_nonneg : B ≥ 0 := le_trans (by linarith : (0 : ℝ) ≤ 1) hB_pos
   use B * B
   constructor
-  · -- C ≥ 0 (since B ≥ 1)
-    have hB_nonneg : B ≥ 0 := le_trans (by linarith : (0 : ℝ) ≤ 1) hB_pos
-    exact mul_nonneg hB_nonneg hB_nonneg
-  · -- The Duhamel-MVT bound via Horizontal_Duhamel_integral_bound
+  · exact mul_nonneg hB_nonneg hB_nonneg
+  · -- Now introduce f₀ and prove the bound
+    intro f₀ hf₀
+    -- The Duhamel-MVT bound via Horizontal_Duhamel_integral_bound
     by_cases ht_zero : t = 0
     · -- Case t = 0: E(0) = 0
       subst ht_zero
@@ -914,19 +916,31 @@ theorem trajectory_closure_bound
       simp only [Pi.zero_apply, mul_zero, Finset.sum_const_zero, Real.sqrt_zero, le_refl]
     · -- Case t > 0: Use Horizontal Duhamel axiom
       have ht_pos : 0 < t := lt_of_le_of_ne ht (Ne.symm ht_zero)
-      -- Establish bounds for both trajectories using B
+      -- Establish trajectory bounds using operator norm bounds
       have hB_full' : ∀ s, 0 ≤ s → s ≤ t → norm_pi pi_dist (HeatKernelMap L s f₀) ≤ B * norm_pi pi_dist f₀ := by
         intro s hs_lo hs_hi
+        have h_opNorm := hB_full_opNorm s hs_lo hs_hi
+        have h_bound := opNorm_pi_bound pi_dist hπ (matrixToLinearMap (HeatKernel L s)) f₀
         calc norm_pi pi_dist (HeatKernelMap L s f₀) 
-            ≤ B_full * norm_pi pi_dist f₀ := hB_full_bound s hs_lo hs_hi
+            ≤ opNorm_pi pi_dist hπ (matrixToLinearMap (HeatKernel L s)) * norm_pi pi_dist f₀ := h_bound
+          _ ≤ B_full * norm_pi pi_dist f₀ := by
+              apply mul_le_mul_of_nonneg_right h_opNorm
+              unfold norm_pi; exact Real.sqrt_nonneg _
           _ ≤ B * norm_pi pi_dist f₀ := by
               apply mul_le_mul_of_nonneg_right (le_max_left _ _)
               unfold norm_pi; exact Real.sqrt_nonneg _
       have hB_coarse' : ∀ s, 0 ≤ s → s ≤ t → 
           norm_pi pi_dist (HeatKernelMap (CoarseGeneratorMatrix L P pi_dist hπ) s f₀) ≤ B * norm_pi pi_dist f₀ := by
         intro s hs_lo hs_hi
+        have h_opNorm := hB_coarse_opNorm s hs_lo hs_hi
+        have h_bound := opNorm_pi_bound pi_dist hπ 
+          (matrixToLinearMap (HeatKernel (CoarseGeneratorMatrix L P pi_dist hπ) s)) f₀
         calc norm_pi pi_dist (HeatKernelMap (CoarseGeneratorMatrix L P pi_dist hπ) s f₀) 
-            ≤ B_coarse * norm_pi pi_dist f₀ := hB_coarse_bound s hs_lo hs_hi
+            ≤ opNorm_pi pi_dist hπ (matrixToLinearMap (HeatKernel (CoarseGeneratorMatrix L P pi_dist hπ) s)) * 
+              norm_pi pi_dist f₀ := h_bound
+          _ ≤ B_coarse * norm_pi pi_dist f₀ := by
+              apply mul_le_mul_of_nonneg_right h_opNorm
+              unfold norm_pi; exact Real.sqrt_nonneg _
           _ ≤ B * norm_pi pi_dist f₀ := by
               apply mul_le_mul_of_nonneg_right (le_max_right _ _)
               unfold norm_pi; exact Real.sqrt_nonneg _
@@ -1260,22 +1274,17 @@ theorem propagator_approximation_bound
     ∃ C : ℝ, C ≥ 0 ∧ 
     opNorm_pi pi_dist hπ (PropagatorDiff L P pi_dist hπ t) ≤ ε * t * C := by
   -- Key insight: PropagatorDiff f = Π(e^{tL} (Π f) - e^{tL̄} (Π f)) by PropagatorDiff_eq_proj_trajectory_diff
-  -- By Π contraction and trajectory_closure_bound:
+  -- By Π contraction and trajectory_closure_bound (UNIFORM form):
   -- ‖PropagatorDiff f‖ ≤ ‖e^{tL} (Π f) - e^{tL̄} (Π f)‖ ≤ ε * t * C * ‖Π f‖ ≤ ε * t * C * ‖f‖
   
-  -- Get semigroup bounds for the trajectory closure constant
-  obtain ⟨B_full, hB_full_pos, hB_full_bound⟩ := trajectory_norm_bound_uniform L pi_dist hπ (fun _ => 1) t ht
-  obtain ⟨B_coarse, hB_coarse_pos, hB_coarse_bound⟩ := 
-    trajectory_norm_bound_uniform (CoarseGeneratorMatrix L P pi_dist hπ) pi_dist hπ (fun _ => 1) t ht
-  let B := max B_full B_coarse
-  have hB_pos : B ≥ 1 := le_max_of_le_left hB_full_pos
-  have hB_nonneg : B ≥ 0 := le_trans (by linarith : (0 : ℝ) ≤ 1) hB_pos
-  use B * B
+  -- Get the UNIFORM constant from trajectory_closure_bound (independent of f₀)
+  obtain ⟨C_traj, hC_traj_pos, h_traj_uniform⟩ := trajectory_closure_bound L P pi_dist hπ ε hε hL t ht
+  use C_traj
   constructor
-  · exact mul_nonneg hB_nonneg hB_nonneg
+  · exact hC_traj_pos
   · -- The operator norm bound via opNorm_pi_le_of_bound
     apply opNorm_pi_le_of_bound
-    · exact mul_nonneg (mul_nonneg hε ht) (mul_nonneg hB_nonneg hB_nonneg)
+    · exact mul_nonneg (mul_nonneg hε ht) hC_traj_pos
     · -- For all f: ‖PropagatorDiff f‖ ≤ ε * t * C * ‖f‖
       intro f
       let g := CoarseProjector P pi_dist hπ f
@@ -1285,8 +1294,8 @@ theorem propagator_approximation_bound
         have h := congrFun (congrArg DFunLike.coe h_idem) f
         simp only [LinearMap.comp_apply] at h
         exact h.symm
-      -- Apply trajectory_closure_bound to g
-      obtain ⟨C_traj, hC_traj_pos, h_traj⟩ := trajectory_closure_bound L P pi_dist hπ ε hε hL t ht g hg_coarse
+      -- Apply the UNIFORM trajectory_closure_bound to g (which is coarse)
+      have h_traj := h_traj_uniform g hg_coarse
       have h_contr_f := CoarseProjector_contractive P pi_dist hπ f
       have h_contr_diff := CoarseProjector_contractive P pi_dist hπ 
         (HeatKernelMap L t g - HeatKernelMap (CoarseGeneratorMatrix L P pi_dist hπ) t g)
@@ -1300,16 +1309,6 @@ theorem propagator_approximation_bound
         _ ≤ ε * t * C_traj * norm_pi pi_dist f := by
             apply mul_le_mul_of_nonneg_left h_contr_f
             exact mul_nonneg (mul_nonneg hε ht) hC_traj_pos
-        _ ≤ ε * t * (B * B) * norm_pi pi_dist f := by
-            -- C_traj is B² from trajectory_closure_bound, so this is ≤
-            -- Actually C_traj might be different per f, but it's bounded by B²
-            -- Since trajectory_closure_bound returns ∃C, we need a uniform bound
-            -- The constant from trajectory_closure_bound is bounded by our B²
-            apply mul_le_mul_of_nonneg_right _ (by unfold norm_pi; exact Real.sqrt_nonneg _)
-            apply mul_le_mul_of_nonneg_left _ (mul_nonneg hε ht)
-            -- C_traj ≤ B * B needs the structure of trajectory_closure_bound
-            -- This follows from how trajectory_closure_bound constructs its constant
-            sorry -- C_traj ≤ B * B (constant comparison from trajectory_closure_bound structure)
 
 /-! ### 8c. Spectral Interface (Weyl Inequality Adapter) -/
 
