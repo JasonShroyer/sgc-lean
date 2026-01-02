@@ -231,6 +231,45 @@ This is a valid improvement that would:
 requires careful handling of Mathlib's `EuclideanSpace` inner product API. This is a 
 good first issue for contributors familiar with Mathlib's inner product infrastructure.
 
+### Computability & SciLean Integration
+
+The codebase is marked `noncomputable section` due to use of `Real`. However, the 
+*structure* is entirely computable:
+
+- `∑` over `Fintype` is just a loop
+- `Matrix` operations are nested loops
+- No non-constructive axioms in the core logic
+
+**Path to Executability:**
+
+1. **Scalar Abstraction:** Generalize from `ℝ` to a type `R` with `[Field R]`, then
+   instantiate with `Float` for computation.
+
+2. **Partition Refinement:** The `Setoid`-based `Partition` in `Lumpability.lean` is
+   elegant for proofs but `Quotient` types are not VM-computable. A "computable
+   refinement" using `Array Nat` for block assignments would enable execution.
+
+3. **SciLean Integration:** The explicit weight pattern aligns well with SciLean's
+   approach to scientific computing. Future work could provide a transpilation path.
+
+**Status:** Out of scope for verified paper. Documented for future contributors 
+interested in executable extraction.
+
+### ProbabilityMeasure Structure
+
+A reviewer suggested bundling `(pi_dist, h_pos, h_sum)` into a structure. This is now
+available as `ProbabilityMeasure V` in `SGC.Axioms.Geometry`:
+
+```lean
+structure ProbabilityMeasure (V : Type*) [Fintype V] where
+  mass : V → ℝ
+  pos : ∀ v, 0 < mass v
+  sum_one : ∑ v, mass v = 1
+```
+
+**Usage:** New code should prefer `μ : ProbabilityMeasure V`. Existing code retains
+the unbundled form for compatibility. Gradual migration is encouraged.
+
 ---
 
 *Last updated: January 2026*

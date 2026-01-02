@@ -34,7 +34,44 @@ open Finset LinearMap Matrix Real ContinuousLinearMap Submodule Topology Euclide
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
 
-/-! ### 1. Weighted L²(π) Inner Product -/
+/-! ### 1. Probability Measure Structure -/
+
+/-- A probability measure on a finite type V.
+    Bundles the mass function with positivity and normalization hypotheses.
+    
+    This structure is intentionally NOT a typeclass. It is passed explicitly to
+    support measure transformations in renormalization (π → π̄) without type coercions.
+    
+    **Usage:** For new code, prefer passing `μ : ProbabilityMeasure V` over the
+    unbundled triple `(pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (h_sum : ...)`.
+    Existing code uses the unbundled form for compatibility. -/
+structure ProbabilityMeasure (V : Type*) [Fintype V] where
+  /-- The mass function π : V → ℝ -/
+  mass : V → ℝ
+  /-- Positivity: π(v) > 0 for all v -/
+  pos : ∀ v, 0 < mass v
+  /-- Normalization: Σ π(v) = 1 -/
+  sum_one : ∑ v, mass v = 1
+
+namespace ProbabilityMeasure
+
+/-- Coercion to function for convenient access. -/
+instance : CoeFun (ProbabilityMeasure V) (fun _ => V → ℝ) where
+  coe μ := μ.mass
+
+/-- The mass at any point is non-negative. -/
+lemma mass_nonneg (μ : ProbabilityMeasure V) (v : V) : 0 ≤ μ.mass v :=
+  le_of_lt (μ.pos v)
+
+/-- The mass at any point is at most 1. -/
+lemma mass_le_one (μ : ProbabilityMeasure V) (v : V) : μ.mass v ≤ 1 := by
+  have h := μ.sum_one
+  have hv : μ.mass v ≤ ∑ w, μ.mass w := Finset.single_le_sum (fun w _ => μ.mass_nonneg w) (Finset.mem_univ v)
+  linarith
+
+end ProbabilityMeasure
+
+/-! ### 2. Weighted L²(π) Inner Product -/
 
 /-- The constant vector of ones. Using `abbrev` ensures definitional equality 
     with `fun _ => 1` is immediate for the elaborator. -/
