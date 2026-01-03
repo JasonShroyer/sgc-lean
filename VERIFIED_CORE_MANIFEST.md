@@ -13,14 +13,14 @@
 
 ## Architectural Distinction
 
-This library has a **two-tier architecture**:
+This library, constructed in the style of a **verified physics paper**, has a **two-tier architecture**:
 
 1. **Verified Core** (✅): The discrete algebraic theory—spectral stability, functorial 
    preservation, thermodynamic decomposition—is **fully machine-checked with zero sorries**.
 
 2. **Axiomatic Extensions** (⚠️): The continuum limit (Belkin-Niyogi convergence) is 
-   **axiomatized as an input assumption**, not a claimed output. This is the standard
-   "axiomatic interface" pattern in mathematical physics formalization.
+   **axiomatized as an input assumption**, not a claimed output. This is an "axiomatic 
+   interface" pattern common in mathematical physics formalization.
 
 **What we have proved**: "IF the Manifold Hypothesis holds, THEN the discrete stability 
 results apply to the continuum."

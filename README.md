@@ -4,9 +4,9 @@
 [![Lean 4](https://img.shields.io/badge/Lean-4-blue.svg)](https://lean-lang.org/)
 [![Verified Core](https://img.shields.io/badge/core-verified-brightgreen.svg)](VERIFIED_CORE_MANIFEST.md)
 
-This repository contains a formally verified Lean 4 library characterizing the **algebraic structure of metastability** in discrete stochastic systems. It integrates spectral geometry, stochastic thermodynamics, and variational methods to derive bounds on the stability of partitions in finite-state Markov chains.
+This repository contains a formally verified Lean 4 library, constructed in the style of a **verified physics paper**, characterizing the algebraic structure of metastability in discrete stochastic systems. It integrates spectral geometry, stochastic thermodynamics, and variational methods to derive bounds on the stability of partitions in finite-state Markov chains.
 
-**Scope:** The verified core establishes results for **finite state spaces** (`[Fintype V]`). Continuum limits are axiomatized via `SGC.Bridge.Discretization`, providing an honest interface for future formalization of analytic convergence results.
+**Scope:** The verified core establishes results for **finite state spaces** (`[Fintype V]`). This is a deliberate design choice—see [`ARCHITECTURE.md`](ARCHITECTURE.md) for rationale. Continuum limits are axiomatized via `SGC.Bridge.Discretization`, providing an explicit interface for future formalization of analytic convergence results.
 
 **New in v2:** Approximate lumpability is now a *derived theorem*, not an axiom. We prove that small kinematic defects (leakage between blocks) lead to bounded trajectory errors. See `trajectory_closure_bound` and `spectral_stability`.
 
@@ -130,9 +130,11 @@ lake build
 | NCD Extension | ✅ Verified | `NCD_uniform_error_bound` verified. `NCD_spectral_stability` correctly identified as false (secular growth). |
 | Full Build | ✅ Passing | — |
 
-See [`VERIFIED_CORE_MANIFEST.md`](VERIFIED_CORE_MANIFEST.md) for the formal verification statement.
-See [`ARCHITECTURE.md`](ARCHITECTURE.md) for design decisions and rationale.
-See [`CHANGELOG.md`](CHANGELOG.md) for the project history.
+**Documentation:**
+- [`VERIFIED_CORE_MANIFEST.md`](VERIFIED_CORE_MANIFEST.md) — Formal verification statement
+- [`ARCHITECTURE.md`](ARCHITECTURE.md) — Design decisions and rationale for reviewers
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) — How to verify and extend the library
+- [`CHANGELOG.md`](CHANGELOG.md) — Project history
 
 ---
 

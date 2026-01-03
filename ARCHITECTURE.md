@@ -1,11 +1,11 @@
 # SGC Architecture & Design Decisions
 
-This document explains the architectural choices in the SGC library, particularly those
+This document explains the architectural choices and idiosyncrasies in the SGC library, particularly those
 that may appear unconventional to experienced Lean/Mathlib developers.
 
-## Executive Summary
+## Summary
 
-SGC is a **verified physics paper**, not a general-purpose mathematics library. Design
+SGC is constructed in the style of a **verified physics paper**, not a general-purpose mathematics library. Design
 decisions prioritize:
 
 1. **Verifiability** of specific theorems from the physics literature
@@ -43,11 +43,11 @@ Using typeclasses would require:
 2. Coercion machinery between them
 3. Localized instances for each weight
 
-The explicit pattern avoids this complexity while remaining mathematically rigorous.
+The explicit pattern avoids this complexity while attempting to remain mathematically rigorous. The reader should be able to follow the proofs without delving into typeclass resolution.
 
 ### Connection to Mathlib
 
-We **do** establish the connection to Mathlib's infrastructure. See `SGC.Axioms.Geometry`:
+We **do** establish the connections to Mathlib's infrastructure. See `SGC.Axioms.Geometry`:
 
 ```lean
 -- Isometry to standard Euclidean space
@@ -65,7 +65,7 @@ The operator norm bounds use Mathlib's `ContinuousLinearMap.le_opNorm` via this 
 ### Trade-off Acknowledged
 
 Yes, we re-prove `cauchy_schwarz_pi` and bilinearity lemmas. This is approximately 100 lines
-of straightforward algebra. In exchange, we gain:
+of straightforward algebra. This was seen as a necessary trade-off to maintain the reader's ability to follow the proofs without delving into typeclass resolution. In exchange, we gain:
 
 - Direct control over weight transformations
 - Proofs that mirror physics paper notation
@@ -140,14 +140,14 @@ chose ASCII names for:
 3. **IDE compatibility**: Some older VSCode versions or alternative editors may not handle
    Greek variable names in autocomplete/refactoring as smoothly.
 
-For a verified paper intended to be audited by diverse reviewers with varying toolchains,
+For a verified paper repository intended to be audited by diverse reviewers with varying toolchains,
 ASCII robustness outweighs the aesthetic benefit of matching paper notation.
 
 ### Namespace Opens
 
 Several modules use `open Matrix Real Finset` globally. This is acceptable for a terminal
 artifact (verified paper) but would be problematic for a library meant to be imported.
-If SGC is ever refactored into a general-purpose library, these opens should be scoped.
+If SGC is deemed to pass review, it may be refactored into a general-purpose library, and these opens will need to be scoped.
 
 ---
 
@@ -162,7 +162,8 @@ SGC restricts to finite state spaces. This is deliberate:
    that obscures the physics.
 
 2. **Computational Content**: Finite sums are computable. The library can (in principle)
-   be extracted to executable code.
+   be extracted to executable code. This is not a goal of the current project, but it is
+   a potential future direction.
 
 3. **Sufficient for the Paper**: The physics results being verified concern finite
    Markov chains and their coarse-grainings.
@@ -176,7 +177,7 @@ generalization to infinite dimensions harder. This is intentional:
   discrete stochastic systems, not a general functional analysis library.
 - **Generalization would require different proof strategies** (measure theory, 
   operator semigroups, etc.), not just removing the constraint.
-- **Clear scope prevents scope creep.** Future contributors know exactly what the
+- **Clear scope prevents scope creep.** Future contributors will know exactly what the
   library covers without digging through proofs.
 
 ### Extension Path
@@ -206,9 +207,9 @@ literature references and proof sketches.
 
 ### Philosophy
 
-SGC focuses on the **algebraic structure of physics**, not the calculus foundations. We 
+SGC focuses on the **algebraic structure of physics**, not calculus foundations. We 
 axiomatize standard analysis results to close the logical loop on the physics while deferring
-the "Standard Library Debt" to future Mathlib integration.
+the "Standard Library Debt" for future Mathlib integration.
 
 ### The Pattern
 
@@ -220,7 +221,7 @@ Weyl inequality, norm equivalence), we:
 3. **Cite the literature** (textbook or paper reference)
 4. **Use the axiom** to complete the physics proof
 
-This is the "Axiomatic Interface" pattern common in mathematical physics formalization.
+This is an "Axiomatic Interface" pattern that is common in mathematical physics formalization.
 
 ### Analysis Axioms in `Approximate.lean`
 
@@ -247,27 +248,42 @@ Each is a 200-500 line proof requiring substantial Mathlib infrastructure. The p
 content of SGC (approximate lumpability, NCD stability) is **independent** of these 
 calculus details.
 
-### The Honest Claim
+### The Claim of the Formalization
 
 We have machine-verified:
 
-> "IF the standard analysis lemmas hold (they do), THEN approximate lumpability implies
+> "IF the standard analysis lemmas hold, THEN approximate lumpability implies
 > spectral stability with quantitative bounds."
 
-The axioms are **not** original claims—they are bridges to textbook results.
+The axioms are **not** original claims—they are bridges to the standard analysis results.
 
 ---
 
-## Summary for Reviewers
+## For Reviewers
 
-If you're coming from Mathlib development:
+To bridge the gap between thermodynamic intuition and formal verification, the library adopts specific architectural constraints:
 
-1. **The explicit weights are intentional** — not ignorance of typeclasses
-2. **The proof structure follows physics conventions** — not poor factoring
-3. **The finite restriction is a feature** — not a limitation
-4. **The axioms are honest** — not hidden sorries
+### 1. Finite-Dimensional Linear Algebra
 
-The goal is a **verified physics paper**, readable by physicists, checkable by machines.
+**Design Choice:** We utilize explicit weighted inner products on finite graphs (L²(π)) rather than general measure-theoretic structures.
+
+While less general than Mathlib's probability theory, this formulation grants direct access to matrix spectral bounds (e.g., Perron-Frobenius gaps). These bounds are strictly required to derive the Validity Horizon (T ~ 1/ε) results that are central to the theory.
+
+### 2. The "Core" Architecture
+
+**Design Necessity:** The codebase strictly separates Algebraic Verification from Analytic Estimation.
+
+**Rationale:**
+- `SGC/Renormalization/Lumpability`: Contains purely algebraic theorems (commutators, projections) that are fully verified in Lean.
+- `SGC/Axioms`: Encapsulates analytic estimates (e.g., Manifold convergence bounds) as explicit axioms.
+
+This separation ensures that the structural logic of the theory is verified independently of the continuum limit assumptions.
+
+### 3. Thermodynamic Type Safety
+
+**Design Choice:** We enforce strict typing to distinguish between Observables (f ∈ ℝᵛ) and Densities (μ ∈ 𝒟(V)).
+
+This enforces the physical duality between "Work" and "Heat" terms, preventing category errors in the formulation of the Stochastic First Law (Doob-Meyer decomposition).
 
 ---
 
@@ -279,13 +295,13 @@ The current `cauchy_schwarz_pi` is proven from first principles using the polyno
 discriminant method (~50 lines). A reviewer suggested using the isometry `iso_L2_to_std` 
 to transport Mathlib's `abs_real_inner_le_norm` instead.
 
-This is a valid improvement that would:
+This would:
 - Demonstrate tighter Mathlib integration
 - Reduce maintenance burden as Mathlib evolves
 
-**Status:** Deferred. The current proof is correct and educational. Proof transport 
+**Status:** Deferred. The current proof appears to be correct. Proof transport 
 requires careful handling of Mathlib's `EuclideanSpace` inner product API. This is a 
-good first issue for contributors familiar with Mathlib's inner product infrastructure.
+candidate first issue for contributors familiar with Mathlib's inner product infrastructure.
 
 ### Computability & SciLean Integration
 
@@ -308,7 +324,7 @@ The codebase is marked `noncomputable section` due to use of `Real`. However, th
 3. **SciLean Integration:** The explicit weight pattern aligns well with SciLean's
    approach to scientific computing. Future work could provide a transpilation path.
 
-**Status:** Out of scope for verified paper. Documented for future contributors 
+**Status:** Out of scope for a verified paper. Documented for future contributors 
 interested in executable extraction.
 
 ### ProbabilityMeasure Structure
@@ -324,13 +340,13 @@ structure ProbabilityMeasure (V : Type*) [Fintype V] where
 ```
 
 **Usage:** New code should prefer `μ : ProbabilityMeasure V`. Existing code retains
-the unbundled form for compatibility. Gradual migration is encouraged.
+the unbundled form for compatibility. Gradual migration is possible.
 
 ---
 
 ## Research Directions (AGI/Robotics Applications)
 
-The following extensions would bridge the "verified physics paper" to practical 
+The following extensions could bridge the repository to practical 
 Object-Centered AI and robotics applications:
 
 ### Approximate Lumpability ("Wobbly Chair" Theorem)
@@ -347,11 +363,11 @@ The full theorem stack is now verified:
 - `spectral_stability`: Eigenvalue tracking via Weyl inequality
 - `NCD_uniform_error_bound`: Uniform-in-time O(ε/γ) for NCD systems
 
-**Physical Insight**: The attempted `NCD_spectral_stability` theorem was correctly
+**Key Physical Insight**: The attempted `NCD_spectral_stability` theorem was correctly
 identified as **false** by the proof assistant. This reveals that effective theories
 have a validity horizon at t ~ 1/ε due to secular phase drift.
 
-### Dynamic State Spaces ("Cat Injection")
+### Dynamic State Spaces
 
 **Status:** 🔬 Research Direction
 
@@ -369,7 +385,6 @@ This is the mathematical foundation for "Phone a Friend" triggers in active infe
 **Status:** 🔬 Research Direction
 
 Current library analyzes monolithic matrices L. Real systems are composed:
-"I know how an airfoil works, I know how a jet engine works... I can invent an airplane."
 
 **Goal:** Tensor product or disjoint union for spectral objects:
 - Define composite generator L_{A⊗B} from subsystems

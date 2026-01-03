@@ -1,17 +1,21 @@
 # Contributing to SGC
 
-This repository acts as a **formal specification and falsification instrument** for the 
-Spectral Geometry of Consolidation. We distinguish between:
+This repository, constructed in the style of a **verified physics paper**, acts as a 
+formal specification and falsification instrument for the Spectral Geometry of Consolidation.
+
+We distinguish between:
 
 - **Foundational Core** (verified algebraic theorems in `Lumpability.lean`)
-- **Effective Theory** (bound specifications in `Approximate.lean` reliant on standard analysis axioms)
+- **Effective Theory** (bound specifications in `Approximate.lean` supported by standard analysis axioms)
 
-This structure allows us to rigorize the high-level architecture while isolating 
-low-level analytic assumptions.
+This two-tier structure allows us to rigorize the high-level architecture while explicitly 
+isolating analytic assumptions. See [`ARCHITECTURE.md`](ARCHITECTURE.md) for detailed rationale.
 
 ## Core Principle
 
 > **We report exactly what the proof assistant verified—and what it rejected.**
+
+The goal is readable proofs for physicists, checkable by machines.
 
 ## Directory Structure
 
