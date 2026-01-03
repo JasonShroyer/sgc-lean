@@ -11,6 +11,16 @@ We distinguish between:
 This two-tier structure allows us to rigorize the high-level architecture while explicitly 
 isolating analytic assumptions. See [`ARCHITECTURE.md`](ARCHITECTURE.md) for detailed rationale.
 
+## Technical Scope & Design Conventions
+
+To bridge the gap between thermodynamic intuition and formal verification, the library adopts specific architectural constraints:
+
+### 1. Finite-Dimensional Linear Algebra
+We utilize explicit weighted inner products on finite graphs ($L^2(\pi)$) rather than general measure-theoretic structures. This formulation grants direct access to matrix spectral bounds (e.g., Perron-Frobenius gaps) which are strictly required to derive the **Validity Horizon** ($T \sim 1/\epsilon$) results.
+
+### 2. Thermodynamic Type Safety
+We enforce strict typing to distinguish between **Observables** ($f \in \mathbb{R}^V$) and **Densities** ($\mu \in \mathcal{D}(V)$). This enforces the physical duality between "Work" and "Heat" terms, preventing category errors in the formulation of the Stochastic First Law (Doob-Meyer decomposition).
+
 ## Core Principle
 
 > **We report exactly what the proof assistant verified—and what it rejected.**

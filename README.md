@@ -138,6 +138,15 @@ lake build
 
 ---
 
+## Future Roadmap
+
+### Executable Semantics (SciLean Target)
+While the verified core utilizes `Real` for analytic precision (marking definitions `noncomputable`), the algebraic structure over `Fintype` is inherently algorithmic.
+* **Goal:** Instantiate the topological definitions with `Float` using [SciLean](https://github.com/lecopivo/SciLean).
+* **Application:** This will allow the exact same theorem-checked code to compile into high-performance C simulators, effectively creating a "verified physics engine" for computing validity horizons.
+
+---
+
 ## License
 
 Apache 2.0
