@@ -75,6 +75,7 @@ jobs:
     - name: Clean up Lake artifacts
       if: always()
       run: |
-        # Remove .lake directory to prevent post-job cleanup from treating
-        # Lake package git repos as unconfigured submodules
+        echo "Removing .lake directory to prevent submodule cleanup errors..."
+        ls -la .lake || echo ".lake not found"
         rm -rf .lake
+        echo "Cleanup complete"
