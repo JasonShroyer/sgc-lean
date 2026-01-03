@@ -75,7 +75,22 @@ jobs:
     - name: Clean up Lake artifacts
       if: always()
       run: |
-        echo "Removing .lake directory to prevent submodule cleanup errors..."
-        ls -la .lake || echo ".lake not found"
-        rm -rf .lake
-        echo "Cleanup complete"
+        echo "Deleting .lake directory to prevent 'actions/checkout' post-cleanup crash..."
+        
+        if [ -d ".lake" ]; then
+          # 1. Force write permissions on git objects (often read-only)
+          chmod -R 777 .lake
+          
+          # 2. Delete the directory
+          rm -rf .lake
+          
+          echo "✓ .lake directory deleted."
+        else
+          echo "No .lake directory found (clean build)."
+        fi
+        
+        # 3. Double-check to ensure it is gone
+        if [ -d ".lake" ]; then
+           echo "::error::Failed to delete .lake directory!"
+           exit 1
+        fi
