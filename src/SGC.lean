@@ -59,7 +59,7 @@ This is the entry point for the formally verified SGC library.
 
 ## Verification Status
 
-- **v1 Core**: Formally verified with zero `sorry` placeholders
-- **v2 Extensions**: Under construction (contains `sorry` for advanced theorems)
+- **v1 Core**: Formally verified (zero unproven goals)
+- **v2 Extensions**: Under construction (axiomatized pending Mathlib integration)
 
 -/

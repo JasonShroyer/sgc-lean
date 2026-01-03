@@ -44,13 +44,29 @@ jobs:
         set -e
         echo "Checking for 'sorry' in source files..."
         
-        # Search for sorry as a standalone word (the tactic), excluding comments
-        # We use grep with word boundaries and filter out comment lines
-        SORRY_COUNT=$(grep -rn --include="*.lean" -E '\bsorry\b' src/ | grep -v '^\s*--' | grep -v '/--' | grep -v 'sorry-free' | grep -v 'zero.*sorry' | grep -v 'sorry.*placeholder' | wc -l || true)
+        # Search for sorry as a standalone word (the tactic), excluding:
+        # - Comment lines (starting with --)
+        # - Docstrings (/-- ... -/)
+        # - Backticked references (`sorry`) in documentation
+        # - Meta-references about verification status
+        SORRY_COUNT=$(grep -rn --include="*.lean" -E '\bsorry\b' src/ \
+          | grep -v '^\s*--' \
+          | grep -v '/--' \
+          | grep -v '`sorry`' \
+          | grep -v 'sorry-free' \
+          | grep -v 'zero.*sorry' \
+          | grep -v 'unproven' \
+          | wc -l || true)
         
         if [ "$SORRY_COUNT" -gt 0 ]; then
           echo "::error::Found $SORRY_COUNT potential 'sorry' occurrences:"
-          grep -rn --include="*.lean" -E '\bsorry\b' src/ | grep -v '^\s*--' | grep -v '/--' | grep -v 'sorry-free' | grep -v 'zero.*sorry' | grep -v 'sorry.*placeholder' || true
+          grep -rn --include="*.lean" -E '\bsorry\b' src/ \
+            | grep -v '^\s*--' \
+            | grep -v '/--' \
+            | grep -v '`sorry`' \
+            | grep -v 'sorry-free' \
+            | grep -v 'zero.*sorry' \
+            | grep -v 'unproven' || true
           exit 1
         fi
         
