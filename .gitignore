@@ -11,7 +11,6 @@ lean_txt_export/
 
 # Paper and publication materials (not for public release)
 paper/
-scripts/
 corpus/
 
 # Legacy ignored files
