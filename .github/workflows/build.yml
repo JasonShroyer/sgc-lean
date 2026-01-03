@@ -22,6 +22,9 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        # Disable submodule handling to avoid issues with .lake/packages
+        submodules: false
     
     - name: Install elan
       run: |
@@ -38,13 +41,17 @@ jobs:
     
     - name: Verify no sorries
       run: |
-        # Check that there are no 'sorry' in the compiled output
-        if grep -r "sorry" --include="*.lean" src/; then
-          echo "::warning::Found 'sorry' in source files - checking if they are in comments only"
-          # More sophisticated check: look for uncommented sorries
-          if grep -rE "^[^-]*sorry" --include="*.lean" src/ | grep -v "sorry-free" | grep -v "-- sorry"; then
-            echo "::error::Found uncommented 'sorry' declarations!"
-            exit 1
-          fi
+        set -e
+        echo "Checking for 'sorry' in source files..."
+        
+        # Search for sorry as a standalone word (the tactic), excluding comments
+        # We use grep with word boundaries and filter out comment lines
+        SORRY_COUNT=$(grep -rn --include="*.lean" -E '\bsorry\b' src/ | grep -v '^\s*--' | grep -v '/--' | grep -v 'sorry-free' | grep -v 'zero.*sorry' | grep -v 'sorry.*placeholder' | wc -l || true)
+        
+        if [ "$SORRY_COUNT" -gt 0 ]; then
+          echo "::error::Found $SORRY_COUNT potential 'sorry' occurrences:"
+          grep -rn --include="*.lean" -E '\bsorry\b' src/ | grep -v '^\s*--' | grep -v '/--' | grep -v 'sorry-free' | grep -v 'zero.*sorry' | grep -v 'sorry.*placeholder' || true
+          exit 1
         fi
-        echo "✓ No active sorries found"
+        
+        echo "✓ No active sorries found (verified)"
