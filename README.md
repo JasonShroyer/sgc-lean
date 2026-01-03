@@ -6,7 +6,7 @@
 
 An experimental formalization of the algebraic structure of metastability in discrete stochastic systems. This library integrates spectral geometry, stochastic thermodynamics, and variational methods to derive bounds on the stability of partitions in finite-state Markov chains.
 
-**Note:** This project was developed by a non-academic (music/CS background) exploring formal verification with AI assistance. Feedback on the rigor of definitions and proofs is welcome.
+**Note:** This project was developed by a non-academic enthusiast (music background, self-taught programmer) using AI to explore formal verification. I treat Lean 4 as a "falsification engine" to test physical intuitions against rigorous logic, preventing self-delusion. I am essentially steering the AI to build the mathematical objects I intuit. Feedback on these definitions is very welcome.
 
 **Scope:** The verified core establishes results for **finite state spaces** (`[Fintype V]`). This is a deliberate design choice—see [`ARCHITECTURE.md`](ARCHITECTURE.md) for rationale. Continuum limits are axiomatized via `SGC.Bridge.Discretization`, providing an explicit interface for future formalization of analytic convergence results.
 
@@ -146,6 +146,15 @@ lake build
 While the verified core utilizes `Real` for analytic precision (marking definitions `noncomputable`), the algebraic structure over `Fintype` is inherently algorithmic.
 * **Goal:** Instantiate the topological definitions with `Float` using [SciLean](https://github.com/lecopivo/SciLean).
 * **Application:** This will allow the exact same theorem-checked code to compile into high-performance C simulators, effectively creating a "verified physics engine" for computing validity horizons.
+
+---
+
+## Community & Feedback
+
+I am looking for collaborators to help refute or refine these definitions.
+
+* **Discussion:** Open a [GitHub Issue](https://github.com/JasonShroyer/sgc-lean/issues)
+* **Contact:** Find me on the [Lean Zulip](https://leanprover.zulipchat.com/) as **Jason Shroyer**.
 
 ---
 
