@@ -71,3 +71,10 @@ jobs:
         fi
         
         echo "✓ No active sorries found (verified)"
+    
+    - name: Clean up Lake artifacts
+      if: always()
+      run: |
+        # Remove .lake directory to prevent post-job cleanup from treating
+        # Lake package git repos as unconfigured submodules
+        rm -rf .lake
