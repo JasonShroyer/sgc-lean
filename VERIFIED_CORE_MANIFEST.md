@@ -44,15 +44,28 @@ This commit represents the **verified algebraic core** of the SGC formalism.
 | **Spectral** | `src/SGC/Spectral/` | Heat kernel bounds, spectral gap theory | Levin & Peres (2017) |
 
 ### Renormalization Pillar (Scale Invariance)
-| Module | Path | Key Theorem | Theoretical Basis |
-|--------|------|-------------|-------------------|
-| **Lumpability** | `src/SGC/Renormalization/Lumpability.lean` | `gap_non_decrease` | Kemeny & Snell (1976) |
-| **Approximate** | `src/SGC/Renormalization/Approximate.lean` | `spectral_stability` (verified) | Simon & Ando (1961) |
 
-#### Approximate Lumpability (FULLY VERIFIED)
+This pillar has a **two-layer structure**:
+
+| Layer | Module | Path | Status |
+|-------|--------|------|--------|
+| **Foundational Core** | Lumpability | `src/SGC/Renormalization/Lumpability.lean` | ✅ Fully Verified (zero axioms) |
+| **Effective Theory** | Approximate | `src/SGC/Renormalization/Approximate.lean` | ✅ Verified (axiom-supported) |
+
+**Foundational Core** (`Lumpability.lean`): Pure algebraic proofs of spectral gap preservation.
+Key theorem: `gap_non_decrease`. No axioms—every step is machine-checked.
+
+**Effective Theory** (`Approximate.lean`): Bound specifications for approximate systems.
+Key theorems: `trajectory_closure_bound`, `spectral_stability`, `NCD_uniform_error_bound`.
+Uses analysis axioms (Duhamel, Weyl) to bridge to standard functional analysis.
+
+This structure creates a firewall: the algebraic core is unassailable, while the effective
+theory explicitly declares its modeling assumptions.
+
+#### Approximate Lumpability (Effective Theory — Axiom-Supported)
 
 The `Approximate.lean` module implements the **verified theorem stack** for approximate lumpability.
-**Status: 100% Verified (Zero Sorries)**
+**Status: Zero Sorries (Axiom-Supported)**
 
 | Theorem | Status | Description |
 |---------|--------|-------------|

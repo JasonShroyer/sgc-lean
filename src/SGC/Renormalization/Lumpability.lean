@@ -565,32 +565,28 @@ def SpectralGap (L : Matrix V V ℝ) (pi_dist : V → ℝ) : ℝ :=
 def SpectralGap_bar (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) : ℝ :=
   sInf (RayleighSetQuot L P pi_dist)
 
-/-! ### 9b. Approximate Lumpability Leakage Bound (DEPRECATED) -/
+/-! ### 9b. Approximate Lumpability (RETIRED)
 
-/-- **Approximate Lumpability Leakage Bound** (DEPRECATED)
+**Historical Note**: The static `approximate_gap_leakage_bound` axiom has been retired.
 
-    **⚠️ DEPRECATED**: This axiom is superseded by the trajectory perturbation theorem
-    in `SGC.Renormalization.Approximate`. The new approach:
-    1. Defines `IsApproxLumpable` via operator norm of the defect D = L∘Π - Π∘L
-    2. Proves `approx_trajectory_closure_bound` via Duhamel's principle
-    
-    The trajectory-based approach is more robust and physically meaningful than
-    spectral gap perturbation bounds, which require delicate eigenvalue analysis.
-    
-    **Original Statement**: When L is approximately lumpable with defect ε:
-    SpectralGap_bar ≥ SpectralGap - C * ε
-    
-    **Migration**: Use `SGC.Approximate.IsApproxLumpable` and 
-    `SGC.Approximate.approx_trajectory_closure_bound` instead.
-    
-    **References**: 
-    - Stewart & Sun, "Matrix Perturbation Theory" (1990)
-    - Kato, "Perturbation Theory for Linear Operators" (1995) -/
-axiom approximate_gap_leakage_bound 
-    (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (ε : ℝ)
-    (hε : 0 ≤ ε)
-    (hL : IsRowSumApproxLumpable L P ε) :
-    ∃ C : ℝ, C ≥ 0 ∧ SpectralGap_bar L P pi_dist ≥ SpectralGap L pi_dist - C * ε
+Our investigation moved to the dynamic, path-wise perspective formalized in 
+`SGC.Renormalization.Approximate.trajectory_closure_bound`. We found that static 
+spectral gap perturbation bounds were insufficient to capture the finite-time 
+validity horizons (t ≪ 1/ε) inherent in NCD systems.
+
+The new approach:
+1. Defines `IsApproxLumpable` via operator norm of the defect D = (I-Π)LΠ
+2. Proves `trajectory_closure_bound` via Duhamel's principle (O(ε·t) error)
+3. Proves `spectral_stability` via Weyl inequality (eigenvalue tracking)
+4. Proves `NCD_uniform_error_bound` for uniform-in-time O(ε/γ) bounds
+
+**Migration**: Use `SGC.Approximate.IsApproxLumpable` and the verified theorem stack.
+
+**References**: 
+- Stewart & Sun, "Matrix Perturbation Theory" (1990)
+- Kato, "Perturbation Theory for Linear Operators" (1995)
+- Simon & Ando, "Aggregation of Variables in Dynamic Systems" (1961)
+-/
 
 /-- **Spectral Gap Non-Decrease (Simple Form)**: inf over block-constant ≥ inf over all. -/
 theorem gap_block_ge_gap_all (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)

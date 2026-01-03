@@ -1,11 +1,19 @@
 # Contributing to SGC
 
-This repository uses a **Living Paper** workflow where the LaTeX paper in `/paper` 
-is co-located with formally verified Lean 4 proofs in `/src`.
+This repository acts as a **formal specification and falsification instrument** for the 
+Spectral Geometry of Consolidation. We distinguish between:
+
+- **Foundational Core** (verified algebraic theorems in `Lumpability.lean`)
+- **Effective Theory** (bound specifications in `Approximate.lean` reliant on standard analysis axioms)
+
+This structure allows us to rigorize the high-level architecture while isolating 
+low-level analytic assumptions.
 
 ## Core Principle
 
 > **Every major claim in the paper must cite a formal definition or theorem in `/src`.**
+> 
+> **We report exactly what the proof assistant verified—and what it rejected.**
 
 ## Directory Structure
 
