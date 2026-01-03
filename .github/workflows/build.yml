@@ -72,25 +72,22 @@ jobs:
         
         echo "✓ No active sorries found (verified)"
     
-    - name: Clean up Lake artifacts
+    - name: Final Cleanup (Scorched Earth)
       if: always()
       run: |
-        echo "Deleting .lake directory to prevent 'actions/checkout' post-cleanup crash..."
+        echo "Cleaning up build artifacts..."
         
+        # 1. Force delete .lake (handle read-only git objects)
         if [ -d ".lake" ]; then
-          # 1. Force write permissions on git objects (often read-only)
-          chmod -R 777 .lake
-          
-          # 2. Delete the directory
-          rm -rf .lake
-          
-          echo "✓ .lake directory deleted."
-        else
-          echo "No .lake directory found (clean build)."
+           chmod -R 777 .lake
+           rm -rf .lake
+           echo "✓ .lake directory deleted."
         fi
-        
-        # 3. Double-check to ensure it is gone
-        if [ -d ".lake" ]; then
-           echo "::error::Failed to delete .lake directory!"
-           exit 1
+
+        # 2. Nuke the .git directory
+        # This prevents the 'actions/checkout' post-run step from trying
+        # to scan for submodules in a directory we just confused.
+        if [ -d ".git" ]; then
+           rm -rf .git
+           echo "✓ .git directory deleted (preventing post-job git hooks)."
         fi
