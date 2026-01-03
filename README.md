@@ -4,7 +4,9 @@
 [![Lean 4](https://img.shields.io/badge/Lean-4-blue.svg)](https://lean-lang.org/)
 [![Verified Core](https://img.shields.io/badge/core-verified-brightgreen.svg)](VERIFIED_CORE_MANIFEST.md)
 
-This repository contains a formally verified Lean 4 library, constructed in the style of a **verified physics paper**, characterizing the algebraic structure of metastability in discrete stochastic systems. It integrates spectral geometry, stochastic thermodynamics, and variational methods to derive bounds on the stability of partitions in finite-state Markov chains.
+An experimental formalization of the algebraic structure of metastability in discrete stochastic systems. This library integrates spectral geometry, stochastic thermodynamics, and variational methods to derive bounds on the stability of partitions in finite-state Markov chains.
+
+**Note:** This project was developed by a non-academic (music/CS background) exploring formal verification with AI assistance. Feedback on the rigor of definitions and proofs is welcome.
 
 **Scope:** The verified core establishes results for **finite state spaces** (`[Fintype V]`). This is a deliberate design choice—see [`ARCHITECTURE.md`](ARCHITECTURE.md) for rationale. Continuum limits are axiomatized via `SGC.Bridge.Discretization`, providing an explicit interface for future formalization of analytic convergence results.
 
