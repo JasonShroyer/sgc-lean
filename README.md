@@ -105,20 +105,46 @@ The proof assistant correctly rejected `NCD_spectral_stability` as false. This i
 
 ---
 
-## Build & Verify
+## Getting Started
 
-Prerequisites: `elan`, `lake`.
+### System Requirements
 
+- **Disk Space:** ~1 GB (includes Mathlib cache and build artifacts)
+- **Network:** Requires downloading Mathlib dependencies (approx. 10 mins on standard connections)
+
+### Prerequisites
+
+This project uses [Lean 4](https://lean-lang.org/) with Mathlib. You'll need `elan` (the Lean version manager) installed.
+
+**macOS / Linux:**
 ```bash
-# Clone the repository
+curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh
+```
+
+**Windows:**
+Download the installer from [github.com/leanprover/elan](https://github.com/leanprover/elan/releases)
+
+### Build Instructions
+
+**Step 1: Clone the repository**
+```bash
 git clone https://github.com/JasonShroyer/sgc-lean.git
 cd sgc-lean
-
-# Build the library
-lake build
-
-# The library root is located at src/SGC.lean
 ```
+
+**Step 2: Troubleshooting — Clean Artifacts**
+
+If you encounter path conflicts or build errors, remove the local Lake cache:
+```bash
+rm -rf .lake
+```
+
+**Step 3: Build**
+```bash
+lake build
+```
+
+The library root is located at `src/SGC.lean`.
 
 ---
 
