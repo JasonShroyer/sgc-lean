@@ -141,6 +141,10 @@ rm -rf .lake
 
 **Step 3: Build**
 ```bash
+# Fetch pre-compiled Mathlib binaries (saves hours of compilation time)
+lake exe cache get
+
+# Build the project
 lake build
 ```
 

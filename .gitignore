@@ -6,6 +6,7 @@ lake-packages/
 # Local environment configuration
 .autoenv
 .DS_Store
+.vscode/settings.json
 
 # Theoretical context (local AI reference only)
 theory_context/
