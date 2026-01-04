@@ -7,7 +7,10 @@ Authors: SGC Formalization Team
 -- Foundation: The L²(π) Inner Product Structure
 import SGC.Axioms.Geometry
 
--- Spectral Pillar: Spectral Gap Monotonicity
+-- Spectral Pillar: Heat Kernel and Sector Envelope
+import SGC.Spectral.Envelope
+
+-- Renormalization Pillar: Spectral Gap Monotonicity
 import SGC.Renormalization.Lumpability
 
 -- Approximate Renormalization: Trajectory bounds for leakage defects

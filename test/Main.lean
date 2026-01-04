@@ -1,8 +1,9 @@
 import SGC.Spectral.Envelope
 import SGC.Renormalization.Lumpability
+import SGC.Renormalization.Approximate
 import Mathlib.LinearAlgebra.Matrix.Notation
 
-open Matrix SGC Real
+open Matrix SGC Real SGC.Spectral SGC.Approximate
 
 /-!
 # Sanity Checks for SGC Library
@@ -43,7 +44,7 @@ def twoStateGenerator : Matrix (Fin 2) (Fin 2) ℝ :=
   ![![-1, 1], ![1, -1]]
 
 /-- Uniform distribution on 2 states. -/
-def uniformDist2 : Fin 2 → ℝ := fun _ => 1/2
+noncomputable def uniformDist2 : Fin 2 → ℝ := fun _ => 1/2
 
 /-- The trivial partition: each state in its own block. -/
 def trivialPartition2 : Setoid (Fin 2) := ⟨Eq, ⟨Eq.refl, Eq.symm, Eq.trans⟩⟩
@@ -69,7 +70,7 @@ def main : IO Unit := do
   let t : ℝ := 1.0
 
   -- 4. Attempt to compute the HeatKernel (this triggers the MatrixExponential library)
-  let K := HeatKernel L t
+  let K := Spectral.HeatKernel L t
 
   -- 5. Print a success message
   IO.println "SGC sanity checks passed. Structures are non-vacuous."
