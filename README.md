@@ -94,13 +94,13 @@ The proof assistant correctly rejected `NCD_spectral_stability` as false. This i
 
 | Theorem | Module | Description |
 |---------|--------|-------------|
-| `FunctorialHeatDominanceTheorem` | `SGC.Spectral` | Spectral stability of non-reversible chains |
+| `spectral_stability_bound` | `SGC.Spectral.Defs` | Spectral stability of non-reversible chains |
 | `gap_non_decrease` | `SGC.Renormalization.Lumpability` | Spectral gap preservation under coarse-graining |
 | `trajectory_closure_bound` | `SGC.Renormalization.Approximate` | Trajectory error O(ε·t) for approx-lumpable systems |
 | `spectral_stability` | `SGC.Renormalization.Approximate` | Eigenvalue tracking (verified via Weyl) |
 | `NCD_uniform_error_bound` | `SGC.Renormalization.Approximate` | Uniform-in-time O(ε/γ) bound for NCD systems |
 | `doob_decomposition` | `SGC.Thermodynamics.DoobMeyer` | Stochastic thermodynamic decomposition of surprise |
-| `emergence_is_necessary` | `SGC.Variational.LeastAction` | Variational derivation of drift maximization |
+| `variational_drift_optimality` | `SGC.Variational.LeastAction` | Variational derivation of drift maximization |
 | `information_geometry_equivalence` | `SGC.Information.Equivalence` | Geometry ⟺ Information equivalence |
 
 ---

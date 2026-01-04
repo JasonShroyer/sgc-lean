@@ -80,7 +80,7 @@ This installs the pre-push hook. After installation, any attempt to push code
 that breaks the Lean build will be rejected with:
 
 ```
-ABORT: PROOF BREAKAGE DETECTED
+ERROR: Build failed. Push rejected.
 ```
 
 ## Inputting Mathematical Symbols
