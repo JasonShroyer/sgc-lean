@@ -36,13 +36,19 @@ The goal is readable proofs for physicists, checkable by machines.
 
 ## Build & Test
 
-To verify the library:
+**Verification:** Compile and check all proofs (ensures no `sorry` remains):
 
 ```bash
 lake build
 ```
 
-This compiles all Lean files and checks that all proofs are complete (zero unproven goals).
+**Running Tests:** To execute the sanity checks and see output:
+
+```bash
+lake env lean test/Main.lean
+```
+
+This uses the interpreter and runs instantly with cached bytecode.
 
 ## Recommended Tools
 

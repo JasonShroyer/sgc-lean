@@ -150,6 +150,16 @@ lake build
 
 The library root is located at `src/SGC.lean`.
 
+### Running Tests
+
+To run the sanity checks and see output (axiom transparency, concrete examples):
+
+```bash
+lake env lean test/Main.lean
+```
+
+This uses the Lean interpreter and runs instantly with cached bytecode.
+
 ---
 
 ## Verification Status
@@ -176,6 +186,10 @@ The library root is located at `src/SGC.lean`.
 While the verified core utilizes `Real` for analytic precision (marking definitions `noncomputable`), the algebraic structure over `Fintype` is inherently algorithmic.
 * **Goal:** Instantiate the topological definitions with `Float` using [SciLean](https://github.com/lecopivo/SciLean).
 * **Application:** This will allow the exact same theorem-checked code to compile into high-performance C simulators, effectively creating a "verified physics engine" for computing validity horizons.
+
+### Browser-Based Verification (Planned)
+
+Upcoming integration with [Gitpod](https://gitpod.io/) to allow one-click review and verification of proofs directly in the browser—no local installation required.
 
 ---
 
