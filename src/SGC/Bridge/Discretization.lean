@@ -30,7 +30,7 @@ Laplace-Beltrami operator.
 Following SGC constraints:
 1. **Axiomatic Continuum**: Treat the continuous operator as an oracle
 2. **Taylor Expansion Focus**: Use algebraic Taylor properties
-3. **No Measure Theory**: Avoid Lebesgue integration on manifolds
+3. **Deferred Measure Theory**: Lebesgue integration on manifolds deferred to Bridge module
 4. **L²(π) Consistency**: Discrete π converges to volume density
 
 ## Main Definitions
@@ -125,8 +125,8 @@ noncomputable def ScaledLaplacian (W : Matrix V V ℝ) (ε : ℝ) : Matrix V V �
 /-! ### 5. Axiomatic Continuum Framework
 
 We treat the continuous Laplacian as an oracle rather than constructing it
-from manifold theory. This allows us to state convergence properties without
-the heavy machinery of differential geometry. -/
+from manifold theory. Full differential geometry formalization is deferred to
+a future Bridge module that will prove isomorphism at fixed snapshots. -/
 
 /-- An abstract **continuous Laplacian target** - the limit operator that 
     our discrete operators should approximate. -/

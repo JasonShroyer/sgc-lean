@@ -33,7 +33,8 @@ where:
 ## Design Philosophy
 
 Following SGC constraints:
-1. **Discrete time only** - avoid SDEs and heavy measure theory
+1. **Discrete time only** - using explicit structures to handle the dynamic sigma-algebras 
+   required by renormalization (where standard static typeclasses imply a single fixed measure)
 2. **Finset sums** - E[f(X')|X=x] = Σ_y P_{xy} f(y)
 3. **No sorries** - elementary algebra on expectations
 
@@ -49,8 +50,11 @@ predictable (F_n-measurable) and E[ΔM | F_n] = 0.
 * [Friston] The free-energy principle
 
 **NOTE**: This module restricts thermodynamic analysis to **discrete time** and
-`[Fintype V]` state spaces to avoid measure-theoretic overhead. This is a deliberate
-scope decision. See `ARCHITECTURE.md` for the full rationale.
+`[Fintype V]` state spaces, using explicit structures to handle the dynamic sigma-algebras 
+required by renormalization. See `ARCHITECTURE.md` for the full rationale.
+
+**TODO (Bridge Module)**: Connect to `Mathlib.Probability.Martingale` (see Kexing Ying's 
+formalization work) via a Bridge module that proves isomorphism at fixed snapshots.
 -/
 
 namespace SGC
@@ -104,7 +108,8 @@ lemma surprise_nonneg (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x)
     
     E[f(X') | X = x] = Σ_y P_{xy} f(y)
     
-    This is the discrete, Finset-based definition avoiding measure theory. -/
+    This explicit Finset-based definition supports the dynamic sigma-algebras required 
+    by renormalization. Bridge module will prove isomorphism to `Mathlib.Probability.Kernel.integral`. -/
 def condExp (P : Matrix V V ℝ) (f : V → ℝ) (x : V) : ℝ :=
   ∑ y, P x y * f y
 

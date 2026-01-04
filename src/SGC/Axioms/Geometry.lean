@@ -13,7 +13,8 @@ import Mathlib.Tactic
   Core L²(π) Geometry for the Stochastic Geometry of Consolidation.
   
   This file provides the foundational weighted inner product space structure
-  used throughout SGC. All geometry is explicit (no heavy typeclasses).
+  used throughout SGC, using explicit structures to handle the dynamic sigma-algebras 
+  required by renormalization.
   
   ## Design Pattern: Explicit Weight Pattern
   - All geometry takes `pi_dist : V → ℝ` explicitly
@@ -21,9 +22,12 @@ import Mathlib.Tactic
   - No custom wrapper types like WeightedSpace
   
   **NOTE**: This module uses an **Explicit Weight Pattern** (`pi_dist` as an argument)
-  rather than Mathlib's `InnerProductSpace` typeclasses. This design supports measure
-  changes (e.g., π → π̄ in renormalization) without type-level gymnastics.
-  See `ARCHITECTURE.md` for the full rationale.
+  rather than Mathlib's `InnerProductSpace` typeclasses. This design handles the 
+  dynamic sigma-algebras required by renormalization (where standard static typeclasses 
+  imply a single fixed measure). See `ARCHITECTURE.md` for the full rationale.
+  
+  **TODO (Bridge Module)**: Prove that at any fixed snapshot, these structures instantiate 
+  `Mathlib.Probability.Kernel` and are isomorphic to `PhysLean.IsHamiltonian` generators.
 -/
 
 noncomputable section

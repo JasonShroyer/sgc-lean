@@ -1265,10 +1265,13 @@ This section translates the trajectory bounds into **operator approximation** an
 **Key Result**: The coarse propagator e^{t L̄} (lifted to V) approximates
 the full propagator e^{tL} restricted to coarse functions.
 
-Since our repository uses custom weighted norms (`inner_pi`), we cannot simply
-import Mathlib's eigenvalue machinery. Instead we:
-1. Prove **Operator Stability** (verified)
-2. Assume a **Weyl Inequality** interface (axiomatic bridge to spectral theory)
+This module uses explicit weighted norms (`inner_pi`) to handle the dynamic sigma-algebras
+required by renormalization. The approach:
+1. Prove **Operator Stability** (verified from first principles)
+2. Assume a **Weyl Inequality** interface (standard functional analysis, axiomatized)
+
+**TODO (Bridge Module)**: Discharge these axioms by proving isomorphism to Mathlib's 
+`Analysis.InnerProductSpace.Spectrum` at fixed measure snapshots.
 -/
 
 /-! ### 8a. Propagator Definitions -/

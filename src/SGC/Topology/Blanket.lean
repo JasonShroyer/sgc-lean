@@ -10,7 +10,9 @@ import Mathlib.LinearAlgebra.Matrix.ToLin
 # Markov Blankets via Geometric Conditional Independence
 
 This module defines Markov Blankets using an **L²(π) orthogonality proxy** for 
-conditional independence, avoiding the complexity of Shannon entropy.
+conditional independence. This geometric approach supports the dynamic sigma-algebras 
+required by renormalization (where standard information-theoretic definitions assume 
+a single fixed measure).
 
 ## Mathematical Background
 

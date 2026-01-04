@@ -6,6 +6,10 @@
   **NOTE**: The main theorem `spectral_stability_bound` uses a **monolithic proof
   structure** (~370 lines) to mirror the physics literature (Steps 1-8). This is
   intentional for reviewability. See `ARCHITECTURE.md` for the full rationale.
+  
+  **TODO (Bridge Module)**: Refactor this monolithic proof into lemmas matching 
+  Mathlib's `Analysis.InnerProductSpace.Spectrum` style, proving isomorphism at 
+  fixed snapshots while preserving the physics narrative in comments.
 -/
 
 import SGC.Spectral.Envelope
