@@ -30,7 +30,7 @@ The goal is readable proofs for physicists, checkable by machines.
 ## Directory Structure
 
 ```
-/src          - Lean 4 source files (READONLY - do not modify without authorization)
+/src          - Verified Core (Stable - please discuss major refactors in an Issue first)
 /scripts      - Automation scripts (consistency checks, safeguards)
 ```
 
@@ -54,8 +54,8 @@ The proofs in `/src` are **sorry-free** and must remain that way. We enforce thi
 2. **Pre-push hook** (optional): Run `python scripts/install_safeguards.py` to install 
    a local Git hook that runs `lake build` before every push.
 
-3. **No unauthorized edits**: Contributors must NOT modify any `.lean` file in `/src`
-   without explicit "Refactor Authorization" from the maintainers.
+3. **Stability First**: Modifications to the verified core must maintain proof integrity.
+   Please discuss significant changes in an issue before opening a Pull Request.
 
 ## Installing Safeguards
 
@@ -69,6 +69,21 @@ that breaks the Lean build will be rejected with:
 ```
 ABORT: PROOF BREAKAGE DETECTED
 ```
+
+## Inputting Mathematical Symbols
+
+New to Lean? You can type mathematical symbols using LaTeX-style abbreviations followed by `TAB` or `SPACE`.
+
+| Input | Symbol |
+|-------|--------|
+| `\R` | `ℝ` |
+| `\pi` | `π` |
+| `\all` | `∀` |
+| `\sum` | `∑` |
+| `\to` | `→` |
+| `\le` | `≤` |
+
+See the [Lean 4 VSCode extension](https://github.com/leanprover/vscode-lean4) for the full abbreviation list.
 
 ## Questions?
 
