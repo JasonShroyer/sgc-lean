@@ -3,6 +3,10 @@ build/
 lake-packages/
 .lake/
 
+# Local environment configuration
+.autoenv
+.DS_Store
+
 # Theoretical context (local AI reference only)
 theory_context/
 
