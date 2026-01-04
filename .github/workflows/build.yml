@@ -72,7 +72,7 @@ jobs:
         
         echo "✓ No active sorries found (verified)"
     
-    - name: Final Cleanup (Scorched Earth)
+    - name: Post-job Cleanup
       if: always()
       run: |
         echo "Cleaning up build artifacts..."
@@ -84,7 +84,7 @@ jobs:
            echo "✓ .lake directory deleted."
         fi
 
-        # 2. Nuke the .git directory
+        # 2. Remove the .git directory
         # This prevents the 'actions/checkout' post-run step from trying
         # to scan for submodules in a directory we just confused.
         if [ -d ".git" ]; then

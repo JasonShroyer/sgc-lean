@@ -92,6 +92,11 @@ The main theorem `spectral_stability_bound` is ~370 lines. This is intentional:
    have h_LK_opNorm : opNorm_pi ... ≤ L_opNorm * Real.exp ... := by ...
    ```
 
+4. **Explicit vs. Implicit Structure**: While standard Lean practice advocates for small 
+   lemmas (<30 lines), we intentionally violate this rule to keep the physical argument 
+   contiguous. We treat the proof state as a narrative document, mirroring the appendix 
+   of a physics paper.
+
 ### Lemmatization Strategy
 
 Reusable building blocks **are** extracted:

@@ -18,14 +18,12 @@ import stat
 # The pre-push hook script content
 PRE_PUSH_HOOK = r'''#!/bin/sh
 #
-# IRONCLAD PRE-PUSH HOOK
+# SGC Pre-Push Hook
 # Prevents pushing if Lean proofs fail to build.
 # Installed by: scripts/install_safeguards.py
 #
 
-echo "╔══════════════════════════════════════════════════════════════╗"
-echo "║  IRONCLAD SAFEGUARD: Running 'lake build' before push...    ║"
-echo "╚══════════════════════════════════════════════════════════════╝"
+echo "[pre-push] Running 'lake build' to verify proofs..."
 echo ""
 
 # Run lake build from the repository root
@@ -36,28 +34,17 @@ BUILD_EXIT_CODE=$?
 
 if [ $BUILD_EXIT_CODE -ne 0 ]; then
     echo ""
-    echo "╔══════════════════════════════════════════════════════════════╗"
-    echo "║  ██████╗ ██████╗  ██████╗  ██████╗ ███████╗    ██████╗      ║"
-    echo "║  ██╔══██╗██╔══██╗██╔═══██╗██╔═══██╗██╔════╝    ██╔══██╗     ║"
-    echo "║  ██████╔╝██████╔╝██║   ██║██║   ██║█████╗      ██║  ██║     ║"
-    echo "║  ██╔═══╝ ██╔══██╗██║   ██║██║   ██║██╔══╝      ██║  ██║     ║"
-    echo "║  ██║     ██║  ██║╚██████╔╝╚██████╔╝██║         ██████╔╝     ║"
-    echo "║  ╚═╝     ╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝         ╚═════╝      ║"
-    echo "╠══════════════════════════════════════════════════════════════╣"
-    echo "║                                                              ║"
-    echo "║   ABORT: PROOF BREAKAGE DETECTED                            ║"
-    echo "║                                                              ║"
-    echo "║   The Lean build failed. Push has been REJECTED.            ║"
-    echo "║   Fix all errors before pushing.                            ║"
-    echo "║                                                              ║"
-    echo "╚══════════════════════════════════════════════════════════════╝"
+    echo "=========================================="
+    echo "ERROR: Build failed. Push rejected."
+    echo ""
+    echo "The Lean build did not complete successfully."
+    echo "Please fix all errors before pushing."
+    echo "=========================================="
     exit 1
 fi
 
 echo ""
-echo "╔══════════════════════════════════════════════════════════════╗"
-echo "║  ✓ BUILD PASSED - Push authorized                           ║"
-echo "╚══════════════════════════════════════════════════════════════╝"
+echo "[pre-push] ✓ Build passed. Push authorized."
 echo ""
 
 exit 0
@@ -106,16 +93,15 @@ def install_hook():
     except Exception:
         pass  # Windows doesn't need this
     
-    print("╔══════════════════════════════════════════════════════════════╗")
-    print("║  IRONCLAD SAFEGUARD INSTALLED                               ║")
-    print("╠══════════════════════════════════════════════════════════════╣")
-    print(f"║  Hook location: .git/hooks/pre-push                         ║")
-    print("║                                                              ║")
-    print("║  Protection enabled:                                        ║")
-    print("║  • Every push will run 'lake build' first                   ║")
-    print("║  • Failed builds will BLOCK the push                        ║")
-    print("║  • Your sorry-free proofs are now protected                 ║")
-    print("╚══════════════════════════════════════════════════════════════╝")
+    print("Pre-push hook installed successfully.")
+    print("")
+    print("  Location: .git/hooks/pre-push")
+    print("")
+    print("  What this does:")
+    print("  • Runs 'lake build' before every push")
+    print("  • Rejects pushes if the build fails")
+    print("")
+    print("Your proofs are now protected from accidental breakage.")
 
 
 if __name__ == '__main__':

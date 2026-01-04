@@ -44,6 +44,13 @@ lake build
 
 This compiles all Lean files and checks that all proofs are complete (zero unproven goals).
 
+## Recommended Tools
+
+Before starting a proof, check if the result exists in Mathlib:
+
+* **Loogle:** [loogle.lean-lang.org](https://loogle.lean-lang.org/) — Semantic search for Lean theorems.
+* **Moogle:** [moogle.ai](https://www.moogle.ai/) — AI-powered search for Mathlib.
+
 ## The Ironclad Rule
 
 The proofs in `/src` are **sorry-free** and must remain that way. We enforce this via:
