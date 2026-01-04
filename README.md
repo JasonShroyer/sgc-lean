@@ -54,7 +54,7 @@ For NCD (Near-Completely Decomposable) systems, the formalization successfully d
 - **Vertical Stability** (✅ Verified): States rapidly collapse to the slow manifold with uniform-in-time error O(ε/γ).
 - **Horizontal Drift** (🚫 Disproved): Phase along the slow manifold drifts as O(ε·t).
 
-The proof assistant correctly rejected `NCD_spectral_stability` as false. This is not a bug—it's physics! Effective theories for NCD systems have a **validity horizon** of t ≪ 1/ε. Beyond this timescale, higher-order corrections are required.
+The proof assistant correctly rejected `NCD_spectral_stability` as false. Effective theories for NCD systems have a **validity horizon** of t ≪ 1/ε. Beyond this timescale, higher-order corrections are required.
 
 ### 3. Thermodynamics (Stochastic Heat)
 - **Module:** `SGC.Thermodynamics.DoobMeyer` 
