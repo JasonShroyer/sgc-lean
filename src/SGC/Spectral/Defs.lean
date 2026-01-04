@@ -144,13 +144,14 @@ lemma deriv_HeatKernel_diag (L : Matrix V V ℝ) (x : V) (t : ℝ) :
 --------------------------------------------------------------------------------
 
 /--
-**Spectral Stability Bound**
+**Spectral Stability Bound** (canonical name: `spectral_stability_bound`)
 
 If the system has a spectral gap > 0, the stability flow is bounded by
 an exponential envelope determined by the spectral gap.
 
 **Historical Note:** This result was originally called the "Functorial Heat 
-Dominance Theorem (FHDT)" in earlier versions of this library.
+Dominance Theorem (FHDT)" in earlier versions of this library. The current 
+name reflects the theorem's role in the public API.
 -/
 theorem spectral_stability_bound
   [Nontrivial V]

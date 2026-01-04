@@ -1,6 +1,8 @@
 import SGC.Spectral.Envelope
 import SGC.Renormalization.Lumpability
 import SGC.Renormalization.Approximate
+import SGC.Thermodynamics.DoobMeyer
+import SGC.Variational.LeastAction
 import Mathlib.LinearAlgebra.Matrix.Notation
 
 open Matrix SGC Real SGC.Spectral SGC.Approximate
@@ -25,9 +27,18 @@ Expected: `propext`, `Quot.sound`, `Classical.choice` (standard Lean/Mathlib axi
 Red flag: If `sorry` appears, the proof is incomplete.
 -/
 
+-- Renormalization Pillar
 #print axioms gap_non_decrease
+
+-- Effective Theory (Approximate Lumpability)
 #print axioms spectral_stability
 #print axioms trajectory_closure_bound
+
+-- Thermodynamics Pillar
+#print axioms doob_decomposition
+
+-- Variational Pillar
+#print axioms variational_drift_optimality
 
 end AxiomAudit
 

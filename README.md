@@ -162,15 +162,38 @@ This uses the Lean interpreter and runs instantly with cached bytecode.
 
 ---
 
-## Verification Status
+## Verification & Axioms
+
+This library has a **two-tier architecture** that separates algebraic foundations from analytic assumptions:
+
+| Tier | Modules | Verification Status |
+|------|---------|---------------------|
+| **Algebraic Core** | `Lumpability`, `DoobMeyer`, `LeastAction`, `Blanket` | ✅ Verified from first principles |
+| **Effective Theory** | `Approximate.lean` | ✅ Verified *conditional* on standard analysis axioms |
+
+### What This Means
+
+The **algebraic core** (spectral gap monotonicity, Doob-Meyer decomposition, variational principles) is machine-checked with zero sorries—these proofs require only standard Lean/Mathlib axioms (`propext`, `Classical.choice`, `Quot.sound`).
+
+The **effective theory** (`Approximate.lean`) proves trajectory bounds and spectral stability for approximately lumpable systems. These proofs are *conditional* on explicitly declared axioms for:
+
+- **Duhamel's Principle** (`Horizontal_Duhamel_integral_bound`)
+- **Weyl Inequality** (`Weyl_inequality_pi`)
+- **Heat Kernel Bounds** (`HeatKernel_opNorm_bound`)
+
+These are standard results in functional analysis. We axiomatize them to avoid a multi-month formalization detour while keeping the dependency explicit. Future contributors can discharge these axioms by proving them from Mathlib primitives.
+
+**Run `lake env lean test/Main.lean` to see exactly which axioms each theorem depends on.**
+
+---
+
+## Build Status
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| SGC Core (v1) | ✅ Verified | Zero sorries |
-| Information Bridge (v2) | ✅ Verified | Zero sorries |
-| Approximate Lumpability | ✅ **100% Verified** | Zero sorries. All core theorems verified. |
-| NCD Extension | ✅ Verified | `NCD_uniform_error_bound` verified. `NCD_spectral_stability` correctly identified as false (secular growth). |
-| Full Build | ✅ Passing | — |
+| Full Build | ✅ Passing | Zero sorries in all modules |
+| Approximate Lumpability | ✅ Complete | All core theorems verified (conditional on analysis axioms) |
+| NCD Extension | ✅ Verified | `NCD_spectral_stability` correctly identified as **false** (secular growth) |
 
 **Documentation:**
 - [`VERIFIED_CORE_MANIFEST.md`](VERIFIED_CORE_MANIFEST.md) — Formal verification statement
