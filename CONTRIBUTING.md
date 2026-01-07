@@ -65,7 +65,7 @@ The proofs in `/src` are **sorry-free** and must remain that way. We enforce thi
    active `sorry` statements exist in the source.
 
 2. **Pre-push hook** (optional): Run `python scripts/install_safeguards.py` to install 
-   a local Git hook that runs `lake build` before every push.
+   a local Git hook that runs `lake build` AND checks for sorry statements before every push.
 
 3. **Stability First**: Modifications to the verified core must maintain proof integrity.
    Please discuss significant changes in an issue before opening a Pull Request.

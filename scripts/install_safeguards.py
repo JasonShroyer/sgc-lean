@@ -2,8 +2,11 @@
 """
 install_safeguards.py - Installs Git hooks to protect sorry-free Lean proofs.
 
-This script installs a pre-push hook that runs `lake build` before any push.
-If the build fails, the push is rejected to prevent proof breakage.
+This script installs a pre-push hook that:
+1. Runs `lake build` to verify proofs compile
+2. Checks for `sorry` statements in src/ (same pattern as CI)
+
+If either check fails, the push is rejected.
 
 Usage:
     python scripts/install_safeguards.py
@@ -19,15 +22,14 @@ import stat
 PRE_PUSH_HOOK = r'''#!/bin/sh
 #
 # SGC Pre-Push Hook
-# Prevents pushing if Lean proofs fail to build.
+# Prevents pushing if Lean proofs fail to build OR contain sorries.
 # Installed by: scripts/install_safeguards.py
 #
 
-echo "[pre-push] Running 'lake build' to verify proofs..."
-echo ""
-
-# Run lake build from the repository root
 cd "$(git rev-parse --show-toplevel)"
+
+echo "[pre-push] Step 1/2: Running 'lake build' to verify proofs..."
+echo ""
 
 lake build 2>&1
 BUILD_EXIT_CODE=$?
@@ -43,8 +45,44 @@ if [ $BUILD_EXIT_CODE -ne 0 ]; then
     exit 1
 fi
 
+echo "[pre-push] ✓ Build passed."
 echo ""
-echo "[pre-push] ✓ Build passed. Push authorized."
+echo "[pre-push] Step 2/2: Checking for sorry statements..."
+
+# Same grep pattern as CI workflow - excludes comments, docstrings, backticked references
+SORRY_COUNT=$(grep -rn --include="*.lean" -E '\bsorry\b' src/ 2>/dev/null \
+  | grep -v '^\s*--' \
+  | grep -v '/--' \
+  | grep -v '`sorry`' \
+  | grep -v 'sorry-free' \
+  | grep -v 'zero.*sorry' \
+  | grep -v 'unproven' \
+  | wc -l || echo "0")
+
+# Trim whitespace (portable)
+SORRY_COUNT=$(echo "$SORRY_COUNT" | tr -d '[:space:]')
+
+if [ "$SORRY_COUNT" -gt 0 ]; then
+    echo ""
+    echo "=========================================="
+    echo "ERROR: Found $SORRY_COUNT potential 'sorry' occurrence(s):"
+    echo ""
+    grep -rn --include="*.lean" -E '\bsorry\b' src/ 2>/dev/null \
+      | grep -v '^\s*--' \
+      | grep -v '/--' \
+      | grep -v '`sorry`' \
+      | grep -v 'sorry-free' \
+      | grep -v 'zero.*sorry' \
+      | grep -v 'unproven' || true
+    echo ""
+    echo "Push rejected. Please remove all sorry statements."
+    echo "=========================================="
+    exit 1
+fi
+
+echo "[pre-push] ✓ No sorries found."
+echo ""
+echo "[pre-push] ✓ All checks passed. Push authorized."
 echo ""
 
 exit 0
@@ -99,7 +137,8 @@ def install_hook():
     print("")
     print("  What this does:")
     print("  • Runs 'lake build' before every push")
-    print("  • Rejects pushes if the build fails")
+    print("  • Checks for 'sorry' statements in src/")
+    print("  • Rejects pushes if build fails OR sorries are found")
     print("")
     print("Your proofs are now protected from accidental breakage.")
 
