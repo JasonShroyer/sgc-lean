@@ -1,17 +1,3 @@
-/-!
-  # SGC/Spectral/Defs.lean
-  
-  Core spectral definitions and the main stability theorem.
-  
-  **NOTE**: The main theorem `spectral_stability_bound` uses a **monolithic proof
-  structure** (~370 lines) to mirror the physics literature (Steps 1-8). This is
-  intentional for reviewability. See `ARCHITECTURE.md` for the full rationale.
-  
-  **TODO (Bridge Module)**: Refactor this monolithic proof into lemmas matching 
-  Mathlib's `Analysis.InnerProductSpace.Spectrum` style, proving isomorphism at 
-  fixed snapshots while preserving the physics narrative in comments.
--/
-
 import SGC.Spectral.Envelope
 import SGC.Spectral.Envelope.Sector
 import SGC.Spectral.Core.Assumptions
@@ -22,6 +8,20 @@ import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Normed.Operator.Basic
 import Mathlib.Data.Real.Basic
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+
+/-!
+  # SGC/Spectral/Defs.lean
+
+  Core spectral definitions and the main stability theorem.
+
+  **NOTE**: The main theorem `spectral_stability_bound` uses a **monolithic proof
+  structure** (~370 lines) to mirror the physics literature (Steps 1-8). This is
+  intentional for reviewability. See `ARCHITECTURE.md` for the full rationale.
+
+  **TODO (Bridge Module)**: Refactor this monolithic proof into lemmas matching
+  Mathlib's `Analysis.InnerProductSpace.Spectrum` style, proving isomorphism at
+  fixed snapshots while preserving the physics narrative in comments.
+-/
 
 noncomputable section
 
@@ -37,14 +37,14 @@ def K_norm (L : Matrix V V ℝ) (t : ℝ) (x : V) (pix : ℝ) : ℝ :=
   1 - (HeatKernel L t) x x / pix
 
 /-- The **expected log return probability**: E_π[log(1 - K_xx(t)/π_x + ε)].
-    
-    This observable tracks the expected logarithmic deviation of return 
+
+    This observable tracks the expected logarithmic deviation of return
     probabilities from stationary values. -/
 def expected_log_return_prob (L : Matrix V V ℝ) (pi_dist : V → ℝ) (ε : ℝ) (t : ℝ) : ℝ :=
   ∑ x, pi_dist x * Real.log (K_norm L t x (pi_dist x) + ε)
 
 /-- The **stability flow** β(t): time derivative of the expected log return probability.
-    
+
     This flow measures the rate of change of the expected log-observable,
     providing a measure of how quickly the system approaches stationarity. -/
 def stability_flow (L : Matrix V V ℝ) (pi_dist : V → ℝ) (ε : ℝ) (t : ℝ) : ℝ :=
@@ -81,22 +81,22 @@ lemma K_norm_differentiable (L : Matrix V V ℝ) (x : V) (pix : ℝ) (hpix : pix
 
 /-- The derivative of K_norm involves the heat kernel derivative. -/
 lemma deriv_K_norm (L : Matrix V V ℝ) (x : V) (pix : ℝ) (hpix : pix > 0) (t : ℝ) :
-    deriv (fun s => K_norm L s x pix) t = 
+    deriv (fun s => K_norm L s x pix) t =
     -(deriv (fun s => (HeatKernel L s) x x) t) / pix := by
   -- K_norm L s x pix = 1 - (HeatKernel L s) x x / pix
-  have h_diag_diff : Differentiable ℝ (fun s => (HeatKernel L s) x x) := 
+  have h_diag_diff : Differentiable ℝ (fun s => (HeatKernel L s) x x) :=
     HeatKernel_diag_differentiable L x
   -- Compute directly using HasDerivAt
   have h_const : HasDerivAt (fun _ : ℝ => (1 : ℝ)) 0 t := hasDerivAt_const t 1
-  have h_diag : HasDerivAt (fun s => (HeatKernel L s) x x) 
-                           (deriv (fun s => (HeatKernel L s) x x) t) t := 
+  have h_diag : HasDerivAt (fun s => (HeatKernel L s) x x)
+                           (deriv (fun s => (HeatKernel L s) x x) t) t :=
     (h_diag_diff t).hasDerivAt
-  have h_div : HasDerivAt (fun s => (HeatKernel L s) x x / pix) 
+  have h_div : HasDerivAt (fun s => (HeatKernel L s) x x / pix)
                           ((deriv (fun s => (HeatKernel L s) x x) t) / pix) t := by
     have := h_diag.div_const pix
     convert this using 1
-  have h_sub : HasDerivAt (fun s => 1 - (HeatKernel L s) x x / pix) 
-                          (0 - (deriv (fun s => (HeatKernel L s) x x) t) / pix) t := 
+  have h_sub : HasDerivAt (fun s => 1 - (HeatKernel L s) x x / pix)
+                          (0 - (deriv (fun s => (HeatKernel L s) x x) t) / pix) t :=
     h_const.sub h_div
   have h_K_eq : (fun s => K_norm L s x pix) = (fun s => 1 - (HeatKernel L s) x x / pix) := rfl
   rw [h_K_eq]
@@ -153,8 +153,8 @@ lemma deriv_HeatKernel_diag (L : Matrix V V ℝ) (x : V) (t : ℝ) :
 If the system has a spectral gap > 0, the stability flow is bounded by
 an exponential envelope determined by the spectral gap.
 
-**Historical Note:** This result was originally called the "Functorial Heat 
-Dominance Theorem (FHDT)" in earlier versions of this library. The current 
+**Historical Note:** This result was originally called the "Functorial Heat
+Dominance Theorem (FHDT)" in earlier versions of this library. The current
 name reflects the theorem's role in the public API.
 -/
 theorem spectral_stability_bound
@@ -179,38 +179,38 @@ theorem spectral_stability_bound
   -- ════════════════════════════════════════════════════════════════════════════
   -- Extract ε_min for denominator bounds
   obtain ⟨ε_min, hε_min_pos, hε_min⟩ := h_eps_min
-  -- 
+  --
   -- ════════════════════════════════════════════════════════════════════════════
   -- Step 1: Bound the derivative of the log-observable
   -- β(t) = deriv expected_log_return_prob t = ∑_x π_x * (1/(K_norm + ε)) * deriv K_norm
   -- ════════════════════════════════════════════════════════════════════════════
-  -- 
+  --
   -- The key bound: |β(t)| ≤ (1/ε_min) * ∑_x π_x * |deriv K_norm|
   -- The derivative of K_norm involves the heat kernel derivative diagonal
   -- which is bounded by the operator norm of L * HeatKernel L t
-  -- 
+  --
   -- ════════════════════════════════════════════════════════════════════════════
   -- Step 2: Use Pillar 3 (Diagonal Bound)
   -- ∑_x |A_{xx}| ≤ |V| * ‖A‖_{op,π}
   -- Here A = L * HeatKernel L t
   -- ════════════════════════════════════════════════════════════════════════════
-  -- 
+  --
   -- ════════════════════════════════════════════════════════════════════════════
   -- Step 3: Use submultiplicativity and envelope bound
   -- ‖L * e^{tL}‖_{op,π} ≤ ‖L‖_{op,π} * ‖e^{tL}‖_{op,π}
   -- ‖e^{tL} P_⊥‖_{op,π} ≤ e^{-gap*t} (from sector_envelope_bound_canonical)
   -- ════════════════════════════════════════════════════════════════════════════
-  -- 
+  --
   -- The constant C combines:
   -- - 1/ε_min (from log derivative bound)
   -- - max_x(1/π_x) (from division by π_x)
   -- - |V| (from diagonal sum bound)
   -- - ‖L‖_{op,π} (from submultiplicativity)
   -- - A factor from the envelope B(t) at t=0, which is B(0)=1
-  -- 
+  --
   -- For now, we construct a universal bound using these components
   -- ════════════════════════════════════════════════════════════════════════════
-  -- 
+  --
   -- Define the constant C
   -- Use a simpler approach: just pick an arbitrary element for the lower bound
   -- For nonempty V, we can find a minimum pi value
@@ -230,22 +230,22 @@ theorem spectral_stability_bound
       convert hx_eq using 2
     rw [h_pi_min_eq]
     exact hπ x
-  -- 
+  --
   -- The bound constant incorporates:
   -- C = |V| / (ε_min * pi_min) * ‖L‖_{op,π}
   -- But since we need ‖L‖_{op,π} which requires building it from opNorm_pi,
   -- we use a simplified existence argument.
-  -- 
+  --
   -- For this assembly, we use that all the necessary tools are available:
   -- 1. The heat kernel derivative is bounded
   -- 2. The diagonal sum is bounded by operator norm
   -- 3. The operator norm decays exponentially
-  -- 
+  --
   -- The explicit construction requires:
   let C_base := (Fintype.card V : ℝ) / (ε_min * pi_min)
   let L_opNorm := opNorm_pi pi_dist hπ (toLin' L)
   let C := C_base * L_opNorm + 1  -- +1 ensures C > 0 even if L_opNorm = 0
-  -- 
+  --
   use C
   constructor
   · -- C ≥ 0
@@ -257,56 +257,56 @@ theorem spectral_stability_bound
       · exact opNorm_pi_nonneg pi_dist hπ (toLin' L)
     · linarith
   · -- |stability_flow| ≤ C * exp(-gap * t)
-    -- 
+    --
     -- ══════════════════════════════════════════════════════════════════════════
     -- The proof uses the following key components (all now proved):
     -- 1. deriv_K_norm, deriv_HeatKernel_diag for derivative formulas
     -- 2. sum_abs_diag_le_card_opNorm (Pillar 3) for diagonal bounds
     -- 3. opNorm_pi_comp for submultiplicativity
     -- 4. sector_envelope_bound_canonical (Pillar 2) for exponential decay
-    -- 
+    --
     -- The key insight is that L * HeatKernel L t factors through P_ortho_pi
     -- since L kills constants, enabling the use of the sector bound.
     -- ══════════════════════════════════════════════════════════════════════════
-    -- 
+    --
     -- Step 1: Bound opNorm of L * K(t) using factorization through P_ortho_pi
     have hL1_vec : L *ᵥ constant_vec_one = 0 := by
       have := hL1
       simp only [toLin'_apply, constant_vec_one] at this ⊢
       exact this
-    have h_sector := sector_envelope_bound_canonical hπ h_sum L H hL1_vec h_sa h_psd hH_const 
+    have h_sector := sector_envelope_bound_canonical hπ h_sum L H hL1_vec h_sa h_psd hH_const
                        h_gap_pos h_rel t ht
-    -- 
+    --
     -- Step 2: Bound diagonal sum using Pillar 3
-    have h_diag_bound : ∑ x, |(L * HeatKernel L t) x x| ≤ 
+    have h_diag_bound : ∑ x, |(L * HeatKernel L t) x x| ≤
                         (Fintype.card V : ℝ) * opNorm_pi pi_dist hπ (toLin' (L * HeatKernel L t)) :=
       sum_abs_diag_le_card_opNorm hπ (L * HeatKernel L t)
-    -- 
+    --
     -- Step 3: Constant bound
     have h_C_bound : (Fintype.card V : ℝ) * L_opNorm / (ε_min * pi_min) ≤ C := by
       have h1 : (Fintype.card V : ℝ) * L_opNorm / (ε_min * pi_min) = C_base * L_opNorm := by
         simp only [C_base]; ring
       rw [h1]; simp only [C]; linarith
-    -- 
+    --
     -- Step 4: The final bound
     -- The remaining computation connects stability_flow to the diagonal sum via:
     -- - Chain rule for log: deriv log(g) = g'/g
     -- - deriv_K_norm and deriv_HeatKernel_diag
     -- - ε_min lower bound on denominators
     -- - π_min lower bound on weights
-    -- 
+    --
     -- This yields |stability_flow| ≤ (|V|/ε_min/π_min) * ‖L‖ * exp(-gap*t) ≤ C * exp(-gap*t)
     -- ══════════════════════════════════════════════════════════════════════════
     -- Step 5: Factor L * K(t) through P_ortho_pi and bound opNorm
     -- ══════════════════════════════════════════════════════════════════════════
-    -- 
+    --
     -- Key: For any f, (L * K(t)) *ᵥ f = (L * K(t)) *ᵥ (P_⊥ f)
     -- because K(t) preserves 1 and L kills 1
-    have h_LK_opNorm : opNorm_pi pi_dist hπ (toLin' (L * HeatKernel L t)) ≤ 
+    have h_LK_opNorm : opNorm_pi pi_dist hπ (toLin' (L * HeatKernel L t)) ≤
                        L_opNorm * Real.exp (-(SpectralGap_pi pi_dist H) * t) := by
       -- The operator L * K(t) factors as L ∘ K(t) ∘ P_⊥ on any vector
       -- because L kills constants and K preserves them
-      -- 
+      --
       -- Key property: K(t) preserves constants (from HeatKernel_preserves_one)
       have hK_preserves := HeatKernel_preserves_one L hL1_vec t
       -- K(t) *ᵥ 1 = 1
@@ -316,8 +316,8 @@ theorem spectral_stability_bound
         exact this
       have hL1' : L *ᵥ (fun _ => (1 : ℝ)) = 0 := by
         have := hL1; simp only [toLin'_apply] at this; exact this
-      -- 
-      have h_factor : ∀ g : V → ℝ, toLin' (L * HeatKernel L t) g = 
+      --
+      have h_factor : ∀ g : V → ℝ, toLin' (L * HeatKernel L t) g =
                       (toLin' L ∘ₗ toLin' (HeatKernel L t) ∘ₗ P_ortho_pi pi_dist h_sum hπ) g := by
         intro g
         simp only [toLin'_apply, LinearMap.comp_apply]
@@ -332,58 +332,58 @@ theorem spectral_stability_bound
         -- LHS: (L * K) *ᵥ g = L *ᵥ (K *ᵥ g) by Matrix.mulVec_mulVec
         exact (Matrix.mulVec_mulVec g L (HeatKernel L t)).symm
       -- Now use operator equality
-      have h_eq_op : toLin' (L * HeatKernel L t) = 
+      have h_eq_op : toLin' (L * HeatKernel L t) =
                      toLin' L ∘ₗ toLin' (HeatKernel L t) ∘ₗ P_ortho_pi pi_dist h_sum hπ := by
         apply LinearMap.ext; intro g; exact h_factor g
       rw [h_eq_op]
       -- Use submultiplicativity
-      have h_comp := opNorm_pi_comp pi_dist hπ (toLin' L) 
+      have h_comp := opNorm_pi_comp pi_dist hπ (toLin' L)
                        (toLin' (HeatKernel L t) ∘ₗ P_ortho_pi pi_dist h_sum hπ)
       calc opNorm_pi pi_dist hπ (toLin' L ∘ₗ (toLin' (HeatKernel L t) ∘ₗ P_ortho_pi pi_dist h_sum hπ))
-          ≤ opNorm_pi pi_dist hπ (toLin' L) * 
+          ≤ opNorm_pi pi_dist hπ (toLin' L) *
             opNorm_pi pi_dist hπ (toLin' (HeatKernel L t) ∘ₗ P_ortho_pi pi_dist h_sum hπ) := h_comp
         _ ≤ L_opNorm * Real.exp (-(SpectralGap_pi pi_dist H) * t) := by
             apply mul_le_mul_of_nonneg_left h_sector
             exact opNorm_pi_nonneg pi_dist hπ (toLin' L)
-    -- 
+    --
     -- ══════════════════════════════════════════════════════════════════════════
     -- Step 6: Combine diagonal bound with opNorm bound
     -- ══════════════════════════════════════════════════════════════════════════
-    -- 
-    have h_diag_exp : ∑ x, |(L * HeatKernel L t) x x| ≤ 
+    --
+    have h_diag_exp : ∑ x, |(L * HeatKernel L t) x x| ≤
                       (Fintype.card V : ℝ) * L_opNorm * Real.exp (-(SpectralGap_pi pi_dist H) * t) := by
-      calc ∑ x, |(L * HeatKernel L t) x x| 
+      calc ∑ x, |(L * HeatKernel L t) x x|
           ≤ (Fintype.card V : ℝ) * opNorm_pi pi_dist hπ (toLin' (L * HeatKernel L t)) := h_diag_bound
         _ ≤ (Fintype.card V : ℝ) * (L_opNorm * Real.exp (-(SpectralGap_pi pi_dist H) * t)) := by
             apply mul_le_mul_of_nonneg_left h_LK_opNorm (Nat.cast_nonneg _)
         _ = (Fintype.card V : ℝ) * L_opNorm * Real.exp (-(SpectralGap_pi pi_dist H) * t) := by ring
-    -- 
+    --
     -- ══════════════════════════════════════════════════════════════════════════
     -- Step 7: Bound |stability_flow| using derivative formula and ε_min, π_min
     -- ══════════════════════════════════════════════════════════════════════════
-    -- 
+    --
     -- The derivative computation gives:
     -- stability_flow = ∑_x π_x * (deriv K_norm) / (K_norm + ε)
     -- |deriv K_norm| ≤ |(L*K)_{xx}| / π_x
     -- 1/(K_norm + ε) ≤ 1/ε_min
-    -- 
+    --
     -- After combining and using π_min:
     -- |stability_flow| ≤ (1/(ε_min * π_min)) * ∑_x |(L*K)_{xx}|
-    -- 
+    --
     have h_pi_min_le : ∀ x, pi_min ≤ pi_dist x := by
       intro x
       simp only [pi_min]
       exact Finset.inf'_le _ (Finset.mem_univ x)
-    -- 
-    have h_beta_bound : |stability_flow L pi_dist ε t| ≤ 
+    --
+    have h_beta_bound : |stability_flow L pi_dist ε t| ≤
                         (1 / (ε_min * pi_min)) * ∑ x, |(L * HeatKernel L t) x x| := by
       -- ════════════════════════════════════════════════════════════════════════
       -- Step A: Expand stability_flow as a finite sum using chain rule for log
       -- ════════════════════════════════════════════════════════════════════════
-      -- 
-      -- stability_flow = deriv (∑_x π_x * log(K_norm + ε)) 
+      --
+      -- stability_flow = deriv (∑_x π_x * log(K_norm + ε))
       --        = ∑_x π_x * (deriv K_norm) / (K_norm + ε)
-      -- 
+      --
       -- Define the summand function for each x
       let F (x : V) (s : ℝ) := pi_dist x * Real.log (K_norm L s x (pi_dist x) + ε)
       -- expected_log_return_prob = ∑_x F x
@@ -408,24 +408,24 @@ theorem spectral_stability_bound
         have h_func_eq : (fun s => ∑ x : V, F x s) = ∑ x : V, F x := by
           ext s; exact (Finset.sum_apply s Finset.univ F).symm
         rw [h_func_eq]
-        -- Now use deriv_sum 
+        -- Now use deriv_sum
         rw [deriv_sum (fun x _ => (hF_diff x).differentiableAt)]
-      -- 
+      --
       -- ════════════════════════════════════════════════════════════════════════
       -- Step B: Compute deriv (F x) using chain rule for log
       -- ════════════════════════════════════════════════════════════════════════
-      -- 
+      --
       -- deriv (π_x * log(g)) = π_x * (deriv g) / g
-      have h_deriv_F : ∀ x, deriv (F x) t = 
+      have h_deriv_F : ∀ x, deriv (F x) t =
           pi_dist x * deriv (fun s => K_norm L s x (pi_dist x)) t / (K_norm L t x (pi_dist x) + ε) := by
         intro x
         simp only [F]
         -- Chain rule: deriv (c * log g) = c * deriv g / g
-        have hg_diff : DifferentiableAt ℝ (fun s => K_norm L s x (pi_dist x) + ε) t := 
+        have hg_diff : DifferentiableAt ℝ (fun s => K_norm L s x (pi_dist x) + ε) t :=
           ((K_norm_differentiable L x (pi_dist x) (hπ x)).add (differentiable_const ε)).differentiableAt
         have hg_pos : K_norm L t x (pi_dist x) + ε > 0 := h_pos' x t
         have h_log := Real.hasDerivAt_log (ne_of_gt hg_pos)
-        have hg_hasderiv : HasDerivAt (fun s => K_norm L s x (pi_dist x) + ε) 
+        have hg_hasderiv : HasDerivAt (fun s => K_norm L s x (pi_dist x) + ε)
                             (deriv (fun s => K_norm L s x (pi_dist x)) t + 0) t := by
           apply HasDerivAt.add
           · exact (K_norm_differentiable L x (pi_dist x) (hπ x)).differentiableAt.hasDerivAt
@@ -437,17 +437,17 @@ theorem spectral_stability_bound
         have := h_mul.deriv
         convert this using 1
         ring
-      -- 
+      --
       -- ════════════════════════════════════════════════════════════════════════
       -- Step C: Use deriv_K_norm to substitute
       -- ════════════════════════════════════════════════════════════════════════
-      -- 
+      --
       -- deriv K_norm = -(L*K)_{xx} / π_x
-      have h_deriv_K : ∀ x, deriv (fun s => K_norm L s x (pi_dist x)) t = 
+      have h_deriv_K : ∀ x, deriv (fun s => K_norm L s x (pi_dist x)) t =
                        -(L * HeatKernel L t) x x / (pi_dist x) := by
         intro x
         rw [deriv_K_norm L x (pi_dist x) (hπ x) t, deriv_HeatKernel_diag L x t]
-      -- 
+      --
       -- So deriv (F x) = π_x * (-(L*K)_{xx} / π_x) / (K_norm + ε)
       --                = -(L*K)_{xx} / (K_norm + ε)
       have h_deriv_F_simp : ∀ x, deriv (F x) t = -(L * HeatKernel L t) x x / (K_norm L t x (pi_dist x) + ε) := by
@@ -456,21 +456,21 @@ theorem spectral_stability_bound
         have hπ_ne : pi_dist x ≠ 0 := ne_of_gt (hπ x)
         have hg_ne : K_norm L t x (pi_dist x) + ε ≠ 0 := ne_of_gt (h_pos' x t)
         field_simp [hπ_ne, hg_ne]
-      -- 
+      --
       -- ════════════════════════════════════════════════════════════════════════
       -- Step D: Take absolute values and bound
       -- ════════════════════════════════════════════════════════════════════════
-      -- 
+      --
       -- |stability_flow| = |∑_x -(L*K)_{xx} / (K_norm + ε)|
       --          ≤ ∑_x |(L*K)_{xx}| / (K_norm + ε)
       --          ≤ ∑_x |(L*K)_{xx}| / ε_min
       --          = (1/ε_min) * ∑_x |(L*K)_{xx}|
-      -- 
+      --
       have h_bound_eps : |stability_flow L pi_dist ε t| ≤ (1 / ε_min) * ∑ x, |(L * HeatKernel L t) x x| := by
         rw [h_beta_sum]
         simp_rw [h_deriv_F_simp]
         calc |∑ x, -(L * HeatKernel L t) x x / (K_norm L t x (pi_dist x) + ε)|
-            ≤ ∑ x, |-(L * HeatKernel L t) x x / (K_norm L t x (pi_dist x) + ε)| := 
+            ≤ ∑ x, |-(L * HeatKernel L t) x x / (K_norm L t x (pi_dist x) + ε)| :=
                 Finset.abs_sum_le_sum_abs _ _
           _ = ∑ x, |(L * HeatKernel L t) x x| / (K_norm L t x (pi_dist x) + ε) := by
                 congr 1; ext x
@@ -486,7 +486,7 @@ theorem spectral_stability_bound
                 apply Finset.sum_congr rfl
                 intro x _
                 rw [div_eq_mul_inv, mul_comm]
-      -- 
+      --
       -- Now use that (1/ε_min) ≤ (1/(ε_min * pi_min)) since pi_min ≤ 1
       have h_pi_min_le_one : pi_min ≤ 1 := by
         -- pi_min = inf {π_x} and ∑_x π_x = 1
@@ -506,24 +506,24 @@ theorem spectral_stability_bound
         · exact mul_pos hε_min_pos hpi_min_pos
         · calc ε_min * pi_min ≤ ε_min * 1 := mul_le_mul_of_nonneg_left h_pi_min_le_one hε_min_pos.le
             _ = ε_min := mul_one _
-      -- 
-      calc |stability_flow L pi_dist ε t| 
+      --
+      calc |stability_flow L pi_dist ε t|
           ≤ (1 / ε_min) * ∑ x, |(L * HeatKernel L t) x x| := h_bound_eps
         _ ≤ (1 / (ε_min * pi_min)) * ∑ x, |(L * HeatKernel L t) x x| := by
             apply mul_le_mul_of_nonneg_right h_const_le
             exact Finset.sum_nonneg (fun x _ => abs_nonneg _)
-    -- 
+    --
     -- ══════════════════════════════════════════════════════════════════════════
     -- Step 8: Final calculation
     -- ══════════════════════════════════════════════════════════════════════════
-    -- 
-    calc |stability_flow L pi_dist ε t| 
+    --
+    calc |stability_flow L pi_dist ε t|
         ≤ (1 / (ε_min * pi_min)) * ∑ x, |(L * HeatKernel L t) x x| := h_beta_bound
-      _ ≤ (1 / (ε_min * pi_min)) * ((Fintype.card V : ℝ) * L_opNorm * 
+      _ ≤ (1 / (ε_min * pi_min)) * ((Fintype.card V : ℝ) * L_opNorm *
             Real.exp (-(SpectralGap_pi pi_dist H) * t)) := by
           apply mul_le_mul_of_nonneg_left h_diag_exp
           exact one_div_nonneg.mpr (mul_pos hε_min_pos hpi_min_pos).le
-      _ = (Fintype.card V : ℝ) * L_opNorm / (ε_min * pi_min) * 
+      _ = (Fintype.card V : ℝ) * L_opNorm / (ε_min * pi_min) *
             Real.exp (-(SpectralGap_pi pi_dist H) * t) := by ring
       _ ≤ C * Real.exp (-(SpectralGap_pi pi_dist H) * t) := by
           apply mul_le_mul_of_nonneg_right h_C_bound (Real.exp_nonneg _)

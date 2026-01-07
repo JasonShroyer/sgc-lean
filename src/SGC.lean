@@ -7,8 +7,9 @@ Authors: SGC Formalization Team
 -- Foundation: The L²(π) Inner Product Structure
 import SGC.Axioms.Geometry
 
--- Spectral Pillar: Heat Kernel and Sector Envelope
+-- Spectral Pillar: Heat Kernel, Sector Envelope, and Core Stability Theorem
 import SGC.Spectral.Envelope
+import SGC.Spectral.Defs
 
 -- Renormalization Pillar: Spectral Gap Monotonicity
 import SGC.Renormalization.Lumpability

@@ -4,6 +4,9 @@ All notable changes to the SGC formalization are documented in this file.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+**Namespace Note:** Historical entries below (v1.x, v2.0) use the original `UPAT` namespace.
+The v2.1 release renamed the project to `SGC`. Mapping: `UPAT.*` → `SGC.*`.
+
 ---
 
 ## [v2.1-rename] - 2026-01-01 — Repository Rename
@@ -83,7 +86,7 @@ The foundational architecture of UPAT, organized into four logical pillars:
   - Formalizes the thermodynamic arrow of complexity accumulation.
 
 - **Kinetics** (`UPAT.Kinetics.LeastAction`)
-  - `emergence_is_necessary`: Derived from the Principle of Least Action.
+  - `variational_drift_optimality` (originally `emergence_is_necessary`): Derived from the Principle of Least Action.
   - Proves that thermodynamic systems naturally maximize complexity accumulation.
 
 ### Supporting Infrastructure

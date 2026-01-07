@@ -6,21 +6,18 @@ import Mathlib.Tactic
 
 /-!
   # SGC/Renormalization/Lumpability.lean
-  
+
   Strong Lumpability and Functorial Stability.
-  
-  This file establishes that the stability triad (λ_gap, β(t), B(t)) is 
+
+  This file establishes that the stability triad (λ_gap, β(t), B(t)) is
   functorial under coarse-graining (renormalization group transformations).
-  
-  ## Key theorems
-  - `heat_kernel_quot_commute`: e^{tL̄} ∘ Q = Q ∘ e^{tL}
-  - `spectrum_subset`: Spec(L̄) ⊆ Spec(L)
-  - `gap_non_decrease`: λ̄_gap ≥ λ_gap
-  - `fhdt_functorial`: |β̄(t)| ≤ C̄ e^{-λ̄_gap t}
-  
+
+  ## Key Theorem
+  - `gap_non_decrease`: λ̄_gap ≥ λ_gap (Spectral gap preservation under coarse-graining)
+
   ## Design
   Setoid-based partition with explicit quotient map Q.
-  
+
   **NOTE**: This module implements renormalization via `Setoid` partitions. It relies
   on the **Explicit Weight Pattern** to handle the transformation π → π̄ without
   type-level coercions. See `ARCHITECTURE.md` for the full rationale.
@@ -45,13 +42,13 @@ structure Partition (V : Type*) [DecidableEq V] where
 /-- The quotient type (coarse-grained state space). -/
 abbrev Partition.Quot {V : Type*} [DecidableEq V] (P : Partition V) : Type _ := Quotient P.rel
 
-instance Partition.instDecidableRel {V : Type*} [DecidableEq V] (P : Partition V) : 
+instance Partition.instDecidableRel {V : Type*} [DecidableEq V] (P : Partition V) :
     DecidableRel P.rel.r := P.decRel
 
-instance Partition.instFintype {V : Type*} [Fintype V] [DecidableEq V] (P : Partition V) : 
+instance Partition.instFintype {V : Type*} [Fintype V] [DecidableEq V] (P : Partition V) :
     Fintype P.Quot := @Quotient.fintype V _ P.rel P.decRel
 
-instance Partition.instDecidableEq {V : Type*} [DecidableEq V] (P : Partition V) : 
+instance Partition.instDecidableEq {V : Type*} [DecidableEq V] (P : Partition V) :
     DecidableEq P.Quot := @Quotient.decidableEq V P.rel P.decRel
 
 /-- The quotient map: V → V̄. -/
@@ -66,7 +63,7 @@ lemma pi_bar_eq_sum_class (P : Partition V) (pi_dist : V → ℝ) (a_bar : P.Quo
     pi_bar P pi_dist a_bar = ∑ x : V, if P.quot_map x = a_bar then pi_dist x else 0 := rfl
 
 /-- π̄ is positive when π is positive. -/
-lemma pi_bar_pos (P : Partition V) {pi_dist : V → ℝ} (hπ : ∀ v, 0 < pi_dist v) 
+lemma pi_bar_pos (P : Partition V) {pi_dist : V → ℝ} (hπ : ∀ v, 0 < pi_dist v)
     (a_bar : P.Quot) : 0 < pi_bar P pi_dist a_bar := by
   unfold pi_bar
   obtain ⟨a, ha⟩ := Quotient.exists_rep a_bar
@@ -94,7 +91,7 @@ lemma pi_bar_sum_one (P : Partition V) {pi_dist : V → ℝ} (h_sum : ∑ v, pi_
 /-- **Strong Lumpability**: L is strongly lumpable w.r.t. partition P if
     for all x, y in the same block, and all blocks b̄:
     Σ_{z∈b̄} L_{xz} = Σ_{z∈b̄} L_{yz}
-    
+
     This ensures the quotient generator is well-defined. -/
 def IsStronglyLumpable (L : Matrix V V ℝ) (P : Partition V) : Prop :=
   ∀ x y : V, P.rel.r x y → ∀ b_bar : P.Quot,
@@ -114,11 +111,11 @@ This validates that macroscopic models (chairs, forklifts) remain stable under s
 /-- **Approximate Lumpability**: L is approximately lumpable w.r.t. partition P with
     tolerance ε if for all x, y in the same block, and all blocks b̄:
     |Σ_{z∈b̄} L_{xz} - Σ_{z∈b̄} L_{yz}| ≤ ε
-    
+
     This is the "Wobbly Chair" condition: real-world symmetries are never exact. -/
 def IsRowSumApproxLumpable (L : Matrix V V ℝ) (P : Partition V) (ε : ℝ) : Prop :=
   ∀ x y : V, P.rel.r x y → ∀ b_bar : P.Quot,
-    |∑ z : V, (if P.quot_map z = b_bar then L x z else 0) - 
+    |∑ z : V, (if P.quot_map z = b_bar then L x z else 0) -
      ∑ z : V, (if P.quot_map z = b_bar then L y z else 0)| ≤ ε
 
 /-- Strong lumpability implies approximate lumpability with ε = 0. -/
@@ -150,7 +147,7 @@ lemma row_sum_block_const (L : Matrix V V ℝ) (P : Partition V)
 
 /-- The quotient generator M on Q (simple form using any representative).
     M_{A,B} = Σ_{k∈B} L_{u,k} for any u ∈ A.
-    
+
     Under strong lumpability, this is well-defined. -/
 def QuotientGeneratorSimple (L : Matrix V V ℝ) (P : Partition V) : Matrix P.Quot P.Quot ℝ :=
   fun A B => row_sum_block L P (Quotient.out A) B
@@ -173,13 +170,13 @@ lemma LK_entry (L : Matrix V V ℝ) (P : Partition V) (i : V) (B : P.Quot) :
 
 /-- RHS of intertwining: (K * M)_{i,B} = Σ_C K_{iC} * M_{CB} = M_{⟦i⟧,B}. -/
 lemma KM_entry (L : Matrix V V ℝ) (P : Partition V) (i : V) (B : P.Quot) :
-    (lift_matrix P * QuotientGeneratorSimple L P) i B = 
+    (lift_matrix P * QuotientGeneratorSimple L P) i B =
     QuotientGeneratorSimple L P (P.quot_map i) B := by
   simp only [Matrix.mul_apply, lift_matrix, QuotientGeneratorSimple]
   -- Sum over C: if P.quot_map i = C then 1 * row_sum else 0
   -- Only C = P.quot_map i contributes
-  have h_sum : (∑ C : P.Quot, (if P.quot_map i = C then (1 : ℝ) else 0) * 
-      row_sum_block L P (Quotient.out C) B) = 
+  have h_sum : (∑ C : P.Quot, (if P.quot_map i = C then (1 : ℝ) else 0) *
+      row_sum_block L P (Quotient.out C) B) =
       row_sum_block L P (Quotient.out (P.quot_map i)) B := by
     -- Only the term where C = P.quot_map i contributes
     rw [Finset.sum_eq_single (P.quot_map i)]
@@ -200,7 +197,7 @@ lemma quot_gen_eq_row_sum (L : Matrix V V ℝ) (P : Partition V)
   simp only [QuotientGeneratorSimple]
   -- Need: row_sum_block L P (Quotient.out (P.quot_map i)) B = row_sum_block L P i B
   -- Since Quotient.out (P.quot_map i) ≈ i
-  have h_out_eq : Quotient.mk P.rel (Quotient.out (P.quot_map i)) = P.quot_map i := 
+  have h_out_eq : Quotient.mk P.rel (Quotient.out (P.quot_map i)) = P.quot_map i :=
     Quotient.out_eq (P.quot_map i)
   have h_i_eq : Quotient.mk P.rel i = P.quot_map i := rfl
   have h_equiv : P.rel.r (Quotient.out (P.quot_map i)) i := by
@@ -209,7 +206,7 @@ lemma quot_gen_eq_row_sum (L : Matrix V V ℝ) (P : Partition V)
   exact row_sum_block_const L P hL _ i h_equiv B
 
 /-- **The Intertwining Theorem (Dynkin Formula)**: L * K = K * M.
-    
+
     The original dynamics L and quotient dynamics M are related by the lift operator.
     This is the fundamental algebraic property of strong lumpability. -/
 theorem intertwining (L : Matrix V V ℝ) (P : Partition V) (hL : IsStronglyLumpable L P) :
@@ -218,12 +215,12 @@ theorem intertwining (L : Matrix V V ℝ) (P : Partition V) (hL : IsStronglyLump
   rw [LK_entry, KM_entry, quot_gen_eq_row_sum L P hL]
 
 /-- Power intertwining: L^n * K = K * M^n by induction. -/
-theorem intertwining_pow (L : Matrix V V ℝ) (P : Partition V) (hL : IsStronglyLumpable L P) 
+theorem intertwining_pow (L : Matrix V V ℝ) (P : Partition V) (hL : IsStronglyLumpable L P)
     (n : ℕ) : L ^ n * lift_matrix P = lift_matrix P * (QuotientGeneratorSimple L P) ^ n := by
   induction n with
   | zero => simp [Matrix.one_mul, Matrix.mul_one]
   | succ n ih =>
-    calc L ^ (n + 1) * lift_matrix P 
+    calc L ^ (n + 1) * lift_matrix P
         = L ^ n * L * lift_matrix P := by rw [pow_succ]
       _ = L ^ n * (L * lift_matrix P) := by rw [Matrix.mul_assoc]
       _ = L ^ n * (lift_matrix P * QuotientGeneratorSimple L P) := by rw [intertwining L P hL]
@@ -236,12 +233,12 @@ theorem intertwining_pow (L : Matrix V V ℝ) (P : Partition V) (hL : IsStrongly
 
 /-- The weighted quotient generator L̄ on V̄.
     L̄_{āb̄} = (1/π̄(ā)) * Σ_{x∈ā} π(x) * (Σ_{z∈b̄} L_{xz})
-    
+
     Under strong lumpability, this equals the simple form. -/
 def QuotientGenerator (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (_hπ : ∀ v, 0 < pi_dist v) : Matrix P.Quot P.Quot ℝ :=
   fun a_bar b_bar =>
-    let sum_over_a := ∑ x : V, if P.quot_map x = a_bar 
+    let sum_over_a := ∑ x : V, if P.quot_map x = a_bar
       then pi_dist x * row_sum_block L P x b_bar
       else 0
     sum_over_a / pi_bar P pi_dist a_bar
@@ -290,9 +287,9 @@ lemma quotient_generator_eq_simple (L : Matrix V V ℝ) (P : Partition V) (pi_di
 
 /-- The averaging/quotient map Q : (V → ℝ) → (V̄ → ℝ).
     (Q f)(ā) = (1/π̄(ā)) * Σ_{x∈ā} π(x) * f(x) -/
-def Q_map (P : Partition V) (pi_dist : V → ℝ) (_hπ : ∀ v, 0 < pi_dist v) : 
+def Q_map (P : Partition V) (pi_dist : V → ℝ) (_hπ : ∀ v, 0 < pi_dist v) :
     (V → ℝ) →ₗ[ℝ] (P.Quot → ℝ) where
-  toFun f a_bar := 
+  toFun f a_bar :=
     (∑ x : V, if P.quot_map x = a_bar then pi_dist x * f x else 0) / pi_bar P pi_dist a_bar
   map_add' f g := by
     ext a_bar
@@ -350,14 +347,14 @@ lemma lift_inner_pi_eq (P : Partition V) (pi_dist : V → ℝ) (g : P.Quot → �
   -- LHS: Σ_x π(x) * g([x])²
   -- RHS: Σ_A (Σ_{x∈A} π(x)) * g(A)²
   -- Rewrite LHS by grouping by equivalence class
-  have h_group : ∀ x : V, pi_dist x * g (P.quot_map x) * g (P.quot_map x) = 
+  have h_group : ∀ x : V, pi_dist x * g (P.quot_map x) * g (P.quot_map x) =
       ∑ A : P.Quot, if P.quot_map x = A then pi_dist x * g A * g A else 0 := fun x => by
     rw [Finset.sum_ite_eq, if_pos (Finset.mem_univ _)]
   simp_rw [h_group]
   rw [Finset.sum_comm]
   apply Finset.sum_congr rfl
   intro A _
-  have h_factor : (∑ x, if P.quot_map x = A then pi_dist x * g A * g A else 0) = 
+  have h_factor : (∑ x, if P.quot_map x = A then pi_dist x * g A * g A else 0) =
       (∑ x, if P.quot_map x = A then pi_dist x else 0) * g A * g A := by
     rw [Finset.sum_mul, Finset.sum_mul]
     apply Finset.sum_congr rfl
@@ -389,17 +386,17 @@ lemma block_constant_iff_lift (P : Partition V) (f : V → ℝ) :
 /-- The lift function: given f : Q → ℝ, produce a block-constant function on V. -/
 def lift_fun (P : Partition V) (f : P.Quot → ℝ) : V → ℝ := fun x => f (P.quot_map x)
 
-/-- lift_fun equals lift_matrix applied to f. 
-    
-    The sum Σ_B (if ⟦i⟧ = B then 1 else 0) * f(B) has only one non-zero term 
+/-- lift_fun equals lift_matrix applied to f.
+
+    The sum Σ_B (if ⟦i⟧ = B then 1 else 0) * f(B) has only one non-zero term
     when B = ⟦i⟧, giving f(⟦i⟧). Uses Finset.sum_eq_single pattern. -/
-lemma lift_fun_eq_mulVec (P : Partition V) (f : P.Quot → ℝ) : 
+lemma lift_fun_eq_mulVec (P : Partition V) (f : P.Quot → ℝ) :
     lift_fun P f = lift_matrix P *ᵥ f := by
   ext i
   simp only [lift_fun, Matrix.mulVec, lift_matrix, Partition.quot_map]
   -- Goal: f(⟦i⟧) = Σ_B K_{iB} * f(B) where K = Matrix.of (indicator)
   -- Use sum_eq_single: only B = ⟦i⟧ contributes
-  have goal_eq : (∑ j : P.Quot, Matrix.of (fun x B => if Quotient.mk P.rel x = B then (1:ℝ) else 0) i j * f j) = 
+  have goal_eq : (∑ j : P.Quot, Matrix.of (fun x B => if Quotient.mk P.rel x = B then (1:ℝ) else 0) i j * f j) =
       f (Quotient.mk P.rel i) := by
     rw [Finset.sum_eq_single (Quotient.mk P.rel i)]
     · simp only [Matrix.of_apply, ite_true, one_mul]
@@ -410,7 +407,7 @@ lemma lift_fun_eq_mulVec (P : Partition V) (f : P.Quot → ℝ) :
   exact goal_eq.symm
 
 /-- **Step 1: Vector Intertwining** - L *ᵥ (lift f) = lift (M *ᵥ f).
-    
+
     The generator L applied to a lifted function equals the lift of M applied to f.
     This follows directly from the matrix intertwining L * K = K * M. -/
 theorem L_lift_eq (L : Matrix V V ℝ) (P : Partition V) (hL : IsStronglyLumpable L P)
@@ -425,14 +422,14 @@ lemma lift_inner_pi_eq' (P : Partition V) (pi_dist : V → ℝ) (f g : P.Quot �
   -- LHS: Σ_x π(x) * f([x]) * g([x])
   -- RHS: Σ_A (Σ_{x∈A} π(x)) * f(A) * g(A)
   -- Fiberwise sum pattern: group by equivalence class
-  have h_group : ∀ x : V, pi_dist x * f (P.quot_map x) * g (P.quot_map x) = 
+  have h_group : ∀ x : V, pi_dist x * f (P.quot_map x) * g (P.quot_map x) =
       ∑ A : P.Quot, if P.quot_map x = A then pi_dist x * f A * g A else 0 := fun x => by
     rw [Finset.sum_ite_eq, if_pos (Finset.mem_univ _)]
   simp_rw [h_group]
   rw [Finset.sum_comm]
   apply Finset.sum_congr rfl
   intro A _
-  have h_factor : (∑ x, if P.quot_map x = A then pi_dist x * f A * g A else 0) = 
+  have h_factor : (∑ x, if P.quot_map x = A then pi_dist x * f A * g A else 0) =
       (∑ x, if P.quot_map x = A then pi_dist x else 0) * f A * g A := by
     rw [Finset.sum_mul, Finset.sum_mul]
     apply Finset.sum_congr rfl
@@ -488,7 +485,7 @@ def DirichletForm_bar (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → �
   DirichletForm (QuotientGeneratorSimple L P) (pi_bar P pi_dist) f
 
 /-- **Dirichlet Form Lift Equality**: ℰ(lift(f)) = ℰ̄(f).
-    
+
     This is THE key lemma that enables gap_non_decrease.
     Proof: immediate from forward_quadratic_form_eq + backward_quadratic_form_eq. -/
 theorem dirichlet_form_lift_eq (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
@@ -516,13 +513,13 @@ def RayleighSet (L : Matrix V V ℝ) (pi_dist : V → ℝ) : Set ℝ :=
 
 /-- The set of Rayleigh quotients restricted to block-constant functions. -/
 def RayleighSetBlockConstant (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) : Set ℝ :=
-  { r | ∃ v : V → ℝ, v ≠ 0 ∧ IsBlockConstant P v ∧ 
+  { r | ∃ v : V → ℝ, v ≠ 0 ∧ IsBlockConstant P v ∧
     inner_pi pi_dist v constant_vec_one = 0 ∧
     r = RayleighQuotient L pi_dist v }
 
 /-- The set of Rayleigh quotients on the quotient space. -/
 def RayleighSetQuot (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) : Set ℝ :=
-  { r | ∃ f : P.Quot → ℝ, f ≠ 0 ∧ 
+  { r | ∃ f : P.Quot → ℝ, f ≠ 0 ∧
     inner_pi (pi_bar P pi_dist) f (fun _ => 1) = 0 ∧
     r = RayleighQuotient (QuotientGeneratorSimple L P) (pi_bar P pi_dist) f }
 
@@ -538,22 +535,22 @@ lemma sInf_subset_ge {S T : Set ℝ} (hST : S ⊆ T) (hS : S.Nonempty) (hT_bdd :
   apply csInf_le_csInf hT_bdd hS hST
 
 /-- **Rayleigh Quotient Lift Equality**: R(lift(f)) = R̄(f).
-    
+
     Key lemma: For block-constant u = lift(f), the Rayleigh quotient on V equals
     the Rayleigh quotient on V̄. Uses dirichlet_form_lift_eq and lift_inner_pi_eq'. -/
 lemma rayleigh_quotient_lift_eq (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hL : IsStronglyLumpable L P) (f : P.Quot → ℝ) :
-    RayleighQuotient L pi_dist (lift_fun P f) = 
+    RayleighQuotient L pi_dist (lift_fun P f) =
     RayleighQuotient (QuotientGeneratorSimple L P) (pi_bar P pi_dist) f := by
   simp only [RayleighQuotient, DirichletForm_bar] at *
   -- Numerator: ℰ(lift(f)) = ℰ̄(f) by dirichlet_form_lift_eq
-  have h_num : DirichletForm L pi_dist (lift_fun P f) = 
+  have h_num : DirichletForm L pi_dist (lift_fun P f) =
                DirichletForm (QuotientGeneratorSimple L P) (pi_bar P pi_dist) f := by
     rw [← DirichletForm_bar]
     exact dirichlet_form_lift_eq L P pi_dist hL f
   -- Denominator: ‖lift(f)‖²_π = ‖f‖²_π̄ by lift_inner_pi_eq'
-  have h_denom : inner_pi pi_dist (lift_fun P f) (lift_fun P f) = 
-                 inner_pi (pi_bar P pi_dist) f f := 
+  have h_denom : inner_pi pi_dist (lift_fun P f) (lift_fun P f) =
+                 inner_pi (pi_bar P pi_dist) f f :=
     lift_inner_pi_eq' P pi_dist f f
   rw [h_num, h_denom]
 
@@ -569,9 +566,9 @@ def SpectralGap_bar (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
 
 **Historical Note**: The static `approximate_gap_leakage_bound` axiom has been retired.
 
-Our investigation moved to the dynamic, path-wise perspective formalized in 
-`SGC.Renormalization.Approximate.trajectory_closure_bound`. We found that static 
-spectral gap perturbation bounds were insufficient to capture the finite-time 
+Our investigation moved to the dynamic, path-wise perspective formalized in
+`SGC.Renormalization.Approximate.trajectory_closure_bound`. We found that static
+spectral gap perturbation bounds were insufficient to capture the finite-time
 validity horizons (t ≪ 1/ε) inherent in NCD systems.
 
 The new approach:
@@ -582,7 +579,7 @@ The new approach:
 
 **Migration**: Use `SGC.Approximate.IsApproxLumpable` and the verified theorem stack.
 
-**References**: 
+**References**:
 - Stewart & Sun, "Matrix Perturbation Theory" (1990)
 - Kato, "Perturbation Theory for Linear Operators" (1995)
 - Simon & Ando, "Aggregation of Variables in Dynamic Systems" (1961)
@@ -590,18 +587,18 @@ The new approach:
 
 /-- **Spectral Gap Non-Decrease (Simple Form)**: inf over block-constant ≥ inf over all. -/
 theorem gap_block_ge_gap_all (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
-    (hS : (RayleighSetBlockConstant L P pi_dist).Nonempty) 
+    (hS : (RayleighSetBlockConstant L P pi_dist).Nonempty)
     (hT_bdd : BddBelow (RayleighSet L pi_dist)) :
     SpectralGap L pi_dist ≤ sInf (RayleighSetBlockConstant L P pi_dist) := by
   exact sInf_subset_ge (rayleigh_block_subset L P pi_dist) hS hT_bdd
 
 /-- **Rayleigh Set Quotient = Rayleigh Set Block-Constant** via lift bijection.
-    
+
     Every block-constant function u is lift(f) for some f, and R(u) = R̄(f). -/
 lemma rayleigh_set_quot_eq_block (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hL : IsStronglyLumpable L P) :
-    RayleighSetQuot L P pi_dist = 
-    { r | ∃ f : P.Quot → ℝ, f ≠ 0 ∧ 
+    RayleighSetQuot L P pi_dist =
+    { r | ∃ f : P.Quot → ℝ, f ≠ 0 ∧
       inner_pi (pi_bar P pi_dist) f (fun _ => 1) = 0 ∧
       r = RayleighQuotient L pi_dist (lift_fun P f) } := by
   ext r
@@ -615,7 +612,7 @@ lemma rayleigh_set_quot_eq_block (L : Matrix V V ℝ) (P : Partition V) (pi_dist
 
 /-- Lift preserves orthogonality to constants: f ⊥ π̄ iff lift(f) ⊥ π. -/
 lemma lift_orthog_iff (P : Partition V) (pi_dist : V → ℝ) (f : P.Quot → ℝ) :
-    inner_pi (pi_bar P pi_dist) f (fun _ => 1) = 0 ↔ 
+    inner_pi (pi_bar P pi_dist) f (fun _ => 1) = 0 ↔
     inner_pi pi_dist (lift_fun P f) constant_vec_one = 0 := by
   -- ⟨lift(f), 1⟩_π = ⟨f, 1⟩_π̄ by lift_inner_pi_eq' with g = constant 1
   -- lift_inner_pi_eq' gives: inner_pi π (x ↦ f([x])) (x ↦ g([x])) = inner_pi π̄ f g
@@ -635,14 +632,14 @@ lemma lift_fun_is_block_constant (P : Partition V) (f : P.Quot → ℝ) :
   rw [h_eq]
 
 /-- **Spectral Gap Non-Decrease**: λ̄_gap ≥ λ_gap.
-    
+
     Coarse-graining cannot decrease the spectral gap because:
     - λ_gap(L) = inf over ALL u ⊥ π of R(u)
     - λ_gap(L̄) = inf over quotient functions f ⊥ π̄ = inf over BLOCK-CONSTANT u ⊥ π
     - Since block-constant functions form a subset: inf(subset) ≥ inf(total) -/
 theorem gap_non_decrease (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hL : IsStronglyLumpable L P)
-    (hS : (RayleighSetBlockConstant L P pi_dist).Nonempty) 
+    (hS : (RayleighSetBlockConstant L P pi_dist).Nonempty)
     (hT_bdd : BddBelow (RayleighSet L pi_dist)) :
     SpectralGap_bar L P pi_dist ≥ SpectralGap L pi_dist := by
   simp only [SpectralGap_bar, SpectralGap]

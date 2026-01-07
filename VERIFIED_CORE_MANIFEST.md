@@ -105,7 +105,7 @@ The "null result" on NCD spectral stability reveals physical limitations of coar
 ### Variational Pillar (Least Action)
 | Module | Path | Key Theorems |
 |--------|------|--------------|
-| **LeastAction** | `src/SGC/Variational/LeastAction.lean` | `least_action_maximum_complexity`, `emergence_is_necessary` |
+| **LeastAction** | `src/SGC/Variational/LeastAction.lean` | `least_action_maximizes_drift`, `variational_drift_optimality` |
 
 ### Bridge Pillar (Discrete Framework)
 | Module | Path | Key Definitions |
@@ -123,7 +123,6 @@ from the literature. These are input assumptions, not claimed outputs.
 |--------|------|-------|---------------------|
 | **Convergence** | `src/SGC/Geometry/Manifold/Convergence.lean` | `manifold_hypothesis` | Belkin-Niyogi (2008) |
 | **Convergence** | `src/SGC/Geometry/Manifold/Convergence.lean` | `spectral_convergence_axiom` | Spectral perturbation theory |
-| **Laplacian** | `src/SGC/Geometry/Manifold/Laplacian.lean` | `discrete_approximates_continuous` | Belkin-Niyogi (2008) |
 
 **Why axioms?** Proving Belkin-Niyogi convergence in Lean requires formalizing 
 Riemannian manifolds, Taylor expansion on curved spaces, and concentration 
@@ -198,5 +197,5 @@ SGC Framework: Structural Persistence in Stochastic Systems
 
 ---
 
-*Generated: January 3, 2026*
+*Generated: January 7, 2026*
 *Repository: https://github.com/JasonShroyer/sgc-lean*

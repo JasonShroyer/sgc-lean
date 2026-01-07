@@ -72,7 +72,8 @@ The proof assistant correctly rejected `NCD_spectral_stability` as false. Effect
 
 - **`SGC.Axioms.Geometry`**: Defines the explicit $L^2(\pi)$ metric space structures without heavy typeclass overhead.
 - **`SGC.Topology.Blanket`**: Formalizes Markov Blankets via geometric orthogonality rather than information theory.
-- **`SGC.Bridge.Discretization`**: Defines the **Axiomatic Interface** for the continuum limit. Proves that any discretization satisfying these axioms (Gap Consistency) inherits thermodynamic stability. This separates the thermodynamic logic from the geometric implementation.
+- **`SGC.Bridge.Discretization`**: Defines the **Gap Consistency** interface for the continuum limit. Proves that any discretization satisfying this interface inherits thermodynamic stability.
+- **`SGC.Geometry.Manifold.Convergence`**: Contains the **Axiomatic Interface** (`manifold_hypothesis`, `spectral_convergence_axiom`) encoding the Belkin-Niyogi convergence theorem. This separates the thermodynamic logic from the geometric implementation.
 
 ---
 
@@ -101,7 +102,7 @@ The proof assistant correctly rejected `NCD_spectral_stability` as false. Effect
 | `NCD_uniform_error_bound` | `SGC.Renormalization.Approximate` | Uniform-in-time O(ε/γ) bound for NCD systems |
 | `doob_decomposition` | `SGC.Thermodynamics.DoobMeyer` | Stochastic thermodynamic decomposition of surprise |
 | `variational_drift_optimality` | `SGC.Variational.LeastAction` | Variational derivation of drift maximization |
-| `information_geometry_equivalence` | `SGC.Information.Equivalence` | Geometry ⟺ Information equivalence |
+| `information_geometry_equivalence` | `SGC` (in `Information/Equivalence.lean`) | Geometry ⟺ Information equivalence |
 
 ---
 
