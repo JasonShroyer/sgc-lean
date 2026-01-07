@@ -55,11 +55,15 @@ Red flag: If `sorry` appears, the proof is incomplete.
 end AxiomAudit
 
 section ConcreteInstantiation
-/-! ## Concrete Instantiation (Non-Vacuity Check)
+/-! ## Concrete Instantiation (Definition Non-Vacuity)
 
-If our definitions were vacuously true (e.g., "no partition exists"),
-these examples would fail to compile. Their successful compilation proves
-our structures are satisfiable with real data.
+These examples prove our **definitions** are satisfiable — they can be instantiated
+with real data. If definitions like `Matrix` or `Setoid` were vacuously true
+(e.g., required `False`), these would fail to compile.
+
+**Note**: Applying theorems like `gap_non_decrease` to these examples would require
+constructing complex hypotheses (`IsStronglyLumpable`, `Nonempty` sets, etc.).
+The `#print axioms` audit above is the ground truth for theorem verification.
 -/
 
 /-- A simple 2-state Markov chain (coin flip dynamics). -/
