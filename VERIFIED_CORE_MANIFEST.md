@@ -82,12 +82,26 @@ While vertical error is uniformly bounded (O(ε/γ)), horizontal phase drift gro
 This demarcates the **validity horizon** of effective theories: they work for t ≪ 1/ε
 but break down at t ~ 1/ε. This is not a bug—it's physics!
 
-**Axioms** (explicit bridges to standard analysis):
-- `Duhamel_integral_bound`, `Horizontal_Duhamel_integral_bound`: Integral calculus (MVT)
-- `Weyl_inequality_pi`: Spectral perturbation (standard Weyl inequality)
-- `NCD_defect_split`, `NCD_integral_bound`: NCD algebraic structure
-- `rowsum_to_opNorm_bound`: Finite-dimensional norm equivalence
-- `HeatKernel_opNorm_bound`: Semigroup theory
+#### Analysis Axioms (Standard Library Debt)
+
+These axioms encode standard functional analysis results. They are "library debt"—mathematically 
+sound but requiring substantial boilerplate to connect with Mathlib infrastructure.
+
+| Axiom | Mathematical Content | Used By | Standard Reference |
+|-------|---------------------|---------|-------------------|
+| `HeatKernel_opNorm_bound` | Semigroup operator norm bound on [0,T] | All trajectory bounds | Hille-Yosida theory |
+| `Duhamel_integral_bound` | MVT for vertical defect integral | `trajectory_closure_bound` | Engel & Nagel (2000) |
+| `Horizontal_Duhamel_integral_bound` | Trajectory comparison via Duhamel formula | `trajectory_closure_bound` | Standard ODE theory |
+| `Weyl_inequality_pi` | Eigenvalue perturbation bound | `spectral_stability` | Weyl (1912), Kato (1966) |
+| `rowsum_to_opNorm_bound` | Finite-dim norm equivalence | `pointwise_implies_opNorm_approx` | Standard functional analysis |
+| `PropagatorDiff_eq_proj_trajectory_diff` | Propagator difference identity | `spectral_stability` | Semigroup algebra |
+| `NCD_defect_split` | Algebraic decomposition L = L_fast + εL_slow | `NCD_uniform_error_bound` | Simon & Ando (1961) |
+| `NCD_slow_defect_bound` | Bounded defect for slow generator | `NCD_uniform_error_bound` | Finite-dim operator theory |
+| `NCD_integral_bound` | Uniform-in-time integral bound | `NCD_uniform_error_bound` | Semigroup theory |
+| `norm_pi_smul_abs` | Scaling property for π-weighted norm | `NCD_uniform_error_bound` | Normed space axioms |
+
+**Discharge Path**: Each axiom can be proven from Mathlib primitives by establishing norm 
+equivalences between `norm_pi` and standard `NormedAddCommGroup` infrastructure.
 
 **Key Achievement**: The entire approximate lumpability theory is **fully verified**.
 The "null result" on NCD spectral stability reveals physical limitations of coarse-graining.

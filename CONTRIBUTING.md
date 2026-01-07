@@ -83,6 +83,33 @@ that breaks the Lean build will be rejected with:
 ERROR: Build failed. Push rejected.
 ```
 
+## Extending the Library
+
+To add a new theorem to the verified core:
+
+1. **Write the theorem** in the appropriate `src/SGC/*.lean` file
+   - Choose the correct pillar: Spectral, Renormalization, Thermodynamics, Variational, or Topology
+   - Follow the naming convention: `lowercase_with_underscores`
+   - Add a docstring explaining the physical/mathematical content
+
+2. **Add axiom audit** to `test/Main.lean`:
+   ```lean
+   #print axioms my_new_theorem
+   ```
+
+3. **Update documentation**:
+   - Add entry to theorem table in `README.md` with appropriate **Tier** (Core/Extension)
+   - If theorem is axiom-free, note in `VERIFIED_CORE_MANIFEST.md`
+   - If theorem uses new axioms, document them in MANIFEST with proof sketches
+
+4. **Verify**:
+   ```bash
+   lake build
+   lake env lean test/Main.lean
+   ```
+
+5. **Commit** with message format: `feat: Add my_new_theorem to [Module]`
+
 ## Inputting Mathematical Symbols
 
 New to Lean? You can type mathematical symbols using LaTeX-style abbreviations followed by `TAB` or `SPACE`.

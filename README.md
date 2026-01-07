@@ -93,16 +93,17 @@ The proof assistant correctly rejected `NCD_spectral_stability` as false. Effect
 
 ## Theorem Index
 
-| Theorem | Module | Description |
-|---------|--------|-------------|
-| `spectral_stability_bound` | `SGC.Spectral.Defs` | Spectral stability of non-reversible chains |
-| `gap_non_decrease` | `SGC.Renormalization.Lumpability` | Spectral gap preservation under coarse-graining |
-| `trajectory_closure_bound` | `SGC.Renormalization.Approximate` | Trajectory error O(ε·t) for approx-lumpable systems |
-| `spectral_stability` | `SGC.Renormalization.Approximate` | Eigenvalue tracking (verified via Weyl) |
-| `NCD_uniform_error_bound` | `SGC.Renormalization.Approximate` | Uniform-in-time O(ε/γ) bound for NCD systems |
-| `doob_decomposition` | `SGC.Thermodynamics.DoobMeyer` | Stochastic thermodynamic decomposition of surprise |
-| `variational_drift_optimality` | `SGC.Variational.LeastAction` | Variational derivation of drift maximization |
-| `information_geometry_equivalence` | `SGC` (in `Information/Equivalence.lean`) | Geometry ⟺ Information equivalence |
+| Theorem | Module | Tier | Description |
+|---------|--------|------|-------------|
+| `spectral_stability_bound` | `SGC.Spectral.Defs` | **Core** | Spectral stability of non-reversible chains |
+| `gap_non_decrease` | `SGC.Renormalization.Lumpability` | **Core** | Spectral gap preservation under coarse-graining |
+| `trajectory_closure_bound` | `SGC.Renormalization.Approximate` | **Core** | Trajectory error O(ε·t) for approx-lumpable systems |
+| `spectral_stability` | `SGC.Renormalization.Approximate` | **Core** | Eigenvalue tracking (verified via Weyl) |
+| `NCD_uniform_error_bound` | `SGC.Renormalization.Approximate` | **Core** | Uniform-in-time O(ε/γ) bound for NCD systems |
+| `doob_decomposition` | `SGC.Thermodynamics.DoobMeyer` | **Core** | Stochastic thermodynamic decomposition of surprise |
+| `variational_drift_optimality` | `SGC.Variational.LeastAction` | **Core** | Variational derivation of drift maximization |
+| `blanket_orthogonality` | `SGC.Topology.Blanket` | **Core** | Internal-external orthogonality for Markov blankets |
+| `information_geometry_equivalence` | `SGC.Information.Equivalence` | **Extension** | Geometry ⟺ Information equivalence |
 
 ---
 
@@ -160,6 +161,26 @@ lake env lean test/Main.lean
 ```
 
 This uses the Lean interpreter and runs instantly with cached bytecode.
+
+### Reading Guide
+
+**For Physicists/Mathematicians:**
+1. Start with this README for the high-level architecture
+2. Read [VERIFIED_CORE_MANIFEST.md](VERIFIED_CORE_MANIFEST.md) for verification status
+3. Inspect [`src/SGC/Renormalization/Lumpability.lean`](src/SGC/Renormalization/Lumpability.lean) for the `gap_non_decrease` proof
+4. See [`test/Main.lean`](test/Main.lean) for concrete examples and axiom audits
+
+**For Lean Developers:**
+1. Read [ARCHITECTURE.md](ARCHITECTURE.md) for design rationale (why explicit weights, why finite state spaces)
+2. Read [CONTRIBUTING.md](CONTRIBUTING.md) for build instructions and safeguards
+3. Run `lake build` and `lake env lean test/Main.lean` to verify
+4. Inspect `#print axioms` output to understand dependency chains
+
+**For Peer Reviewers:**
+1. Start with [VERIFIED_CORE_MANIFEST.md](VERIFIED_CORE_MANIFEST.md) for the verification statement
+2. Check [`src/SGC/Renormalization/Approximate.lean`](src/SGC/Renormalization/Approximate.lean) for the axiomatized effective theory
+3. Review axiom docstrings (search for `axiom` keyword) to understand modeling assumptions
+4. Verify CI build status and `Verify no sorries` step in [`.github/workflows/build.yml`](.github/workflows/build.yml)
 
 ---
 
