@@ -22,6 +22,7 @@ import SGC.Topology.Blanket
 
 -- Thermodynamics Pillar: Stochastic Thermodynamics of Surprise
 import SGC.Thermodynamics.DoobMeyer
+import SGC.Thermodynamics.EntropyProduction
 
 -- Variational Pillar: Principle of Least Action
 import SGC.Variational.LeastAction
