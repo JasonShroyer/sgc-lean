@@ -32,13 +32,15 @@ Red flag: If `sorry` appears, the proof is incomplete.
 -- Spectral Pillar (Core Stability Result)
 #print axioms SGC.Spectral.spectral_stability_bound
 
--- Renormalization Pillar
-#print axioms gap_non_decrease
+-- Renormalization Pillar (Dirichlet Gap - algebraic)
+#print axioms dirichlet_gap_non_decrease
 
 -- Effective Theory (Approximate Lumpability)
-#print axioms spectral_stability
-#print axioms trajectory_closure_bound
-#print axioms NCD_uniform_error_bound
+-- trajectory_closure_bound: THE CORE VICTORY - valid for ALL generators
+#print axioms SGC.Approximate.trajectory_closure_bound
+#print axioms SGC.Approximate.NCD_uniform_error_bound
+-- spectral_stability_reversible: Only valid for reversible (self-adjoint) generators
+#print axioms SGC.Approximate.spectral_stability_reversible
 
 -- Thermodynamics Pillar
 #print axioms doob_decomposition

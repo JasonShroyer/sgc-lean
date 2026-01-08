@@ -52,12 +52,17 @@ This pillar has a **two-layer structure**:
 | **Foundational Core** | Lumpability | `src/SGC/Renormalization/Lumpability.lean` | ✅ Fully Verified (zero axioms) |
 | **Effective Theory** | Approximate | `src/SGC/Renormalization/Approximate.lean` | ✅ Verified (axiom-supported) |
 
-**Foundational Core** (`Lumpability.lean`): Pure algebraic proofs of spectral gap preservation.
-Key theorem: `gap_non_decrease`. No axioms—every step is machine-checked.
+**Foundational Core** (`Lumpability.lean`): Pure algebraic proofs of Dirichlet form preservation.
+Key theorem: `dirichlet_gap_non_decrease`. No axioms—every step is machine-checked.
+
+**Note on Reversibility**: The theorem `dirichlet_gap_non_decrease` is algebraically valid for ALL 
+generators. However, the interpretation as "spectral gap preservation" requires L to be self-adjoint 
+in L²(π) (reversible/detailed balance). For non-reversible systems, this bounds the coercivity 
+constant, not the eigenvalue gap. See the docstrings in the code for details.
 
 **Effective Theory** (`Approximate.lean`): Bound specifications for approximate systems.
-Key theorems: `trajectory_closure_bound`, `spectral_stability`, `NCD_uniform_error_bound`.
-Uses analysis axioms (Duhamel, Weyl) to bridge to standard functional analysis.
+Key theorems: `trajectory_closure_bound`, `NCD_uniform_error_bound` (valid for ALL generators).
+Uses analysis axioms (Duhamel bounds) to bridge to standard functional analysis.
 
 This structure creates a firewall: the algebraic core is unassailable, while the effective
 theory explicitly declares its modeling assumptions.
@@ -67,14 +72,20 @@ theory explicitly declares its modeling assumptions.
 The `Approximate.lean` module implements the **verified theorem stack** for approximate lumpability.
 **Status: Zero Sorries (Axiom-Supported)**
 
-| Theorem | Status | Description |
-|---------|--------|-------------|
-| `trajectory_closure_bound` | ✅ Verified | Uniform trajectory error O(ε·t) |
-| `propagator_approximation_bound` | ✅ Verified | Operator norm bound via trajectory closure |
-| `spectral_stability` | ✅ Verified | Eigenvalue tracking via Weyl inequality |
-| `NCD_uniform_error_bound` | ✅ Verified | Uniform-in-time O(ε/γ) for NCD systems |
-| `pointwise_implies_opNorm_approx` | ✅ Verified | Bridge: row-sum bounds → operator norm |
-| `NCD_spectral_stability` | 🚫 Aborted | **Disproved** (Secular Growth) |
+| Theorem | Status | Scope | Description |
+|---------|--------|-------|-------------|
+| `trajectory_closure_bound` | ✅ Verified | **All L** | Trajectory error O(ε·t) — **THE CORE VICTORY** |
+| `NCD_uniform_error_bound` | ✅ Verified | **All L** | Uniform-in-time O(ε/γ) for NCD systems |
+| `propagator_approximation_bound` | ✅ Verified | All L | Operator norm bound via trajectory closure |
+| `spectral_stability_reversible` | ⚠️ Reversible | L = L* | Eigenvalue tracking via Weyl (requires self-adjoint) |
+| `pointwise_implies_opNorm_approx` | ✅ Verified | All L | Bridge: row-sum bounds → operator norm |
+| `NCD_spectral_stability` | 🚫 Aborted | — | **Disproved** (Secular Growth) |
+
+**Reversibility Caveat**: The `spectral_stability_reversible` theorem and its underlying 
+`Weyl_inequality_pi` axiom are ONLY valid for reversible (self-adjoint) generators. For non-reversible 
+systems, eigenvalues can be complex and Weyl's inequality fails due to pseudospectral instability. 
+The trajectory-based results (`trajectory_closure_bound`, `NCD_uniform_error_bound`) are the foundation 
+for non-reversible theory and the physics of emergence.
 
 **NCD Spectral Stability — A Physical Insight**:
 The proof assistant correctly identified that `NCD_spectral_stability` is **false**.

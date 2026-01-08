@@ -554,12 +554,25 @@ lemma rayleigh_quotient_lift_eq (L : Matrix V V ℝ) (P : Partition V) (pi_dist 
     lift_inner_pi_eq' P pi_dist f f
   rw [h_num, h_denom]
 
-/-- **Spectral Gap** (using Dirichlet form): inf of Rayleigh quotients over u ⊥ π. -/
-def SpectralGap (L : Matrix V V ℝ) (pi_dist : V → ℝ) : ℝ :=
+/-- **Dirichlet Gap** (Rayleigh quotient infimum): inf of ⟨u, Lu⟩_π / ‖u‖²_π over u ⊥ π.
+
+    **IMPORTANT (Reversibility Caveat)**:
+    - For **reversible** generators (L self-adjoint in L²(π)), this equals the spectral gap
+      (smallest non-zero eigenvalue), and the min-max theorem applies.
+    - For **non-reversible** generators, this is the coercivity constant of the symmetric
+      part H = (L + L*)/2, NOT the eigenvalue-based spectral gap. Eigenvalues may be complex
+      and the Rayleigh-Ritz characterization fails.
+
+    The theorem `dirichlet_gap_non_decrease` below is algebraically valid for all generators,
+    but its interpretation as "spectral gap preservation" requires reversibility.
+
+    **For non-reversible systems**: Use `trajectory_closure_bound` in `Approximate.lean`,
+    which provides valid dynamical bounds without spectral assumptions. -/
+def DirichletGap (L : Matrix V V ℝ) (pi_dist : V → ℝ) : ℝ :=
   sInf (RayleighSet L pi_dist)
 
-/-- **Spectral Gap on Quotient** -/
-def SpectralGap_bar (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) : ℝ :=
+/-- **Dirichlet Gap on Quotient**: The Rayleigh infimum on the coarse-grained space. -/
+def DirichletGap_bar (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) : ℝ :=
   sInf (RayleighSetQuot L P pi_dist)
 
 /-! ### 9b. Approximate Lumpability (RETIRED)
@@ -585,11 +598,13 @@ The new approach:
 - Simon & Ando, "Aggregation of Variables in Dynamic Systems" (1961)
 -/
 
-/-- **Spectral Gap Non-Decrease (Simple Form)**: inf over block-constant ≥ inf over all. -/
-theorem gap_block_ge_gap_all (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+/-- **Dirichlet Gap Non-Decrease (Simple Form)**: inf over block-constant ≥ inf over all.
+
+    This is pure set theory: restricting an infimum to a subset cannot decrease it. -/
+theorem dirichlet_gap_block_ge_all (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hS : (RayleighSetBlockConstant L P pi_dist).Nonempty)
     (hT_bdd : BddBelow (RayleighSet L pi_dist)) :
-    SpectralGap L pi_dist ≤ sInf (RayleighSetBlockConstant L P pi_dist) := by
+    DirichletGap L pi_dist ≤ sInf (RayleighSetBlockConstant L P pi_dist) := by
   exact sInf_subset_ge (rayleigh_block_subset L P pi_dist) hS hT_bdd
 
 /-- **Rayleigh Set Quotient = Rayleigh Set Block-Constant** via lift bijection.
@@ -631,18 +646,26 @@ lemma lift_fun_is_block_constant (P : Partition V) (f : P.Quot → ℝ) :
   have h_eq : P.quot_map x = P.quot_map y := Quotient.eq'.mpr hxy
   rw [h_eq]
 
-/-- **Spectral Gap Non-Decrease**: λ̄_gap ≥ λ_gap.
+/-- **Dirichlet Gap Non-Decrease**: γ̄ ≥ γ where γ = inf R(u).
 
-    Coarse-graining cannot decrease the spectral gap because:
-    - λ_gap(L) = inf over ALL u ⊥ π of R(u)
-    - λ_gap(L̄) = inf over quotient functions f ⊥ π̄ = inf over BLOCK-CONSTANT u ⊥ π
-    - Since block-constant functions form a subset: inf(subset) ≥ inf(total) -/
-theorem gap_non_decrease (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    Coarse-graining cannot decrease the Dirichlet gap because:
+    - γ(L) = inf over ALL u ⊥ π of the Rayleigh quotient R(u)
+    - γ(L̄) = inf over quotient functions f ⊥ π̄ = inf over BLOCK-CONSTANT u ⊥ π
+    - Since block-constant functions form a subset: inf(subset) ≥ inf(total)
+
+    **Reversibility Caveat**: This is algebraically valid for ANY generator L.
+    However, the interpretation as "spectral gap preservation" requires L to be
+    self-adjoint in L²(π) (reversible/detailed balance). For non-reversible systems,
+    this bounds the coercivity constant, not the eigenvalue gap.
+
+    **For non-reversible systems**: Use `trajectory_closure_bound` instead, which
+    provides valid dynamical (predictive) bounds without spectral assumptions. -/
+theorem dirichlet_gap_non_decrease (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hL : IsStronglyLumpable L P)
     (hS : (RayleighSetBlockConstant L P pi_dist).Nonempty)
     (hT_bdd : BddBelow (RayleighSet L pi_dist)) :
-    SpectralGap_bar L P pi_dist ≥ SpectralGap L pi_dist := by
-  simp only [SpectralGap_bar, SpectralGap]
+    DirichletGap_bar L P pi_dist ≥ DirichletGap L pi_dist := by
+  simp only [DirichletGap_bar, DirichletGap]
   -- Key: RayleighSetQuot and RayleighSetBlockConstant have the same infimum
   -- because every block-constant u = lift(f) for unique f, and R(lift(f)) = R̄(f)
   have h_eq : sInf (RayleighSetQuot L P pi_dist) = sInf (RayleighSetBlockConstant L P pi_dist) := by
@@ -685,7 +708,7 @@ theorem gap_non_decrease (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V →
           exact hg_eq.symm
     rw [h_set_eq]
   rw [h_eq]
-  exact gap_block_ge_gap_all L P pi_dist hS hT_bdd
+  exact dirichlet_gap_block_ge_all L P pi_dist hS hT_bdd
 
 end Lumpability
 end SGC

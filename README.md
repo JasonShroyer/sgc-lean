@@ -10,7 +10,9 @@ An experimental formalization of the algebraic structure of metastability in dis
 
 **Scope:** The verified core establishes results for **finite state spaces** (`[Fintype V]`). This is a deliberate design choice—see [`ARCHITECTURE.md`](ARCHITECTURE.md) for rationale. Continuum limits are axiomatized via `SGC.Bridge.Discretization`, providing an explicit interface for future formalization of analytic convergence results.
 
-**New in v2:** Approximate lumpability is now a *derived theorem*, not an axiom. We prove that small kinematic defects (leakage between blocks) lead to bounded trajectory errors. See `trajectory_closure_bound` and `spectral_stability`.
+**New in v2:** Approximate lumpability is now a *derived theorem*, not an axiom. We prove that small kinematic defects (leakage between blocks) lead to bounded trajectory errors. The core result `trajectory_closure_bound` establishes that **prediction is possible in a coarse-grained world**—the mathematical foundation for emergent agency.
+
+**New in v3 (Audit Refinement):** Following rigorous mathematical review, we clarified the scope of spectral vs. dynamical results. The **trajectory bounds** (`trajectory_closure_bound`, `NCD_uniform_error_bound`) are valid for ALL generators, including non-reversible systems. Spectral eigenvalue matching (`spectral_stability_reversible`) requires reversibility. The trajectory-based results are the foundation for a physics of emergence.
 
 ---
 
@@ -25,26 +27,37 @@ The library is organized into four logical modules (`src/SGC/`):
 
 ### 2. Renormalization (Scale Invariance)
 - **Module:** `SGC.Renormalization.Lumpability` 
-- **Physics:** Proves that spectral stability is preserved under coarse-graining (renormalization group flow).
-- **Key Theorem:** `gap_non_decrease` (The spectral gap of a lumped chain is bounded below by the original gap).
+- **Physics:** Proves that coarse-graining preserves predictive validity (trajectory closure).
+- **Key Theorem:** `dirichlet_gap_non_decrease` (The Dirichlet form infimum is preserved under coarse-graining).
 
 #### Verified Approximate Lumpability (100% Complete)
 
 We have replaced the `approximate_gap_leakage` axiom with a **fully verified theorem stack**. See [`src/SGC/Renormalization/Approximate.lean`](src/SGC/Renormalization/Approximate.lean).
 
-| Component | Status | Description |
-|-----------|--------|-------------|
-| `IsApproxLumpable` | ✅ Definition | ‖(I-Π)LΠ‖_op ≤ ε |
-| `trajectory_closure_bound` | ✅ Verified | Uniform trajectory error O(ε·t) |
-| `propagator_approximation_bound` | ✅ Verified | Operator norm bound |
-| `spectral_stability` | ✅ Verified | Eigenvalue tracking via Weyl |
-| `NCD_uniform_error_bound` | ✅ Verified | Uniform-in-time O(ε/γ) for NCD |
-| `pointwise_implies_opNorm_approx` | ✅ Verified | Legacy bridge (row-sum → op-norm) |
+| Component | Status | Scope | Description |
+|-----------|--------|-------|-------------|
+| `IsApproxLumpable` | ✅ Definition | All L | ‖(I-Π)LΠ‖_op ≤ ε (leakage defect) |
+| `trajectory_closure_bound` | ✅ Verified | **All L** | Trajectory error O(ε·t) — **THE CORE VICTORY** |
+| `NCD_uniform_error_bound` | ✅ Verified | **All L** | Uniform-in-time O(ε/γ) for NCD systems |
+| `propagator_approximation_bound` | ✅ Verified | All L | Operator norm bound on propagator difference |
+| `spectral_stability_reversible` | ⚠️ Reversible | L = L* | Eigenvalue tracking via Weyl (requires self-adjoint L) |
+| `dirichlet_gap_non_decrease` | ✅ Verified | All L | Algebraic (spectral interpretation requires reversibility) |
 
-**The Physics:** When a partition is "almost" lumpable (defect operator small), the reduced model accurately tracks the full dynamics. The `spectral_stability` theorem proves this rigorously via:
+**The Physics of Emergence:** The trajectory-based results prove that **prediction is possible** using a coarse-grained model. This is the mathematical foundation for:
+- **Effective Field Theory**: A reduced model validly predicts the future
+- **Markov Blankets**: Minimizing leakage defect ε mechanically carves out predictive boundaries
+- **Emergent Agency**: Systems that persist must minimize prediction error, hence minimize ε
 
+The chain of inference for non-reversible systems:
 ```
-IsApproxLumpable → trajectory_closure_bound → propagator_approximation_bound → spectral_stability
+IsApproxLumpable → trajectory_closure_bound → NCD_uniform_error_bound
+                                           ↓
+                              PREDICTIVE EMERGENCE (valid for all generators)
+```
+
+For reversible systems only:
+```
+trajectory_closure_bound → propagator_approximation_bound → spectral_stability_reversible
 ```
 
 #### NCD Validity Horizon (A Physical Insight)
