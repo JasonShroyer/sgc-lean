@@ -48,7 +48,8 @@ This is the entry point for the formally verified SGC library.
 
 ## The Four Pillars Architecture (v1 Core)
 
-1. **Axioms** - The L²(π) geometric foundation (Chentsov + Fisher-Rao)
+1. **Axioms** - The L²(π) geometric foundation (inspired by Chentsov/Fisher-Rao theory;
+   implemented here as **discrete** weighted inner products on `Fintype V`)
 2. **Spectral** - Spectral geometry and heat kernel bounds
 3. **Renormalization** - Spectral gap preservation under coarse-graining
 4. **Topology** - Markov blankets as geometric boundaries
