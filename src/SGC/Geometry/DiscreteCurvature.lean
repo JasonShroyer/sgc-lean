@@ -252,35 +252,7 @@ theorem yamabe_energy_decreasing {V : Type*} [Fintype V]
   -- This follows from the flow being the negative gradient of E
   exact ⟨0, le_refl 0, trivial⟩
 
-/-! ### 6. Connection to Consolidation -/
-
-/-- **Claim**: Yamabe energy is the "Assembly Index" from Consolidation.
-
-    The intuition:
-    - High curvature variance = High local "surprise" = High prediction error
-    - Yamabe flow = Curvature smoothing = Error minimization
-    - Yamabe energy dissipated = Work done to consolidate
-
-    This connects:
-    - DiscreteScalarCurvature ↔ Local prediction error (ε at each vertex)
-    - YamabeEnergy ↔ Total leakage defect (global ε²)
-    - YamabeFlow ↔ Consolidation dynamics
-    - Energy dissipated ↔ Assembly Index -/
-noncomputable def AssemblyIndex {V : Type*} [Fintype V] (curvature : V → ℝ) (u : V → ℝ) : ℝ :=
-  YamabeEnergy curvature u
-
-/-- **Consolidation as Curvature Flow**: The consolidation process is
-    geometrically equivalent to Yamabe flow.
-
-    Systems that "consolidate" are those whose internal geometry flows
-    toward constant curvature (uniform predictability). -/
-theorem consolidation_is_curvature_flow {V : Type*} [Fintype V]
-    (curvature : V → ℝ) (u : V → ℝ) (hu : ∀ v, 0 < u v) :
-    ∃ flow : V → ℝ, (∀ v, flow v = yamabeFlowDerivative curvature u v) ∧
-    True := by -- placeholder for: flow minimizes YamabeEnergy
-  exact ⟨yamabeFlowDerivative curvature u, fun v => rfl, trivial⟩
-
-/-! ### 7. The KAT Theorem (2D Existence) -/
+/-! ### 6. The KAT Theorem (2D Existence) -/
 
 /-- The **Koebe-Andreev-Thurston Circle Packing Theorem**:
 
@@ -309,7 +281,7 @@ theorem KAT_implies_constant_curvature {V : Type*} [DecidableEq V] [Fintype V]
   obtain ⟨u, _⟩ := KAT_existence K h_planar h_triangulation
   exact ⟨u, 0, trivial⟩
 
-/-! ### 8. Generalization to n-Dimensions -/
+/-! ### 7. Generalization to n-Dimensions -/
 
 /-- **Discrete Yamabe Problem** (general n):
 
@@ -333,28 +305,29 @@ axiom yamabe_flow_convergence {V : Type*} [DecidableEq V] [Fintype V]
     (K : SimplicialComplex V) (g : PLMetric V K)
     (h_positive : True) : DiscreteYamabeProblem K g
 
-/-! ### 9. Summary: The Geometric Foundation of Consolidation
+/-! ### 8. Summary: Pure Discrete Geometry
 
-**What This Module Establishes**:
+**What This Module Establishes** (Pure Geometry):
 
-1. **SimplicialComplex**: n-dimensional meshes (vertices, edges, triangles, tetrahedra, ...)
-2. **DiscreteScalarCurvature**: Angle-defect generalized to n dimensions
-3. **DiscreteYamabeFlow**: Gradient descent that smooths curvature
-4. **YamabeEnergy = AssemblyIndex**: The energy dissipated IS the work of consolidation
+1. **SimplicialComplex**: Abstract n-dimensional simplicial complexes
+2. **PLMetric**: Piecewise linear metrics via edge lengths
+3. **ConformalFactor**: Discrete conformal deformations
+4. **DiscreteScalarCurvature**: Angle-defect curvature (2D and n-dim)
+5. **DiscreteYamabeFlow**: Gradient descent minimizing curvature variance
+6. **YamabeEnergy**: The L² functional measuring deviation from constant curvature
 
-**The Physical Picture**:
+**Key Results** (Axiomatized from literature):
 
-A system's "internal geometry" is described by curvature at each point.
-- High curvature = High local complexity = High prediction error
-- Curvature variation = Global disorder = Total ε²
-- Yamabe flow = Natural tendency toward uniformity = Consolidation
-- Energy dissipated = Work done to reduce disorder = Assembly Index
+- `discrete_gauss_bonnet`: Total curvature = 2π · χ(K)
+- `KAT_existence`: 2D circle packing existence
+- `yamabe_flow_convergence`: n-dim Yamabe flow converges
 
 **The 2D-to-nD Progression**:
-- 2D: KAT theorem guarantees circle packing → constant curvature exists
-- nD: Yamabe flow generalizes this → convergence under good conditions
+- 2D: KAT theorem → circle packing → constant curvature exists
+- nD: Yamabe flow → convergence under positivity conditions (Luo, Glickenstein)
 
-This completes the geometric foundation: **Consolidation is curvature flow**.
+**Physical Interpretation**: See `SGC.Geometry.CurvatureBridge` for the connection
+between this pure geometry and thermodynamic dissipation concepts.
 -/
 
 end Geometry

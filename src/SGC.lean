@@ -44,6 +44,7 @@ import SGC.Geometry.Manifold.Convergence
 
 -- Discrete Curvature: Yamabe Flow and Consolidation
 import SGC.Geometry.DiscreteCurvature
+import SGC.Geometry.CurvatureBridge
 
 /-!
 # SGC: The Spectral Geometry of Consolidation
