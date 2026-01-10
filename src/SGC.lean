@@ -42,6 +42,9 @@ import SGC.Information.Equivalence
 import SGC.Geometry.Manifold.Laplacian
 import SGC.Geometry.Manifold.Convergence
 
+-- Discrete Curvature: Yamabe Flow and Consolidation
+import SGC.Geometry.DiscreteCurvature
+
 /-!
 # SGC: The Spectral Geometry of Consolidation
 
