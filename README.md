@@ -102,6 +102,29 @@ The proof assistant correctly rejected `NCD_spectral_stability` as false. Effect
 - **Physics:** Scaffolding for the Belkin-Niyogi convergence theorem (graph Laplacians → Laplace-Beltrami operators).
 - **Goal:** Constructive validation of the `ContinuumTarget` axiom.
 
+### Topological Evolution (Phase 5 - NEW)
+- **Module:** `SGC.Evolution`
+- **Physics:** Ricci Flow with Surgery—structural emergence via bond breaking/forming.
+- **Key Components:**
+
+| Module | Purpose | Key Definition |
+|--------|---------|----------------|
+| `FormanRicci` | Stress signal | `FormanRicci G u v` — combinatorial edge curvature |
+| `Surgery` | Operators | `SurgeryCut`, `SurgerySew` — topology-changing maps |
+| `Conservation` | Constraints | `IsSafeSurgery`, `BettiNumber` — topological invariants |
+
+**The Three-Layer Architecture:**
+```
+Signal:     FormanRicci(e) < 0  →  Edge under stress (bottleneck)
+Action:     SurgeryCut(G, θ)   →  Remove stressed edges
+Constraint: IsSafeSurgery      →  Preserve b₀=1, b₁≥1 (connectedness + blanket)
+```
+
+**Physical Applications:**
+- **Origin of Life**: Chemical bond formation/breaking
+- **Neural Networks**: Synaptic pruning/growth  
+- **Emergent Identity**: Markov blanket (b₁ ≥ 1) as topological "self"
+
 ---
 
 ## Theorem Index
@@ -117,6 +140,10 @@ The proof assistant correctly rejected `NCD_spectral_stability` as false. Effect
 | `variational_drift_optimality` | `SGC.Variational.LeastAction` | **Core** | Variational derivation of drift maximization |
 | `blanket_orthogonality` | `SGC.Topology.Blanket` | **Core** | Internal-external orthogonality for Markov blankets |
 | `information_geometry_equivalence` | `SGC.Information.Equivalence` | **Extension** | Geometry ⟺ Information equivalence |
+| `forman_ricci_symm` | `SGC.Evolution.FormanRicci` | **Evolution** | F(u,v) = F(v,u) — curvature symmetry |
+| `forman_ricci_bottleneck` | `SGC.Evolution.FormanRicci` | **Evolution** | High-degree endpoints → negative curvature |
+| `safe_surgery_preserves_blanket` | `SGC.Evolution.Conservation` | **Evolution** | Safe surgery maintains b₁ ≥ 1 |
+| `self_preservation` | `SGC.Evolution.Conservation` | **Evolution** | Constrained surgery preserves Markov blanket |
 
 ---
 
