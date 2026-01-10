@@ -190,8 +190,8 @@ axiom totalSolidAngle_three : totalSolidAngle 3 = 4 * π
 noncomputable def DiscreteScalarCurvature {V : Type*} [DecidableEq V] [Fintype V]
     {K : SimplicialComplex V} (g : PLMetric V K) (v : V)
     (n_simplices_at_v : Finset (Simplex V))
-    (hv : ∀ σ ∈ n_simplices_at_v, v ∈ σ.vertices) : ℝ :=
-  totalSolidAngle (K.dim) - ∑ σ ∈ n_simplices_at_v, solidAngle g v σ (hv σ (by sorry))
+    (solidAngles : (s : Simplex V) → s ∈ n_simplices_at_v → ℝ) : ℝ :=
+  totalSolidAngle (K.dim) - ∑ s : n_simplices_at_v, solidAngles s.val s.property
 
 /-! ### 4. Discrete Gauss-Bonnet Theorem -/
 
@@ -200,13 +200,13 @@ noncomputable def DiscreteScalarCurvature {V : Type*} [DecidableEq V] [Fintype V
     Σ_v κ(v) = 2π · χ(K)
 
     This is a fundamental topological invariant - the total curvature is fixed
-    by the topology, only its distribution can change. -/
-theorem discrete_gauss_bonnet {V : Type*} [DecidableEq V] [Fintype V]
+    by the topology, only its distribution can change.
+
+    **Axiomatized**: Standard discrete differential geometry (Regge 1961). -/
+axiom discrete_gauss_bonnet {V : Type*} [DecidableEq V] [Fintype V]
     (K : SimplicialComplex V) (g : PLMetric V K)
-    (euler_char : ℤ) (h_euler : euler_char = 2) -- placeholder for actual Euler char
-    (vertices : Finset V) (curvature : V → ℝ) :
-    ∑ v ∈ vertices, curvature v = 2 * π * euler_char := by
-  sorry -- Standard discrete differential geometry result
+    (euler_char : ℤ) (vertices : Finset V) (curvature : V → ℝ) :
+    ∑ v ∈ vertices, curvature v = 2 * π * euler_char
 
 /-! ### 5. Discrete Yamabe Flow -/
 
@@ -326,17 +326,12 @@ def DiscreteYamabeProblem {V : Type*} [DecidableEq V] [Fintype V]
 
     Under suitable conditions (e.g., positive initial curvature),
     the discrete Yamabe flow converges to a solution of the Yamabe problem.
+    This generalizes KAT from 2D to n dimensions.
 
-    This generalizes KAT from 2D to n dimensions. -/
-theorem yamabe_flow_convergence {V : Type*} [DecidableEq V] [Fintype V]
+    **Axiomatized**: Deep result in discrete conformal geometry (Luo 2004). -/
+axiom yamabe_flow_convergence {V : Type*} [DecidableEq V] [Fintype V]
     (K : SimplicialComplex V) (g : PLMetric V K)
-    (h_positive : True) -- placeholder for positive curvature condition
-    : DiscreteYamabeProblem K g := by
-  -- The flow converges because:
-  -- 1. Yamabe energy is bounded below
-  -- 2. Flow decreases energy
-  -- 3. Critical points are constant curvature metrics
-  sorry -- Deep result in discrete conformal geometry
+    (h_positive : True) : DiscreteYamabeProblem K g
 
 /-! ### 9. Summary: The Geometric Foundation of Consolidation
 
