@@ -72,4 +72,27 @@ This is the entry point for the formally verified SGC library.
 - **v1 Core**: Formally verified (zero unproven goals)
 - **v2 Extensions**: Under construction (axiomatized pending Mathlib integration)
 
+## Scope & Roadmap
+
+### Current Scope: Metric Consolidation (Level 1 - Fixed Topology)
+
+This library formalizes **annealing/learning** on a fixed graph structure:
+- Edge weights evolve, but which edges exist is static
+- Yamabe flow smooths curvature via conformal factor adjustment
+- Ollivier-Ricci curvature grounds geometry in transition probabilities
+
+### Future Scope: Topological Evolution (Level 2 - Reserved)
+
+The next phase will formalize **structural emergence** (bond breaking/forming):
+- **Forman-Ricci Curvature**: Combinatorial stress indicator for edges
+- **Ricci Flow with Surgery**: Topology-changing operator (w_{ij} → 0 triggers edge removal)
+- **Discrete Morse Theory**: Persistent homology to track topological invariants
+
+Reserved type signatures for Phase 5+:
+```
+TopologicalSurgery : Graph → Graph
+FormanRicci : Edge → ℝ
+BettiNumber : Graph → ℕ → ℕ
+```
+
 -/

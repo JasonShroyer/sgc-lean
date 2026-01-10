@@ -240,6 +240,41 @@ These are standard results in functional analysis. We axiomatize them to avoid a
 
 ## Future Roadmap
 
+### Current Scope: Metric Consolidation (Level 1)
+
+**What we have formalized (Phase 1-4):**
+- **Fixed Topology**: The graph structure (which states connect to which) is static
+- **Yamabe Flow**: Curvature smoothing via gradient descent on conformal factors
+- **Assembly Index**: Measures deviation from uniform predictability
+- **Ollivier-Ricci Curvature**: Grounds geometric curvature in transition probabilities
+
+This corresponds to **learning/annealing** on a fixed architecture—optimizing edge weights without changing which edges exist.
+
+### Future Scope: Topological Evolution (Level 2)
+
+**The next frontier (Phase 5+):**
+
+| Concept | Tool | Application |
+|---------|------|-------------|
+| **Forman-Ricci Curvature** | Combinatorial edge curvature | Identifies "stress points" (likely to break/form) |
+| **Ricci Flow with Surgery** | Topology-changing operator | Models bond breaking/forming |
+| **Discrete Morse Theory** | Persistent homology (Betti numbers) | Tracks topological invariants through surgery |
+
+**Why This Matters:**
+- **Origin of Life**: Chemical bond formation/breaking
+- **Neural Architecture Search**: Synaptic pruning/growth
+- **Social Network Evolution**: Relationship formation/dissolution
+- **Emergent Identity**: Creation of stable Markov blankets (Betti₁ = "self")
+
+**Reserved Interfaces:**
+```
+TopologicalSurgery : Graph → Graph  -- Discontinuous topology change
+FormanRicci : Edge → ℝ              -- Combinatorial stress indicator
+BettiNumber : Graph → ℕ → ℕ         -- Topological invariant tracker
+```
+
+The current Yamabe flow framework provides the foundation: surgery occurs when weights vanish (w_{ij} → 0) or curvature diverges (κ → -∞).
+
 ### Executable Semantics (SciLean Target)
 While the verified core utilizes `Real` for analytic precision (marking definitions `noncomputable`), the algebraic structure over `Fintype` is inherently algorithmic.
 * **Goal:** Instantiate the topological definitions with `Float` using [SciLean](https://github.com/lecopivo/SciLean).
