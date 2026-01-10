@@ -55,6 +55,13 @@ import SGC.Evolution.FormanRicci
 import SGC.Evolution.Surgery
 import SGC.Evolution.Conservation
 
+-- ═══════════════════════════════════════════════════════════════════════════
+-- Phase 6: Thermodynamics of Evolution (The Cost of Change)
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- Landauer's Principle: Surgery has thermodynamic cost
+import SGC.Thermodynamics.Evolution
+
 /-!
 # SGC: The Spectral Geometry of Consolidation
 
