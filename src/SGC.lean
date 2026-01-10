@@ -46,6 +46,15 @@ import SGC.Geometry.Manifold.Convergence
 import SGC.Geometry.DiscreteCurvature
 import SGC.Geometry.CurvatureBridge
 
+-- ═══════════════════════════════════════════════════════════════════════════
+-- Phase 5: Topological Evolution (Level 2)
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- Evolution: Ricci Flow with Surgery
+import SGC.Evolution.FormanRicci
+import SGC.Evolution.Surgery
+import SGC.Evolution.Conservation
+
 /-!
 # SGC: The Spectral Geometry of Consolidation
 
@@ -74,25 +83,26 @@ This is the entry point for the formally verified SGC library.
 
 ## Scope & Roadmap
 
-### Current Scope: Metric Consolidation (Level 1 - Fixed Topology)
+### Level 1: Metric Consolidation (Phases 1-4) ✓
 
-This library formalizes **annealing/learning** on a fixed graph structure:
+Formalizes **annealing/learning** on a fixed graph structure:
 - Edge weights evolve, but which edges exist is static
 - Yamabe flow smooths curvature via conformal factor adjustment
 - Ollivier-Ricci curvature grounds geometry in transition probabilities
 
-### Future Scope: Topological Evolution (Level 2 - Reserved)
+### Level 2: Topological Evolution (Phase 5) ✓
 
-The next phase will formalize **structural emergence** (bond breaking/forming):
-- **Forman-Ricci Curvature**: Combinatorial stress indicator for edges
-- **Ricci Flow with Surgery**: Topology-changing operator (w_{ij} → 0 triggers edge removal)
-- **Discrete Morse Theory**: Persistent homology to track topological invariants
+Formalizes **structural emergence** (bond breaking/forming):
+- **Forman-Ricci Curvature** (`Evolution.FormanRicci`): Combinatorial stress indicator
+- **Surgery Operators** (`Evolution.Surgery`): Cut (remove stressed edges) and Sew (add stabilizing edges)
+- **Topological Conservation** (`Evolution.Conservation`): Betti numbers, safe surgery, Markov blanket preservation
 
-Reserved type signatures for Phase 5+:
+Key definitions:
 ```
-TopologicalSurgery : Graph → Graph
-FormanRicci : Edge → ℝ
-BettiNumber : Graph → ℕ → ℕ
+FormanRicci : WeightedGraph → V → V → ℝ     -- Edge stress signal
+SurgeryCut : WeightedGraph → ℝ → WeightedGraph  -- Remove stressed edges
+BettiNumber : WeightedGraph → ℕ → ℕ         -- Topological invariants
+IsSafeSurgery : WeightedGraph → WeightedGraph → Prop  -- Preserves b₀=1, b₁≥1
 ```
 
 -/
