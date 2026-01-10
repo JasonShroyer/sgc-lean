@@ -6,7 +6,7 @@ name: Build
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, dev, wip-* ]
   pull_request:
     branches: [ main, master ]
 
@@ -59,7 +59,7 @@ jobs:
           | wc -l || true)
         
         if [ "$SORRY_COUNT" -gt 0 ]; then
-          echo "::error::Found $SORRY_COUNT potential 'sorry' occurrences:"
+          echo "Found $SORRY_COUNT potential 'sorry' occurrences:"
           grep -rn --include="*.lean" -E '\bsorry\b' src/ \
             | grep -v '^\s*--' \
             | grep -v '/--' \
@@ -67,10 +67,18 @@ jobs:
             | grep -v 'sorry-free' \
             | grep -v 'zero.*sorry' \
             | grep -v 'unproven' || true
-          exit 1
+          
+          # Only fail on main/master branches, warn on dev branches
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          if [[ "$BRANCH_NAME" == "main" || "$BRANCH_NAME" == "master" ]]; then
+            echo "::error::Sorries not allowed on $BRANCH_NAME branch"
+            exit 1
+          else
+            echo "::warning::$SORRY_COUNT sorries found - allowed on $BRANCH_NAME branch (WIP)"
+          fi
+        else
+          echo "✓ No active sorries found (verified)"
         fi
-        
-        echo "✓ No active sorries found (verified)"
     
     - name: Post-job Cleanup
       if: always()
