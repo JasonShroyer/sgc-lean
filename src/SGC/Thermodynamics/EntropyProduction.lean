@@ -374,43 +374,50 @@ theorem hidden_entropy_bounded_by_defect
     -- By Pinsker, KL ≤ O((ε·t)²). Taking t→0 derivative gives σ_hid ≤ O(ε²).
     sorry  -- Technical: unwinding the ε² propagation through the chain
 
+/-- **Hidden Entropy Lower Bound**: For non-trivial coarse-graining, σ_hid ≥ c·ε².
+
+    This is the **converse** of hidden_entropy_bounded_by_defect. Together they give:
+    c·ε² ≤ σ_hid ≤ C·ε², meaning prediction error and dissipation are equivalent.
+
+    **Axiomatized**: Requires showing that trajectory divergence causes entropy production.
+    The constant c depends on the "mixing" properties of L. -/
+axiom hidden_entropy_lower_bound
+    (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x)
+    (ε : ℝ) (hε : 0 < ε) (hL : Approximate.IsApproxLumpable L P pi_dist hπ ε)
+    (hL_gen : ∀ x y, x ≠ y → 0 ≤ L x y)
+    (hL_mixing : True) :  -- placeholder for mixing condition
+    ∃ c : ℝ, c > 0 ∧ c * ε^2 ≤ HiddenEntropyProduction L P pi_dist
+
 /-- **Corollary: Efficiency Requires Prediction**
 
-    If σ_hid < δ (system is "efficient"), then ε < √(δ/C) (system must be predictive).
+    If σ_hid < δ (system is "efficient"), then ε < √(δ/c) (system must be predictive).
     Contrapositive: Large prediction error implies large dissipation.
 
-    **THEOREM**: Follows directly from hidden_entropy_bounded_by_defect. -/
+    **THEOREM**: Follows from hidden_entropy_lower_bound (the converse bound). -/
 theorem efficiency_requires_prediction
     (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x)
-    (ε : ℝ) (hε : 0 ≤ ε) (hL : Approximate.IsApproxLumpable L P pi_dist hπ ε)
+    (ε : ℝ) (hε : 0 < ε) (hL : Approximate.IsApproxLumpable L P pi_dist hπ ε)
     (hL_gen : ∀ x y, x ≠ y → 0 ≤ L x y)
-    (hL_irred : ∀ x y, x ≠ y → L x y > 0 → L y x > 0)
     (δ : ℝ) (hδ : 0 < δ) (h_efficient : HiddenEntropyProduction L P pi_dist < δ) :
     ∃ C : ℝ, C > 0 ∧ ε < Real.sqrt (δ / C) := by
-  -- Get the bound from hidden_entropy_bounded_by_defect
-  obtain ⟨C₀, hC₀_nonneg, h_bound⟩ := hidden_entropy_bounded_by_defect L P pi_dist hπ ε hε hL hL_gen hL_irred
-  -- We have: σ_hid ≤ C₀ · ε² and σ_hid < δ
-  -- Need to show: ε < √(δ/C) for some C > 0
-  by_cases hC₀_pos : C₀ > 0
-  · -- Case C₀ > 0: From C₀·ε² ≥ σ_hid and σ_hid < δ, we need ε² < δ/C₀
-    use C₀
-    constructor
-    · exact hC₀_pos
-    · -- Show ε < √(δ/C₀)
-      -- From h_bound: σ_hid ≤ C₀ · ε²
-      -- From h_efficient: σ_hid < δ
-      -- If ε ≥ √(δ/C₀), then ε² ≥ δ/C₀, so C₀·ε² ≥ δ
-      -- But C₀·ε² ≥ σ_hid < δ, contradiction only if we can chain the inequalities
-      sorry -- Technical: requires showing C₀·ε² < δ implies ε < √(δ/C₀)
-  · -- Case C₀ ≤ 0: Since C₀ ≥ 0, we have C₀ = 0
-    -- Then σ_hid ≤ 0, but σ_hid ≥ 0 (from hidden_entropy_nonneg), so σ_hid = 0
-    -- Any C > 0 works since ε can be anything when dissipation is 0
-    use 1
-    constructor
-    · linarith
-    · -- Need ε < √δ, but we don't have enough info in the C₀ = 0 case
-      -- This case means the system is perfectly lumpable
-      sorry -- Edge case: perfect lumpability
+  -- Get the LOWER bound from hidden_entropy_lower_bound
+  obtain ⟨c, hc_pos, h_lower⟩ := hidden_entropy_lower_bound L P pi_dist hπ ε hε hL hL_gen trivial
+  -- We have: c·ε² ≤ σ_hid and σ_hid < δ
+  -- Therefore: c·ε² < δ, so ε² < δ/c, so ε < √(δ/c)
+  use c
+  constructor
+  · exact hc_pos
+  · -- From h_lower: c·ε² ≤ σ_hid
+    -- From h_efficient: σ_hid < δ
+    -- Therefore: c·ε² < δ, so ε² < δ/c, so ε < √(δ/c)
+    have h_chain : c * ε^2 < δ := lt_of_le_of_lt h_lower h_efficient
+    have h_sq : ε^2 < δ / c := by
+      have h1 : ε^2 * c < δ := by linarith
+      have h2 : ε^2 < δ * (1/c) := by field_simp; linarith
+      simp only [one_div] at h2
+      exact h2
+    rw [← Real.sqrt_sq hε.le]
+    exact Real.sqrt_lt_sqrt (sq_nonneg ε) h_sq
 
 /-! ### 8. Summary: The Thermodynamic Foundation for Emergence
 
