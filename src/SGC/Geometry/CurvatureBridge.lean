@@ -51,16 +51,46 @@ variable {V : Type*} [Fintype V] [DecidableEq V]
 
 /-! ### 1. The Assembly Index as Yamabe Energy -/
 
-/-- **Assembly Index**: The total "work" required to consolidate a system.
+/-- **Assembly Index (Raw)**: The total "work" required to consolidate a system.
 
     This is defined as the Yamabe energy of the associated geometric structure.
     The interpretation: curvature variance measures how much the system
     deviates from uniform predictability.
 
     **Physical Meaning**: A system with high Assembly Index has high internal
-    complexity that requires work to organize. -/
+    complexity that requires work to organize.
+
+    **Note on Units**: In 2D, YamabeEnergy is conformally invariant (dimensionless).
+    In higher dimensions n > 2, it has units [L]^{n-2}. For a scale-invariant
+    complexity metric, use `NormalizedAssemblyIndex` instead. -/
 noncomputable def AssemblyIndex (curvature : V → ℝ) (u : V → ℝ) : ℝ :=
   Geometry.YamabeEnergy curvature u
+
+/-- **Volume** of the discrete manifold (sum of conformal factors squared).
+
+    Vol = Σ_v u(v)²
+
+    This serves as the "size" measure for normalization. -/
+noncomputable def DiscreteVolume (u : V → ℝ) : ℝ :=
+  ∑ v, u v ^ 2
+
+/-- **Normalized Assembly Index**: Scale-invariant complexity metric.
+
+    Ẽ = E / Vol^{(n-2)/n}
+
+    This normalization ensures the Assembly Index is a pure "complexity number"
+    independent of the physical size of the system. In 2D (n=2), the exponent
+    is 0, so normalization has no effect (already conformal invariant).
+
+    For n > 2, dividing by Vol^{(n-2)/n} removes the length-scale dependence,
+    making it a universal complexity metric comparable across systems of
+    different sizes.
+
+    **Physical Meaning**: Two systems with the same NormalizedAssemblyIndex
+    have the same "intrinsic complexity" regardless of their physical extent. -/
+noncomputable def NormalizedAssemblyIndex (curvature : V → ℝ) (u : V → ℝ) (n : ℕ) : ℝ :=
+  if n ≤ 2 then AssemblyIndex curvature u
+  else AssemblyIndex curvature u / (DiscreteVolume u) ^ ((n - 2 : ℝ) / n)
 
 /-- The Assembly Index is always non-negative. -/
 theorem assembly_index_nonneg (curvature : V → ℝ) (u : V → ℝ) :
@@ -139,20 +169,27 @@ axiom yamabe_bounds_hidden_entropy
 /-! ### 4. Yamabe Flow ↔ Consolidation Dynamics -/
 
 /-- **Consolidation as Curvature Flow**: The consolidation process (error
-    minimization over time) corresponds to Yamabe flow (curvature smoothing).
+    minimization over geometric scale λ) corresponds to Yamabe flow (curvature smoothing).
 
-    The flow du/dt = (κ̄ - κ(v)) · u(v) in geometry corresponds to the
+    The flow du/dλ = (κ̄ - κ(v)) · u(v) in geometry corresponds to the
     dynamics that minimize prediction error in the physical system.
+
+    **IMPORTANT TIME DISTINCTION**:
+    - Dynamical time t: Parameter in e^{tL}, how states evolve given fixed geometry
+    - Geometric scale λ: Parameter in Yamabe flow, how geometry itself evolves
+
+    Consolidation happens on λ-time (learning/evolutionary scale), which is
+    typically much slower than dynamical t-time (physical state evolution).
 
     **Claim**: Systems that "consolidate" (become more predictable) are
     precisely those whose internal geometry flows toward constant curvature.
 
     This provides a geometric interpretation of the Free Energy Principle:
     - Minimizing free energy = Minimizing prediction error
-    - Minimizing prediction error = Yamabe flow
+    - Minimizing prediction error = Yamabe flow (in λ)
     - Yamabe flow = Curvature smoothing toward uniformity -/
 def ConsolidationIsYamabeFlow (curvature : V → ℝ) (u : V → ℝ) : Prop :=
-  ∀ v, ∃ du_dt : ℝ, du_dt = Geometry.yamabeFlowDerivative curvature u v
+  ∀ v, ∃ du_dscale : ℝ, du_dscale = Geometry.yamabeFlowDerivative curvature u v
 
 /-- Consolidation dynamics are always well-defined. -/
 theorem consolidation_well_defined (curvature : V → ℝ) (u : V → ℝ) :
@@ -164,10 +201,10 @@ theorem consolidation_well_defined (curvature : V → ℝ) (u : V → ℝ) :
 
 /-- **Yamabe Energy Dissipation**: Under Yamabe flow, the energy decreases.
 
-    dE/dt ≤ 0
+    dE/dλ ≤ 0  (in geometric scale λ, not dynamical time t)
 
     This is the geometric version of the second law: curvature variance
-    decreases under natural evolution. -/
+    decreases under consolidation/learning. -/
 theorem yamabe_energy_decreases_along_flow (_curvature : V → ℝ) (_u : V → ℝ)
     (_hu : ∀ v, 0 < _u v) :
     ∃ rate : ℝ, rate ≤ 0 ∧ True := by  -- placeholder for actual derivative
@@ -177,10 +214,11 @@ theorem yamabe_energy_decreases_along_flow (_curvature : V → ℝ) (_u : V → 
 /-- **Energy-Entropy Rate Correspondence**: The rate of Yamabe energy dissipation
     corresponds to the hidden entropy production rate.
 
-    dE/dt ~ -σ_hid
+    dE/dλ ~ -σ_hid  (geometric scale λ, not dynamical time t)
 
-    Systems dissipate Yamabe energy at a rate proportional to their hidden
-    entropy production. This is the geometric form of "dissipation = disorder reduction".
+    Systems dissipate Yamabe energy at a rate (in geometric time) proportional
+    to their hidden entropy production. This is the geometric form of
+    "consolidation = disorder reduction".
 
     **Axiomatized**: Requires showing the flow rates match. -/
 axiom energy_entropy_rate_correspondence

@@ -184,9 +184,18 @@ axiom totalSolidAngle_three : totalSolidAngle 3 = 4 * π
 
 /-- **Discrete Scalar Curvature** (general n-dimensions):
 
-    κ(v) = ω_{n-1} - Σ_{n-simplices at v} (solid angle at v)
+    κ(v) = ω_n - Σ_{n-simplices at v} (solid angle at v)
 
-    This is the n-dimensional generalization of angle defect. -/
+    where n = K.dim is the dimension of the simplicial complex and
+    ω_n = totalSolidAngle(n) is the total solid angle of the (n-1)-sphere:
+    - n=2: ω_2 = 2π (circle)
+    - n=3: ω_3 = 4π (sphere)
+    - General: ω_n = 2π^(n/2) / Γ(n/2)
+
+    This is the n-dimensional generalization of angle defect (Cooper-Rivin-Glickenstein).
+
+    **Note**: The dimension n comes from `K.dim`, ensuring consistency between
+    the complex dimension and the solid angle normalization. -/
 noncomputable def DiscreteScalarCurvature {V : Type*} [DecidableEq V] [Fintype V]
     {K : SimplicialComplex V} (_g : PLMetric V K) (_v : V)
     (n_simplices_at_v : Finset (Simplex V))
@@ -215,7 +224,13 @@ noncomputable def averageCurvature {V : Type*} [Fintype V]
     (curvature : V → ℝ) : ℝ :=
   (∑ v, curvature v) / Fintype.card V
 
-/-- **Discrete Yamabe Flow (Unnormalized, Luo 2004)**: The gradient descent du/dt = -κ(v).
+/-- **Discrete Yamabe Flow (Unnormalized, Luo 2004)**: The gradient descent du/dλ = -κ(v).
+
+    **IMPORTANT**: The parameter λ here is "geometric scale time" (or "flow time"),
+    NOT the dynamical time t of the Markov process e^{tL}.
+
+    - Dynamical time t: How states evolve given a fixed generator L
+    - Geometric time λ: How the geometry (generator L) itself evolves under learning/consolidation
 
     This is the basic combinatorial Yamabe flow from Luo's foundational paper.
     The conformal factor u evolves to reduce curvature magnitude everywhere.
@@ -227,9 +242,11 @@ noncomputable def yamabeFlowDerivative_unnormalized {V : Type*} [Fintype V]
 
 /-- **Discrete Yamabe Flow (Normalized)**: Volume-preserving variant.
 
-    du/dt = (κ̄ - κ(v)) · u(v)
+    du/dλ = (κ̄ - κ(v)) · u(v)
 
-    where u(v) is the conformal factor at vertex v.
+    where u(v) is the conformal factor at vertex v, and λ is geometric scale time.
+
+    **IMPORTANT**: λ is NOT dynamical time t. See `yamabeFlowDerivative_unnormalized` for details.
 
     - If κ(v) > κ̄ (too curved), u decreases (shrink)
     - If κ(v) < κ̄ (too flat), u increases (expand)
@@ -255,7 +272,7 @@ noncomputable def YamabeEnergy {V : Type*} [Fintype V]
 
 /-- Yamabe flow **decreases** the Yamabe energy.
 
-    dE/dt ≤ 0
+    dE/dλ ≤ 0  (where λ is geometric scale time, not dynamical time t)
 
     This is the variational principle underlying curvature smoothing. -/
 theorem yamabe_energy_decreasing {V : Type*} [Fintype V]
@@ -309,13 +326,15 @@ def DiscreteYamabeProblem {V : Type*} [DecidableEq V] [Fintype V]
 
 /-- **Yamabe Flow Long-Time Existence** (Luo 2004, Theorem 1.1):
 
-    The discrete Yamabe flow exists for all time t ∈ [0, ∞).
+    The discrete Yamabe flow exists for all geometric scale λ ∈ [0, ∞).
     Unlike smooth PDE flows, the discrete flow never develops singularities.
+
+    **Note**: λ is geometric/consolidation time, not dynamical time t.
 
     **Axiomatized**: Luo, "Combinatorial Yamabe Flow on Surfaces" (2004) -/
 axiom yamabe_flow_exists_all_time {V : Type*} [DecidableEq V] [Fintype V]
     (K : SimplicialComplex V) (g : PLMetric V K) (u₀ : ConformalFactor V) :
-    ∀ t : ℝ, t ≥ 0 → ∃ _u_t : ConformalFactor V, True  -- solution at time t
+    ∀ scale : ℝ, scale ≥ 0 → ∃ _u_scale : ConformalFactor V, True  -- solution at scale λ
 
 /-- **Yamabe Flow Convergence** (Luo 2004, Theorem 1.2):
 
@@ -337,8 +356,11 @@ axiom yamabe_flow_convergence {V : Type*} [DecidableEq V] [Fintype V]
 
 /-- **Exponential Convergence Rate** (Luo 2004):
 
-    The curvature converges exponentially: ‖κ(t) - κ̄‖ ≤ C·e^{-λt}·‖κ(0) - κ̄‖
-    where λ > 0 depends on the spectral gap of the Laplacian.
+    The curvature converges exponentially in geometric scale:
+    ‖κ(λ) - κ̄‖ ≤ C·e^{-r·λ}·‖κ(0) - κ̄‖
+    where r > 0 depends on the spectral gap of the Laplacian, and λ is geometric time.
+
+    **Note**: λ here is consolidation/learning time, not dynamical time t.
 
     **Axiomatized**: Follows from the gradient flow structure. -/
 axiom yamabe_exponential_convergence {V : Type*} [DecidableEq V] [Fintype V]
