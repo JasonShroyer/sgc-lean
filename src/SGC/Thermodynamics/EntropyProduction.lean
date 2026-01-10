@@ -319,6 +319,8 @@ axiom weighted_unweighted_norm_compare [Nonempty V] (v : V → ℝ) (pi_dist : V
 
 /-- **The Payoff Theorem**: Hidden entropy production bounded by leakage defect squared.
 
+    **Physical Intuition**: Bad predictions (high ε) force wasteful dissipation (high σ_hid).
+
     **Proof Chain** (invoking axioms):
     1. `trajectory_closure_bound` ⇒ trajectories differ by O(ε·t) in ‖·‖_π
     2. `weighted_unweighted_norm_compare` ⇒ L² distance bounded
@@ -390,6 +392,8 @@ axiom hidden_entropy_lower_bound
 
 /-- **Corollary: Efficiency Requires Prediction**
 
+    **Physical Intuition**: Efficient systems must be good predictors—there's no free lunch.
+
     If σ_hid < δ (system is "efficient"), then ε < √(δ/c) (system must be predictive).
     Contrapositive: Large prediction error implies large dissipation.
 
@@ -398,7 +402,7 @@ theorem efficiency_requires_prediction
     (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x)
     (ε : ℝ) (hε : 0 < ε) (hL : Approximate.IsApproxLumpable L P pi_dist hπ ε)
     (hL_gen : ∀ x y, x ≠ y → 0 ≤ L x y)
-    (δ : ℝ) (hδ : 0 < δ) (h_efficient : HiddenEntropyProduction L P pi_dist < δ) :
+    (δ : ℝ) (_hδ : 0 < δ) (h_efficient : HiddenEntropyProduction L P pi_dist < δ) :
     ∃ C : ℝ, C > 0 ∧ ε < Real.sqrt (δ / C) := by
   -- Get the LOWER bound from hidden_entropy_lower_bound
   obtain ⟨c, hc_pos, h_lower⟩ := hidden_entropy_lower_bound L P pi_dist hπ ε hε hL hL_gen trivial

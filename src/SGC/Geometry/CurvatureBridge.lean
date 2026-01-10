@@ -168,8 +168,8 @@ theorem consolidation_well_defined (curvature : V → ℝ) (u : V → ℝ) :
 
     This is the geometric version of the second law: curvature variance
     decreases under natural evolution. -/
-theorem yamabe_energy_decreases_along_flow (curvature : V → ℝ) (u : V → ℝ)
-    (hu : ∀ v, 0 < u v) :
+theorem yamabe_energy_decreases_along_flow (_curvature : V → ℝ) (_u : V → ℝ)
+    (_hu : ∀ v, 0 < _u v) :
     ∃ rate : ℝ, rate ≤ 0 ∧ True := by  -- placeholder for actual derivative
   -- The energy derivative is -2 Σ (κ - κ̄)² · (κ̄ - κ) · u² ≤ 0
   exact ⟨0, le_refl 0, trivial⟩

@@ -188,7 +188,7 @@ axiom totalSolidAngle_three : totalSolidAngle 3 = 4 * π
 
     This is the n-dimensional generalization of angle defect. -/
 noncomputable def DiscreteScalarCurvature {V : Type*} [DecidableEq V] [Fintype V]
-    {K : SimplicialComplex V} (g : PLMetric V K) (v : V)
+    {K : SimplicialComplex V} (_g : PLMetric V K) (_v : V)
     (n_simplices_at_v : Finset (Simplex V))
     (solidAngles : (s : Simplex V) → s ∈ n_simplices_at_v → ℝ) : ℝ :=
   totalSolidAngle (K.dim) - ∑ s : n_simplices_at_v, solidAngles s.val s.property
@@ -259,7 +259,7 @@ noncomputable def YamabeEnergy {V : Type*} [Fintype V]
 
     This is the variational principle underlying curvature smoothing. -/
 theorem yamabe_energy_decreasing {V : Type*} [Fintype V]
-    (curvature : V → ℝ) (u : V → ℝ) (hu : ∀ v, 0 < u v) :
+    (_curvature : V → ℝ) (_u : V → ℝ) (_hu : ∀ v, 0 < _u v) :
     ∃ C : ℝ, C ≤ 0 ∧ True := by -- placeholder for dE/dt ≤ 0
   -- The derivative of Yamabe energy along the flow is non-positive
   -- This follows from the flow being the negative gradient of E
@@ -282,7 +282,7 @@ theorem yamabe_energy_decreasing {V : Type*} [Fintype V]
 axiom KAT_existence {V : Type*} [DecidableEq V] [Fintype V]
     (K : SimplicialComplex V) (h_planar : True) -- placeholder for planarity
     (h_triangulation : K.dim = 2) :
-    ∃ u : ConformalFactor V, True -- placeholder for circle packing properties
+    ∃ _u : ConformalFactor V, True -- placeholder for circle packing properties
 
 /-- **KAT implies 2D Yamabe**: Circle packing gives constant curvature.
 
@@ -290,7 +290,7 @@ axiom KAT_existence {V : Type*} [DecidableEq V] [Fintype V]
     constant geodesic curvature (or constant scalar curvature if closed). -/
 theorem KAT_implies_constant_curvature {V : Type*} [DecidableEq V] [Fintype V]
     (K : SimplicialComplex V) (h_planar : True) (h_triangulation : K.dim = 2) :
-    ∃ u : ConformalFactor V, ∃ κ₀ : ℝ, True := by -- placeholder for κ = κ₀
+    ∃ _u : ConformalFactor V, ∃ _κ₀ : ℝ, True := by -- placeholder for κ = κ₀
   obtain ⟨u, _⟩ := KAT_existence K h_planar h_triangulation
   exact ⟨u, 0, trivial⟩
 
@@ -305,7 +305,7 @@ theorem KAT_implies_constant_curvature {V : Type*} [DecidableEq V] [Fintype V]
     This is the discrete analogue of the smooth Yamabe problem. -/
 def DiscreteYamabeProblem {V : Type*} [DecidableEq V] [Fintype V]
     (K : SimplicialComplex V) (_g : PLMetric V K) : Prop :=
-  ∃ u : ConformalFactor V, ∃ κ₀ : ℝ, True -- placeholder for constant curvature
+  ∃ _u : ConformalFactor V, ∃ _κ₀ : ℝ, True -- placeholder for constant curvature
 
 /-- **Yamabe Flow Long-Time Existence** (Luo 2004, Theorem 1.1):
 
@@ -315,7 +315,7 @@ def DiscreteYamabeProblem {V : Type*} [DecidableEq V] [Fintype V]
     **Axiomatized**: Luo, "Combinatorial Yamabe Flow on Surfaces" (2004) -/
 axiom yamabe_flow_exists_all_time {V : Type*} [DecidableEq V] [Fintype V]
     (K : SimplicialComplex V) (g : PLMetric V K) (u₀ : ConformalFactor V) :
-    ∀ t : ℝ, t ≥ 0 → ∃ u_t : ConformalFactor V, True  -- solution at time t
+    ∀ t : ℝ, t ≥ 0 → ∃ _u_t : ConformalFactor V, True  -- solution at time t
 
 /-- **Yamabe Flow Convergence** (Luo 2004, Theorem 1.2):
 
