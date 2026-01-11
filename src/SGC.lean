@@ -54,6 +54,8 @@ import SGC.Geometry.CurvatureBridge
 import SGC.Evolution.FormanRicci
 import SGC.Evolution.Surgery
 import SGC.Evolution.Conservation
+-- Stage 4: The Dynamics of Evolution (hybrid system lifecycle)
+import SGC.Evolution.Dynamics
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Phase 6: Thermodynamics of Evolution (The Cost of Change)
