@@ -1,5 +1,9 @@
-# UPAT-Scope: Reality X-Ray Demo
-# Python dependencies for the visualization prototype
+# SGC Stability Analyzer
+# Python dependencies for the web app and CLI
+
+# Web interface
+streamlit>=1.28.0
+plotly>=5.18.0
 
 # Core scientific computing
 numpy>=1.24.0
@@ -7,25 +11,9 @@ scipy>=1.10.0
 
 # Image processing
 pillow>=10.0.0
-opencv-python>=4.8.0
 
 # Hilbert curve mapping
 hilbertcurve>=2.0.5
 
-# Visualization
+# CLI visualization (optional)
 matplotlib>=3.7.0
-seaborn>=0.12.0
-
-# Animation (optional, for Manim-style output)
-# manim>=0.17.0  # Uncomment for full animation support
-
-# Audio synthesis (for sonification)
-sounddevice>=0.4.6
-soundfile>=0.12.0
-
-# Progress bars and CLI
-tqdm>=4.65.0
-rich>=13.0.0
-
-# JSON output formatting
-jsonschema>=4.17.0
