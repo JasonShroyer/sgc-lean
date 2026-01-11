@@ -77,6 +77,8 @@ import SGC.Geometry.Yamabe
 
 -- Audited measurement system with tightness and independence contracts
 import SGC.Measurement.Interfaces
+-- Diffusion wavelets for non-normal systems
+import SGC.Measurement.Wavelets
 
 /-!
 # SGC: The Spectral Geometry of Consolidation
