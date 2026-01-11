@@ -71,6 +71,13 @@ import SGC.Geometry.Simplicial
 import SGC.Geometry.Conformal
 import SGC.Geometry.Yamabe
 
+-- ═══════════════════════════════════════════════════════════════════════════
+-- Stage 0: Measurement Interfaces (Physics-Grade Contracts)
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- Audited measurement system with tightness and independence contracts
+import SGC.Measurement.Interfaces
+
 /-!
 # SGC: The Spectral Geometry of Consolidation
 
