@@ -373,7 +373,7 @@ def main():
         
         with col1:
             st.markdown("**Original Image**")
-            st.image(result.original_image, use_container_width=True, clamp=True)
+            st.image(result.original_image, use_column_width=True, clamp=True)
         
         with col2:
             st.markdown("**Singularity Map** (Stress Overlay)")
@@ -389,7 +389,7 @@ def main():
             overlay[:, :, 1] = overlay[:, :, 1] * (1 - stress_normalized * 0.3)
             overlay[:, :, 2] = overlay[:, :, 2] * (1 - stress_normalized * 0.3)
             
-            st.image(overlay, use_container_width=True, clamp=True)
+            st.image(overlay, use_column_width=True, clamp=True)
         
         st.markdown("---")
         
@@ -449,16 +449,16 @@ def main():
         col1, col2, col3 = st.columns([1, 2, 1])
         
         with col2:
-            if st.button("Apply Surgery (Smooth Singularities)", use_container_width=True):
+            if st.button("Apply Surgery (Smooth Singularities)"):
                 repaired = apply_surgery(result.original_image, result.stress_2d, stress_threshold)
                 
                 col_a, col_b = st.columns(2)
                 with col_a:
                     st.markdown("**Before**")
-                    st.image(result.original_image, use_container_width=True, clamp=True)
+                    st.image(result.original_image, use_column_width=True, clamp=True)
                 with col_b:
                     st.markdown("**After Surgery**")
-                    st.image(repaired, use_container_width=True, clamp=True)
+                    st.image(repaired, use_column_width=True, clamp=True)
                 
                 st.success("Surgery complete. Singularities smoothed.")
         
