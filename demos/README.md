@@ -1,20 +1,20 @@
-# UPAT-Scope: The Reality X-Ray
+# SGC Multiscale Stability Analyzer
 
-**A mathematical microscope that highlights 'Structural Stress' in data.**
-
-When the red light flashes, the physics is breaking.
+Python implementation of the frame tightness diagnostics and singularity detection
+algorithms formally verified in the SGC Lean4 library.
 
 ## Overview
 
-This demo implements the concepts formally verified in the [SGC Lean4 library](../src/SGC/):
+This analyzer implements Hilbert-ordered diffusion wavelet decomposition with
+auditable frame bounds, corresponding to the following Lean4 modules:
 
 | Python Component | Lean4 Reference |
 |-----------------|-----------------|
-| `HilbertMapper` | Stage 2: Hilbert ordering |
+| `HilbertMapper` | Locality-preserving 2D→1D mapping |
 | `DiffusionWavelets` | `SGC.Measurement.Wavelets` |
 | `FrameAuditor` | `SGC.Measurement.Interfaces.TightnessAudit` |
 | `StressDetector` | `SGC.Thermodynamics.Evolution.CanEvolve` |
-| `UPATScope` | `SGC.Evolution.Dynamics.EvolutionStep` |
+| `SGCAnalyzer` | `SGC.Evolution.Dynamics.EvolutionStep` |
 
 ## Quick Start
 
@@ -23,13 +23,13 @@ This demo implements the concepts formally verified in the [SGC Lean4 library](.
 pip install -r requirements.txt
 
 # Run demo with test pattern
-python upat_scope.py --demo
+python sgc_analyzer.py --demo
 
-# Scan an image
-python upat_scope.py path/to/image.png --output results/
+# Analyze an image
+python sgc_analyzer.py path/to/image.png --output results/
 
-# Generate JSON audit log
-python upat_scope.py image.png --json audit.json
+# Generate JSON diagnostic log
+python sgc_analyzer.py image.png --json diagnostic.json
 ```
 
 ## The Pipeline
@@ -85,57 +85,49 @@ These avoid eigendecomposition pitfalls for irreversible systems.
 ## Output Example
 
 ```
-═══════════════════════════════════════════════════════════════════════
-  UPAT-SCOPE AUDIT LOG
-  Structural Stability Analysis
-═══════════════════════════════════════════════════════════════════════
+======================================================================
+  SGC STABILITY DIAGNOSTIC
+  Multiscale Frame Analysis
+======================================================================
   Timestamp: 2026-01-11T14:15:00
-  Input: 256x256 → Hilbert Order 8
+  Input: 256x256 -> Hilbert Order 8
   Scales: 5
-──────────────────────────────────────────────────────────────────────
+----------------------------------------------------------------------
 
   [FRAME TIGHTNESS AUDITS]
-  Scale 0: τ = 0.0234 (A=0.891, B=0.912) [✓ PASS]
-  Scale 1: τ = 0.0456 (A=0.823, B=0.861) [✓ PASS]
-  Scale 2: τ = 0.0892 (A=0.756, B=0.823) [✓ PASS]
-  Scale 3: τ = 0.1245 (A=0.689, B=0.775) [✗ FAIL]
-  Scale 4: τ = 0.2103 (A=0.612, B=0.741) [✗ FAIL]
+  Scale 0: tau = 0.0234 (A=0.891, B=0.912) [PASS]
+  Scale 1: tau = 0.0456 (A=0.823, B=0.861) [PASS]
+  Scale 2: tau = 0.0892 (A=0.756, B=0.823) [PASS]
+  Scale 3: tau = 0.1245 (A=0.689, B=0.775) [FAIL]
+  Scale 4: tau = 0.2103 (A=0.612, B=0.741) [FAIL]
 
-  [STRESS DETECTION]
-  Region 1: idx [1024:1280] peak=0.892 → SURGERY PERMITTED
-  Region 2: idx [3840:4096] peak=0.756 → SURGERY PERMITTED
+  [SINGULARITY DETECTION]
+  Region 1: idx [1024:1280] peak=0.892 -> THRESHOLD EXCEEDED
+  Region 2: idx [3840:4096] peak=0.756 -> THRESHOLD EXCEEDED
 
   [SUMMARY]
   Overall Stability: 78.50%
-  Surgery Status: TRIGGERED
+  Surgery Criterion: SATISFIED
 
   [LEAN4 VERIFICATION]
   Verified: True
-    • SGC.Measurement.Interfaces.TightnessRatio
-    • SGC.Measurement.Wavelets.DiffusionWavelet
-    • SGC.Thermodynamics.Evolution.SatisfiesEvolutionInequality
-    • SGC.Evolution.Dynamics.EvolutionStep
-    • SGC.Evolution.Dynamics.SurgeryStep
-═══════════════════════════════════════════════════════════════════════
+    - SGC.Measurement.Interfaces.TightnessRatio
+    - SGC.Measurement.Wavelets.DiffusionWavelet
+    - SGC.Thermodynamics.Evolution.SatisfiesEvolutionInequality
+    - SGC.Evolution.Dynamics.EvolutionStep
+======================================================================
 ```
 
 ## Visualization
 
-The scanner produces a 6-panel visualization:
+The analyzer produces a 6-panel visualization:
 
 1. **Input Image** - Original grayscale image
-2. **Hilbert Curve** - The space-filling curve mapping
-3. **1D Signal** - Hilbert-ordered signal with stress regions highlighted
+2. **Hilbert Curve** - Space-filling curve mapping overlay
+3. **1D Signal** - Hilbert-ordered signal with detected singularities
 4. **Wavelet Coefficients** - Heatmap of |W_j| across scales
-5. **Stress Map** - Overlay showing detected stress regions
-6. **Audit Summary** - Frame bounds and surgery decision
-
-## The "Harmonic Snap" Future Demo
-
-Coming soon: Sonification of the Hilbert stream where:
-- **Blue zones** sound like harmonies (stable)
-- **Red zones** sound like distortion (unstable)
-- **Surgery** produces a satisfying "click"
+5. **Stress Map** - Detected singularities overlaid on image
+6. **Diagnostic Summary** - Frame bounds and threshold status
 
 ## License
 

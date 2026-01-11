@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 """
-UPAT-Scope: The Reality X-Ray
+SGC Multiscale Stability Analyzer
 
-A mathematical microscope that highlights 'Structural Stress' in data.
-When the red light flashes, the physics is breaking.
+Computes frame tightness diagnostics and detects structural singularities
+in image data using Hilbert-ordered diffusion wavelets.
 
-This demo implements the concepts formally verified in the SGC Lean4 library:
-- Frame tightness audit (SGC.Measurement.Interfaces)
-- Diffusion wavelets (SGC.Measurement.Wavelets)
-- Evolution inequality (SGC.Thermodynamics.Evolution)
+Implements algorithms formally verified in the SGC Lean4 library:
+- Frame tightness bounds (SGC.Measurement.Interfaces)
+- Diffusion wavelet decomposition (SGC.Measurement.Wavelets)
+- Thermodynamic evolution criteria (SGC.Thermodynamics.Evolution)
 
 Usage:
-    python upat_scope.py input_image.png --output results/
-    python upat_scope.py --demo  # Run on built-in test pattern
+    python sgc_analyzer.py input_image.png --output results/
+    python sgc_analyzer.py --demo  # Run on built-in test pattern
 
-Author: SGC Project
+Reference: https://github.com/JasonShroyer/sgc-lean
 License: Apache 2.0
 """
 
@@ -535,10 +535,10 @@ class ScanResult:
         }
     
     def print_audit_log(self):
-        """Print formatted audit log (lab equipment style)."""
+        """Print formatted diagnostic report."""
         print("\n" + "=" * 70)
-        print("  UPAT-SCOPE AUDIT LOG")
-        print("  Structural Stability Analysis")
+        print("  SGC STABILITY DIAGNOSTIC")
+        print("  Multiscale Frame Analysis")
         print("=" * 70)
         print(f"  Timestamp: {self.timestamp}")
         print(f"  Input: {self.input_shape[0]}x{self.input_shape[1]} -> Hilbert Order {self.hilbert_order}")
@@ -574,17 +574,17 @@ class ScanResult:
         print("=" * 70 + "\n")
 
 
-class UPATScope:
-    """The Reality X-Ray: Mathematical Microscope for Structural Stress.
+class SGCAnalyzer:
+    """Multiscale stability analyzer with formal verification.
     
-    This scanner implements the full UPAT pipeline:
-    1. Hilbert mapping (2D → 1D preserving locality)
+    Implements the SGC analysis pipeline:
+    1. Hilbert mapping (2D to 1D preserving locality)
     2. Diffusion wavelet decomposition
     3. Frame tightness audit
-    4. Stress detection via Evolution Inequality
-    5. Surgery recommendation
+    4. Singularity detection via thermodynamic criteria
+    5. Surgery threshold computation
     
-    All computations are backed by formal proofs in the SGC Lean4 library.
+    All algorithms correspond to formally verified theorems in the SGC Lean4 library.
     """
     
     def __init__(
@@ -593,7 +593,7 @@ class UPATScope:
         tightness_tolerance: float = 0.1,
         stress_threshold: float = 0.5
     ):
-        """Initialize UPAT-Scope.
+        """Initialize analyzer.
         
         Args:
             n_scales: Number of wavelet scales
@@ -847,17 +847,17 @@ def generate_test_pattern(size: int = 256) -> np.ndarray:
 
 
 def main():
-    """Main entry point for UPAT-Scope demo."""
+    """Main entry point for SGC stability analyzer."""
     import argparse
     
     parser = argparse.ArgumentParser(
-        description="UPAT-Scope: The Reality X-Ray",
+        description="SGC Multiscale Stability Analyzer",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-    python upat_scope.py --demo
-    python upat_scope.py input.png --output results/
-    python upat_scope.py input.png --json audit.json
+    python sgc_analyzer.py --demo
+    python sgc_analyzer.py input.png --output results/
+    python sgc_analyzer.py input.png --json audit.json
         """
     )
     
@@ -875,8 +875,8 @@ Examples:
     
     args = parser.parse_args()
     
-    # Initialize scanner
-    scope = UPATScope(
+    # Initialize analyzer
+    analyzer = SGCAnalyzer(
         n_scales=args.scales,
         tightness_tolerance=args.tolerance
     )
@@ -897,13 +897,13 @@ Examples:
         img = img.resize((new_size, new_size))
         image = np.array(img)
     
-    # Run scan
+    # Run analysis
     output_path = None
     if args.output:
         args.output.mkdir(parents=True, exist_ok=True)
-        output_path = args.output / "upat_scan.png"
+        output_path = args.output / "sgc_analysis.png"
     
-    result = scope.scan_and_visualize(image, output_path)
+    result = analyzer.scan_and_visualize(image, output_path)
     
     # Print audit log
     result.print_audit_log()
