@@ -15,6 +15,8 @@ from dataclasses import dataclass
 from typing import List, Tuple, Optional
 from PIL import Image
 import io
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 # Page configuration - must be first Streamlit command
 st.set_page_config(
@@ -173,7 +175,8 @@ class StressDetector:
 @dataclass
 class AnalysisResult:
     """Container for analysis results."""
-    original_image: np.ndarray
+    original_image: np.ndarray  # uint8, 0-255
+    original_normalized: np.ndarray  # float, 0-1 for display
     hilbert_signal: np.ndarray
     stress_1d: np.ndarray
     stress_2d: np.ndarray
@@ -201,6 +204,10 @@ def analyze_image(
     # Convert to grayscale if needed
     if len(image.shape) == 3:
         image = np.mean(image, axis=2)
+    
+    # Store both uint8 (for processing) and normalized (for display)
+    image_uint8 = image.astype(np.uint8)
+    image_normalized = image.astype(np.float64) / 255.0
     
     # Hilbert mapping
     mapper = HilbertMapper(hilbert_order)
@@ -237,7 +244,8 @@ def analyze_image(
     frame_tightness = total_energy / (signal_energy + 1e-10)
     
     return AnalysisResult(
-        original_image=image,
+        original_image=image_uint8,
+        original_normalized=image_normalized,
         hilbert_signal=signal_1d_norm,
         stress_1d=stress_1d,
         stress_2d=stress_2d,
@@ -373,21 +381,22 @@ def main():
         
         with col1:
             st.markdown("**Original Image**")
-            st.image(result.original_image, use_column_width=True, clamp=True)
+            st.image(result.original_image, use_column_width=True)
         
         with col2:
             st.markdown("**Singularity Map** (Stress Overlay)")
-            # Create overlay
-            img_rgb = np.stack([result.original_image] * 3, axis=-1)
-            if img_rgb.max() > 1:
-                img_rgb = img_rgb / 255.0
+            # Create RGB overlay from normalized grayscale
+            img_rgb = np.stack([result.original_normalized] * 3, axis=-1)
             
-            # Apply stress as red channel overlay
+            # Apply stress as red/orange overlay (magma-style)
             stress_normalized = result.stress_2d / (result.stress_2d.max() + 1e-10)
             overlay = img_rgb.copy()
-            overlay[:, :, 0] = np.clip(overlay[:, :, 0] + stress_normalized * 0.7, 0, 1)
-            overlay[:, :, 1] = overlay[:, :, 1] * (1 - stress_normalized * 0.3)
-            overlay[:, :, 2] = overlay[:, :, 2] * (1 - stress_normalized * 0.3)
+            # Red channel boost
+            overlay[:, :, 0] = np.clip(overlay[:, :, 0] + stress_normalized * 0.8, 0, 1)
+            # Slight orange tint
+            overlay[:, :, 1] = np.clip(overlay[:, :, 1] + stress_normalized * 0.3 - stress_normalized * 0.5, 0, 1)
+            # Reduce blue in stressed areas
+            overlay[:, :, 2] = overlay[:, :, 2] * (1 - stress_normalized * 0.7)
             
             st.image(overlay, use_column_width=True, clamp=True)
         
@@ -398,12 +407,9 @@ def main():
         
         # Subsample for display
         display_len = min(2000, len(result.hilbert_signal))
-        step = len(result.hilbert_signal) // display_len
+        step = max(1, len(result.hilbert_signal) // display_len)
         signal_display = result.hilbert_signal[::step]
         stress_display = result.stress_1d[::step]
-        
-        import plotly.graph_objects as go
-        from plotly.subplots import make_subplots
         
         fig = make_subplots(rows=2, cols=1, shared_xaxes=True,
                            subplot_titles=("Hilbert-Ordered Signal", "Curvature Stress"),
@@ -455,10 +461,12 @@ def main():
                 col_a, col_b = st.columns(2)
                 with col_a:
                     st.markdown("**Before**")
-                    st.image(result.original_image, use_column_width=True, clamp=True)
+                    st.image(result.original_image, use_column_width=True)
                 with col_b:
                     st.markdown("**After Surgery**")
-                    st.image(repaired, use_column_width=True, clamp=True)
+                    # Normalize repaired image for display
+                    repaired_display = repaired.astype(np.float64) / 255.0
+                    st.image(repaired_display, use_column_width=True, clamp=True)
                 
                 st.success("Surgery complete. Singularities smoothed.")
         
