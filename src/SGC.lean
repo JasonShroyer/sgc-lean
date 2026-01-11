@@ -62,6 +62,15 @@ import SGC.Evolution.Conservation
 -- Landauer's Principle: Surgery has thermodynamic cost
 import SGC.Thermodynamics.Evolution
 
+-- ═══════════════════════════════════════════════════════════════════════════
+-- Phase 7: Discrete Conformal Geometry (The Geometric Engine)
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- Constructive geometry via Koebe-Andreev-Thurston theorem
+import SGC.Geometry.Simplicial
+import SGC.Geometry.Conformal
+import SGC.Geometry.Yamabe
+
 /-!
 # SGC: The Spectral Geometry of Consolidation
 

@@ -41,10 +41,32 @@ Following SGC constraints:
 - `GraphLaplacian`: L = D - W (unnormalized)
 - `RandomWalkLaplacian`: L_rw = I - D⁻¹W
 
+## Remark (Geometric Rigidity & The Discrete Dual)
+
+While this library axiomatizes the continuum limit (via Belkin-Niyogi convergence),
+we note that for the **planar case**, a constructive bridge exists via the
+**Koebe–Andreev–Thurston (KAT) Theorem**.
+
+KAT guarantees that every finite planar graph admits a unique conformal realization
+(circle packing), implying that the discrete metric is not arbitrary but **canonically
+determined by the combinatorics**.
+
+This suggests a duality where the **Fisher-Rao metric** (Axiom II) is the continuum
+limit of the **Circle Packing metric** under refinement. Consequently, our
+Renormalization Group (RG) flow may be formally interpreted as a discrete **Ricci Flow**
+smoothing the combinatorial curvature.
+
+The constructive formalization of this connection is provided in:
+- `SGC.Geometry.Simplicial` — Simplicial complex structure
+- `SGC.Geometry.Conformal` — Circle packing and discrete conformal geometry
+- `SGC.Geometry.Yamabe` — Discrete Yamabe flow on circle packings
+
 ## References
 
 * [Coifman-Lafon] Diffusion Maps
 * [Belkin-Niyogi] Laplacian Eigenmaps
+* [Thurston] The Geometry and Topology of 3-Manifolds (Ch. 13)
+* [Stephenson] Introduction to Circle Packing
 
 -/
 
