@@ -17,6 +17,7 @@ from PIL import Image
 import io
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import base64
 
 # Page configuration - must be first Streamlit command
 st.set_page_config(
@@ -25,6 +26,12 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# Initialize session state for surgery results persistence
+if 'surgery_result' not in st.session_state:
+    st.session_state.surgery_result = None
+if 'show_surgery' not in st.session_state:
+    st.session_state.show_surgery = False
 
 # Custom CSS for dark theme with accent colors
 st.markdown("""
@@ -186,13 +193,16 @@ class AnalysisResult:
     frame_tightness: float
 
 
+@st.cache_data(show_spinner=False)
 def analyze_image(
-    image: np.ndarray,
+    image_bytes: bytes,
     hilbert_order: int = 6,
     n_scales: int = 4,
     stress_threshold: float = 0.3
 ) -> AnalysisResult:
-    """Run full SGC analysis pipeline."""
+    """Run full SGC analysis pipeline. Cached to prevent re-computation."""
+    # Convert bytes back to array for processing
+    image = np.array(Image.open(io.BytesIO(image_bytes)))
     
     # Resize to power of 2
     size = 2 ** hilbert_order
@@ -268,6 +278,44 @@ def apply_surgery(image: np.ndarray, stress_2d: np.ndarray, threshold: float = 0
     return result
 
 
+def generate_demo_image(size: int = 256) -> bytes:
+    """Generate a test pattern with known singularities."""
+    img = np.zeros((size, size), dtype=np.uint8)
+    
+    # Smooth gradient background
+    x, y = np.meshgrid(np.linspace(0, 1, size), np.linspace(0, 1, size))
+    img = (128 + 50 * np.sin(4 * np.pi * x) * np.cos(4 * np.pi * y)).astype(np.uint8)
+    
+    # Sharp edges (singularities)
+    img[size//4:3*size//4, size//4:size//4+3] = 255
+    img[size//4:size//4+3, size//4:3*size//4] = 255
+    
+    # High-frequency noise patch
+    noise_region = np.random.randint(0, 255, (size//6, size//6), dtype=np.uint8)
+    img[3*size//4:3*size//4+size//6, 3*size//4:3*size//4+size//6] = noise_region
+    
+    # Circle
+    center = (size//2, size//2)
+    Y, X = np.ogrid[:size, :size]
+    dist = np.sqrt((X - center[0])**2 + (Y - center[1])**2)
+    img[dist < size//6] = 200
+    
+    # Convert to bytes for caching
+    pil_img = Image.fromarray(img)
+    buffer = io.BytesIO()
+    pil_img.save(buffer, format='PNG')
+    return buffer.getvalue()
+
+
+def get_image_download_link(img_array: np.ndarray, filename: str, text: str) -> str:
+    """Generate a download link for an image."""
+    pil_img = Image.fromarray(img_array.astype(np.uint8))
+    buffer = io.BytesIO()
+    pil_img.save(buffer, format='PNG')
+    b64 = base64.b64encode(buffer.getvalue()).decode()
+    return f'<a href="data:image/png;base64,{b64}" download="{filename}" style="color: #00d4ff;">{text}</a>'
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # STREAMLIT UI
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -279,7 +327,7 @@ def main():
     
     # Sidebar
     with st.sidebar:
-        st.header("Configuration")
+        st.header("📁 Input")
         
         uploaded_file = st.file_uploader(
             "Upload Image",
@@ -287,14 +335,18 @@ def main():
             help="Upload an image to analyze"
         )
         
+        use_demo = st.checkbox("Use demo image", value=False, 
+                               help="Try with a generated test pattern")
+        
         st.markdown("---")
-        st.subheader("Analysis Parameters")
+        st.header("⚙️ Parameters")
         
         hilbert_order = st.slider(
             "Hilbert Order",
             min_value=4, max_value=8, value=6,
-            help="Higher = finer resolution (2^n x 2^n grid)"
+            help=f"Grid: {2**6}×{2**6} = {(2**6)**2:,} points"
         )
+        st.caption(f"→ {2**hilbert_order}×{2**hilbert_order} grid ({(2**hilbert_order)**2:,} points)")
         
         n_scales = st.slider(
             "Wavelet Scales",
@@ -305,36 +357,47 @@ def main():
         stress_threshold = st.slider(
             "Singularity Threshold",
             min_value=0.1, max_value=0.9, value=0.3, step=0.05,
-            help="Threshold for detecting structural singularities"
+            help="Lower = more sensitive detection"
         )
         
         st.markdown("---")
-        st.subheader("Lean4 Verification")
-        st.markdown("""
-        <div class="lean-badge">SGC.Measurement.Wavelets</div>
-        <br>
-        <div class="lean-badge">SGC.Thermodynamics.Evolution</div>
-        <br>
-        <div class="lean-badge">SGC.Evolution.Dynamics</div>
-        """, unsafe_allow_html=True)
+        st.header("🔬 Verification")
+        st.code("SGC.Measurement.Wavelets", language=None)
+        st.code("SGC.Thermodynamics.Evolution", language=None)
+        st.code("SGC.Evolution.Dynamics", language=None)
         
         st.markdown("---")
-        st.markdown("[View Source on GitHub](https://github.com/JasonShroyer/sgc-lean)")
+        st.link_button("View Source on GitHub", "https://github.com/JasonShroyer/sgc-lean", use_container_width=True)
+    
+    # Determine image source
+    image_bytes = None
+    image_source = None
+    
+    if uploaded_file is not None:
+        image_bytes = uploaded_file.getvalue()
+        image_source = uploaded_file.name
+        # Reset surgery state on new image
+        st.session_state.surgery_result = None
+        st.session_state.show_surgery = False
+    elif use_demo or st.session_state.get('use_demo_clicked', False):
+        image_bytes = generate_demo_image(256)
+        image_source = "Demo Pattern"
     
     # Main content
-    if uploaded_file is not None:
-        # Load image
-        image = Image.open(uploaded_file)
-        image_array = np.array(image)
-        
-        # Run analysis
-        with st.spinner("Analyzing structural stability..."):
-            result = analyze_image(
-                image_array,
-                hilbert_order=hilbert_order,
-                n_scales=n_scales,
-                stress_threshold=stress_threshold
-            )
+    if image_bytes is not None:
+        # Run analysis with caching
+        try:
+            with st.spinner("Analyzing structural stability..."):
+                result = analyze_image(
+                    image_bytes,
+                    hilbert_order=hilbert_order,
+                    n_scales=n_scales,
+                    stress_threshold=stress_threshold
+                )
+        except Exception as e:
+            st.error(f"Error analyzing image: {str(e)}")
+            st.info("Please try a different image or check the file format.")
+            return
         
         # Row 1: Metrics
         st.markdown("### Diagnostic Summary")
@@ -380,8 +443,9 @@ def main():
         col1, col2 = st.columns(2)
         
         with col1:
-            st.markdown("**Original Image**")
+            st.markdown(f"**Original Image** ({result.original_image.shape[0]}×{result.original_image.shape[1]})")
             st.image(result.original_image, use_column_width=True)
+            st.markdown(get_image_download_link(result.original_image, "original.png", "📥 Download"), unsafe_allow_html=True)
         
         with col2:
             st.markdown("**Singularity Map** (Stress Overlay)")
@@ -399,6 +463,9 @@ def main():
             overlay[:, :, 2] = overlay[:, :, 2] * (1 - stress_normalized * 0.7)
             
             st.image(overlay, use_column_width=True, clamp=True)
+            # Convert overlay to uint8 for download
+            overlay_uint8 = (overlay * 255).astype(np.uint8)
+            st.markdown(get_image_download_link(overlay_uint8, "stress_map.png", "📥 Download"), unsafe_allow_html=True)
         
         st.markdown("---")
         
@@ -451,24 +518,31 @@ def main():
         
         # Row 4: Surgery
         st.markdown("### Topological Surgery")
+        st.caption("Apply smoothing to detected singularity regions")
         
         col1, col2, col3 = st.columns([1, 2, 1])
         
         with col2:
-            if st.button("Apply Surgery (Smooth Singularities)"):
-                repaired = apply_surgery(result.original_image, result.stress_2d, stress_threshold)
-                
-                col_a, col_b = st.columns(2)
-                with col_a:
-                    st.markdown("**Before**")
-                    st.image(result.original_image, use_column_width=True)
-                with col_b:
-                    st.markdown("**After Surgery**")
-                    # Normalize repaired image for display
-                    repaired_display = repaired.astype(np.float64) / 255.0
-                    st.image(repaired_display, use_column_width=True, clamp=True)
-                
-                st.success("Surgery complete. Singularities smoothed.")
+            if st.button("🔧 Apply Surgery", use_container_width=True, type="primary"):
+                st.session_state.surgery_result = apply_surgery(
+                    result.original_image, result.stress_2d, stress_threshold
+                )
+                st.session_state.show_surgery = True
+        
+        # Show surgery results (persists across reruns)
+        if st.session_state.show_surgery and st.session_state.surgery_result is not None:
+            col_a, col_b = st.columns(2)
+            with col_a:
+                st.markdown("**Before**")
+                st.image(result.original_image, use_column_width=True)
+            with col_b:
+                st.markdown("**After Surgery**")
+                st.image(st.session_state.surgery_result, use_column_width=True)
+                st.markdown(get_image_download_link(
+                    st.session_state.surgery_result, "repaired.png", "📥 Download Repaired"
+                ), unsafe_allow_html=True)
+            
+            st.success(f"✓ Surgery complete. {result.n_singularities:,} singularity points smoothed.")
         
         # Footer
         st.markdown("---")
@@ -482,50 +556,62 @@ def main():
         """, unsafe_allow_html=True)
     
     else:
-        # No image uploaded - show demo
-        st.info("👆 Upload an image in the sidebar to begin analysis")
+        # No image uploaded - show welcome screen
+        st.markdown("---")
         
+        # Quick start
+        col1, col2 = st.columns([2, 1])
+        with col1:
+            st.info("👈 **Upload an image** in the sidebar, or check **'Use demo image'** to try it out")
+        with col2:
+            if st.button("🎯 Try Demo Now", use_container_width=True, type="primary"):
+                st.session_state['use_demo_clicked'] = True
+                st.rerun()
+        
+        st.markdown("---")
         st.markdown("### How It Works")
         
         col1, col2, col3 = st.columns(3)
         
         with col1:
+            st.markdown("#### 1️⃣ Hilbert Mapping")
             st.markdown("""
-            **1. Hilbert Mapping**
-            
-            The image is unfolded into a 1D signal using a 
-            space-filling Hilbert curve, preserving spatial locality.
+            Image pixels are reordered along a space-filling 
+            Hilbert curve, preserving spatial locality in 1D.
             """)
         
         with col2:
+            st.markdown("#### 2️⃣ Wavelet Analysis")
             st.markdown("""
-            **2. Wavelet Decomposition**
-            
-            Diffusion wavelets extract multiscale structure,
-            avoiding eigendecomposition pitfalls.
+            Diffusion wavelets decompose the signal at multiple 
+            scales without eigenvalue computation.
             """)
         
         with col3:
+            st.markdown("#### 3️⃣ Singularity Detection")
             st.markdown("""
-            **3. Singularity Detection**
-            
             Thermodynamic criteria identify structural 
-            singularities where "physics breaks down."
+            discontinuities requiring topological surgery.
             """)
         
         st.markdown("---")
         
-        st.markdown("### Lean4 Verification")
+        st.markdown("### Formal Verification")
         st.markdown("""
-        All algorithms are backed by formal proofs in the SGC Lean4 library:
-        
-        | Component | Lean4 Module |
-        |-----------|--------------|
-        | Frame Bounds | `SGC.Measurement.Interfaces.TightnessAudit` |
-        | Diffusion Wavelets | `SGC.Measurement.Wavelets.DiffusionWavelet` |
-        | Surgery Criterion | `SGC.Thermodynamics.Evolution.SatisfiesEvolutionInequality` |
-        | Evolution Dynamics | `SGC.Evolution.Dynamics.EvolutionStep` |
+        All algorithms correspond to theorems proven in the **SGC Lean4 library**:
         """)
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            st.code("""
+SGC.Measurement.Interfaces.TightnessAudit
+SGC.Measurement.Wavelets.DiffusionWavelet
+            """, language="lean4")
+        with col2:
+            st.code("""
+SGC.Thermodynamics.Evolution.CanEvolve
+SGC.Evolution.Dynamics.EvolutionStep
+            """, language="lean4")
 
 
 if __name__ == "__main__":
