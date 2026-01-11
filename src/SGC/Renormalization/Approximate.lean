@@ -1416,6 +1416,13 @@ For non-reversible systems:
 The trajectory-based results (`trajectory_closure_bound`, `NCD_uniform_error_bound`)
 are valid for ALL generators and provide the foundation for predictive emergence. -/
 
+/-- **Self-Adjoint in L²(π)**: An operator A is self-adjoint if ⟨Af, g⟩_π = ⟨f, Ag⟩_π.
+
+    This is the correct hypothesis for Weyl's inequality. For Markov generators,
+    this is equivalent to detailed balance (reversibility). -/
+def IsSelfAdjoint_pi (A : (V → ℝ) →ₗ[ℝ] (V → ℝ)) (pi_dist : V → ℝ) : Prop :=
+  ∀ f g, inner_pi pi_dist (A f) g = inner_pi pi_dist f (A g)
+
 /-- **Weyl Inequality for Weighted Norms** (REVERSIBLE SYSTEMS ONLY):
     If two self-adjoint operators are close in operator norm, their eigenvalues are close.
 
@@ -1432,9 +1439,13 @@ are valid for ALL generators and provide the foundation for predictive emergence
     **Discharge Path** (for future verification, reversible case only):
     - Show `opNorm_pi` is equivalent to standard operator norm (via `iso_L2_to_std`)
     - Apply Mathlib's Weyl inequality for self-adjoint operators
-    - Transfer back to our setting -/
+    - Transfer back to our setting
+
+    **TYPE SAFETY FIX**: Now requires `IsSelfAdjoint_pi` hypotheses for both operators,
+    preventing misuse on non-reversible systems. -/
 axiom Weyl_inequality_pi (A B : (V → ℝ) →ₗ[ℝ] (V → ℝ)) (pi_dist : V → ℝ)
-    (hπ : ∀ v, 0 < pi_dist v) (k : ℕ) :
+    (hπ : ∀ v, 0 < pi_dist v) (k : ℕ)
+    (hA : IsSelfAdjoint_pi A pi_dist) (hB : IsSelfAdjoint_pi B pi_dist) :
     ∃ eigenvalue_k : ((V → ℝ) →ₗ[ℝ] (V → ℝ)) → ℝ,
     |eigenvalue_k A - eigenvalue_k B| ≤ opNorm_pi pi_dist hπ (A - B)
 
@@ -1459,7 +1470,9 @@ axiom Weyl_inequality_pi (A B : (V → ℝ) →ₗ[ℝ] (V → ℝ)) (pi_dist : 
 theorem spectral_stability_reversible
     (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (ε : ℝ) (hε : 0 ≤ ε) (hL : IsApproxLumpable L P pi_dist hπ ε)
-    (t : ℝ) (ht : 0 ≤ t) (k : ℕ) :
+    (t : ℝ) (ht : 0 ≤ t) (k : ℕ)
+    (hEffSA : IsSelfAdjoint_pi (EffectivePropagator L P pi_dist hπ t) pi_dist)
+    (hCoarseSA : IsSelfAdjoint_pi (CoarsePropagatorLifted L P pi_dist hπ t) pi_dist) :
     ∃ C : ℝ, ∃ eigenvalue_k : ((V → ℝ) →ₗ[ℝ] (V → ℝ)) → ℝ,
     C ≥ 0 ∧
     |eigenvalue_k (EffectivePropagator L P pi_dist hπ t) -
@@ -1469,7 +1482,7 @@ theorem spectral_stability_reversible
   obtain ⟨ev_k, h_weyl⟩ := Weyl_inequality_pi
     (EffectivePropagator L P pi_dist hπ t)
     (CoarsePropagatorLifted L P pi_dist hπ t)
-    pi_dist hπ k
+    pi_dist hπ k hEffSA hCoarseSA
   use C_prop, ev_k
   constructor
   · exact hC_prop
