@@ -367,7 +367,7 @@ def main():
         st.code("SGC.Evolution.Dynamics", language=None)
         
         st.markdown("---")
-        st.link_button("View Source on GitHub", "https://github.com/JasonShroyer/sgc-lean", use_container_width=True)
+        st.markdown("[View Source on GitHub](https://github.com/JasonShroyer/sgc-lean)")
     
     # Determine image source
     image_bytes = None
@@ -523,7 +523,7 @@ def main():
         col1, col2, col3 = st.columns([1, 2, 1])
         
         with col2:
-            if st.button("🔧 Apply Surgery", use_container_width=True, type="primary"):
+            if st.button("🔧 Apply Surgery"):
                 st.session_state.surgery_result = apply_surgery(
                     result.original_image, result.stress_2d, stress_threshold
                 )
@@ -564,7 +564,7 @@ def main():
         with col1:
             st.info("👈 **Upload an image** in the sidebar, or check **'Use demo image'** to try it out")
         with col2:
-            if st.button("🎯 Try Demo Now", use_container_width=True, type="primary"):
+            if st.button("🎯 Try Demo Now"):
                 st.session_state['use_demo_clicked'] = True
                 st.rerun()
         
