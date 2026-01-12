@@ -475,8 +475,84 @@ def main():
     
     st.markdown("---")
     
-    # Row 2: Visualizations
-    st.markdown("### 🔬 Weight Matrix Analysis")
+    # Row 2: 3D TERRAIN VISUALIZATION (The Hero Visual)
+    st.markdown("### 🏔️ The Collapse of Complexity: 3D Stress Terrain")
+    st.caption("Watch the 'mountain range' of singularities melt into a smooth valley as the network groks")
+    
+    # Create meshgrid for 3D surface
+    x_range = np.arange(metrics.stress_map.shape[1])
+    y_range = np.arange(metrics.stress_map.shape[0])
+    
+    # Scale stress for dramatic 3D effect
+    z_scale = 2.0 if phase == "MEMORIZATION" else (1.5 if phase == "CHAOS" else 0.5)
+    z_data = metrics.stress_map * z_scale
+    
+    fig_3d = go.Figure(data=[go.Surface(
+        z=z_data,
+        x=x_range,
+        y=y_range,
+        colorscale='Magma',
+        cmin=0,
+        cmax=1.5,
+        showscale=True,
+        colorbar=dict(
+            title="Stress",
+            titleside="right",
+            tickvals=[0, 0.5, 1.0, 1.5],
+            ticktext=["Stable", "Low", "High", "Critical"]
+        ),
+        lighting=dict(
+            ambient=0.4,
+            diffuse=0.8,
+            specular=0.3,
+            roughness=0.5
+        ),
+        lightposition=dict(x=100, y=100, z=1000)
+    )])
+    
+    # Dynamic camera angle based on phase
+    if phase == "CHAOS":
+        camera_eye = dict(x=1.5, y=1.5, z=1.2)
+    elif phase == "MEMORIZATION":
+        camera_eye = dict(x=1.8, y=1.8, z=1.0)  # Closer to see spikes
+    else:
+        camera_eye = dict(x=2.0, y=2.0, z=0.8)  # Pull back to see smoothness
+    
+    fig_3d.update_layout(
+        template='plotly_dark',
+        height=500,
+        margin=dict(l=0, r=0, t=30, b=0),
+        scene=dict(
+            xaxis=dict(showticklabels=False, title='', showgrid=False, zeroline=False),
+            yaxis=dict(showticklabels=False, title='', showgrid=False, zeroline=False),
+            zaxis=dict(
+                title='Geometric Stress',
+                range=[0, 2],
+                showgrid=True,
+                gridcolor='rgba(100,100,100,0.3)'
+            ),
+            camera=dict(eye=camera_eye),
+            bgcolor='rgba(10,10,15,1)'
+        ),
+        title=dict(
+            text=f"Epoch {epoch}: {phase} Phase",
+            font=dict(size=16, color='#00d4ff'),
+            x=0.5
+        )
+    )
+    
+    st.plotly_chart(fig_3d, use_container_width=True)
+    
+    # Terrain interpretation
+    if phase == "MEMORIZATION":
+        st.warning("🏔️ **Jagged Peaks Detected** — The spikes are memorization artifacts (infinite curvature at data points)")
+    elif phase == "GROKKING":
+        st.info("🌊 **Smooth Valley Achieved** — The terrain has collapsed into a stable harmonic ground state")
+    
+    st.markdown("---")
+    
+    # Row 3: 2D Comparison (Weight Matrix vs Stress Scan)
+    st.markdown("### 🔬 2D Analysis Views")
     col1, col2 = st.columns(2)
     
     with col1:
@@ -490,7 +566,7 @@ def main():
         ))
         fig1.update_layout(
             template='plotly_dark',
-            height=400,
+            height=350,
             margin=dict(l=20, r=20, t=20, b=20),
             xaxis=dict(showticklabels=False),
             yaxis=dict(showticklabels=False, scaleanchor='x')
@@ -498,10 +574,10 @@ def main():
         st.plotly_chart(fig1, use_container_width=True)
     
     with col2:
-        st.markdown("**SGC Stress Scan** (Singularity Detection)")
+        st.markdown("**SGC Stress Scan** (Top-Down View)")
         fig2 = go.Figure(data=go.Heatmap(
             z=metrics.stress_map,
-            colorscale='Hot',
+            colorscale='Magma',
             zmin=0,
             zmax=1,
             showscale=True,
@@ -509,7 +585,7 @@ def main():
         ))
         fig2.update_layout(
             template='plotly_dark',
-            height=400,
+            height=350,
             margin=dict(l=20, r=20, t=20, b=20),
             xaxis=dict(showticklabels=False),
             yaxis=dict(showticklabels=False, scaleanchor='x')
