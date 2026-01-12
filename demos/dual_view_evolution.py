@@ -371,67 +371,69 @@ class GraphManifoldEngine:
 # VISUALIZATION
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def create_graph_figure(engine: GraphManifoldEngine) -> go.Figure:
+def create_graph_figure(engine: GraphManifoldEngine, node_colors: np.ndarray) -> go.Figure:
     """Create 3D graph visualization (LEFT panel)."""
     G = engine.state.graph
     pos = engine.state.positions_3d
     curvatures = engine.state.curvatures
+    n_nodes = len(pos)
     
-    # Edge traces
-    edge_x, edge_y, edge_z = [], [], []
-    edge_colors = []
+    # Edge traces - color by curvature (red = high stress)
+    edge_traces = []
     
     for edge in G.edges():
         x0, y0, z0 = pos[edge[0]]
         x1, y1, z1 = pos[edge[1]]
-        edge_x.extend([x0, x1, None])
-        edge_y.extend([y0, y1, None])
-        edge_z.extend([z0, z1, None])
         
         # Edge color based on endpoint curvatures
         avg_curv = (curvatures[edge[0]] + curvatures[edge[1]]) / 2
-        edge_colors.append(avg_curv)
+        
+        # Red for high curvature, blue for low
+        if avg_curv > 0.6:
+            edge_color = 'rgba(255, 80, 80, 0.8)'
+            width = 3
+        elif avg_curv > 0.3:
+            edge_color = 'rgba(255, 180, 100, 0.6)'
+            width = 2
+        else:
+            edge_color = 'rgba(100, 200, 255, 0.5)'
+            width = 2
+        
+        edge_traces.append(go.Scatter3d(
+            x=[x0, x1], y=[y0, y1], z=[z0, z1],
+            mode='lines',
+            line=dict(color=edge_color, width=width),
+            hoverinfo='none',
+            showlegend=False
+        ))
     
-    # Create edge trace
-    edge_trace = go.Scatter3d(
-        x=edge_x, y=edge_y, z=edge_z,
-        mode='lines',
-        line=dict(
-            color='rgba(150, 150, 150, 0.5)',
-            width=2
-        ),
-        hoverinfo='none',
-        showlegend=False
-    )
-    
-    # Node trace
+    # Node trace - color by node ID (matches manifold)
     node_x = pos[:, 0]
     node_y = pos[:, 1]
     node_z = pos[:, 2]
     
-    # Color by curvature (red = high, blue = low)
     node_trace = go.Scatter3d(
         x=node_x, y=node_y, z=node_z,
         mode='markers',
         marker=dict(
-            size=8,
-            color=curvatures,
-            colorscale='RdBu_r',
+            size=10,
+            color=node_colors,
+            colorscale='Viridis',
             cmin=0,
-            cmax=1,
+            cmax=n_nodes,
             colorbar=dict(
-                title="Curvature",
+                title="Node ID",
                 x=1.02,
                 len=0.5
             ),
             line=dict(width=1, color='#0a0a0f')
         ),
-        text=[f"Node {i}<br>Curvature: {curvatures[i]:.2f}" for i in range(len(curvatures))],
+        text=[f"Node {i}<br>Curvature: {curvatures[i]:.2f}" for i in range(n_nodes)],
         hoverinfo='text',
         showlegend=False
     )
     
-    fig = go.Figure(data=[edge_trace, node_trace])
+    fig = go.Figure(data=edge_traces + [node_trace])
     
     fig.update_layout(
         template='plotly_dark',
@@ -445,7 +447,7 @@ def create_graph_figure(engine: GraphManifoldEngine) -> go.Figure:
             camera=dict(eye=dict(x=1.5, y=1.5, z=1.2))
         ),
         title=dict(
-            text="GRAPH SPACE (Discrete)",
+            text="GRAPH (Discrete Edges)",
             font=dict(size=14, color='#ff6666'),
             x=0.5
         )
@@ -454,58 +456,53 @@ def create_graph_figure(engine: GraphManifoldEngine) -> go.Figure:
     return fig
 
 
-def create_manifold_figure(engine: GraphManifoldEngine) -> go.Figure:
-    """Create spectral embedding visualization (RIGHT panel)."""
+def create_manifold_figure(engine: GraphManifoldEngine, node_colors: np.ndarray) -> go.Figure:
+    """Create spectral embedding as a continuous SURFACE (RIGHT panel)."""
     coords = engine.state.spectral_coords
-    curvatures = engine.state.curvatures
-    G = engine.state.graph
+    n_nodes = len(coords)
     
-    # Node trace
+    # Create Mesh3d surface using Delaunay triangulation (alphahull)
+    # This wraps the points in a "skin" making it look like a continuous manifold
+    mesh_trace = go.Mesh3d(
+        x=coords[:, 0],
+        y=coords[:, 1],
+        z=coords[:, 2],
+        alphahull=0,  # Convex hull (use -1 for Delaunay if points are good)
+        opacity=0.5,
+        color='#00d4ff',
+        flatshading=True,
+        lighting=dict(
+            ambient=0.6,
+            diffuse=0.8,
+            specular=0.2,
+            roughness=0.5
+        ),
+        lightposition=dict(x=100, y=100, z=200),
+        hoverinfo='none',
+        showlegend=False
+    )
+    
+    # Also show points colored by node ID (matching graph)
     node_trace = go.Scatter3d(
         x=coords[:, 0],
         y=coords[:, 1],
         z=coords[:, 2],
         mode='markers',
         marker=dict(
-            size=6,
-            color=curvatures,
-            colorscale='RdBu_r',
+            size=5,
+            color=node_colors,
+            colorscale='Viridis',
             cmin=0,
-            cmax=1,
-            colorbar=dict(
-                title="Curvature",
-                x=1.02,
-                len=0.5
-            ),
-            line=dict(width=0.5, color='#0a0a0f')
+            cmax=n_nodes,
+            showscale=False,
+            line=dict(width=0)
         ),
-        text=[f"Node {i}<br>Curvature: {curvatures[i]:.2f}" for i in range(len(curvatures))],
+        text=[f"Node {i}" for i in range(n_nodes)],
         hoverinfo='text',
         showlegend=False
     )
     
-    # Edge traces in spectral space
-    edge_x, edge_y, edge_z = [], [], []
-    
-    for edge in G.edges():
-        x0, y0, z0 = coords[edge[0]]
-        x1, y1, z1 = coords[edge[1]]
-        edge_x.extend([x0, x1, None])
-        edge_y.extend([y0, y1, None])
-        edge_z.extend([z0, z1, None])
-    
-    edge_trace = go.Scatter3d(
-        x=edge_x, y=edge_y, z=edge_z,
-        mode='lines',
-        line=dict(
-            color='rgba(0, 212, 255, 0.3)',
-            width=1
-        ),
-        hoverinfo='none',
-        showlegend=False
-    )
-    
-    fig = go.Figure(data=[edge_trace, node_trace])
+    fig = go.Figure(data=[mesh_trace, node_trace])
     
     fig.update_layout(
         template='plotly_dark',
@@ -516,10 +513,10 @@ def create_manifold_figure(engine: GraphManifoldEngine) -> go.Figure:
             yaxis=dict(showgrid=False, zeroline=False, showticklabels=False, title=''),
             zaxis=dict(showgrid=False, zeroline=False, showticklabels=False, title=''),
             bgcolor='rgba(10,10,15,1)',
-            camera=dict(eye=dict(x=1.5, y=1.5, z=1.2))
+            camera=dict(eye=dict(x=1.8, y=1.8, z=1.0))
         ),
         title=dict(
-            text="MANIFOLD SPACE (Spectral Embedding)",
+            text="MANIFOLD (Continuous Surface)",
             font=dict(size=14, color='#00d4ff'),
             x=0.5
         )
@@ -589,9 +586,11 @@ def main():
     </div>
     """, unsafe_allow_html=True)
     
-    # Initialize engine
+    # Initialize engine and auto-play state
     if 'gm_engine' not in st.session_state:
         st.session_state.gm_engine = GraphManifoldEngine(n_nodes=40, seed=42)
+    if 'auto_play' not in st.session_state:
+        st.session_state.auto_play = False
     
     engine = st.session_state.gm_engine
     
@@ -607,22 +606,28 @@ def main():
         
         st.markdown("---")
         
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("⏭️ Step", use_container_width=True):
-                engine.evolve(flow_enabled)
-        with col2:
-            if st.button("🔄 Reset", use_container_width=True):
-                engine.reset()
+        # Auto-play toggle
+        auto_play = st.toggle(
+            "▶️ Auto-Play",
+            value=st.session_state.auto_play,
+            help="Smooth animation loop"
+        )
+        st.session_state.auto_play = auto_play
         
-        steps = st.slider("Flow Steps", 1, 100, 20)
-        if st.button(f"⚡ Flow {steps} Steps", use_container_width=True):
-            for _ in range(steps):
-                engine.evolve(flow_enabled)
+        play_speed = st.slider("Speed", 1, 10, 5, help="Steps per frame")
         
         st.markdown("---")
         
-        if st.button("🎯 Jump to Lattice", use_container_width=True,
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("⏭️ Step"):
+                engine.evolve(flow_enabled)
+        with col2:
+            if st.button("🔄 Reset"):
+                engine.reset()
+                st.session_state.auto_play = False
+        
+        if st.button("🎯 Jump to Lattice",
                     help="Transform to regular grid (target state)"):
             engine.make_regular_lattice()
         
@@ -645,68 +650,100 @@ def main():
         st.markdown("---")
         st.header("📖 Theory")
         st.markdown("""
-        **The Duality:**
+        **Node Colors:** Same on both sides!
+        Track how graph nodes map to manifold.
         
-        - **Left (Graph):** Discrete structure with 
-          edges and nodes. Curvature measured by 
-          local clustering deficit.
+        **Edge Colors (Left):**
+        - 🔴 Red = High curvature (stressed)
+        - 🔵 Blue = Low curvature (relaxed)
         
-        - **Right (Manifold):** Spectral embedding 
-          reveals the "shape" hidden in the graph's 
-          connectivity.
-        
-        **The Flow:**
-        
-        As we smooth the graph (add triangles, 
-        balance degrees), the manifold embedding 
-        transforms from "crumpled paper" to 
-        "smooth surface."
-        
-        **Key Insight:**
-        
-        Graph organization IS manifold geometry.
-        They are two views of the same reality.
+        **Surface (Right):**
+        - Crumpled = High entropy
+        - Smooth = Emerged structure
         """)
     
-    # Main content - Split screen
-    col_left, col_right = st.columns(2)
+    # Create node colors (by node ID - consistent across both views)
+    n_nodes = engine.state.graph.number_of_nodes()
+    node_colors = np.arange(n_nodes)
     
-    with col_left:
-        st.markdown('<div class="graph-label"><b>🔴 ENGINE ROOM</b><br>Discrete Graph Structure</div>', 
-                   unsafe_allow_html=True)
-        fig_graph = create_graph_figure(engine)
-        st.plotly_chart(fig_graph, use_container_width=True)
+    # Auto-play animation loop
+    if st.session_state.auto_play:
+        import time
+        
+        # Create placeholders for smooth updates
+        graph_placeholder = st.empty()
+        manifold_placeholder = st.empty()
+        metrics_placeholder = st.empty()
+        
+        # Animation loop
+        for _ in range(100):  # Max iterations
+            if not st.session_state.auto_play:
+                break
+            
+            # Evolve
+            for _ in range(play_speed):
+                engine.evolve(flow_enabled)
+            
+            # Update visualizations in place
+            col_left, col_right = graph_placeholder.columns(2)
+            
+            with col_left:
+                st.markdown('<div class="graph-label"><b>🔴 ENGINE ROOM</b><br>Discrete Graph</div>', 
+                           unsafe_allow_html=True)
+                fig_graph = create_graph_figure(engine, node_colors)
+                st.plotly_chart(fig_graph, use_container_width=True, key=f"graph_{engine.state.generation}")
+            
+            with col_right:
+                st.markdown('<div class="manifold-label"><b>🔵 PROJECTION</b><br>Spectral Surface</div>', 
+                           unsafe_allow_html=True)
+                fig_manifold = create_manifold_figure(engine, node_colors)
+                st.plotly_chart(fig_manifold, use_container_width=True, key=f"manifold_{engine.state.generation}")
+            
+            # Update metrics
+            with metrics_placeholder.container():
+                st.markdown("### 📈 Curvature ↓ = Smoothness ↑")
+                fig_metrics = create_metrics_chart(engine)
+                st.plotly_chart(fig_metrics, use_container_width=True, key=f"metrics_{engine.state.generation}")
+            
+            time.sleep(0.1)
+            
+            # Check for emergence
+            avg_curv = np.mean(engine.state.curvatures)
+            if avg_curv < 0.25:
+                st.session_state.auto_play = False
+                st.balloons()
+                break
+        
+        st.rerun()
     
-    with col_right:
-        st.markdown('<div class="manifold-label"><b>🔵 PROJECTION</b><br>Laplacian Eigenmap</div>', 
-                   unsafe_allow_html=True)
-        fig_manifold = create_manifold_figure(engine)
-        st.plotly_chart(fig_manifold, use_container_width=True)
+    else:
+        # Static display (no auto-play)
+        col_left, col_right = st.columns(2)
+        
+        with col_left:
+            st.markdown('<div class="graph-label"><b>🔴 ENGINE ROOM</b><br>Discrete Graph</div>', 
+                       unsafe_allow_html=True)
+            fig_graph = create_graph_figure(engine, node_colors)
+            st.plotly_chart(fig_graph, use_container_width=True)
+        
+        with col_right:
+            st.markdown('<div class="manifold-label"><b>🔵 PROJECTION</b><br>Spectral Surface</div>', 
+                       unsafe_allow_html=True)
+            fig_manifold = create_manifold_figure(engine, node_colors)
+            st.plotly_chart(fig_manifold, use_container_width=True)
+        
+        # Metrics chart
+        st.markdown("---")
+        st.markdown("### 📈 Curvature ↓ = Smoothness ↑")
+        fig_metrics = create_metrics_chart(engine)
+        st.plotly_chart(fig_metrics, use_container_width=True)
     
-    # Metrics chart
-    st.markdown("---")
-    st.markdown("### 📈 The Flow of Healing")
-    fig_metrics = create_metrics_chart(engine)
-    st.plotly_chart(fig_metrics, use_container_width=True)
-    
-    # Interpretation
+    # Legend
     col1, col2 = st.columns(2)
-    
     with col1:
-        st.markdown("""
-        **🔴 Graph (Left):**
-        - Red nodes = High curvature (spiky)
-        - Blue nodes = Low curvature (flat)
-        - Flow adds triangles to reduce curvature
-        """)
-    
+        st.caption("🔴 **Graph:** Red edges = stressed, Blue = relaxed. Nodes colored by ID.")
     with col2:
-        st.markdown("""
-        **🔵 Manifold (Right):**
-        - Crumpled = High graph curvature
-        - Smooth = Low graph curvature
-        - Watch it "unfold" as flow progresses!
-        """)
+        st.caption("🔵 **Manifold:** Semi-transparent surface wraps spectral embedding. Same node colors.")
     
     # Footer
     st.markdown("---")
