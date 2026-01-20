@@ -95,21 +95,29 @@ axiom defect_bounded_by_assembly
     ∃ C : ℝ, C > 0 ∧
     DefectNormSquared L P pi_dist hπ ≤ C * AssemblyIndex (VertexCurvature L) u
 
-/-- **Reverse Bound: Assembly bounded by Defect**
+/-- **Reverse Bound: Assembly bounded by Defect** (REVERSIBLE SYSTEMS ONLY)
 
     This axiom completes the bidirectional equivalence between geometric complexity
-    (Assembly Index) and predictive failure (Defect Norm²).
+    (Assembly Index) and predictive failure (Defect Norm²) **for self-adjoint generators**.
 
-    **Physical Intuition**: If your predictions are perfect (Defect = 0), then your
-    world must be structurally flat (Assembly = 0). Any curvature variance would
-    create prediction errors, so zero defect necessitates zero curvature variance.
+    **Physical Intuition**: In reversible (self-adjoint) systems, if your predictions
+    are perfect (Defect = 0), then your world must be structurally flat (Assembly = 0).
+    The spectral theorem guarantees eigenvalues fully control dynamics.
 
     **Mathematical Content**: Assembly ≤ C' · Defect for some C' > 0.
 
-    Combined with `defect_bounded_by_assembly`, this establishes full equivalence:
-    Defect = 0 ⟺ Assembly = 0 ⟺ Constant Curvature -/
+    **REVERSIBILITY REQUIREMENT**: This bound requires `IsSelfAdjoint_pi` because:
+    - Self-adjoint operators have real eigenvalues that fully determine evolution
+    - Non-normal operators can have transient growth exceeding eigenvalue predictions
+    - In non-normal systems, you can have "Invisible Complexity" (Assembly > 0, Defect ≈ 0)
+      or "Transient Emergence" (large transient Defect, small Assembly)
+
+    Combined with `defect_bounded_by_assembly` (which IS universal), this establishes:
+    - **General**: Defect ≤ C · Assembly (geometry constrains dynamics)
+    - **Reversible only**: Assembly ≤ C' · Defect (dynamics determines geometry) -/
 axiom assembly_bounded_by_defect
     (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (h_sa : IsSelfAdjoint_pi (toLin' L) pi_dist)  -- REVERSIBILITY HYPOTHESIS
     (u : V → ℝ) (hu : ∀ v, 0 < u v) :
     ∃ C : ℝ, C > 0 ∧
     AssemblyIndex (VertexCurvature L) u ≤ C * DefectNormSquared L P pi_dist hπ
@@ -159,16 +167,29 @@ theorem energy_unification_triangle
 
 /-! ### 5. Corollaries -/
 
-/-- **Corollary 1**: Zero defect implies zero Assembly Index (constant curvature).
+/-- **Corollary 1 (Zero Emergence Theorem)**: Zero defect implies constant curvature.
 
-    If ‖D‖ = 0 (exact lumpability), then AssemblyIndex = 0 (uniform geometry). -/
+    **REVERSIBLE SYSTEMS ONLY**: For self-adjoint generators, if ‖D‖ = 0 (exact
+    lumpability), then AssemblyIndex = 0 (uniform geometry).
+
+    **Physical Meaning**: In equilibrium/reversible systems, perfect prediction
+    (zero defect) necessitates geometric flatness. There is no "hidden complexity."
+
+    **Non-Normal Caveat**: For non-self-adjoint systems (shear flows, transients),
+    this theorem does NOT apply. Such systems can exhibit:
+    - "Invisible Complexity": Assembly > 0 but Defect ≈ 0 (laminar shear)
+    - "Transient Emergence": Large transient Defect despite small Assembly
+
+    This is physically correct: a laminar shear flow can be perfectly predictable
+    (zero defect) while having non-trivial geometric structure (shear = curvature). -/
 theorem zero_defect_implies_constant_curvature
     (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (h_sa : IsSelfAdjoint_pi (toLin' L) pi_dist)  -- REVERSIBILITY HYPOTHESIS
     (u : V → ℝ) (hu : ∀ v, 0 < u v)
     (h_zero_defect : DefectNormSquared L P pi_dist hπ = 0) :
     ∃ C : ℝ, ∀ v, VertexCurvature L v = C := by
-  -- Step 1: Get the reverse bound Assembly ≤ C * Defect
-  obtain ⟨C', hC'_pos, h_assembly_defect⟩ := assembly_bounded_by_defect L P pi_dist hπ u hu
+  -- Step 1: Get the reverse bound Assembly ≤ C * Defect (requires self-adjointness)
+  obtain ⟨C', hC'_pos, h_assembly_defect⟩ := assembly_bounded_by_defect L P pi_dist hπ h_sa u hu
   -- Step 2: Since Defect = 0, we have Assembly ≤ C * 0 = 0
   have h_assembly_le_zero : AssemblyIndex (VertexCurvature L) u ≤ 0 := by
     calc AssemblyIndex (VertexCurvature L) u
