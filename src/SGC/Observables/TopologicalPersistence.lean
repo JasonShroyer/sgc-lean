@@ -84,12 +84,15 @@ def expected_persistence_time (G : WeightedGraph V) (dynamics : SurgeryDynamics)
 
 /-- Persistence time is positive when b₁ ≥ 1 and destruction probability > 0. -/
 lemma expected_persistence_time_pos (G : WeightedGraph V) (dynamics : SurgeryDynamics)
-    (_hb : HasMarkovBlanket G) (hp : 0 < dynamics.cycleDestructionProb) :
+    (hb : HasMarkovBlanket G) (hp : 0 < dynamics.cycleDestructionProb) :
     0 < expected_persistence_time G dynamics := by
   unfold expected_persistence_time
   apply div_pos
   · -- b₁ ≥ 1 implies (b₁ : ℝ) > 0
-    sorry
+    -- HasMarkovBlanket means BettiNumber G 1 ≥ 1
+    unfold HasMarkovBlanket at hb
+    have h_pos_nat : 0 < BettiNumber G 1 := Nat.one_le_iff_ne_zero.mp hb |> Nat.pos_of_ne_zero
+    exact Nat.cast_pos.mpr h_pos_nat
   · exact mul_pos dynamics.rate_pos hp
 
 /-! ### 3. Main Theorem: Betti-Persistence Bound -/
@@ -180,12 +183,27 @@ def persistence_cost_ratio (dynamics : SurgeryDynamics) (cost_per_cycle : ℝ)
 /-- The persistence-cost ratio is independent of b₁. -/
 theorem persistence_cost_ratio_constant (G₁ G₂ : WeightedGraph V)
     (dynamics : SurgeryDynamics) (cost_per_cycle : ℝ)
-    (_hc : 0 < cost_per_cycle) (_hp : 0 < dynamics.cycleDestructionProb)
-    (_hb₁ : HasMarkovBlanket G₁) (_hb₂ : HasMarkovBlanket G₂) :
+    (hc : 0 < cost_per_cycle) (hp : 0 < dynamics.cycleDestructionProb)
+    (hb₁ : HasMarkovBlanket G₁) (hb₂ : HasMarkovBlanket G₂) :
     expected_persistence_time G₁ dynamics / maintenance_cost G₁ cost_per_cycle =
     expected_persistence_time G₂ dynamics / maintenance_cost G₂ cost_per_cycle := by
   -- Both sides simplify to 1 / (λ · p · c), independent of b₁
-  sorry
+  unfold expected_persistence_time maintenance_cost
+  -- LHS = (b₁ / (λ·p)) / (c·b₁) = b₁ / (λ·p·c·b₁) = 1 / (λ·p·c)  [when b₁ ≠ 0]
+  -- RHS = (b₂ / (λ·p)) / (c·b₂) = b₂ / (λ·p·c·b₂) = 1 / (λ·p·c)  [when b₂ ≠ 0]
+  -- Get that b₁ ≠ 0 and b₂ ≠ 0 from HasMarkovBlanket
+  unfold HasMarkovBlanket at hb₁ hb₂
+  have hb₁_pos : (0 : ℝ) < (BettiNumber G₁ 1 : ℝ) := by
+    exact Nat.cast_pos.mpr (Nat.pos_of_ne_zero (Nat.one_le_iff_ne_zero.mp hb₁))
+  have hb₂_pos : (0 : ℝ) < (BettiNumber G₂ 1 : ℝ) := by
+    exact Nat.cast_pos.mpr (Nat.pos_of_ne_zero (Nat.one_le_iff_ne_zero.mp hb₂))
+  have hb₁_ne : (BettiNumber G₁ 1 : ℝ) ≠ 0 := ne_of_gt hb₁_pos
+  have hb₂_ne : (BettiNumber G₂ 1 : ℝ) ≠ 0 := ne_of_gt hb₂_pos
+  have hc_ne : cost_per_cycle ≠ 0 := ne_of_gt hc
+  have hdenom_ne : dynamics.surgeryRate * dynamics.cycleDestructionProb ≠ 0 :=
+    ne_of_gt (mul_pos dynamics.rate_pos hp)
+  -- Simplify both sides - field_simp handles the cancellation
+  field_simp
 
 /-! ### 6. Connection to Validity Horizon -/
 

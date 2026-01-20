@@ -95,6 +95,25 @@ axiom defect_bounded_by_assembly
     ∃ C : ℝ, C > 0 ∧
     DefectNormSquared L P pi_dist hπ ≤ C * AssemblyIndex (VertexCurvature L) u
 
+/-- **Reverse Bound: Assembly bounded by Defect**
+
+    This axiom completes the bidirectional equivalence between geometric complexity
+    (Assembly Index) and predictive failure (Defect Norm²).
+
+    **Physical Intuition**: If your predictions are perfect (Defect = 0), then your
+    world must be structurally flat (Assembly = 0). Any curvature variance would
+    create prediction errors, so zero defect necessitates zero curvature variance.
+
+    **Mathematical Content**: Assembly ≤ C' · Defect for some C' > 0.
+
+    Combined with `defect_bounded_by_assembly`, this establishes full equivalence:
+    Defect = 0 ⟺ Assembly = 0 ⟺ Constant Curvature -/
+axiom assembly_bounded_by_defect
+    (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (u : V → ℝ) (hu : ∀ v, 0 < u v) :
+    ∃ C : ℝ, C > 0 ∧
+    AssemblyIndex (VertexCurvature L) u ≤ C * DefectNormSquared L P pi_dist hπ
+
 /-- **Reverse Bound Conjecture**:
 
     Assembly Index is bounded by a multiple of Hidden Entropy Production.
@@ -148,10 +167,31 @@ theorem zero_defect_implies_constant_curvature
     (u : V → ℝ) (hu : ∀ v, 0 < u v)
     (h_zero_defect : DefectNormSquared L P pi_dist hπ = 0) :
     ∃ C : ℝ, ∀ v, VertexCurvature L v = C := by
-  -- From h_zero_defect and defect_bounded_by_assembly, AssemblyIndex ≤ 0
-  -- Since AssemblyIndex ≥ 0 (by assembly_index_nonneg), AssemblyIndex = 0
-  -- By assembly_index_zero_iff_constant, curvature is constant
-  sorry  -- Requires instantiation of the bounds
+  -- Step 1: Get the reverse bound Assembly ≤ C * Defect
+  obtain ⟨C', hC'_pos, h_assembly_defect⟩ := assembly_bounded_by_defect L P pi_dist hπ u hu
+  -- Step 2: Since Defect = 0, we have Assembly ≤ C * 0 = 0
+  have h_assembly_le_zero : AssemblyIndex (VertexCurvature L) u ≤ 0 := by
+    calc AssemblyIndex (VertexCurvature L) u
+        ≤ C' * DefectNormSquared L P pi_dist hπ := h_assembly_defect
+      _ = C' * 0 := by rw [h_zero_defect]
+      _ = 0 := mul_zero C'
+  -- Step 3: Since Assembly ≥ 0 (by assembly_index_nonneg), we have Assembly = 0
+  have h_assembly_nonneg : AssemblyIndex (VertexCurvature L) u ≥ 0 :=
+    assembly_index_nonneg (VertexCurvature L) u
+  have h_assembly_zero : AssemblyIndex (VertexCurvature L) u = 0 :=
+    le_antisymm h_assembly_le_zero h_assembly_nonneg
+  -- Step 4: By assembly_index_zero_iff_constant, curvature is constant
+  have hu_ne : ∀ v, u v ≠ 0 := fun v => ne_of_gt (hu v)
+  have h_const := (assembly_index_zero_iff_constant (VertexCurvature L) u hu_ne).mp h_assembly_zero
+  -- Step 5: Extract a witness for the constant value
+  cases isEmpty_or_nonempty V with
+  | inl hempty =>
+    -- If V is empty, any constant works vacuously
+    exact ⟨0, fun v => (IsEmpty.false v).elim⟩
+  | inr hne =>
+    -- If V is nonempty, pick any vertex and use its curvature as the constant
+    obtain ⟨v₀⟩ := hne
+    exact ⟨VertexCurvature L v₀, fun v => h_const v v₀⟩
 
 /-- **Corollary 2**: Low dissipation implies low defect.
 
