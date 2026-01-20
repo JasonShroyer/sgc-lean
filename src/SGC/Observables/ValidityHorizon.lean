@@ -111,14 +111,98 @@ lemma autocorrelation_time_from_gap_pos (γ : ℝ) (hγ : 0 < γ) :
 
 /-! ### 4. Autocorrelation Decay Bound -/
 
+/-! #### 4a. The Spectral Bridge: Deriving Decay from Sector Envelope
+
+The following theorem is the **Spectral Bridge**: it derives autocorrelation decay
+from `sector_envelope_bound_canonical`. This connects abstract spectral theory
+to observable time-series data.
+
+**The Key Insight**: For mean-zero f, the autocorrelation C_f(t) = ⟨f, e^{tL} f⟩_π
+can be bounded using Cauchy-Schwarz:
+  |C_f(t)| = |⟨f, e^{tL} f⟩| ≤ ‖f‖_π · ‖e^{tL} f‖_π ≤ ‖f‖_π · e^{-γt} · ‖f‖_π = ‖f‖²_π · e^{-γt}
+
+The middle inequality comes from sector_envelope_bound_canonical. -/
+
+/-- **Spectral Bridge Theorem**: Autocorrelation decay from sector envelope bound.
+
+    Under the full sector conditions (L, H satisfying stationarity, self-adjointness,
+    PSD, and sector relation), the autocorrelation decays exponentially:
+
+    |C_f(t)| ≤ ‖f‖²_π · e^{-γt}
+
+    where γ = SpectralGap_pi pi_dist H.
+
+    **Proof**: Cauchy-Schwarz + sector_envelope_bound_canonical. -/
+theorem autocorrelation_decay_from_sector
+    [Nontrivial V] (L H : Matrix V V ℝ) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) (h_sum : ∑ v, pi_dist v = 1)
+    (hL1 : L *ᵥ constant_vec_one = 0)
+    (h_sa : ∀ u v, inner_pi pi_dist (H *ᵥ u) v = inner_pi pi_dist u (H *ᵥ v))
+    (h_psd : ∀ u, 0 ≤ inner_pi pi_dist (H *ᵥ u) u)
+    (h_constH : H *ᵥ constant_vec_one = 0)
+    (h_gap : 0 < SpectralGap_pi pi_dist H)
+    (h_rel : ∀ u v, inner_pi pi_dist (L *ᵥ u) v + inner_pi pi_dist u (L *ᵥ v) =
+                    -2 * inner_pi pi_dist (H *ᵥ u) v)
+    (f : V → ℝ) (hf : inner_pi pi_dist f (fun _ => 1) = 0)
+    (t : ℝ) (ht : 0 ≤ t) :
+    |autocorrelation L pi_dist f t| ≤ norm_sq_pi pi_dist f * Real.exp (-(SpectralGap_pi pi_dist H) * t) := by
+  -- For mean-zero f, autocorrelation simplifies to ⟨f, e^{tL} f⟩_π
+  unfold autocorrelation
+  -- Since f is mean-zero: ⟨f, 1⟩_π = 0
+  have h_mean_zero : inner_pi pi_dist f (fun _ => 1) = 0 := hf
+  simp only [h_mean_zero, sq, zero_mul, sub_zero]
+  -- Helper: norm_pi is nonnegative (from sqrt)
+  have h_norm_nonneg : ∀ g : V → ℝ, 0 ≤ norm_pi pi_dist g := fun g => Real.sqrt_nonneg _
+  -- Now bound |⟨f, e^{tL} f⟩_π| using Cauchy-Schwarz
+  have h_cs := cauchy_schwarz_pi pi_dist hπ f (HeatKernelMap L t f)
+  -- h_cs : |⟨f, e^{tL} f⟩| ≤ ‖f‖_π · ‖e^{tL} f‖_π
+  calc |inner_pi pi_dist f (HeatKernelMap L t f)|
+      ≤ norm_pi pi_dist f * norm_pi pi_dist (HeatKernelMap L t f) := h_cs
+    _ ≤ norm_pi pi_dist f * (Real.exp (-(SpectralGap_pi pi_dist H) * t) * norm_pi pi_dist f) := by
+        -- Use sector_envelope_bound_canonical to bound ‖e^{tL} f‖_π
+        apply mul_le_mul_of_nonneg_left _ (h_norm_nonneg f)
+        -- For mean-zero f, f = P f where P is projection onto 1⊥
+        have h_f_eq_Pf : (P_ortho_pi pi_dist h_sum hπ) f = f := by
+          unfold P_ortho_pi
+          simp only [LinearMap.sub_apply, LinearMap.id_apply,
+                     LinearMap.smulRight_apply, LinearMap.coe_mk, AddHom.coe_mk]
+          rw [h_mean_zero, zero_smul, sub_zero]
+        -- HeatKernelMap L t f = (toLin' (HeatKernel L t) ∘ₗ P) f for mean-zero f
+        have h_heat_eq : HeatKernelMap L t f = (toLin' (Spectral.HeatKernel L t) ∘ₗ P_ortho_pi pi_dist h_sum hπ) f := by
+          simp only [LinearMap.comp_apply, h_f_eq_Pf]
+          rfl
+        rw [h_heat_eq]
+        -- Apply sector_envelope_bound_canonical
+        have h_sector := sector_envelope_bound_canonical hπ h_sum L H hL1 h_sa h_psd h_constH h_gap h_rel t ht
+        -- Use opNorm bound: ‖A f‖ ≤ opNorm(A) · ‖f‖
+        have h_bound := opNorm_pi_bound pi_dist hπ
+                          (toLin' (Spectral.HeatKernel L t) ∘ₗ P_ortho_pi pi_dist h_sum hπ) f
+        calc norm_pi pi_dist ((toLin' (Spectral.HeatKernel L t) ∘ₗ P_ortho_pi pi_dist h_sum hπ) f)
+            ≤ opNorm_pi pi_dist hπ (toLin' (Spectral.HeatKernel L t) ∘ₗ P_ortho_pi pi_dist h_sum hπ) *
+              norm_pi pi_dist f := h_bound
+          _ ≤ Real.exp (-(SpectralGap_pi pi_dist H) * t) * norm_pi pi_dist f := by
+              apply mul_le_mul_of_nonneg_right h_sector (h_norm_nonneg f)
+    _ = norm_sq_pi pi_dist f * Real.exp (-(SpectralGap_pi pi_dist H) * t) := by
+        -- ‖f‖ · (e^{-γt} · ‖f‖) = ‖f‖² · e^{-γt}
+        -- norm_pi² = norm_sq_pi by definition, so √(norm_sq) * √(norm_sq) = norm_sq
+        have h_sq : norm_pi pi_dist f * norm_pi pi_dist f = norm_sq_pi pi_dist f := by
+          unfold norm_pi
+          rw [← Real.sqrt_mul (norm_sq_pi_nonneg pi_dist hπ f), Real.sqrt_mul_self (norm_sq_pi_nonneg pi_dist hπ f)]
+        calc norm_pi pi_dist f * (Real.exp (-(SpectralGap_pi pi_dist H) * t) * norm_pi pi_dist f)
+            = norm_pi pi_dist f * norm_pi pi_dist f * Real.exp (-(SpectralGap_pi pi_dist H) * t) := by ring
+          _ = norm_sq_pi pi_dist f * Real.exp (-(SpectralGap_pi pi_dist H) * t) := by rw [h_sq]
+
 /-- **Exponential Decay of Autocorrelation** (Parametric Form):
 
     For mean-zero observables with spectral gap γ > 0:
     |C_f(t)| ≤ ‖f‖²_π · e^{-γt}
 
-    This follows from the sector envelope bound (`sector_envelope_bound_canonical`
-    in SGC.Spectral.Envelope.Sector). The spectral gap γ is passed as a parameter
-    to avoid complex type dependencies.
+    This is the **parametric interface** to `autocorrelation_decay_from_sector`.
+    It takes the spectral gap γ as a parameter, avoiding the complex type dependencies
+    of the full sector machinery.
+
+    **Instantiation**: When sector conditions hold with γ = SpectralGap_pi pi_dist H,
+    this follows from `autocorrelation_decay_from_sector`.
 
     **Connection to SpectralGap_pi**: For reversible systems where H is the
     Dirichlet form operator, γ = SpectralGap_pi pi_dist H. -/
