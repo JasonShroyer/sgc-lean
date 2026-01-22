@@ -4,8 +4,8 @@
 
 | Field | Value |
 |-------|-------|
-| **Date** | January 3, 2026 |
-| **Status** | ✅ VERIFIED CORE (100%) + ⚠️ AXIOMATIC EXTENSIONS |
+| **Date** | January 22, 2026 |
+| **Status** | ✅ VERIFIED CORE (100%) + ⚠️ AXIOMATIC EXTENSIONS + 🧪 OBSERVABLES (Phase 1) |
 | **Lean Version** | Lean 4 |
 | **Mathlib** | v4.25.2 |
 
@@ -117,6 +117,36 @@ equivalences between `norm_pi` and standard `NormedAddCommGroup` infrastructure.
 **Key Achievement**: The entire approximate lumpability theory is **fully verified**.
 The "null result" on NCD spectral stability reveals physical limitations of coarse-graining.
 
+### Observables Pillar (Phenomenology)
+
+The Observables pillar connects the algebraic core to measurable quantities.
+
+| Module | Path | Key Theorem | Status |
+|--------|------|-------------|--------|
+| **EnergyUnification** | `EnergyUnification.lean` | `energy_unification_triangle` | ✅ Axiom-Supported |
+| **EnergyUnification** | `EnergyUnification.lean` | `zero_defect_implies_constant_curvature` | ⚠️ Reversible (Scoped) |
+| **TopologicalPersistence** | `TopologicalPersistence.lean` | `expected_persistence_time_pos` | ✅ Verified |
+| **TopologicalPersistence** | `TopologicalPersistence.lean` | `persistence_cost_ratio_constant` | ✅ Verified |
+| **ValidityHorizon** | `ValidityHorizon.lean` | `autocorrelation_decay_from_sector` | ✅ Verified (Spectral Bridge) |
+| **ValidityHorizon** | `ValidityHorizon.lean` | `validity_horizon_lower_bound_param` | ✅ Axiom-Interface |
+
+### Phenomenological Axioms
+
+These axioms define the physical modeling assumptions connecting different pillars.
+They are distinct from "Analysis Axioms" (which are mathematical debt).
+
+| Axiom | Scope | Meaning |
+|-------|-------|---------|
+| `defect_bounded_by_assembly` | **General** | Geometry constrains Dynamics (Defect ≤ C · Assembly) |
+| `assembly_bounded_by_defect` | **Restricted** (Reversible) | Dynamics determines Geometry (Assembly ≤ C' · Defect) |
+| `assembly_bounded_by_entropy` | **Conjecture** | Connection to thermodynamics |
+| `autocorrelation_decay_param` | **Interface** | Parametric wrapper for verified `autocorrelation_decay_from_sector` |
+
+**Zero Emergence Theorem**: The equivalence `Defect = 0 ⟺ Constant Curvature` is proven
+using the Restricted axiom `assembly_bounded_by_defect`. This correctly reflects that
+non-normal systems (shear flows) can have `Defect > 0` (transient growth) even with
+`Assembly ≈ 0` (flat spectrum).
+
 ### Topology Pillar (Structure)
 | Module | Path | Key Definitions |
 |--------|------|-----------------|
@@ -172,6 +202,8 @@ SGC Framework: Structural Persistence in Stochastic Systems
 │   └── S = M + A: Martingale heat + Predictable work
 ├── Variational (Why): Least Action Principle for Complexity
 │   └── Systems maximize consolidation rate
+├── Observables (Phenomenology): Connecting algebra to experiment
+│   └── T* = τ_corr/Q: Observable validity horizon
 └── Bridge (Validity): Discrete theory converges to continuum
     └── ε-graph Laplacian → Laplace-Beltrami operator
 ```
@@ -184,13 +216,19 @@ SGC Framework: Structural Persistence in Stochastic Systems
 >
 > **Verified (zero sorries)**: All theorems in the discrete core modules 
 > (`SGC.Axioms`, `SGC.Spectral`, `SGC.Renormalization`, `SGC.Topology`, 
-> `SGC.Thermodynamics`, `SGC.Variational`, `SGC.Bridge`, `SGC.Information`) 
+> `SGC.Thermodynamics`, `SGC.Variational`, `SGC.Bridge`, `SGC.Information`,
+> `SGC.Observables`) 
 > are formally verified in Lean 4 with **zero `sorry` placeholders**.
 >
 > **Approximate Lumpability**: The `Approximate.lean` module is **100% verified**.
 > This includes trajectory bounds, propagator approximation, spectral stability,
 > and NCD uniform error bounds. The attempted `NCD_spectral_stability` theorem
 > was correctly identified as **false** due to secular growth—a physical insight.
+>
+> **Observables Pillar**: The `Observables` module is **100% verified** (zero sorries).
+> The theory distinguishes between General systems (where Geometry constrains Dynamics)
+> and Reversible systems (where they are equivalent). The Spectral Bridge theorem
+> rigorously connects abstract spectral gaps to measurable autocorrelation decay.
 >
 > **Axiomatized (explicit assumptions)**: The continuum limit modules 
 > (`SGC.Geometry.Manifold`) contain **explicit axioms** encoding the 
@@ -218,9 +256,9 @@ SGC Framework: Structural Persistence in Stochastic Systems
 
 ## Tags
 
-- `v1.0-release` — Public release tag
+- `v1.1-observables` — Observables Pillar Release
 
 ---
 
-*Generated: January 7, 2026*
+*Generated: January 22, 2026*
 *Repository: https://github.com/JasonShroyer/sgc-lean*
