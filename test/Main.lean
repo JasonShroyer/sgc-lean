@@ -5,6 +5,9 @@ import SGC.Renormalization.Approximate
 import SGC.Thermodynamics.DoobMeyer
 import SGC.Variational.LeastAction
 import SGC.Information.Equivalence
+import SGC.Observables.ValidityHorizon
+import SGC.Observables.TopologicalPersistence
+import SGC.Observables.EnergyUnification
 import Mathlib.LinearAlgebra.Matrix.Notation
 
 open Matrix SGC Real SGC.Spectral SGC.Approximate
@@ -53,6 +56,17 @@ Red flag: If `sorry` appears, the proof is incomplete.
 
 -- Information Bridge (v2 Extension)
 #print axioms SGC.information_geometry_equivalence
+
+-- Observables Pillar (NEW January 2026)
+-- Spectral Bridge: Connects abstract spectral gap to measurable autocorrelation
+#print axioms SGC.Observables.autocorrelation_decay_from_sector
+-- Zero Emergence Theorem (REVERSIBLE ONLY): Defect=0 ⟹ Constant Curvature
+#print axioms SGC.Observables.zero_defect_implies_constant_curvature
+-- Topological Persistence: Markov blanket ⟹ positive survival time
+#print axioms SGC.Observables.expected_persistence_time_pos
+#print axioms SGC.Observables.persistence_cost_ratio_constant
+-- Energy Unification Triangle
+#print axioms SGC.Observables.energy_unification_triangle
 
 end AxiomAudit
 

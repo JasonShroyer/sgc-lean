@@ -167,6 +167,49 @@ non-normal systems (shear flows) can have `Defect > 0` (transient growth) even w
 |--------|------|-----------------|
 | **Discretization** | `src/SGC/Bridge/Discretization.lean` | `GapConsistent`, `DiscretizationTheorem` |
 
+### Observables Pillar (Measurable Emergence) — NEW (January 2026)
+
+This pillar connects abstract theory to **experimentally measurable quantities**.
+
+| Module | Path | Key Theorems | Status |
+|--------|------|--------------|--------|
+| **ValidityHorizon** | `src/SGC/Observables/ValidityHorizon.lean` | `autocorrelation_decay_from_sector` (Spectral Bridge) | ✅ Verified |
+| **TopologicalPersistence** | `src/SGC/Observables/TopologicalPersistence.lean` | `expected_persistence_time_pos`, `persistence_cost_ratio_constant` | ✅ Verified |
+| **EnergyUnification** | `src/SGC/Observables/EnergyUnification.lean` | `zero_defect_implies_constant_curvature` (Zero Emergence) | ✅ Verified |
+
+#### Key Results
+
+**Spectral Bridge** (`autocorrelation_decay_from_sector`):
+Derives autocorrelation decay from sector envelope bounds via Cauchy-Schwarz:
+```
+|C_f(t)| ≤ ‖f‖²_π · e^{-γt}
+```
+This connects abstract spectral gap γ to measurable autocorrelation time τ_corr = 1/γ.
+
+**Zero Emergence Theorem** (`zero_defect_implies_constant_curvature`):
+For **reversible (self-adjoint) systems**: Defect = 0 ⟹ Constant Curvature.
+
+**Hierarchical Validity** (General vs Reversible):
+| Scope | Bound | Physical Meaning |
+|-------|-------|------------------|
+| General (all L) | Defect ≤ C · Assembly | Geometry constrains dynamics |
+| Reversible only | Assembly ≤ C' · Defect | Dynamics determines geometry |
+
+**Non-Normal Phenomena** (explicitly accommodated in theory):
+- *Invisible Complexity*: Assembly > 0, Defect ≈ 0 (laminar shear flows)
+- *Transient Emergence*: Large transient Defect, small Assembly (turbulent transitions)
+
+#### Observables Axioms (Restricted)
+
+| Axiom | Scope | Description |
+|-------|-------|-------------|
+| `defect_bounded_by_assembly` | **Universal** | Geometry constrains dynamics |
+| `assembly_bounded_by_defect` | **Reversible only** | Requires `IsSelfAdjoint_pi` |
+| `assembly_bounded_by_entropy` | Universal | Assembly ≤ C · Entropy Production |
+| `survival_bound` | Universal | Markov blanket survives k surgeries |
+| `defect_betti_scaling` | Universal | ε · b₁ ≤ C |
+| `autocorrelation_decay_param` | Parametric | Interface to Spectral Bridge |
+
 ---
 
 ## Axiomatic Extensions (NOT VERIFIED)
