@@ -313,6 +313,14 @@ Upcoming integration with [Gitpod](https://gitpod.io/) to allow one-click review
 
 ---
 
+## Architecture Note
+
+This library provides the **mathematical foundation**—spectral theory, thermodynamics, and geometry—as a formally verified standard. Runtime implementations, measurement harnesses, and experimental control modules are maintained in a separate repository to ensure this library remains a focused, academically accessible artifact.
+
+If you are interested in applying these formalizations to executable simulations or control systems, please reach out via the channels below.
+
+---
+
 ## Community & Feedback
 
 I am looking for collaborators to help refute or refine these definitions.
