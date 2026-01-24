@@ -183,9 +183,32 @@ theorem assembly_index_zero_iff_constant (curvature : V → ℝ) (u : V → ℝ)
   constructor
   · -- E = 0 implies constant curvature
     intro h_zero
-    -- Each term (κ-κ̄)²u² ≥ 0, sum = 0 implies each term = 0
-    -- u ≠ 0 implies κ = κ̄ for all v
-    sorry -- Technical: sum of nonneg = 0 implies each = 0
+    intro v w
+    unfold AssemblyIndex Geometry.YamabeEnergy at h_zero
+    -- The sum of non-negative terms is 0, so each term is 0
+    have h_nonneg : ∀ x ∈ Finset.univ, 0 ≤ (curvature x - Geometry.averageCurvature curvature) ^ 2 * u x ^ 2 := by
+      intro x _
+      apply mul_nonneg (sq_nonneg _) (sq_nonneg _)
+    have h_each_zero := (Finset.sum_eq_zero_iff_of_nonneg h_nonneg).mp h_zero
+    -- Each term being 0 implies (κ - κ̄)² * u² = 0
+    have hv := h_each_zero v (Finset.mem_univ v)
+    have hw := h_each_zero w (Finset.mem_univ w)
+    -- Since u ≠ 0, we have u² ≠ 0, so (κ - κ̄)² = 0, hence κ = κ̄
+    have hu_v_sq : u v ^ 2 ≠ 0 := pow_ne_zero 2 (hu v)
+    have hu_w_sq : u w ^ 2 ≠ 0 := pow_ne_zero 2 (hu w)
+    have h_diff_v : (curvature v - Geometry.averageCurvature curvature) ^ 2 = 0 := by
+      by_contra h_ne
+      have := mul_ne_zero h_ne hu_v_sq
+      exact this hv
+    have h_diff_w : (curvature w - Geometry.averageCurvature curvature) ^ 2 = 0 := by
+      by_contra h_ne
+      have := mul_ne_zero h_ne hu_w_sq
+      exact this hw
+    have hv_eq : curvature v = Geometry.averageCurvature curvature := by
+      rwa [sq_eq_zero_iff, sub_eq_zero] at h_diff_v
+    have hw_eq : curvature w = Geometry.averageCurvature curvature := by
+      rwa [sq_eq_zero_iff, sub_eq_zero] at h_diff_w
+    rw [hv_eq, hw_eq]
   · -- Constant curvature implies E = 0
     intro h_const
     unfold AssemblyIndex Geometry.YamabeEnergy
@@ -194,7 +217,16 @@ theorem assembly_index_zero_iff_constant (curvature : V → ℝ) (u : V → ℝ)
     -- All curvatures equal implies κ(v) = κ̄
     have h_eq_avg : curvature v = Geometry.averageCurvature curvature := by
       -- If f is constant with value c, then average(f) = c
-      sorry -- Technical: constant function has average equal to that constant
+      simp only [Geometry.averageCurvature]
+      have h1 : ∀ w : V, curvature w = curvature v := fun w => h_const w v
+      have h_sum_eq : ∑ w : V, curvature w = ∑ _ : V, curvature v := Finset.sum_congr rfl (fun w _ => h1 w)
+      rw [h_sum_eq, Finset.sum_const, Finset.card_univ]
+      simp only [nsmul_eq_mul, mul_comm]
+      rw [mul_div_assoc]
+      have hcard : (Fintype.card V : ℝ) ≠ 0 := by
+        have : Nonempty V := ⟨v⟩
+        exact Nat.cast_ne_zero.mpr Fintype.card_pos.ne'
+      rw [div_self hcard, mul_one]
     rw [h_eq_avg, sub_self, zero_pow (by norm_num : 2 ≠ 0), zero_mul]
 
 /-! ### 2. Curvature ↔ Prediction Error Correspondence -/
