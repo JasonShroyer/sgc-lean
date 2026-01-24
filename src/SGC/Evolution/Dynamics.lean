@@ -5,7 +5,6 @@ Authors: SGC Formalization Team
 -/
 import SGC.Evolution.Surgery
 import SGC.Thermodynamics.Evolution
-import SGC.Measurement.Wavelets
 
 /-!
 # Stage 4: The Dynamics of Evolution
@@ -73,7 +72,7 @@ noncomputable section
 
 namespace SGC.Evolution
 
-open SGC.Thermodynamics SGC.Measurement
+open SGC.Thermodynamics
 
 variable {V : Type*} [Fintype V] [DecidableEq V] [Nonempty V]
 

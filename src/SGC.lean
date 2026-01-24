@@ -74,13 +74,11 @@ import SGC.Geometry.Conformal
 import SGC.Geometry.Yamabe
 
 -- ═══════════════════════════════════════════════════════════════════════════
--- Stage 0: Measurement Interfaces (Physics-Grade Contracts)
+-- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════
-
--- Audited measurement system with tightness and independence contracts
-import SGC.Measurement.Interfaces
--- Diffusion wavelets for non-normal systems
-import SGC.Measurement.Wavelets
+-- Runtime implementations (Interfaces, Wavelets, Impulse) are now in the
+-- private Veridion repository. This public library provides only the
+-- mathematical foundations that those implementations depend on.
 
 /-!
 # SGC: The Spectral Geometry of Consolidation
