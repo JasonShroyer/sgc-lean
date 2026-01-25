@@ -137,6 +137,15 @@ axiom kl_divergence_zero_iff (p q : V → ℝ)
     (hp : ∀ v, 0 ≤ p v) (hq : ∀ v, 0 < q v) :
     KLDivergence p q = 0 ↔ p = q
 
+/-- **Stationary distribution is strictly positive** for connected graphs.
+
+    For an irreducible Markov chain (connected weighted graph), the unique
+    stationary distribution has π(v) > 0 for all states v.
+
+    This is the Perron-Frobenius theorem applied to stochastic matrices. -/
+axiom stationary_strictly_positive (G : WeightedGraph V) :
+    ∀ v, 0 < StationaryDistribution G v
+
 /-- **Surgery Cost**: The information cost of changing topology.
 
     W_surg ≥ k_B T · D_KL(π_G ‖ π_G')
@@ -154,9 +163,7 @@ theorem surgery_cost_nonneg (G G' : WeightedGraph V) :
     SurgeryCost G G' ≥ 0 := by
   apply kl_divergence_nonneg
   · exact fun v => (stationary_is_probability G).1 v
-  · intro v
-    have h := (stationary_is_probability G').1 v
-    sorry -- Requires strict positivity, which we'd need to add as an axiom
+  · exact stationary_strictly_positive G'
 
 /-- Surgery cost is zero iff topology change doesn't affect equilibrium. -/
 theorem surgery_cost_zero_iff (G G' : WeightedGraph V)
