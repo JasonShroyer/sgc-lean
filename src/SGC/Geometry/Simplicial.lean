@@ -93,11 +93,12 @@ def boundary (σ : Simplex V) : Set (Simplex V) :=
 
 /-- Vertex dimension is 0. -/
 theorem vertex_dim (v : V) : (vertex v).dimension = 0 := by
-  sorry -- card {v} = 1, so dimension = 1 - 1 = 0
+  simp only [dimension, vertex, Finset.card_singleton]
 
 /-- Edge dimension is 1. -/
 theorem edge_dim (u v : V) (h : u ≠ v) : (edge u v h).dimension = 1 := by
-  sorry -- card {u, v} = 2 when u ≠ v, so dimension = 2 - 1 = 1
+  simp only [dimension, edge, Finset.card_insert_of_not_mem (Finset.not_mem_singleton.mpr h),
+    Finset.card_singleton]
 
 end Simplex
 
