@@ -132,6 +132,25 @@ def generatorFromGraph (G : WeightedGraph V) : Matrix V V ℝ :=
     **Axiomatized**: Full implementation requires matrix exponential. -/
 axiom diffusionStep (G : WeightedGraph V) (π : V → ℝ) (dt : ℝ) : V → ℝ
 
+/-- **Diffusion preserves non-negativity**: The heat kernel is a stochastic semigroup.
+
+    If π ≥ 0 initially, then exp(tL)π ≥ 0 for all t ≥ 0.
+
+    This is a standard property of Markov semigroups: the generator L has
+    non-negative off-diagonal entries, ensuring probability mass never goes negative. -/
+axiom diffusionStep_nonneg (G : WeightedGraph V) (π : V → ℝ) (dt : ℝ)
+    (hπ : ∀ v, 0 ≤ π v) (hdt : 0 ≤ dt) :
+  ∀ v, 0 ≤ diffusionStep G π dt v
+
+/-- **Diffusion preserves probability mass**: The heat kernel conserves total probability.
+
+    Σ_v (exp(tL)π)_v = Σ_v π_v
+
+    This follows from L being a generator (row sums = 0), so exp(tL) is doubly stochastic
+    when L is symmetric, or at least preserves the sum when L has column sums = 0. -/
+axiom diffusionStep_sum (G : WeightedGraph V) (π : V → ℝ) (dt : ℝ) :
+  ∑ v, diffusionStep G π dt v = ∑ v, π v
+
 /-- **Curvature Smoothing**: Conceptual stub for metric renormalization.
 
     In the full implementation, this would apply Yamabe flow to the edge weights.
@@ -151,11 +170,8 @@ def ConsolidationStep (s : EvolutionaryState V) (dt : ℝ) (hdt : 0 ≤ dt) : Ev
   G := curvatureSmoothingStep s.G dt
   π := diffusionStep s.G s.π dt
   t := s.t + dt
-  π_nonneg := by
-    intro v
-    sorry  -- Heat kernel preserves non-negativity (stochastic)
-  π_sum := by
-    sorry  -- Heat kernel preserves probability mass
+  π_nonneg := fun v => diffusionStep_nonneg s.G s.π dt s.π_nonneg hdt v
+  π_sum := by rw [diffusionStep_sum]; exact s.π_sum
   t_nonneg := by linarith [s.t_nonneg]
 
 /-! ### 3. The Discrete Step (Surgery) -/
