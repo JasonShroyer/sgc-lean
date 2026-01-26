@@ -277,33 +277,33 @@ axiom inner_pi_orthogonal_decomp (pi_dist : V → ℝ) (P : Partition V) (ψ : V
     1. KL says P E† E P ψ = α ψ
     2. Take ⟨_, ψ⟩: ⟨P E† E ψ, ψ⟩ = α⟨ψ, ψ⟩
     3. P self-adjoint: ⟨E† E ψ, Pψ⟩ = ⟨E† E ψ, ψ⟩
-    4. inner_adjoint_self: ⟨E† E ψ, ψ⟩ = ⟨Eψ, Eψ⟩ = ‖Eψ‖² -/
+    4. inner_adjoint_self: ⟨E† E ψ, ψ⟩ = ⟨Eψ, Eψ⟩ = ‖Eψ‖²
+
+    Note: We use real α (physically, the leakage coefficient must be real). -/
 theorem KL_gives_norm_sq_proportional (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (L : Matrix V V ℝ) (P : Partition V) (α : ℂ)
+    (L : Matrix V V ℝ) (P : Partition V) (α : ℝ)
     (hKL : ∀ f, (partitionToCodeSubspace pi_dist P).proj
         ((adjoint_pi pi_dist (complexifyDefect pi_dist hπ L P))
           ((complexifyDefect pi_dist hπ L P)
             ((partitionToCodeSubspace pi_dist P).proj f))) =
-        α • ((partitionToCodeSubspace pi_dist P).proj f))
+        (α : ℂ) • ((partitionToCodeSubspace pi_dist P).proj f))
     (ψ : V → ℂ) (h_codeword : (partitionToCodeSubspace pi_dist P).proj ψ = ψ) :
     SGC.Axioms.GeometryGeneral.inner_pi pi_dist
       ((complexifyDefect pi_dist hπ L P) ψ) ((complexifyDefect pi_dist hπ L P) ψ) =
-    α * SGC.Axioms.GeometryGeneral.inner_pi pi_dist ψ ψ := by
+    (α : ℂ) * SGC.Axioms.GeometryGeneral.inner_pi pi_dist ψ ψ := by
   let proj := (partitionToCodeSubspace pi_dist P).proj
   let E := complexifyDefect pi_dist hπ L P
   -- KL condition for ψ: P E† E (Pψ) = α (Pψ) = α ψ
   have h_KL_ψ := hKL ψ
   rw [h_codeword] at h_KL_ψ
   -- Take inner product with ψ: ⟨P E† E ψ, ψ⟩ = ⟨α ψ, ψ⟩ = α⟨ψ, ψ⟩
-  -- Note: inner_pi_smul_left gives star α * inner, but for real α this equals α * inner
-  have h_inner_RHS : SGC.Axioms.GeometryGeneral.inner_pi pi_dist (α • ψ) ψ =
-      α * SGC.Axioms.GeometryGeneral.inner_pi pi_dist ψ ψ := by
+  -- For real α: star α = α, so inner_pi_smul_left gives α * inner
+  have h_inner_RHS : SGC.Axioms.GeometryGeneral.inner_pi pi_dist ((α : ℂ) • ψ) ψ =
+      (α : ℂ) * SGC.Axioms.GeometryGeneral.inner_pi pi_dist ψ ψ := by
     rw [SGC.Axioms.GeometryGeneral.inner_pi_smul_left]
-    -- For KL conditions, α is typically real, so star α = α
-    -- In general: star α * x = α * x when α is real
-    -- We use ring_nf to handle the algebra
-    ring_nf
-    sorry  -- Technical: need α real or handle star α properly
+    -- star (α : ℂ) = α for real α (α has zero imaginary part)
+    congr 1
+    simp only [RCLike.star_def, Complex.conj_ofReal]
   -- LHS: ⟨P E† E ψ, ψ⟩ = ⟨E† E ψ, Pψ⟩ = ⟨E† E ψ, ψ⟩ (P self-adjoint, Pψ = ψ)
   have h_inner_LHS : SGC.Axioms.GeometryGeneral.inner_pi pi_dist (proj (adjoint_pi pi_dist E (E ψ))) ψ =
       SGC.Axioms.GeometryGeneral.inner_pi pi_dist (adjoint_pi pi_dist E (E ψ)) ψ := by
@@ -315,8 +315,8 @@ theorem KL_gives_norm_sq_proportional (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi
   calc SGC.Axioms.GeometryGeneral.inner_pi pi_dist (E ψ) (E ψ)
     = SGC.Axioms.GeometryGeneral.inner_pi pi_dist (adjoint_pi pi_dist E (E ψ)) ψ := h_adj_self.symm
     _ = SGC.Axioms.GeometryGeneral.inner_pi pi_dist (proj (adjoint_pi pi_dist E (E ψ))) ψ := h_inner_LHS.symm
-    _ = SGC.Axioms.GeometryGeneral.inner_pi pi_dist (α • ψ) ψ := by rw [h_KL_ψ]
-    _ = α * SGC.Axioms.GeometryGeneral.inner_pi pi_dist ψ ψ := h_inner_RHS
+    _ = SGC.Axioms.GeometryGeneral.inner_pi pi_dist ((α : ℂ) • ψ) ψ := by rw [h_KL_ψ]
+    _ = (α : ℂ) * SGC.Axioms.GeometryGeneral.inner_pi pi_dist ψ ψ := h_inner_RHS
 
 /-- **Lemma 6b**: The defect operator E = (I-P)LP factors as E = (I-P) ∘ E.
     This means E maps everything to the complement of the code subspace.
