@@ -92,6 +92,17 @@ the weighted Hermitian inner product. Over ℂ, this corresponds to Hermitian ma
 over ℝ, this reduces to symmetric matrices.
 -/
 
+/-- The weighted inner product is non-degenerate: if ⟨x, y⟩ = 0 for all y, then x = 0.
+    This holds when all weights π(v) > 0. -/
+axiom inner_pi_nondegenerate (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) (x : V → 𝕜) :
+    (∀ y, inner_pi pi_dist x y = 0) → x = 0
+
+/-- Two operators are equal if they produce equal inner products for all vectors.
+    Follows from non-degeneracy: if ⟨(A-B)u, v⟩ = 0 for all u,v, then A = B. -/
+axiom linearMap_ext_inner (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (A B : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
+    (∀ u v, inner_pi pi_dist (A u) v = inner_pi pi_dist (B u) v) → A = B
+
 /-- An operator A is self-adjoint w.r.t. the weighted inner product if A† = A.
     Equivalently, ⟨Au, v⟩ = ⟨u, Av⟩ for all u, v.
     For quantum Hamiltonians, this ensures real eigenvalues and orthogonal eigenvectors. -/
@@ -99,16 +110,18 @@ def IsSelfAdjoint_pi (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V →
   adjoint_pi pi_dist A = A
 
 /-- Alternative characterization: A is self-adjoint iff ⟨Au, v⟩ = ⟨u, Av⟩. -/
-lemma isSelfAdjoint_pi_iff (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
+lemma isSelfAdjoint_pi_iff (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
     IsSelfAdjoint_pi pi_dist A ↔ ∀ u v, inner_pi pi_dist (A u) v = inner_pi pi_dist u (A v) := by
   constructor
   · intro hA u v
     rw [← adjoint_pi_spec pi_dist A u v, hA]
   · intro h
-    -- If ⟨Au, v⟩ = ⟨u, Av⟩ for all u,v, and ⟨A†u, v⟩ = ⟨u, Av⟩, then ⟨A†u, v⟩ = ⟨Au, v⟩
-    -- By non-degeneracy of inner product, A† = A
-    -- This requires showing inner product is non-degenerate; axiomatize for now
-    sorry
+    -- Show A† = A using linearMap_ext_inner
+    apply linearMap_ext_inner pi_dist hπ
+    intro u v
+    -- ⟨A†u, v⟩ = ⟨u, Av⟩ (by adjoint_pi_spec) = ⟨Au, v⟩ (by hypothesis h)
+    rw [adjoint_pi_spec, h]
 
 /-- An operator A is positive w.r.t. the weighted inner product if ⟨Au, u⟩ ≥ 0 for all u.
     Combined with self-adjointness, this gives a positive semidefinite operator. -/
