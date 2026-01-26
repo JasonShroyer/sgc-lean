@@ -188,20 +188,44 @@ axiom complexifyDefect_kills_complement (pi_dist : V → ℝ) (hπ : ∀ v, 0 < 
 
 /-- **Structural Property 1c**: P E† P = 0 follows from P E P = 0.
 
-    **Derivation**: Taking adjoint of P E P = 0:
+    **PROVEN**: Taking adjoint of P E P = 0:
     - (P ∘ E ∘ P)† = P† ∘ E† ∘ P† (by `adjoint_pi_comp` twice)
     - = P ∘ E† ∘ P (since P is self-adjoint: P† = P)
     - = (P E P)† = 0† = 0 (by `adjoint_pi_zero`)
 
-    This is a key step for proving that the KL condition forces α = 0.
-
-    **Status**: Derivable from `complexifyDefect_orthogonal`, `adjoint_pi_comp`,
-    `adjoint_pi_zero`, and `CodeSubspace.self_adjoint`. -/
-axiom adjoint_defect_orthogonal (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    This is a key step for proving that the KL condition forces α = 0. -/
+theorem adjoint_defect_orthogonal (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (L : Matrix V V ℝ) (P : Partition V) :
     (partitionToCodeSubspace pi_dist P).proj ∘ₗ
     (adjoint_pi pi_dist (complexifyDefect pi_dist hπ L P)) ∘ₗ
-    (partitionToCodeSubspace pi_dist P).proj = 0
+    (partitionToCodeSubspace pi_dist P).proj = 0 := by
+  -- Get P E P = 0
+  have h_PEP := complexifyDefect_orthogonal pi_dist hπ L P
+  -- Get P is self-adjoint: P† = P
+  have h_P_sa := (partitionToCodeSubspace pi_dist P).self_adjoint
+  unfold SGC.Axioms.GeometryGeneral.IsSelfAdjoint_pi at h_P_sa
+  -- Abbreviations
+  let proj := (partitionToCodeSubspace pi_dist P).proj
+  let E := complexifyDefect pi_dist hπ L P
+  -- (P E P)† = 0† = 0
+  have h_adj_zero := SGC.Axioms.GeometryGeneral.adjoint_pi_zero (𝕜 := ℂ) pi_dist
+  -- The adjoint of P E P using composition rule
+  have h_comp1 : adjoint_pi pi_dist (E ∘ₗ proj) =
+      (adjoint_pi pi_dist proj) ∘ₗ (adjoint_pi pi_dist E) :=
+    SGC.Axioms.GeometryGeneral.adjoint_pi_comp pi_dist E proj
+  have h_comp2 : adjoint_pi pi_dist (proj ∘ₗ E ∘ₗ proj) =
+      (adjoint_pi pi_dist (E ∘ₗ proj)) ∘ₗ (adjoint_pi pi_dist proj) :=
+    SGC.Axioms.GeometryGeneral.adjoint_pi_comp pi_dist proj (E ∘ₗ proj)
+  -- Substitute P† = P
+  simp only [h_P_sa] at h_comp1 h_comp2
+  -- (P E P)† = (E P)† ∘ P = (P ∘ E†) ∘ P = P ∘ E† ∘ P
+  rw [h_comp1] at h_comp2
+  -- P E P = 0, so (P E P)† = 0† = 0
+  have h_adj_PEP : adjoint_pi pi_dist (proj ∘ₗ E ∘ₗ proj) = 0 := by
+    rw [h_PEP, h_adj_zero]
+  -- Therefore P E† P = 0
+  rw [h_comp2, h_P_sa] at h_adj_PEP
+  exact h_adj_PEP
 
 /-- **Structural Property 2**: The inner product of E†E ψ with ψ equals ‖Eψ‖².
     This is standard: ⟨E†E ψ, ψ⟩ = ⟨Eψ, Eψ⟩ = ‖Eψ‖².
