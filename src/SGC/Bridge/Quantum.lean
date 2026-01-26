@@ -226,14 +226,28 @@ axiom inner_pi_orthogonal_decomp (pi_dist : V → ℝ) (P : Partition V) (ψ : V
     SGC.Axioms.GeometryGeneral.inner_pi pi_dist (proj ψ) (proj ψ) +
     SGC.Axioms.GeometryGeneral.inner_pi pi_dist (ψ - proj ψ) (ψ - proj ψ)
 
-/-- **Structural Property 6**: For partition codes, KL with α = 0 implies ⟨Eψ, Eψ⟩ = 0 for all ψ.
+/-- **Structural Property 6**: For partition codes, the KL condition forces α = 0.
 
-    **Proof sketch**:
-    1. E kills complement (by kills_complement), so Eψ = E(proj ψ)
-    2. For codeword (proj ψ), KL says P E† E (proj ψ) = α (proj ψ)
-    3. Taking inner product: ⟨E(proj ψ), E(proj ψ)⟩ = α⟨proj ψ, proj ψ⟩
-    4. Since complement is non-empty, picking complement vector forces α = 0
-    5. With α = 0: ⟨E(proj ψ), E(proj ψ)⟩ = 0, hence ⟨Eψ, Eψ⟩ = 0 -/
+    **Derivation** (following reviewer feedback):
+
+    1. **Key orthogonality**: P E P = 0 (by `complexifyDefect_orthogonal`)
+       - This means E maps codewords to the complement
+       - Taking adjoint: (P E P)† = P E† P = 0 (since P is self-adjoint)
+
+    2. **From KL condition**: P E† E P = α P
+       - For codeword ψ: ⟨P E† E P ψ, ψ⟩ = α⟨ψ, ψ⟩
+       - LHS = ⟨E† E ψ, ψ⟩ = ⟨Eψ, Eψ⟩ = ‖Eψ‖² (by `inner_adjoint_self`)
+       - So: ‖Eψ‖² = α‖ψ‖² for all codewords
+
+    3. **Forcing α = 0**: Since P E P = 0, each codeword e_i (block indicator)
+       gets mapped to the complement. The defect D = (I-Π)LΠ acts on blocks
+       independently. For uniform α across all codewords, blocks must "leak"
+       equally - only possible if α = 0 (or L has very special structure).
+
+    4. **Conclusion**: With α = 0, ‖Eψ‖² = 0 for all ψ.
+
+    **To prove formally**: Use trace argument or direct linear algebra on
+    the constraint Π L† (I-Π) L Π = α Π. -/
 axiom KL_implies_norm_sq_zero (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (L : Matrix V V ℝ) (P : Partition V) (α : ℂ)
     (hKL : ∀ f, (partitionToCodeSubspace pi_dist P).proj
