@@ -51,17 +51,64 @@ lemma inner_pi_conj_symm (pi_dist : V → ℝ) (u v : V → 𝕜) :
     inner_pi pi_dist u v = star (inner_pi pi_dist v u) := by
   simp [inner_pi, mul_assoc, mul_left_comm, mul_comm]
 
-/-! ## Hermitian Operators
+/-! ## Adjoint Operators
+
+The adjoint A† of an operator A w.r.t. the weighted inner product satisfies
+⟨A†u, v⟩_π = ⟨u, Av⟩_π. This is essential for quantum mechanics where
+observables must be self-adjoint (A† = A).
+-/
+
+/-- The adjoint of an operator w.r.t. the weighted inner product.
+    Satisfies ⟨A† u, v⟩_π = ⟨u, A v⟩_π.
+
+    For finite-dimensional spaces, this always exists and is unique.
+    We axiomatize the construction; the defining property is `adjoint_pi_spec`. -/
+axiom adjoint_pi (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)
+
+/-- Defining property of the adjoint: ⟨A† u, v⟩_π = ⟨u, A v⟩_π. -/
+axiom adjoint_pi_spec (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) (u v : V → 𝕜) :
+    inner_pi pi_dist (adjoint_pi pi_dist A u) v = inner_pi pi_dist u (A v)
+
+/-- The adjoint is an involution: (A†)† = A. -/
+axiom adjoint_pi_involutive (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
+    adjoint_pi pi_dist (adjoint_pi pi_dist A) = A
+
+/-- The adjoint of a composition: (AB)† = B†A†. -/
+axiom adjoint_pi_comp (pi_dist : V → ℝ) (A B : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
+    adjoint_pi pi_dist (A ∘ₗ B) = adjoint_pi pi_dist B ∘ₗ adjoint_pi pi_dist A
+
+/-- The adjoint of the identity is the identity. -/
+axiom adjoint_pi_id (pi_dist : V → ℝ) :
+    adjoint_pi pi_dist (LinearMap.id : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) = LinearMap.id
+
+/-- The adjoint of zero is zero. -/
+axiom adjoint_pi_zero (pi_dist : V → ℝ) :
+    adjoint_pi pi_dist (0 : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) = 0
+
+/-! ## Hermitian (Self-Adjoint) Operators
 
 For quantum applications, we need operators that are self-adjoint with respect to
 the weighted Hermitian inner product. Over ℂ, this corresponds to Hermitian matrices;
 over ℝ, this reduces to symmetric matrices.
 -/
 
-/-- An operator A is self-adjoint w.r.t. the weighted inner product if ⟨Au, v⟩ = ⟨u, Av⟩.
+/-- An operator A is self-adjoint w.r.t. the weighted inner product if A† = A.
+    Equivalently, ⟨Au, v⟩ = ⟨u, Av⟩ for all u, v.
     For quantum Hamiltonians, this ensures real eigenvalues and orthogonal eigenvectors. -/
 def IsSelfAdjoint_pi (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) : Prop :=
-  ∀ u v, inner_pi pi_dist (A u) v = inner_pi pi_dist u (A v)
+  adjoint_pi pi_dist A = A
+
+/-- Alternative characterization: A is self-adjoint iff ⟨Au, v⟩ = ⟨u, Av⟩. -/
+lemma isSelfAdjoint_pi_iff (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
+    IsSelfAdjoint_pi pi_dist A ↔ ∀ u v, inner_pi pi_dist (A u) v = inner_pi pi_dist u (A v) := by
+  constructor
+  · intro hA u v
+    rw [← adjoint_pi_spec pi_dist A u v, hA]
+  · intro h
+    -- If ⟨Au, v⟩ = ⟨u, Av⟩ for all u,v, and ⟨A†u, v⟩ = ⟨u, Av⟩, then ⟨A†u, v⟩ = ⟨Au, v⟩
+    -- By non-degeneracy of inner product, A† = A
+    -- This requires showing inner product is non-degenerate; axiomatize for now
+    sorry
 
 /-- An operator A is positive w.r.t. the weighted inner product if ⟨Au, u⟩ ≥ 0 for all u.
     Combined with self-adjointness, this gives a positive semidefinite operator. -/

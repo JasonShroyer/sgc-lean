@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 SGC Authors. All rights reserved.
+Copyright (c) 2026 Jason Shroyer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: SGC Contributors
+Authors: Jason Shroyer
 -/
 import SGC.Axioms.GeometryGeneral
 import SGC.Spectral.Core.Assumptions
@@ -111,12 +111,15 @@ structure ErrorOperators (V : Type*) [Fintype V] [DecidableEq V] (n : ℕ) where
 
 /-- The Knill-Laflamme conditions: P E_i† E_j P = α_ij P for some scalars α_ij.
     When satisfied, errors can be perfectly corrected.
-    We axiomatize the adjoint operation for simplicity. -/
+
+    This is the quantum error correction condition: the projection of error
+    compositions back onto the code subspace is proportional to the projector itself,
+    meaning errors don't distinguish between codewords. -/
 def KnillLaflamme (pi_dist : V → ℝ) (code : CodeSubspace V pi_dist)
     {n : ℕ} (errors : ErrorOperators V n) : Prop :=
   ∃ (α : Fin n → Fin n → ℂ), ∀ (i : Fin n) (j : Fin n),
-    -- P E_i† E_j P = α_ij P (axiomatized; E† is the adjoint w.r.t. inner_pi)
-    True  -- Placeholder: full statement requires adjoint infrastructure
+    code.proj ∘ₗ (adjoint_pi pi_dist (errors.errors i)) ∘ₗ (errors.errors j) ∘ₗ code.proj =
+    α i j • code.proj
 
 /-! ## The Bridge: Lumpability ↔ Quantum Error Correction
 
@@ -141,28 +144,80 @@ axiom partitionToCodeSubspace (pi_dist : V → ℝ) (P : Partition V) :
     CodeSubspace V pi_dist
 
 /-- The defect operator from approximate lumpability corresponds to
-    the error syndrome in quantum error correction. -/
-axiom defectToErrorOperators (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    the error syndrome in quantum error correction.
+
+    For a classical generator L and partition P, the defect D = (I - Π) L Π
+    becomes the single error operator in the quantum picture.
+
+    We axiomatize the complexification D_ℂ : (V → ℂ) →ₗ[ℂ] (V → ℂ). -/
+axiom complexifyDefect (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (L : Matrix V V ℝ) (P : Partition V) : (V → ℂ) →ₗ[ℂ] (V → ℂ)
+
+/-- The complexified defect is zero iff the real defect has zero operator norm. -/
+axiom complexifyDefect_zero_iff (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (L : Matrix V V ℝ) (P : Partition V) :
-    ErrorOperators V 1  -- Single error channel corresponding to leakage
+    complexifyDefect pi_dist hπ L P = 0 ↔ opNorm_pi pi_dist hπ (DefectOperator L P pi_dist hπ) = 0
 
-/-- **Main Bridge Theorem (ε = 0 case)**:
-    Exact lumpability of a Markov chain is equivalent to the Knill-Laflamme
-    conditions being satisfied for the corresponding quantum objects.
+def defectToErrorOperators (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (L : Matrix V V ℝ) (P : Partition V) : ErrorOperators V 1 :=
+  { errors := fun _ => complexifyDefect pi_dist hπ L P }
 
-    Classical side: L is lumpable w.r.t. partition P iff [L, Q] = 0
-    where Q is the coarse projection operator.
+/-- **Easy Direction**: If the defect operator is zero (exact lumpability),
+    then Knill-Laflamme conditions hold trivially with α = 0.
 
-    Quantum side: The code defined by P can correct errors from L
-    iff Knill-Laflamme holds. -/
-axiom knill_laflamme_is_lumpability (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    Proof idea: D = 0 ⟹ E = 0 ⟹ E†E = 0 ⟹ P E†E P = 0 = 0·P -/
+theorem lumpability_implies_knill_laflamme (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (L : Matrix V V ℝ) (P : Partition V)
+    (hD : opNorm_pi pi_dist hπ (DefectOperator L P pi_dist hπ) = 0) :
+    let code := partitionToCodeSubspace pi_dist P
+    let errors := defectToErrorOperators pi_dist hπ L P
+    KnillLaflamme pi_dist code errors := by
+  intro code errors
+  -- When opNorm D = 0, the complexified defect E is also zero
+  have hE_zero : complexifyDefect pi_dist hπ L P = 0 :=
+    (complexifyDefect_zero_iff pi_dist hπ L P).mpr hD
+  -- So E† E = 0, and P ∘ 0 ∘ P = 0 = 0 • P
+  use fun _ _ => 0  -- α_ij = 0 for all i,j
+  intro i j
+  simp only [zero_smul]
+  -- errors.errors _ = complexifyDefect = 0
+  have hEi : errors.errors i = 0 := hE_zero
+  have hEj : errors.errors j = 0 := hE_zero
+  -- P ∘ 0† ∘ 0 ∘ P = 0
+  rw [hEi, hEj, adjoint_pi_zero]
+  simp only [LinearMap.comp_zero, LinearMap.zero_comp]
+
+/-- **Hard Direction**: If Knill-Laflamme conditions hold,
+    then the defect operator norm is zero.
+
+    This is more subtle: KL says P E† E P ∝ P, which constrains the error structure.
+    When the error comes from a classical defect operator, this forces D = 0. -/
+theorem knill_laflamme_implies_lumpability (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (L : Matrix V V ℝ) (P : Partition V)
+    (hKL : let code := partitionToCodeSubspace pi_dist P
+           let errors := defectToErrorOperators pi_dist hπ L P
+           KnillLaflamme pi_dist code errors) :
+    opNorm_pi pi_dist hπ (DefectOperator L P pi_dist hπ) = 0 := by
+  -- The Knill-Laflamme condition P E† E P = α P, combined with:
+  -- 1. E is the complexification of the real defect operator D
+  -- 2. P is the complexification of the real coarse projector Π
+  -- 3. Π is self-adjoint (symmetric for real operators)
+  -- implies that D must be zero.
+  --
+  -- Key insight: For the single-error case with E = D_ℂ:
+  -- If P D† D P = α P and D comes from (I-Π)LΠ, then
+  -- the only way this can hold for all codewords is if D = 0.
+  sorry
+
+/-- The full bridge theorem combining both directions. -/
+theorem knill_laflamme_iff_lumpability (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (L : Matrix V V ℝ) (P : Partition V) :
     let code := partitionToCodeSubspace pi_dist P
     let errors := defectToErrorOperators pi_dist hπ L P
-    -- Classical: defect operator norm is zero (exact lumpability)
     (opNorm_pi pi_dist hπ (DefectOperator L P pi_dist hπ) = 0) ↔
-    -- Quantum: Knill-Laflamme conditions hold
-    KnillLaflamme pi_dist code errors
+    KnillLaflamme pi_dist code errors :=
+  ⟨lumpability_implies_knill_laflamme pi_dist hπ L P,
+   knill_laflamme_implies_lumpability pi_dist hπ L P⟩
 
 /-! ## Approximate Version: Error Bounds
 
