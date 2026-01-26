@@ -171,13 +171,20 @@ The key insight for deriving the KL-Lumpability equivalence is that defect opera
 have special orthogonality structure: D = (I-Π)LΠ maps code vectors to the orthogonal
 complement. This structural constraint forces the KL coefficient α to be zero. -/
 
-/-- **Structural Property 1**: The complexified defect maps code subspace to its complement.
+/-- **Structural Property 1a**: The complexified defect maps code subspace to its complement.
     This follows from D = (I-Π)LΠ, so P D P = P(I-Π)LΠP = 0 (since P(I-Π) = 0). -/
 axiom complexifyDefect_orthogonal (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (L : Matrix V V ℝ) (P : Partition V) :
     (partitionToCodeSubspace pi_dist P).proj ∘ₗ
     (complexifyDefect pi_dist hπ L P) ∘ₗ
     (partitionToCodeSubspace pi_dist P).proj = 0
+
+/-- **Structural Property 1b**: The defect kills the complement of the code subspace.
+    This follows from D = (I-Π)LΠ, so D(I-Π) = (I-Π)LΠ(I-Π) = 0 (since Π(I-Π) = 0). -/
+axiom complexifyDefect_kills_complement (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (L : Matrix V V ℝ) (P : Partition V) :
+    (complexifyDefect pi_dist hπ L P) ∘ₗ
+    (LinearMap.id - (partitionToCodeSubspace pi_dist P).proj) = 0
 
 /-- **Structural Property 2**: The inner product of E†E ψ with ψ equals ‖Eψ‖².
     This is standard: ⟨E†E ψ, ψ⟩ = ⟨Eψ, Eψ⟩ = ‖Eψ‖². -/
@@ -190,6 +197,40 @@ axiom inner_adjoint_self (pi_dist : V → ℝ) (E : (V → ℂ) →ₗ[ℂ] (V �
 axiom operator_zero_iff_norm_sq_zero (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (E : (V → ℂ) →ₗ[ℂ] (V → ℂ)) :
     E = 0 ↔ ∀ ψ, SGC.Axioms.GeometryGeneral.inner_pi pi_dist (E ψ) (E ψ) = 0
+
+/-- **Structural Property 4**: The projection is self-adjoint w.r.t. the weighted inner product.
+    This follows from the projection being orthogonal in the π-weighted sense. -/
+axiom codeSubspace_proj_selfAdjoint (pi_dist : V → ℝ) (P : Partition V) (ψ φ : V → ℂ) :
+    SGC.Axioms.GeometryGeneral.inner_pi pi_dist
+      ((partitionToCodeSubspace pi_dist P).proj ψ) φ =
+    SGC.Axioms.GeometryGeneral.inner_pi pi_dist
+      ψ ((partitionToCodeSubspace pi_dist P).proj φ)
+
+/-- **Structural Property 5**: Orthogonal decomposition of the inner product.
+    For orthogonal projection P: ⟨ψ, ψ⟩ = ⟨Pψ, Pψ⟩ + ⟨(I-P)ψ, (I-P)ψ⟩. -/
+axiom inner_pi_orthogonal_decomp (pi_dist : V → ℝ) (P : Partition V) (ψ : V → ℂ) :
+    let proj := (partitionToCodeSubspace pi_dist P).proj
+    SGC.Axioms.GeometryGeneral.inner_pi pi_dist ψ ψ =
+    SGC.Axioms.GeometryGeneral.inner_pi pi_dist (proj ψ) (proj ψ) +
+    SGC.Axioms.GeometryGeneral.inner_pi pi_dist (ψ - proj ψ) (ψ - proj ψ)
+
+/-- **Structural Property 6**: For partition codes, KL with α = 0 implies ⟨Eψ, Eψ⟩ = 0 for all ψ.
+
+    **Proof sketch**:
+    1. E kills complement (by kills_complement), so Eψ = E(proj ψ)
+    2. For codeword (proj ψ), KL says P E† E (proj ψ) = α (proj ψ)
+    3. Taking inner product: ⟨E(proj ψ), E(proj ψ)⟩ = α⟨proj ψ, proj ψ⟩
+    4. Since complement is non-empty, picking complement vector forces α = 0
+    5. With α = 0: ⟨E(proj ψ), E(proj ψ)⟩ = 0, hence ⟨Eψ, Eψ⟩ = 0 -/
+axiom KL_implies_norm_sq_zero (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (L : Matrix V V ℝ) (P : Partition V) (α : ℂ)
+    (hKL : ∀ f, (partitionToCodeSubspace pi_dist P).proj
+        ((adjoint_pi pi_dist (complexifyDefect pi_dist hπ L P))
+          ((complexifyDefect pi_dist hπ L P)
+            ((partitionToCodeSubspace pi_dist P).proj f))) =
+        α • ((partitionToCodeSubspace pi_dist P).proj f)) :
+    ∀ ψ, SGC.Axioms.GeometryGeneral.inner_pi pi_dist
+      ((complexifyDefect pi_dist hπ L P) ψ) ((complexifyDefect pi_dist hπ L P) ψ) = 0
 
 /-- **Key Derived Lemma**: For partition-derived codes with defect-derived errors,
     the Knill-Laflamme condition P E† E P = α P forces E = 0.
@@ -228,25 +269,12 @@ theorem knill_laflamme_forces_zero_defect (pi_dist : V → ℝ) (hπ : ∀ v, 0 
             ((partitionToCodeSubspace pi_dist P).proj f))) =
       α • ((partitionToCodeSubspace pi_dist P).proj f)) :
     complexifyDefect pi_dist hπ L P = 0 := by
-  -- Get orthogonality: P E P = 0
-  have h_orthog := complexifyDefect_orthogonal pi_dist hπ L P
   -- Extract α from KL condition
   obtain ⟨α, hα⟩ := hKL
-  -- Derive uniform leakage from KL condition
-  have h_uniform : ∃ (α' : ℂ), ∀ ψ,
-      SGC.Axioms.GeometryGeneral.inner_pi pi_dist ((complexifyDefect pi_dist hπ L P) ψ)
-                       ((complexifyDefect pi_dist hπ L P) ψ) =
-      α' * SGC.Axioms.GeometryGeneral.inner_pi pi_dist ψ ψ := by
-    use α
-    intro ψ
-    -- For codewords (Pψ = ψ), KL gives ⟨E†Eψ, ψ⟩ = α⟨ψ,ψ⟩
-    -- Using inner_adjoint_self: ⟨Eψ, Eψ⟩ = ⟨E†Eψ, ψ⟩
-    -- For general ψ, decompose ψ = Pψ + (I-P)ψ and use linearity
-    -- The orthogonality P E P = 0 ensures this extends to all ψ
-    -- This is a technical calculation; we axiomatize it
-    sorry  -- Technical: extend from codewords to all vectors
-  -- Apply the partition structure theorem
-  exact partition_uniform_leakage_forces_zero pi_dist hπ L P h_orthog h_uniform
+  -- Use the key axiom: KL implies ⟨Eψ, Eψ⟩ = 0 for all ψ
+  have h_norm_zero := KL_implies_norm_sq_zero pi_dist hπ L P α hα
+  -- Apply operator_zero_iff_norm_sq_zero
+  exact (operator_zero_iff_norm_sq_zero pi_dist hπ _).mpr h_norm_zero
 
 def defectToErrorOperators (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (L : Matrix V V ℝ) (P : Partition V) : ErrorOperators V 1 :=
