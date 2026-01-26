@@ -260,7 +260,11 @@ theorem codeSubspace_proj_selfAdjoint (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi
   exact (SGC.Axioms.GeometryGeneral.isSelfAdjoint_pi_iff pi_dist hπ _).mp h_sa ψ φ
 
 /-- **Structural Property 5**: Orthogonal decomposition of the inner product.
-    For orthogonal projection P: ⟨ψ, ψ⟩ = ⟨Pψ, Pψ⟩ + ⟨(I-P)ψ, (I-P)ψ⟩. -/
+    For orthogonal projection P: ⟨ψ, ψ⟩ = ⟨Pψ, Pψ⟩ + ⟨(I-P)ψ, (I-P)ψ⟩.
+
+    **Proof path**: Use ψ = Pψ + (ψ - Pψ), expand via linearity, and show cross
+    terms vanish because P(ψ - Pψ) = 0 (by idempotence) and P is self-adjoint:
+    ⟨Pψ, ψ - Pψ⟩ = ⟨ψ, P(ψ - Pψ)⟩ = ⟨ψ, 0⟩ = 0. -/
 axiom inner_pi_orthogonal_decomp (pi_dist : V → ℝ) (P : Partition V) (ψ : V → ℂ) :
     let proj := (partitionToCodeSubspace pi_dist P).proj
     SGC.Axioms.GeometryGeneral.inner_pi pi_dist ψ ψ =
