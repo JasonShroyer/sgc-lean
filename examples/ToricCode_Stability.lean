@@ -163,13 +163,34 @@ theorem toric_code_exponential_protection (n : ℕ) (hn : 0 < n)
   use δ / (p * Real.exp (-(n:ℝ)))
   constructor
   · -- Show T ≥ (δ/p) · e^n  (algebraic identity)
-    sorry  -- (δ/p) · e^n = δ / (p · e^{-n}) by exp_neg
+    -- δ / (p · e^{-n}) = δ · e^n / p = (δ/p) · e^n
+    have h_exp_neg : Real.exp (-(n:ℝ)) = 1 / Real.exp n := by
+      rw [Real.exp_neg, inv_eq_one_div]
+    rw [h_exp_neg]
+    have h_pos_exp : 0 < Real.exp (n:ℝ) := Real.exp_pos n
+    have h_pos_p_exp : 0 < p * (1 / Real.exp n) := by
+      apply mul_pos hp
+      apply div_pos one_pos h_pos_exp
+    field_simp
+    -- After field_simp, goal is 1 ≤ 1
+    exact le_refl 1
   · -- Show quantumValidityHorizon ≥ T
-    -- From hℒ: horizon ≥ δ/ε, and from hε_bound: ε ≤ p·e^{-n}
-    -- So horizon ≥ δ/ε ≥ δ/(p·e^{-n}) = T (by monotonicity of division)
     use ℒ
-    -- The chain: hℒ gives ≥ δ/ε, hε_bound gives ε ≤ p·e^{-n}, so δ/ε ≥ δ/(p·e^{-n})
-    sorry  -- Calc proof omitted; key insight: div_le_div + hε_bound
+    -- The chain: hℒ gives ≥ δ/ε, and we need to show this is ≥ our T
+    -- Since ε ≤ p·e^{-n} (from hε_bound), we have δ/ε ≥ δ/(p·e^{-n}) = T
+    calc quantumValidityHorizon (toricPiDist n) ℒ
+            (partitionToCodeSubspace (toricPiDist n) (toricPartition n)) δ
+        ≥ δ / opNorm_pi (toricPiDist n) (toricPiDist_pos n hn)
+            (DefectOperator (toricNoiseGenerator n p) (toricPartition n)
+              (toricPiDist n) (toricPiDist_pos n hn)) := hℒ
+      _ ≥ δ / (p * Real.exp (-(n:ℝ))) := by
+          -- Goal: δ/ε ≥ δ/(p*exp(-n))
+          -- Since ε ≤ p*exp(-n) and both positive, δ/ε ≥ δ/(p*exp(-n))
+          -- (larger denominator → smaller fraction, so smaller denom → larger)
+          have h_pos_denom : 0 < p * Real.exp (-(n:ℝ)) := mul_pos hp (Real.exp_pos _)
+          -- div_le_div_of_le_left : 0 ≤ a → 0 < b → 0 < c → b ≤ c → a/c ≤ a/b
+          rw [ge_iff_le]
+          apply div_le_div_of_nonneg_left (le_of_lt hδ) hε_pos hε_bound
 
 /-! ## Summary
 
