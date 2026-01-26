@@ -187,10 +187,15 @@ axiom complexifyDefect_kills_complement (pi_dist : V → ℝ) (hπ : ∀ v, 0 < 
     (LinearMap.id - (partitionToCodeSubspace pi_dist P).proj) = 0
 
 /-- **Structural Property 2**: The inner product of E†E ψ with ψ equals ‖Eψ‖².
-    This is standard: ⟨E†E ψ, ψ⟩ = ⟨Eψ, Eψ⟩ = ‖Eψ‖². -/
-axiom inner_adjoint_self (pi_dist : V → ℝ) (E : (V → ℂ) →ₗ[ℂ] (V → ℂ)) (ψ : V → ℂ) :
+    This is standard: ⟨E†E ψ, ψ⟩ = ⟨Eψ, Eψ⟩ = ‖Eψ‖².
+
+    **PROVEN** from adjoint_pi_spec: ⟨A†u, v⟩ = ⟨u, Av⟩, setting u = Eψ, v = ψ. -/
+theorem inner_adjoint_self (pi_dist : V → ℝ) (E : (V → ℂ) →ₗ[ℂ] (V → ℂ)) (ψ : V → ℂ) :
     SGC.Axioms.GeometryGeneral.inner_pi pi_dist (adjoint_pi pi_dist E (E ψ)) ψ =
-    SGC.Axioms.GeometryGeneral.inner_pi pi_dist (E ψ) (E ψ)
+    SGC.Axioms.GeometryGeneral.inner_pi pi_dist (E ψ) (E ψ) := by
+  -- Use adjoint_pi_spec: ⟨A†u, v⟩ = ⟨u, Av⟩
+  -- With A = E, u = Eψ, v = ψ: ⟨E†(Eψ), ψ⟩ = ⟨Eψ, Eψ⟩
+  exact SGC.Axioms.GeometryGeneral.adjoint_pi_spec pi_dist E (E ψ) ψ
 
 /-- **Structural Property 3**: An operator is zero iff its norm squared is zero on all inputs.
     More precisely: E = 0 ↔ ∀ ψ, ⟨Eψ, Eψ⟩ = 0. -/

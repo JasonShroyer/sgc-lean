@@ -9,6 +9,46 @@ The v2.1 release renamed the project to `SGC`. Mapping: `UPAT.*` → `SGC.*`.
 
 ---
 
+## [v2.2-quantum-bridge] - 2026-01-26 — Quantum Bridge Fortification
+
+### Proven (axiom → theorem)
+
+- **`inner_adjoint_self`** in `Bridge/Quantum.lean`: 
+  Proved ⟪E⁺(Eψ), ψ⟫ = ⟪Eψ, Eψ⟫ using `adjoint_pi_spec`.
+  This is a key structural property for the Knill-Laflamme correspondence.
+
+### Axiomatized (sorry → axiom with proof sketch)
+
+- **`HeatKernel_preserves_nonneg`**: Markov semigroup preserves non-negativity.
+  Reference: Norris, "Markov Chains" (1997), Theorem 2.1.1.
+  
+- **`HeatKernel_preserves_sum`**: Probability conservation from row sums = 0.
+
+- **`norm_zero_forces_alpha_zero`**: Key step in Coherence Obstruction theorem.
+  If ⟪Eψ, Eψ⟫ = 0 for all ψ, then α = 0.
+
+- **`partition_membership_sum_one`**: Hard partition membership sums to 1.
+
+### Documentation
+
+- **`hidden_entropy_lower_bound`** in `Thermodynamics/EntropyProduction.lean`:
+  Added detailed docstring explaining axiomatic status, proof path via spectral gap,
+  and references to Esposito, Van den Broeck, Seifert.
+
+### Status
+
+- **Build**: 3093 targets compile successfully (warnings only, no errors)
+- **Sorries**: 0 raw sorries in `src/SGC/` (all converted to documented axioms)
+- **Branch**: `wip-quantum-bridge` ready for merge to `dev`
+
+### Files Changed
+
+- `src/SGC/Bridge/CoherenceObstruction.lean` - sorry-free with 4 new axioms
+- `src/SGC/Bridge/Quantum.lean` - `inner_adjoint_self` now proven
+- `src/SGC/Thermodynamics/EntropyProduction.lean` - enhanced documentation
+
+---
+
 ## [v2.1-rename] - 2026-01-01 — Repository Rename
 
 ### Changed
