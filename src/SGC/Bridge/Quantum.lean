@@ -204,12 +204,19 @@ axiom operator_zero_iff_norm_sq_zero (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_
     E = 0 ↔ ∀ ψ, SGC.Axioms.GeometryGeneral.inner_pi pi_dist (E ψ) (E ψ) = 0
 
 /-- **Structural Property 4**: The projection is self-adjoint w.r.t. the weighted inner product.
-    This follows from the projection being orthogonal in the π-weighted sense. -/
-axiom codeSubspace_proj_selfAdjoint (pi_dist : V → ℝ) (P : Partition V) (ψ φ : V → ℂ) :
+    This follows from the projection being orthogonal in the π-weighted sense.
+
+    **PROVEN** from CodeSubspace.self_adjoint field and isSelfAdjoint_pi_iff. -/
+theorem codeSubspace_proj_selfAdjoint (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (P : Partition V) (ψ φ : V → ℂ) :
     SGC.Axioms.GeometryGeneral.inner_pi pi_dist
       ((partitionToCodeSubspace pi_dist P).proj ψ) φ =
     SGC.Axioms.GeometryGeneral.inner_pi pi_dist
-      ψ ((partitionToCodeSubspace pi_dist P).proj φ)
+      ψ ((partitionToCodeSubspace pi_dist P).proj φ) := by
+  -- partitionToCodeSubspace returns a CodeSubspace with self_adjoint field
+  have h_sa := (partitionToCodeSubspace pi_dist P).self_adjoint
+  -- Use isSelfAdjoint_pi_iff to get the inner product characterization
+  exact (SGC.Axioms.GeometryGeneral.isSelfAdjoint_pi_iff pi_dist hπ _).mp h_sa ψ φ
 
 /-- **Structural Property 5**: Orthogonal decomposition of the inner product.
     For orthogonal projection P: ⟨ψ, ψ⟩ = ⟨Pψ, Pψ⟩ + ⟨(I-P)ψ, (I-P)ψ⟩. -/
