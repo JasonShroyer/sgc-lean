@@ -27,8 +27,9 @@ import SGC.Thermodynamics.EntropyProduction
 -- Variational Pillar: Principle of Least Action
 import SGC.Variational.LeastAction
 
--- Bridge Pillar: Continuum Limits
+-- Bridge Pillar: Continuum Limits and Quantum Correspondence
 import SGC.Bridge.Discretization
+import SGC.Bridge.Quantum
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- SGC Extensions: The Constructive Physics Layer
