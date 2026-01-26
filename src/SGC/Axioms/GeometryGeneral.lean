@@ -51,6 +51,55 @@ lemma inner_pi_conj_symm (pi_dist : V → ℝ) (u v : V → 𝕜) :
     inner_pi pi_dist u v = star (inner_pi pi_dist v u) := by
   simp [inner_pi, mul_assoc, mul_left_comm, mul_comm]
 
+/-! ## Hermitian Operators
+
+For quantum applications, we need operators that are self-adjoint with respect to
+the weighted Hermitian inner product. Over ℂ, this corresponds to Hermitian matrices;
+over ℝ, this reduces to symmetric matrices.
+-/
+
+/-- An operator A is self-adjoint w.r.t. the weighted inner product if ⟨Au, v⟩ = ⟨u, Av⟩.
+    For quantum Hamiltonians, this ensures real eigenvalues and orthogonal eigenvectors. -/
+def IsSelfAdjoint_pi (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) : Prop :=
+  ∀ u v, inner_pi pi_dist (A u) v = inner_pi pi_dist u (A v)
+
+/-- An operator A is positive w.r.t. the weighted inner product if ⟨Au, u⟩ ≥ 0 for all u.
+    Combined with self-adjointness, this gives a positive semidefinite operator. -/
+def IsPositive_pi (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) : Prop :=
+  ∀ u, 0 ≤ RCLike.re (inner_pi pi_dist (A u) u)
+
+/-- For self-adjoint operators, ⟨Au, u⟩ is real-valued (imaginary part is zero).
+    Proof: ⟨Au,u⟩ = star⟨u,Au⟩ = star⟨Au,u⟩ by self-adjointness, so z = star z. -/
+axiom inner_self_adjoint_real (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜))
+    (hA : IsSelfAdjoint_pi pi_dist A) (u : V → 𝕜) :
+    RCLike.im (inner_pi pi_dist (A u) u) = 0
+
+/-! ## Spectral Gap (Generalized)
+
+The spectral gap is the infimum of the Rayleigh quotient ⟨Hu,u⟩/⟨u,u⟩ over
+vectors orthogonal to the constant function. -/
+
+/-- The spectral gap of a self-adjoint operator H, defined as the infimum of the
+    Rayleigh quotient on vectors orthogonal to the constant function. -/
+noncomputable def SpectralGap_pi (pi_dist : V → ℝ) (H : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) : ℝ :=
+  sInf { r | ∃ v : V → 𝕜, v ≠ 0 ∧ inner_pi pi_dist v constant_vec_one = 0 ∧
+    r = RCLike.re (inner_pi pi_dist (H v) v) / norm_sq_pi pi_dist v }
+
+/-! ## Trace Operations
+
+For density matrices, we need trace and trace norm. -/
+
+/-- The weighted trace: Tr_π(A) = Σ_x π(x) A(x,x).
+    For density matrices, this should equal 1. -/
+def trace_pi (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) : 𝕜 :=
+  ∑ x, (pi_dist x : 𝕜) * A (fun y => if y = x then 1 else 0) x
+
+/-- A density matrix is a positive operator with trace 1. -/
+structure IsDensityMatrix (pi_dist : V → ℝ) (ρ : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) : Prop where
+  self_adjoint : IsSelfAdjoint_pi pi_dist ρ
+  positive : IsPositive_pi pi_dist ρ
+  trace_one : trace_pi pi_dist ρ = 1
+
 end GeometryGeneral
 end Axioms
 end SGC
