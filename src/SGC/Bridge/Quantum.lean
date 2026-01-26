@@ -186,6 +186,23 @@ axiom complexifyDefect_kills_complement (pi_dist : V → ℝ) (hπ : ∀ v, 0 < 
     (complexifyDefect pi_dist hπ L P) ∘ₗ
     (LinearMap.id - (partitionToCodeSubspace pi_dist P).proj) = 0
 
+/-- **Structural Property 1c**: P E† P = 0 follows from P E P = 0.
+
+    **Derivation**: Taking adjoint of P E P = 0:
+    - (P ∘ E ∘ P)† = P† ∘ E† ∘ P† (by `adjoint_pi_comp` twice)
+    - = P ∘ E† ∘ P (since P is self-adjoint: P† = P)
+    - = (P E P)† = 0† = 0 (by `adjoint_pi_zero`)
+
+    This is a key step for proving that the KL condition forces α = 0.
+
+    **Status**: Derivable from `complexifyDefect_orthogonal`, `adjoint_pi_comp`,
+    `adjoint_pi_zero`, and `CodeSubspace.self_adjoint`. -/
+axiom adjoint_defect_orthogonal (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (L : Matrix V V ℝ) (P : Partition V) :
+    (partitionToCodeSubspace pi_dist P).proj ∘ₗ
+    (adjoint_pi pi_dist (complexifyDefect pi_dist hπ L P)) ∘ₗ
+    (partitionToCodeSubspace pi_dist P).proj = 0
+
 /-- **Structural Property 2**: The inner product of E†E ψ with ψ equals ‖Eψ‖².
     This is standard: ⟨E†E ψ, ψ⟩ = ⟨Eψ, Eψ⟩ = ‖Eψ‖².
 
