@@ -8,6 +8,9 @@ import SGC.Information.Equivalence
 import SGC.Observables.ValidityHorizon
 import SGC.Observables.TopologicalPersistence
 import SGC.Observables.EnergyUnification
+import SGC.Bridge.Quantum
+import SGC.Bridge.CoherenceObstruction
+import SGC.Axioms.GeometryGeneral
 import Mathlib.LinearAlgebra.Matrix.Notation
 
 open Matrix SGC Real SGC.Spectral SGC.Approximate
@@ -210,3 +213,8 @@ This runs during elaboration, so interpreter users see it.
 -/
 
 #eval IO.println "✓ SGC sanity checks passed. All structures are non-vacuous."
+
+/-- Main entry point for the test executable. -/
+def main : IO Unit := do
+  runPropertyTests
+  IO.println "\n✓ SGC test suite completed successfully."

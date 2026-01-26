@@ -14,4 +14,3 @@ lean_lib «SGC» where
 
 lean_exe «test» where
   root := `test.Main
-
