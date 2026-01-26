@@ -360,7 +360,17 @@ axiom hidden_entropy_bounded_by_defect
     c·ε² ≤ σ_hid ≤ C·ε², meaning prediction error and dissipation are equivalent.
 
     **Axiomatized**: Requires showing that trajectory divergence causes entropy production.
-    The constant c depends on the "mixing" properties of L. -/
+    The constant c depends on the "mixing" properties of L.
+
+    **Note**: This lower bound is currently axiomatic. In a full derivation,
+    this would follow from spectral gap assumptions: mixing implies that
+    prediction error causes dissipation. The proof would use:
+    1. The defect D = (I-Π)LΠ measures "leakage" from the coarse space
+    2. Leakage creates probability currents not captured by the reduced dynamics
+    3. These hidden currents contribute to entropy production σ_hid
+    4. Under mixing assumptions, the contribution is bounded below by c·‖D‖² ~ c·ε²
+
+    **Reference**: Esposito & Van den Broeck (2010), Seifert (2012) -/
 axiom hidden_entropy_lower_bound
     (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x)
     (ε : ℝ) (hε : 0 < ε) (hL : Approximate.IsApproxLumpable L P pi_dist hπ ε)
