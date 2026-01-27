@@ -155,18 +155,18 @@ structure ClassicalEmbedding (V : Type*) [Fintype V] [DecidableEq V] where
     4. Since the code subspace is non-trivial, ∃ φ with ⟨φ, φ⟩ > 0
     5. Combining: 0 = α⟨φ, φ⟩, so α = 0 -/
 axiom norm_zero_forces_alpha_zero (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (L : Matrix V V ℝ) (P : Partition V) (α : ℂ)
+    (L : Matrix V V ℝ) (P : Partition V) (α : ℝ)
     (h_norm_zero : ∀ ψ, SGC.Axioms.GeometryGeneral.inner_pi pi_dist
       ((complexifyDefect pi_dist hπ L P) ψ) ((complexifyDefect pi_dist hπ L P) ψ) = 0) :
     α = 0
 
 theorem classical_embedding_forces_alpha_zero (emb : ClassicalEmbedding V) :
-    ∀ (α : ℂ),
+    ∀ (α : ℝ),
     (∀ f, (partitionToCodeSubspace emb.pi_dist emb.partition).proj
       ((adjoint_pi emb.pi_dist (complexifyDefect emb.pi_dist emb.hπ emb.generator emb.partition))
         ((complexifyDefect emb.pi_dist emb.hπ emb.generator emb.partition)
           ((partitionToCodeSubspace emb.pi_dist emb.partition).proj f))) =
-      α • (partitionToCodeSubspace emb.pi_dist emb.partition).proj f)
+      (α : ℂ) • (partitionToCodeSubspace emb.pi_dist emb.partition).proj f)
     → α = 0 := by
   intro α hKL
   -- This follows from KL_implies_norm_sq_zero and the partition structure
@@ -175,13 +175,15 @@ theorem classical_embedding_forces_alpha_zero (emb : ClassicalEmbedding V) :
   exact norm_zero_forces_alpha_zero emb.pi_dist emb.hπ emb.generator emb.partition α h_norm_zero
 
 /-- **Corollary**: Classical embeddings cannot have coherent backaction. -/
-theorem classical_no_coherent_backaction (emb : ClassicalEmbedding V) (α : ℂ) :
+theorem classical_no_coherent_backaction (emb : ClassicalEmbedding V) (α : ℝ) :
     ¬ HasCoherentBackaction emb.pi_dist
       (partitionToCodeSubspace emb.pi_dist emb.partition)
-      (complexifyDefect emb.pi_dist emb.hπ emb.generator emb.partition) α := by
+      (complexifyDefect emb.pi_dist emb.hπ emb.generator emb.partition) (α : ℂ) := by
   intro ⟨hα_ne, hKL⟩
   have hα_zero := classical_embedding_forces_alpha_zero emb α hKL
-  exact hα_ne hα_zero
+  -- hα_zero : α = 0, but hα_ne expects (α : ℂ) ≠ 0
+  have hα_complex_zero : (α : ℂ) = 0 := by simp [hα_zero]
+  exact hα_ne hα_complex_zero
 
 /-! ## 3. Soft Partitions: The Fuzzy Extension -/
 
