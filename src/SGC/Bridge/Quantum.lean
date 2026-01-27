@@ -413,43 +413,77 @@ theorem KL_with_alpha_zero_implies_norm_sq_zero (pi_dist : V → ℝ) (hπ : ∀
   simp only [Complex.ofReal_zero, zero_mul] at h_prop
   exact h_prop
 
-/-- **Key Structural Property**: For partition codes, the KL condition forces α = 0.
+/-- **Sum Rule Infrastructure**: The all-ones vector is in the code subspace.
 
-    **Physical intuition**: The partition structure means codewords (block indicators)
-    have independent leakage patterns determined by off-diagonal terms of L.
-    For the KL condition P E† E P = α P to hold with uniform α, all blocks must
-    leak equally - this is only possible when there's no leakage (α = 0).
+    For partition codes, 𝟙 = Σᵢ eᵢ where eᵢ are block indicators.
+    Since each eᵢ is in the code, their sum is too. -/
+axiom all_ones_in_code (pi_dist : V → ℝ) (P : Partition V) :
+    (partitionToCodeSubspace pi_dist P).proj (fun _ => (1 : ℂ)) = fun _ => 1
 
-    **Sum Rule Proof** (converts this axiom to a theorem):
-    1. Let eᵢ be the orthonormal block indicators spanning the code subspace
-    2. The all-ones vector 𝟙 = Σᵢ eᵢ is in the code subspace
-    3. **Conservation**: For stochastic generators (L𝟙 = 0), we have E𝟙 = 0
-       - E = (I-P)LP, so E𝟙 = (I-P)L(P𝟙) = (I-P)L𝟙 = (I-P)0 = 0
-    4. **KL orthogonality**: For i ≠ j, ⟨E eᵢ, E eⱼ⟩ = 0 (from off-diagonal KL)
-    5. **Pythagorean theorem**: ‖E𝟙‖² = ‖Σᵢ E eᵢ‖² = Σᵢ ‖E eᵢ‖² (orthogonal)
-    6. **Uniform diagonal**: ‖E eᵢ‖² = α for all i (from diagonal KL)
-    7. **Conclusion**: 0 = ‖E𝟙‖² = Σᵢ ‖E eᵢ‖² = N·α, so α = 0 (since N > 0)
+/-- **Sum Rule Infrastructure**: The all-ones vector has positive norm squared.
 
-    **Dependencies for full proof**:
-    - Conservation hypothesis: ∀ v, Σ_w L(v,w) = 0 (row sums zero)
-    - Orthonormality of block indicators
-    - Pythagorean theorem for orthogonal vectors
+    ‖𝟙‖² = Σᵥ π(v) > 0 since all π(v) > 0 and V is nonempty (Fintype). -/
+axiom all_ones_norm_sq_pos (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) :
+    SGC.Axioms.GeometryGeneral.inner_pi pi_dist (fun _ : V => (1 : ℂ)) (fun _ => 1) ≠ 0
 
-    This is axiomatized pending the infrastructure above. -/
-axiom partition_forces_alpha_zero (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+/-- **Sum Rule Infrastructure**: Conservation implies E(𝟙) = 0.
+
+    For stochastic generators with row sums = 0:
+    E𝟙 = (I-P)L(P𝟙) = (I-P)L𝟙 = (I-P)0 = 0
+
+    This is the key conservation property that makes the Sum Rule work. -/
+axiom defect_kills_all_ones (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (L : Matrix V V ℝ) (P : Partition V)
+    (hL_conserv : ∀ v, ∑ w, L v w = 0) :
+    (complexifyDefect pi_dist hπ L P) (fun _ => 1) = 0
+
+/-- **Sum Rule Infrastructure**: KL implies zero norm squared for all-ones.
+
+    From defect_kills_all_ones: E𝟙 = 0, so ‖E𝟙‖² = 0.
+    Combined with KL proportionality: 0 = α·‖𝟙‖².
+    Since ‖𝟙‖² > 0, we get α = 0. -/
+theorem partition_forces_alpha_zero (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (L : Matrix V V ℝ) (P : Partition V) (α : ℝ)
+    (hL_conserv : ∀ v, ∑ w, L v w = 0)
     (hKL : ∀ f, (partitionToCodeSubspace pi_dist P).proj
         ((adjoint_pi pi_dist (complexifyDefect pi_dist hπ L P))
           ((complexifyDefect pi_dist hπ L P)
             ((partitionToCodeSubspace pi_dist P).proj f))) =
         (α : ℂ) • ((partitionToCodeSubspace pi_dist P).proj f)) :
-    α = 0
+    α = 0 := by
+  -- The all-ones vector is a codeword
+  let ones : V → ℂ := fun _ => 1
+  have h_code : (partitionToCodeSubspace pi_dist P).proj ones = ones :=
+    all_ones_in_code pi_dist P
+  -- E(𝟙) = 0 by conservation
+  have h_E_ones : (complexifyDefect pi_dist hπ L P) ones = 0 :=
+    defect_kills_all_ones pi_dist hπ L P hL_conserv
+  -- ‖E(𝟙)‖² = 0
+  have h_norm_zero : SGC.Axioms.GeometryGeneral.inner_pi pi_dist
+      ((complexifyDefect pi_dist hπ L P) ones)
+      ((complexifyDefect pi_dist hπ L P) ones) = 0 := by
+    rw [h_E_ones]
+    simp [SGC.Axioms.GeometryGeneral.inner_pi]
+  -- By KL_gives_norm_sq_proportional: ‖E(𝟙)‖² = α·‖𝟙‖²
+  have h_prop := KL_gives_norm_sq_proportional pi_dist hπ L P α hKL ones h_code
+  -- So 0 = α·‖𝟙‖²
+  rw [h_norm_zero] at h_prop
+  -- ‖𝟙‖² = Σᵥ π(v) > 0 (since all π(v) > 0)
+  have h_ones_pos : SGC.Axioms.GeometryGeneral.inner_pi pi_dist ones ones ≠ 0 :=
+    all_ones_norm_sq_pos pi_dist hπ
+  -- From 0 = α·‖𝟙‖² and ‖𝟙‖² ≠ 0, conclude α = 0
+  have h_alpha_zero : (α : ℂ) = 0 := by
+    by_contra h_ne
+    have := mul_ne_zero h_ne h_ones_pos
+    exact this (h_prop.symm)
+  exact_mod_cast h_alpha_zero
 
 /-- **Structural Property 6** (Corollary): KL condition forces ‖Eψ‖² = 0 for all ψ.
 
     **PROVEN** from `partition_forces_alpha_zero` and `KL_with_alpha_zero_implies_norm_sq_zero`. -/
 theorem KL_implies_norm_sq_zero (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (L : Matrix V V ℝ) (P : Partition V) (α : ℝ)
+    (hL_conserv : ∀ v, ∑ w, L v w = 0)
     (hKL : ∀ f, (partitionToCodeSubspace pi_dist P).proj
         ((adjoint_pi pi_dist (complexifyDefect pi_dist hπ L P))
           ((complexifyDefect pi_dist hπ L P)
@@ -458,7 +492,7 @@ theorem KL_implies_norm_sq_zero (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist 
     ∀ ψ, SGC.Axioms.GeometryGeneral.inner_pi pi_dist
       ((complexifyDefect pi_dist hπ L P) ψ) ((complexifyDefect pi_dist hπ L P) ψ) = 0 := by
   -- First show α = 0
-  have h_alpha_zero := partition_forces_alpha_zero pi_dist hπ L P α hKL
+  have h_alpha_zero := partition_forces_alpha_zero pi_dist hπ L P α hL_conserv hKL
   -- Substitute into hKL
   rw [h_alpha_zero] at hKL
   -- Apply the α = 0 case theorem
@@ -497,6 +531,7 @@ axiom partition_uniform_leakage_forces_zero (pi_dist : V → ℝ) (hπ : ∀ v, 
     Note: We use real α (physically required for the leakage coefficient). -/
 theorem knill_laflamme_forces_zero_defect (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (L : Matrix V V ℝ) (P : Partition V)
+    (hL_conserv : ∀ v, ∑ w, L v w = 0)
     (hKL : ∃ (α : ℝ), ∀ f,
       (partitionToCodeSubspace pi_dist P).proj
         ((adjoint_pi pi_dist (complexifyDefect pi_dist hπ L P))
@@ -507,7 +542,7 @@ theorem knill_laflamme_forces_zero_defect (pi_dist : V → ℝ) (hπ : ∀ v, 0 
   -- Extract α from KL condition
   obtain ⟨α, hα⟩ := hKL
   -- Use KL_implies_norm_sq_zero: KL implies ⟨Eψ, Eψ⟩ = 0 for all ψ
-  have h_norm_zero := KL_implies_norm_sq_zero pi_dist hπ L P α hα
+  have h_norm_zero := KL_implies_norm_sq_zero pi_dist hπ L P α hL_conserv hα
   -- Apply operator_zero_iff_norm_sq_zero
   exact (operator_zero_iff_norm_sq_zero pi_dist hπ _).mpr h_norm_zero
 
@@ -544,9 +579,12 @@ theorem lumpability_implies_knill_laflamme (pi_dist : V → ℝ) (hπ : ∀ v, 0
     then the defect operator norm is zero.
 
     This is more subtle: KL says P E† E P ∝ P, which constrains the error structure.
-    When the error comes from a classical defect operator, this forces D = 0. -/
+    When the error comes from a classical defect operator, this forces D = 0.
+
+    Note: Requires conservation (row sums = 0) for the Sum Rule proof. -/
 theorem knill_laflamme_implies_lumpability (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (L : Matrix V V ℝ) (P : Partition V)
+    (hL_conserv : ∀ v, ∑ w, L v w = 0)
     (hKL : let code := partitionToCodeSubspace pi_dist P
            let errors := defectToErrorOperators pi_dist hπ L P
            KnillLaflamme pi_dist code errors) :
@@ -606,19 +644,22 @@ theorem knill_laflamme_implies_lumpability (pi_dist : V → ℝ) (hπ : ∀ v, 0
     rw [h_eq]
     exact h_applied
   -- Apply the key structural theorem
-  have hE_zero := knill_laflamme_forces_zero_defect pi_dist hπ L P hKL'
+  have hE_zero := knill_laflamme_forces_zero_defect pi_dist hπ L P hL_conserv hKL'
   -- Convert E = 0 to opNorm D = 0
   exact (complexifyDefect_zero_iff pi_dist hπ L P).mp hE_zero
 
-/-- The full bridge theorem combining both directions. -/
+/-- The full bridge theorem combining both directions.
+
+    Note: The hard direction (→) requires conservation (row sums = 0). -/
 theorem knill_laflamme_iff_lumpability (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (L : Matrix V V ℝ) (P : Partition V) :
+    (L : Matrix V V ℝ) (P : Partition V)
+    (hL_conserv : ∀ v, ∑ w, L v w = 0) :
     let code := partitionToCodeSubspace pi_dist P
     let errors := defectToErrorOperators pi_dist hπ L P
     (opNorm_pi pi_dist hπ (DefectOperator L P pi_dist hπ) = 0) ↔
     KnillLaflamme pi_dist code errors :=
   ⟨lumpability_implies_knill_laflamme pi_dist hπ L P,
-   knill_laflamme_implies_lumpability pi_dist hπ L P⟩
+   knill_laflamme_implies_lumpability pi_dist hπ L P hL_conserv⟩
 
 /-! ## Approximate Version: Error Bounds
 

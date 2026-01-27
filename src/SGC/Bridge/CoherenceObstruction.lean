@@ -139,6 +139,8 @@ structure ClassicalEmbedding (V : Type*) [Fintype V] [DecidableEq V] where
   hπ : ∀ v, 0 < pi_dist v
   partition : Partition V
   generator : Matrix V V ℝ
+  -- Conservation: row sums = 0 (stochastic generator)
+  conserv : ∀ v, ∑ w, generator v w = 0
   -- The complexified defect is the error operator
   error_is_defect : (V → ℂ) →ₗ[ℂ] (V → ℂ) := complexifyDefect pi_dist hπ generator partition
 
@@ -170,7 +172,7 @@ theorem classical_embedding_forces_alpha_zero (emb : ClassicalEmbedding V) :
     → α = 0 := by
   intro α hKL
   -- This follows from KL_implies_norm_sq_zero and the partition structure
-  have h_norm_zero := KL_implies_norm_sq_zero emb.pi_dist emb.hπ emb.generator emb.partition α hKL
+  have h_norm_zero := KL_implies_norm_sq_zero emb.pi_dist emb.hπ emb.generator emb.partition α emb.conserv hKL
   -- Apply the axiom that norm-zero forces α = 0
   exact norm_zero_forces_alpha_zero emb.pi_dist emb.hπ emb.generator emb.partition α h_norm_zero
 
