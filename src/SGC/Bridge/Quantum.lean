@@ -562,15 +562,18 @@ theorem knill_laflamme_implies_lumpability (pi_dist : V → ℝ) (hπ : ∀ v, 0
       -- Use inner_self_adjoint_real: for self-adjoint A, Im⟨Au, u⟩ = 0
       have h_im_zero := SGC.Axioms.GeometryGeneral.inner_self_adjoint_real
         pi_dist (adjoint_pi pi_dist E ∘ₗ E) h_sa
-      -- For any non-zero codeword g:
-      -- ⟨P E† E P g, g⟩ = α⟨g, g⟩ (from KL)
-      -- ⟨(E† ∘ E) g, g⟩ has Im = 0 (by inner_self_adjoint_real)
-      -- ⟨g, g⟩ is real (norm squared)
-      -- Therefore α is real
-      -- The KL coefficient is real by self-adjointness of E†E
-      -- Using inner_self_adjoint_real and the fact that ⟨E†Eg, g⟩ = ‖Eg‖² is real
-      -- Combined with ⟨αg, g⟩ = α⟨g, g⟩ where ⟨g,g⟩ is real, this forces Im(α) = 0
-      -- Technical proof omitted - follows from h_im_zero and inner product algebra
+      -- The argument: pick test function f, use KL condition + self-adjointness
+      -- ⟨(E†E) f, f⟩ has Im = 0 (by h_im_zero)
+      -- KL says P(E†E(Pf)) = α(Pf), take inner with f:
+      -- ⟨P(E†E(Pf)), f⟩ = ⟨α(Pf), f⟩ = (α 0 0) * ⟨Pf, f⟩
+      -- For codeword f (Pf = f): ⟨E†Ef, f⟩ = (α 0 0) * ⟨f, f⟩
+      -- Both ⟨E†Ef, f⟩ and ⟨f, f⟩ are real, so (α 0 0) is real
+      -- Formalize: Im((α 0 0) * ⟨f, f⟩) = Im(α 0 0) * Re(⟨f, f⟩) = 0
+      -- For f with ⟨f, f⟩ ≠ 0, this gives Im(α 0 0) = 0
+      -- The extraction requires showing that for codeword f with ⟨f,f⟩ ≠ 0:
+      -- ⟨E†E f, f⟩ = (α 0 0) * ⟨f, f⟩, and both ⟨E†E f, f⟩ and ⟨f,f⟩ are real
+      -- Therefore Im(α 0 0) = 0
+      -- This follows from h_im_zero applied to a suitable codeword
       sorry
     -- With α 0 0 real, we have (α 0 0).re = α 0 0
     have h_eq : ((α 0 0).re : ℂ) = α 0 0 := by
