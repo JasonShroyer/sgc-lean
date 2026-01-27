@@ -1,5 +1,6 @@
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Data.Real.Basic
+import SGC.Axioms.WeightedSpace
 
 noncomputable section
 
@@ -273,6 +274,70 @@ axiom traceDistance_classical_eq_TV (pi_dist : V → ℝ) (ρ σ : (V → 𝕜) 
     traceDistance_pi pi_dist ρ σ =
       (1/2) * ∑ x, |RCLike.re (ρ (fun y => if y = x then 1 else 0) x) -
                    RCLike.re (σ (fun y => if y = x then 1 else 0) x)|
+
+/-! ## Complex Specialization via WeightedSpace
+
+For the complex case (𝕜 = ℂ), we can use the `WeightedSpace` infrastructure to prove
+properties that are axiomatized in the general case. This section provides the bridge. -/
+
+section ComplexBridge
+
+variable {V : Type*} [Fintype V] [DecidableEq V]
+
+/-- Convert a function V → ℂ to WeightedSpace V. -/
+@[inline] def toWeightedSpace (f : V → ℂ) : WeightedSpace V := WeightedSpace.mk f
+
+/-- Convert WeightedSpace V back to V → ℂ. -/
+@[inline] def fromWeightedSpace (f : WeightedSpace V) : V → ℂ := f
+
+/-- The inner product on V → ℂ equals the weighted inner product on WeightedSpace V. -/
+theorem inner_pi_eq_weightedInner (pi_dist : V → ℝ) (u v : V → ℂ) :
+    inner_pi pi_dist u v = WeightedSpace.weightedInner pi_dist (toWeightedSpace u) (toWeightedSpace v) := by
+  unfold inner_pi WeightedSpace.weightedInner toWeightedSpace WeightedSpace.mk
+  rfl
+
+/-- **THEOREM** (replaces axiom for ℂ): The weighted inner product is non-degenerate. -/
+theorem inner_pi_nondegenerate_complex (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) (x : V → ℂ) :
+    (∀ y, inner_pi pi_dist x y = 0) → x = 0 := by
+  intro h
+  have h' : ∀ y : WeightedSpace V, WeightedSpace.weightedInner pi_dist (toWeightedSpace x) y = 0 := by
+    intro y
+    have := h (fromWeightedSpace y)
+    rw [inner_pi_eq_weightedInner] at this
+    convert this
+  have := WeightedSpace.weightedInner_nondegenerate pi_dist hπ (toWeightedSpace x) h'
+  exact this
+
+/-- **THEOREM** (replaces axiom for ℂ): Two operators equal if they produce equal inner products. -/
+theorem linearMap_ext_inner_complex (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (A B : (V → ℂ) →ₗ[ℂ] (V → ℂ)) :
+    (∀ u v, inner_pi pi_dist (A u) v = inner_pi pi_dist (B u) v) → A = B := by
+  intro h
+  apply LinearMap.ext
+  intro f
+  -- Show A f - B f = 0 by non-degeneracy, then conclude A f = B f
+  have h_diff : A f - B f = 0 := by
+    apply inner_pi_nondegenerate_complex pi_dist hπ
+    intro v
+    have h1 := h f v
+    calc inner_pi pi_dist (A f - B f) v
+        = inner_pi pi_dist (A f) v + inner_pi pi_dist ((-1 : ℂ) • B f) v := by
+          rw [sub_eq_add_neg, ← neg_one_smul ℂ (B f), inner_pi_add_left]
+        _ = inner_pi pi_dist (A f) v + star (-1 : ℂ) * inner_pi pi_dist (B f) v := by
+          rw [inner_pi_smul_left]
+        _ = inner_pi pi_dist (A f) v - inner_pi pi_dist (B f) v := by
+          simp only [star_neg, star_one, neg_mul, one_mul]; ring
+        _ = 0 := by rw [h1, sub_self]
+  simp only [sub_eq_zero] at h_diff
+  exact h_diff
+
+/-- **THEOREM** (replaces axiom for ℂ): For any vector, ⟨f, f⟩ is real. -/
+theorem inner_self_real_complex (pi_dist : V → ℝ) (f : V → ℂ) :
+    RCLike.im (inner_pi pi_dist f f) = 0 := by
+  rw [inner_pi_eq_weightedInner]
+  exact WeightedSpace.weightedInner_self_real pi_dist (toWeightedSpace f)
+
+end ComplexBridge
 
 end GeometryGeneral
 end Axioms
