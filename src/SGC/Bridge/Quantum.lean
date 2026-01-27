@@ -533,17 +533,51 @@ theorem knill_laflamme_implies_lumpability (pi_dist : V → ℝ) (hπ : ∀ v, 0
           ((complexifyDefect pi_dist hπ L P)
             ((partitionToCodeSubspace pi_dist P).proj f))) =
       (α' : ℂ) • ((partitionToCodeSubspace pi_dist P).proj f) := by
-    -- The KL coefficient must be real (positive semidefiniteness of E†E)
-    -- For now, axiomatize this physical constraint
+    -- The KL coefficient must be real because ⟨E†E ψ, ψ⟩ = ‖Eψ‖² is real
     use (α 0 0).re  -- Extract real part
     intro f
     have h := hα 0 0
     simp only [defectToErrorOperators] at h
     have h_applied := congrFun (congrArg DFunLike.coe h) f
     simp only [LinearMap.comp_apply, LinearMap.smul_apply] at h_applied
-    -- Need: α 0 0 is real, so (α 0 0).re = α 0 0
-    -- This follows from E†E being positive semidefinite
-    sorry  -- Technical: KL coefficient is real
+    -- The KL condition gives α 0 0 • (P f) = P E† E P f
+    -- For codeword ψ: ⟨α ψ, ψ⟩ = ⟨E† E ψ, ψ⟩ = ⟨Eψ, Eψ⟩ = ‖Eψ‖² (real!)
+    -- So α must be real. We use inner_adjoint_self to establish this.
+    -- Since ⟨E†E ψ, ψ⟩ = ‖Eψ‖² ∈ ℝ and ⟨α ψ, ψ⟩ = α ‖ψ‖², we get α ∈ ℝ.
+    -- Formally: (α 0 0).im = 0, so α 0 0 = (α 0 0).re
+    -- The imaginary part is zero by the real-valuedness of ‖Eψ‖²
+    have h_real : (α 0 0).im = 0 := by
+      -- Key insight: ⟨E†E f, f⟩ = ⟨Ef, Ef⟩ by inner_adjoint_self
+      -- ⟨Ef, Ef⟩ is real (it's a norm squared)
+      -- The KL condition equates this to α⟨f, f⟩
+      -- Since ⟨f, f⟩ is also real, α must be real
+      --
+      -- E†E is self-adjoint: (E†E)† = E†E
+      have E := complexifyDefect pi_dist hπ L P
+      have h_sa : SGC.Axioms.GeometryGeneral.IsSelfAdjoint_pi pi_dist
+          (adjoint_pi pi_dist E ∘ₗ E) := by
+        unfold SGC.Axioms.GeometryGeneral.IsSelfAdjoint_pi
+        rw [SGC.Axioms.GeometryGeneral.adjoint_pi_comp]
+        rw [SGC.Axioms.GeometryGeneral.adjoint_pi_involutive]
+      -- Use inner_self_adjoint_real: for self-adjoint A, Im⟨Au, u⟩ = 0
+      have h_im_zero := SGC.Axioms.GeometryGeneral.inner_self_adjoint_real
+        pi_dist (adjoint_pi pi_dist E ∘ₗ E) h_sa
+      -- For any non-zero codeword g:
+      -- ⟨P E† E P g, g⟩ = α⟨g, g⟩ (from KL)
+      -- ⟨(E† ∘ E) g, g⟩ has Im = 0 (by inner_self_adjoint_real)
+      -- ⟨g, g⟩ is real (norm squared)
+      -- Therefore α is real
+      -- The KL coefficient is real by self-adjointness of E†E
+      -- Using inner_self_adjoint_real and the fact that ⟨E†Eg, g⟩ = ‖Eg‖² is real
+      -- Combined with ⟨αg, g⟩ = α⟨g, g⟩ where ⟨g,g⟩ is real, this forces Im(α) = 0
+      -- Technical proof omitted - follows from h_im_zero and inner product algebra
+      sorry
+    -- With α 0 0 real, we have (α 0 0).re = α 0 0
+    have h_eq : ((α 0 0).re : ℂ) = α 0 0 := by
+      rw [Complex.ext_iff]
+      simp [h_real]
+    rw [h_eq]
+    exact h_applied
   -- Apply the key structural theorem
   have hE_zero := knill_laflamme_forces_zero_defect pi_dist hπ L P hKL'
   -- Convert E = 0 to opNorm D = 0
