@@ -4,7 +4,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Date** | January 22, 2026 |
+| **Date** | January 27, 2026 |
 | **Status** | ✅ VERIFIED CORE (100%) + ⚠️ AXIOMATIC EXTENSIONS + 🧪 OBSERVABLES (Phase 1) |
 | **Lean Version** | Lean 4 |
 | **Mathlib** | v4.25.2 |
@@ -162,10 +162,52 @@ non-normal systems (shear flows) can have `Defect > 0` (transient growth) even w
 |--------|------|--------------|
 | **LeastAction** | `src/SGC/Variational/LeastAction.lean` | `least_action_maximizes_drift`, `variational_drift_optimality` |
 
-### Bridge Pillar (Discrete Framework)
+### Bridge Pillar (Classical-Quantum Correspondence)
+
+#### Discretization Module
 | Module | Path | Key Definitions |
 |--------|------|-----------------|
 | **Discretization** | `src/SGC/Bridge/Discretization.lean` | `GapConsistent`, `DiscretizationTheorem` |
+
+#### Quantum Bridge Module (January 2026)
+
+The Quantum Bridge establishes a formal correspondence between classical Markov chain 
+lumpability and quantum error correction via the Knill-Laflamme conditions.
+
+| Module | Path | Key Theorems | Status |
+|--------|------|--------------|--------|
+| **Quantum** | `src/SGC/Bridge/Quantum.lean` | `knill_laflamme_forces_zero_defect` | ✅ Verified |
+| **Quantum** | `src/SGC/Bridge/Quantum.lean` | `partition_forces_alpha_zero` | ✅ Verified |
+| **Quantum** | `src/SGC/Bridge/Quantum.lean` | `all_ones_in_code` | ✅ Verified |
+| **Quantum** | `src/SGC/Bridge/Quantum.lean` | `defect_kills_all_ones` | ✅ Verified |
+| **Quantum** | `src/SGC/Bridge/Quantum.lean` | `operator_zero_iff_norm_sq_zero` | ✅ Verified (was axiom) |
+
+**Main Result** ("No Coherent Backaction"):
+For a classical stochastic generator L with conservation (∑ⱼ Lᵢⱼ = 0), if the 
+complexified defect E = (I−Π)LΠ satisfies the Knill-Laflamme condition Π E†E Π = α·Π 
+for real α, then **E = 0**.
+
+**Proof Structure**:
+1. The all-ones vector 𝟙 is in the code subspace (block-constant)
+2. Conservation implies E(𝟙) = 0
+3. KL condition gives ‖E(𝟙)‖² = α·‖𝟙‖², so α·‖𝟙‖² = 0
+4. Since ‖𝟙‖² > 0, we have α = 0
+5. With α = 0, KL implies ‖Eψ‖² = 0 for all ψ
+6. By positive definiteness, E = 0
+
+**Physical Interpretation**: Classical Markov chains cannot exhibit the "coherent 
+backaction" structure required by nontrivial quantum error-correcting codes. The 
+probability conservation law (row sums zero) provides the obstruction.
+
+**Remaining Axioms** (9 total in Quantum.lean):
+| Axiom | Purpose | Discharge Path |
+|-------|---------|----------------|
+| `adjoint_pi` | Weighted adjoint construction | Riesz representation theorem |
+| `adjoint_pi_spec` | Adjoint defining property | Follows from construction |
+| `KL_coefficient_real` | α ∈ ℝ for self-adjoint operators | Self-adjoint spectral theory |
+| `partitionToCodeSubspace` | Code subspace projector | Constructive definition |
+| `approximate_qec_bound` | Approximate QEC error bound | Application layer |
+| Others | Auxiliary properties | Standard functional analysis |
 
 ### Observables Pillar (Measurable Emergence) — NEW (January 2026)
 
@@ -293,15 +335,17 @@ SGC Framework: Structural Persistence in Stochastic Systems
 | **Renormalization** | Kemeny, J.G. & Snell, J.L. (1976). *Finite Markov Chains* |
 | **Thermodynamics** | Doob, J.L. (1953). *Stochastic Processes* |
 | **Topology** | Friston, K. (2010). *The free-energy principle* |
+| **Quantum Bridge** | Knill, E. & Laflamme, R. (1997). *Theory of quantum error-correcting codes* |
 | **Continuum Limit** | Belkin, M. & Niyogi, P. (2008). *Towards a Theoretical Foundation for Laplacian-Based Manifold Methods* |
 
 ---
 
 ## Tags
 
+- `v1.2-quantum-bridge` — Quantum Bridge & No Coherent Backaction Theorem
 - `v1.1-observables` — Observables Pillar Release
 
 ---
 
-*Generated: January 22, 2026*
+*Generated: January 27, 2026*
 *Repository: https://github.com/JasonShroyer/sgc-lean*

@@ -7,17 +7,30 @@
 
 SGC-Lean is a formal library for the **Physics of Emergence**. It provides a rigorous mathematical framework for "Approximate Lumpability"—the conditions under which a complex micro-system can be validly described by a simpler macro-theory.
 
-## 🌌 Quantum Error Correction Bridge (New!)
+## 🌌 Quantum Error Correction Bridge
 
-We have established a formal isomorphism between **Classical Emergence** and **Quantum Error Correction**.
+We have established a **formal correspondence** between classical Markov chain lumpability and quantum error correction.
 
-*   **Theorem**: Classical Approximate Lumpability is mathematically isomorphic to the **Knill-Laflamme Conditions** for Quantum Error Correction.
-*   **Implication**: The "Leakage Defect" ($\epsilon$) in a coarse-grained model plays the exact same role as "Recoverable Error" in a quantum code.
-*   **Demo**: See [`examples/ToricCode_Stability.lean`](examples/ToricCode_Stability.lean) for a formal verification of topological code stability ($T_{valid} \propto e^L$) derived from renormalization bounds.
+### Main Result: No Coherent Backaction Theorem
 
-This bridge allows researchers to use SGC's `validity_horizon_bound` ($T^* \ge \delta/\epsilon$) to certify the stability of both:
-1.  **Classical Simulations** (Molecular Dynamics, Agent-Based Models)
-2.  **Quantum Memories** (Topological Codes, Noisy Qubits)
+**Theorem** (`knill_laflamme_forces_zero_defect`): *For a classical stochastic generator L with conservation (row sums zero), if the complexified defect operator E = (I−Π)LΠ satisfies the Knill-Laflamme condition Π E†E Π = α·Π for some real α, then E = 0.*
+
+**Physical interpretation**: A classical Markov chain cannot exhibit the "coherent backaction" structure required by quantum error-correcting codes. The conservation law (probability preservation) forces α = 0 via the all-ones vector, which then implies E = 0 by positive definiteness.
+
+### Proof Chain (Fully Verified)
+1. `all_ones_in_code`: The constant function 𝟙 lies in the code subspace
+2. `defect_kills_all_ones`: Conservation implies E(𝟙) = 0  
+3. `partition_forces_alpha_zero`: Combined with KL condition, this forces α = 0
+4. `operator_zero_iff_norm_sq_zero`: Positive definiteness gives E = 0
+
+### Correspondence Table
+| Classical (Markov) | Quantum |
+|---|---|
+| Partition of state space | Projection onto code subspace |
+| Exact lumpability | Knill-Laflamme conditions (ε = 0) |
+| Approximate lumpability | Approximate QEC |
+
+**Demo**: See [`examples/ToricCode_Stability.lean`](examples/ToricCode_Stability.lean) for an application to topological code stability bounds.
 
 ## 🔭 Core Capabilities
 
