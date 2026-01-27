@@ -44,6 +44,7 @@ namespace Quantum
 
 open Finset
 open SGC.Axioms.GeometryGeneral
+open SGC.Axioms.WeightedSpace
 open SGC.Spectral
 open SGC.Approximate
 
