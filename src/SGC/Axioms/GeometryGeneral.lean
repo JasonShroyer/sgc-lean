@@ -337,6 +337,18 @@ theorem inner_self_real_complex (pi_dist : V → ℝ) (f : V → ℂ) :
   rw [inner_pi_eq_weightedInner]
   exact WeightedSpace.weightedInner_self_real pi_dist (toWeightedSpace f)
 
+/-- inner_pi with zero in left argument gives zero. -/
+lemma inner_pi_zero_left_complex (pi_dist : V → ℝ) (v : V → ℂ) :
+    inner_pi pi_dist 0 v = 0 := by
+  unfold inner_pi
+  simp only [Pi.zero_apply, star_zero, mul_zero, zero_mul, Finset.sum_const_zero]
+
+/-- inner_pi with zero in right argument gives zero. -/
+lemma inner_pi_zero_right_complex (pi_dist : V → ℝ) (u : V → ℂ) :
+    inner_pi pi_dist u 0 = 0 := by
+  unfold inner_pi
+  simp only [Pi.zero_apply, mul_zero, Finset.sum_const_zero]
+
 end ComplexBridge
 
 end GeometryGeneral

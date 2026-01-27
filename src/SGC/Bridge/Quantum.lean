@@ -299,11 +299,31 @@ theorem inner_adjoint_self (pi_dist : V → ℝ) (E : (V → ℂ) →ₗ[ℂ] (V
   -- With A = E, u = Eψ, v = ψ: ⟨E†(Eψ), ψ⟩ = ⟨Eψ, Eψ⟩
   exact SGC.Axioms.GeometryGeneral.adjoint_pi_spec pi_dist E (E ψ) ψ
 
-/-- **Structural Property 3**: An operator is zero iff its norm squared is zero on all inputs.
-    More precisely: E = 0 ↔ ∀ ψ, ⟨Eψ, Eψ⟩ = 0. -/
-axiom operator_zero_iff_norm_sq_zero (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+/-- **THEOREM** (was axiom): An operator is zero iff its norm squared is zero on all inputs.
+    More precisely: E = 0 ↔ ∀ ψ, ⟨Eψ, Eψ⟩ = 0.
+
+    **Proof**: Uses `inner_pi_nondegenerate_complex` from ComplexBridge.
+    - (→) If E = 0, then Eψ = 0, so ⟨0, 0⟩ = 0.
+    - (←) If ⟨Eψ, Eψ⟩ = 0 for all ψ, then by non-degeneracy Eψ = 0 for all ψ,
+          so E = 0 by LinearMap.ext. -/
+theorem operator_zero_iff_norm_sq_zero (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (E : (V → ℂ) →ₗ[ℂ] (V → ℂ)) :
-    E = 0 ↔ ∀ ψ, SGC.Axioms.GeometryGeneral.inner_pi pi_dist (E ψ) (E ψ) = 0
+    E = 0 ↔ ∀ ψ, SGC.Axioms.GeometryGeneral.inner_pi pi_dist (E ψ) (E ψ) = 0 := by
+  constructor
+  · -- Forward: E = 0 → ∀ ψ, ⟨Eψ, Eψ⟩ = 0
+    intro hE ψ
+    simp only [hE, LinearMap.zero_apply]
+    exact inner_pi_zero_left_complex pi_dist 0
+  · -- Backward: ∀ ψ, ⟨Eψ, Eψ⟩ = 0 → E = 0
+    intro h
+    apply LinearMap.ext
+    intro ψ
+    -- ⟨Eψ, Eψ⟩ = 0, so by positive definiteness, Eψ = 0
+    have h_self := h ψ
+    -- Use that ⟨f, f⟩ = 0 implies f = 0 (definite property from WeightedSpace)
+    -- Convert inner_pi to weightedInner using the equality
+    rw [inner_pi_eq_weightedInner] at h_self
+    exact weightedInner_definite pi_dist hπ (toWeightedSpace (E ψ)) h_self
 
 /-- **Lemma 3a**: KL coefficient reality from self-adjoint operator.
 
