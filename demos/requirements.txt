@@ -17,3 +17,6 @@ hilbertcurve>=2.0.5
 
 # CLI visualization (optional)
 matplotlib>=3.7.0
+
+# Neural network training (optional, for train_petz_net.py)
+# torch>=2.0.0

@@ -10,6 +10,7 @@ import SGC.Observables.TopologicalPersistence
 import SGC.Observables.EnergyUnification
 import SGC.Bridge.Quantum
 import SGC.Bridge.CoherenceObstruction
+import SGC.Bridge.Recovery
 import SGC.Axioms.GeometryGeneral
 import Mathlib.LinearAlgebra.Matrix.Notation
 
@@ -59,6 +60,17 @@ Red flag: If `sorry` appears, the proof is incomplete.
 
 -- Information Bridge (v2 Extension)
 #print axioms SGC.information_geometry_equivalence
+
+-- Petz Recovery Bridge (NEW - Quantum Bridge Sprint)
+-- PetzRecoveryMap: Adjoint-based recovery channel
+#print axioms SGC.Bridge.Recovery.PetzRecoveryMap_spec
+#print axioms SGC.Bridge.Recovery.PetzRecoveryMap_involutive
+-- Data Processing Inequality and Petz Recovery Theorem
+#print axioms SGC.Bridge.Recovery.DataProcessingInequality
+#print axioms SGC.Bridge.Recovery.PetzRecoveryTheorem
+-- Landauer's Principle connection
+#print axioms SGC.Bridge.Recovery.LandauerPrinciple
+#print axioms SGC.Bridge.Recovery.ML_agent_pays_landauer
 
 -- Observables Pillar (NEW January 2026)
 -- Spectral Bridge: Connects abstract spectral gap to measurable autocorrelation
