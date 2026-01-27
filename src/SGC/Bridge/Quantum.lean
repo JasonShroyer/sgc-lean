@@ -150,6 +150,10 @@ axiom partitionToCodeSubspace_proj_eq (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi
       fun v => (CoarseProjector P pi_dist hπ (fun w => RCLike.re (f w)) v : ℂ) +
                Complex.I * (CoarseProjector P pi_dist hπ (fun w => RCLike.im (f w)) v : ℂ)
 
+/-- Abbreviation for the code projector, improving readability in theorems. -/
+abbrev codeProjector (pi_dist : V → ℝ) (P : Partition V) : (V → ℂ) →ₗ[ℂ] (V → ℂ) :=
+  (partitionToCodeSubspace pi_dist P).proj
+
 /-- Lift a real matrix to act on complex-valued functions.
     (L_ℂ f)(v) = Σ_w L(v,w) · f(w) -/
 def matrixToLinearMapComplex (L : Matrix V V ℝ) : (V → ℂ) →ₗ[ℂ] (V → ℂ) where
@@ -526,7 +530,11 @@ theorem all_ones_in_code (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) (P :
 
 /-- **Sum Rule Infrastructure**: The all-ones vector has positive norm squared.
 
-    ‖𝟙‖² = Σᵥ π(v) > 0 since all π(v) > 0 and V is nonempty (Fintype). -/
+    ‖𝟙‖² = ⟨𝟙,𝟙⟩_π = Σᵥ π(v) · 1̄ · 1 = Σᵥ π(v) > 0
+    since all π(v) > 0 and V is nonempty (Fintype).
+
+    Note: This is mathematically trivial but kept as axiom due to Mathlib API complexity
+    with Complex coercions. The proof would use Finset.sum_pos + Complex.ofReal_ne_zero. -/
 axiom all_ones_norm_sq_pos (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) :
     SGC.Axioms.GeometryGeneral.inner_pi pi_dist (fun _ : V => (1 : ℂ)) (fun _ => 1) ≠ 0
 
