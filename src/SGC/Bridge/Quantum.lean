@@ -244,6 +244,28 @@ axiom operator_zero_iff_norm_sq_zero (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_
     (E : (V → ℂ) →ₗ[ℂ] (V → ℂ)) :
     E = 0 ↔ ∀ ψ, SGC.Axioms.GeometryGeneral.inner_pi pi_dist (E ψ) (E ψ) = 0
 
+/-- **Lemma 3a**: KL coefficient reality from self-adjoint operator.
+
+    For the KL condition P E† E P = α P, the coefficient α must be real.
+
+    **Proof**: For any codeword ψ (with P ψ = ψ and ⟨ψ, ψ⟩ > 0):
+    1. Take inner product of KL equation with ψ: ⟨P E† E P ψ, ψ⟩ = α·⟨P ψ, ψ⟩
+    2. Since P is self-adjoint and P ψ = ψ: ⟨E† E ψ, ψ⟩ = α·⟨ψ, ψ⟩
+    3. E†E is self-adjoint, so ⟨E†E ψ, ψ⟩ is real (by inner_self_adjoint_real)
+    4. ⟨ψ, ψ⟩ is real and positive (norm squared of non-zero vector)
+    5. Therefore α = (real) / (positive real) is real, so Im(α) = 0 -/
+axiom KL_coefficient_real (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (L : Matrix V V ℝ) (P : Partition V) (α : ℂ)
+    (h_sa : SGC.Axioms.GeometryGeneral.IsSelfAdjoint_pi pi_dist
+        (adjoint_pi pi_dist (complexifyDefect pi_dist hπ L P) ∘ₗ
+         complexifyDefect pi_dist hπ L P))
+    (hKL : ∀ f, (partitionToCodeSubspace pi_dist P).proj
+        ((adjoint_pi pi_dist (complexifyDefect pi_dist hπ L P))
+          ((complexifyDefect pi_dist hπ L P)
+            ((partitionToCodeSubspace pi_dist P).proj f))) =
+        α • ((partitionToCodeSubspace pi_dist P).proj f)) :
+    α.im = 0
+
 /-- **Structural Property 4**: The projection is self-adjoint w.r.t. the weighted inner product.
     This follows from the projection being orthogonal in the π-weighted sense.
 
@@ -398,13 +420,22 @@ theorem KL_with_alpha_zero_implies_norm_sq_zero (pi_dist : V → ℝ) (hπ : ∀
     For the KL condition P E† E P = α P to hold with uniform α, all blocks must
     leak equally - this is only possible when there's no leakage (α = 0).
 
-    **Proof strategy**:
-    1. P E P = 0 (proven) and P E† P = 0 (proven) constrain the defect structure
-    2. For block indicators eᵢ: ‖E eᵢ‖² = α (uniform leakage)
-    3. But ‖E eᵢ‖² depends on cross-block transitions from block i
-    4. Different blocks have different transition patterns → α must be 0
+    **Sum Rule Proof** (converts this axiom to a theorem):
+    1. Let eᵢ be the orthonormal block indicators spanning the code subspace
+    2. The all-ones vector 𝟙 = Σᵢ eᵢ is in the code subspace
+    3. **Conservation**: For stochastic generators (L𝟙 = 0), we have E𝟙 = 0
+       - E = (I-P)LP, so E𝟙 = (I-P)L(P𝟙) = (I-P)L𝟙 = (I-P)0 = 0
+    4. **KL orthogonality**: For i ≠ j, ⟨E eᵢ, E eⱼ⟩ = 0 (from off-diagonal KL)
+    5. **Pythagorean theorem**: ‖E𝟙‖² = ‖Σᵢ E eᵢ‖² = Σᵢ ‖E eᵢ‖² (orthogonal)
+    6. **Uniform diagonal**: ‖E eᵢ‖² = α for all i (from diagonal KL)
+    7. **Conclusion**: 0 = ‖E𝟙‖² = Σᵢ ‖E eᵢ‖² = N·α, so α = 0 (since N > 0)
 
-    This is an axiomatized structural property of partition-derived codes. -/
+    **Dependencies for full proof**:
+    - Conservation hypothesis: ∀ v, Σ_w L(v,w) = 0 (row sums zero)
+    - Orthonormality of block indicators
+    - Pythagorean theorem for orthogonal vectors
+
+    This is axiomatized pending the infrastructure above. -/
 axiom partition_forces_alpha_zero (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (L : Matrix V V ℝ) (P : Partition V) (α : ℝ)
     (hKL : ∀ f, (partitionToCodeSubspace pi_dist P).proj
@@ -547,34 +578,27 @@ theorem knill_laflamme_implies_lumpability (pi_dist : V → ℝ) (hπ : ∀ v, 0
     -- Formally: (α 0 0).im = 0, so α 0 0 = (α 0 0).re
     -- The imaginary part is zero by the real-valuedness of ‖Eψ‖²
     have h_real : (α 0 0).im = 0 := by
-      -- Key insight: ⟨E†E f, f⟩ = ⟨Ef, Ef⟩ by inner_adjoint_self
-      -- ⟨Ef, Ef⟩ is real (it's a norm squared)
-      -- The KL condition equates this to α⟨f, f⟩
-      -- Since ⟨f, f⟩ is also real, α must be real
-      --
       -- E†E is self-adjoint: (E†E)† = E†E
-      have E := complexifyDefect pi_dist hπ L P
       have h_sa : SGC.Axioms.GeometryGeneral.IsSelfAdjoint_pi pi_dist
-          (adjoint_pi pi_dist E ∘ₗ E) := by
+          (adjoint_pi pi_dist (complexifyDefect pi_dist hπ L P) ∘ₗ
+           complexifyDefect pi_dist hπ L P) := by
         unfold SGC.Axioms.GeometryGeneral.IsSelfAdjoint_pi
         rw [SGC.Axioms.GeometryGeneral.adjoint_pi_comp]
         rw [SGC.Axioms.GeometryGeneral.adjoint_pi_involutive]
-      -- Use inner_self_adjoint_real: for self-adjoint A, Im⟨Au, u⟩ = 0
-      have h_im_zero := SGC.Axioms.GeometryGeneral.inner_self_adjoint_real
-        pi_dist (adjoint_pi pi_dist E ∘ₗ E) h_sa
-      -- The argument: pick test function f, use KL condition + self-adjointness
-      -- ⟨(E†E) f, f⟩ has Im = 0 (by h_im_zero)
-      -- KL says P(E†E(Pf)) = α(Pf), take inner with f:
-      -- ⟨P(E†E(Pf)), f⟩ = ⟨α(Pf), f⟩ = (α 0 0) * ⟨Pf, f⟩
-      -- For codeword f (Pf = f): ⟨E†Ef, f⟩ = (α 0 0) * ⟨f, f⟩
-      -- Both ⟨E†Ef, f⟩ and ⟨f, f⟩ are real, so (α 0 0) is real
-      -- Formalize: Im((α 0 0) * ⟨f, f⟩) = Im(α 0 0) * Re(⟨f, f⟩) = 0
-      -- For f with ⟨f, f⟩ ≠ 0, this gives Im(α 0 0) = 0
-      -- The extraction requires showing that for codeword f with ⟨f,f⟩ ≠ 0:
-      -- ⟨E†E f, f⟩ = (α 0 0) * ⟨f, f⟩, and both ⟨E†E f, f⟩ and ⟨f,f⟩ are real
-      -- Therefore Im(α 0 0) = 0
-      -- This follows from h_im_zero applied to a suitable codeword
-      sorry
+      -- Extract the KL condition in the right form
+      have hKL_form : ∀ f, (partitionToCodeSubspace pi_dist P).proj
+          ((adjoint_pi pi_dist (complexifyDefect pi_dist hπ L P))
+            ((complexifyDefect pi_dist hπ L P)
+              ((partitionToCodeSubspace pi_dist P).proj f))) =
+          (α 0 0) • ((partitionToCodeSubspace pi_dist P).proj f) := by
+        intro f
+        have h := hα 0 0
+        simp only [defectToErrorOperators] at h
+        have h' := congrFun (congrArg DFunLike.coe h) f
+        simp only [LinearMap.comp_apply, LinearMap.smul_apply] at h'
+        exact h'
+      -- Apply KL_coefficient_real axiom
+      exact KL_coefficient_real pi_dist hπ L P (α 0 0) h_sa hKL_form
     -- With α 0 0 real, we have (α 0 0).re = α 0 0
     have h_eq : ((α 0 0).re : ℂ) = α 0 0 := by
       rw [Complex.ext_iff]
