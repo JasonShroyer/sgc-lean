@@ -150,15 +150,33 @@ axiom partitionToCodeSubspace_proj_eq (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi
       fun v => (CoarseProjector P pi_dist hπ (fun w => RCLike.re (f w)) v : ℂ) +
                Complex.I * (CoarseProjector P pi_dist hπ (fun w => RCLike.im (f w)) v : ℂ)
 
+/-- Lift a real matrix to act on complex-valued functions.
+    (L_ℂ f)(v) = Σ_w L(v,w) · f(w) -/
+def matrixToLinearMapComplex (L : Matrix V V ℝ) : (V → ℂ) →ₗ[ℂ] (V → ℂ) where
+  toFun f v := ∑ w, (L v w : ℂ) * f w
+  map_add' f g := by
+    ext v
+    simp only [Pi.add_apply]
+    rw [← Finset.sum_add_distrib]
+    congr 1; ext w; ring
+  map_smul' c f := by
+    ext v
+    simp only [Pi.smul_apply, smul_eq_mul, RingHom.id_apply]
+    rw [Finset.mul_sum]
+    congr 1; ext w; ring
+
 /-- The defect operator from approximate lumpability corresponds to
     the error syndrome in quantum error correction.
 
     For a classical generator L and partition P, the defect D = (I - Π) L Π
     becomes the single error operator in the quantum picture.
 
-    We axiomatize the complexification D_ℂ : (V → ℂ) →ₗ[ℂ] (V → ℂ). -/
-axiom complexifyDefect (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (L : Matrix V V ℝ) (P : Partition V) : (V → ℂ) →ₗ[ℂ] (V → ℂ)
+    **CONSTRUCTIVE DEFINITION**: D = (I - Π) ∘ L_ℂ ∘ Π
+    This allows structural properties to be proven by algebraic simplification. -/
+def complexifyDefect (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (L : Matrix V V ℝ) (P : Partition V) : (V → ℂ) →ₗ[ℂ] (V → ℂ) :=
+  let proj := (partitionToCodeSubspace pi_dist P).proj
+  (LinearMap.id - proj) ∘ₗ (matrixToLinearMapComplex L) ∘ₗ proj
 
 /-- The complexified defect is zero iff the real defect has zero operator norm. -/
 axiom complexifyDefect_zero_iff (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
@@ -172,19 +190,57 @@ have special orthogonality structure: D = (I-Π)LΠ maps code vectors to the ort
 complement. This structural constraint forces the KL coefficient α to be zero. -/
 
 /-- **Structural Property 1a**: The complexified defect maps code subspace to its complement.
-    This follows from D = (I-Π)LΠ, so P D P = P(I-Π)LΠP = 0 (since P(I-Π) = 0). -/
-axiom complexifyDefect_orthogonal (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    This follows from D = (I-Π)LΠ, so P D P = P(I-Π)LΠP = 0 (since P(I-Π) = 0).
+
+    **PROVEN BY DEFINITION**: D = (I-Π) L Π, so
+    Π D Π = Π (I-Π) L Π Π = Π (I-Π) L Π (by idempotence)
+                           = (Π - Π²) L Π = (Π - Π) L Π = 0 -/
+theorem complexifyDefect_orthogonal (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (L : Matrix V V ℝ) (P : Partition V) :
     (partitionToCodeSubspace pi_dist P).proj ∘ₗ
     (complexifyDefect pi_dist hπ L P) ∘ₗ
-    (partitionToCodeSubspace pi_dist P).proj = 0
+    (partitionToCodeSubspace pi_dist P).proj = 0 := by
+  let proj := (partitionToCodeSubspace pi_dist P).proj
+  let L_c := matrixToLinearMapComplex L
+  -- D = (I - proj) ∘ L_c ∘ proj by definition
+  have h_def : complexifyDefect pi_dist hπ L P = (LinearMap.id - proj) ∘ₗ L_c ∘ₗ proj := rfl
+  -- proj is idempotent: proj ∘ proj = proj
+  have h_idem : proj ∘ₗ proj = proj := (partitionToCodeSubspace pi_dist P).idempotent
+  -- proj D proj = proj (I - proj) L_c proj proj = proj (I - proj) L_c proj
+  -- proj (I - proj) = proj - proj² = proj - proj = 0
+  have h_proj_annihilate : proj ∘ₗ (LinearMap.id - proj) = 0 := by
+    rw [LinearMap.comp_sub, LinearMap.comp_id, h_idem, sub_self]
+  calc proj ∘ₗ (complexifyDefect pi_dist hπ L P) ∘ₗ proj
+      = proj ∘ₗ ((LinearMap.id - proj) ∘ₗ L_c ∘ₗ proj) ∘ₗ proj := by rw [h_def]
+    _ = (proj ∘ₗ (LinearMap.id - proj)) ∘ₗ L_c ∘ₗ (proj ∘ₗ proj) := by
+        simp only [LinearMap.comp_assoc]
+    _ = 0 ∘ₗ L_c ∘ₗ proj := by rw [h_proj_annihilate, h_idem]
+    _ = 0 := by simp only [LinearMap.zero_comp]
 
 /-- **Structural Property 1b**: The defect kills the complement of the code subspace.
-    This follows from D = (I-Π)LΠ, so D(I-Π) = (I-Π)LΠ(I-Π) = 0 (since Π(I-Π) = 0). -/
-axiom complexifyDefect_kills_complement (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    This follows from D = (I-Π)LΠ, so D(I-Π) = (I-Π)LΠ(I-Π) = 0 (since Π(I-Π) = 0).
+
+    **PROVEN BY DEFINITION**: D = (I-Π) L Π, so
+    D (I-Π) = (I-Π) L Π (I-Π) = (I-Π) L (Π - Π²) = (I-Π) L 0 = 0 -/
+theorem complexifyDefect_kills_complement (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (L : Matrix V V ℝ) (P : Partition V) :
     (complexifyDefect pi_dist hπ L P) ∘ₗ
-    (LinearMap.id - (partitionToCodeSubspace pi_dist P).proj) = 0
+    (LinearMap.id - (partitionToCodeSubspace pi_dist P).proj) = 0 := by
+  let proj := (partitionToCodeSubspace pi_dist P).proj
+  let L_c := matrixToLinearMapComplex L
+  -- D = (I - proj) ∘ L_c ∘ proj by definition
+  have h_def : complexifyDefect pi_dist hπ L P = (LinearMap.id - proj) ∘ₗ L_c ∘ₗ proj := rfl
+  -- proj is idempotent: proj ∘ proj = proj
+  have h_idem : proj ∘ₗ proj = proj := (partitionToCodeSubspace pi_dist P).idempotent
+  -- proj (I - proj) = proj - proj² = proj - proj = 0
+  have h_proj_comp : proj ∘ₗ (LinearMap.id - proj) = 0 := by
+    simp only [LinearMap.comp_sub, LinearMap.comp_id, h_idem, sub_self]
+  -- D (I-proj) = (I-proj) L_c proj (I-proj) = (I-proj) L_c (proj - proj²) = (I-proj) L_c 0 = 0
+  calc (complexifyDefect pi_dist hπ L P) ∘ₗ (LinearMap.id - proj)
+      = ((LinearMap.id - proj) ∘ₗ L_c ∘ₗ proj) ∘ₗ (LinearMap.id - proj) := by rw [h_def]
+    _ = (LinearMap.id - proj) ∘ₗ L_c ∘ₗ (proj ∘ₗ (LinearMap.id - proj)) := by simp only [LinearMap.comp_assoc]
+    _ = (LinearMap.id - proj) ∘ₗ L_c ∘ₗ 0 := by rw [h_proj_comp]
+    _ = 0 := by simp only [LinearMap.comp_zero]
 
 /-- **Structural Property 1c**: P E† P = 0 follows from P E P = 0.
 
@@ -343,13 +399,36 @@ theorem KL_gives_norm_sq_proportional (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi
 /-- **Lemma 6b**: The defect operator E = (I-P)LP factors as E = (I-P) ∘ E.
     This means E maps everything to the complement of the code subspace.
 
+    **PROVEN BY DEFINITION**: E = (I-P) L P, so
+    (I-P) ∘ E = (I-P) ∘ (I-P) L P = (I-P) L P = E
+    since (I-P) is idempotent (because P is idempotent).
+
     Combined with P E† P = 0 (`adjoint_defect_orthogonal`), for partition codes
     the uniform leakage condition forces α = 0. -/
-axiom defect_maps_to_complement (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+theorem defect_maps_to_complement (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (L : Matrix V V ℝ) (P : Partition V) :
     (complexifyDefect pi_dist hπ L P) =
     (LinearMap.id - (partitionToCodeSubspace pi_dist P).proj) ∘ₗ
-    (complexifyDefect pi_dist hπ L P)
+    (complexifyDefect pi_dist hπ L P) := by
+  let proj := (partitionToCodeSubspace pi_dist P).proj
+  let L_c := matrixToLinearMapComplex L
+  -- E = (I - proj) ∘ L_c ∘ proj by definition
+  have h_def : complexifyDefect pi_dist hπ L P = (LinearMap.id - proj) ∘ₗ L_c ∘ₗ proj := rfl
+  -- proj is idempotent, so (I - proj) is also idempotent
+  have h_idem : proj ∘ₗ proj = proj := (partitionToCodeSubspace pi_dist P).idempotent
+  have h_complement_idem : (LinearMap.id - proj) ∘ₗ (LinearMap.id - proj) = LinearMap.id - proj := by
+    simp only [LinearMap.sub_comp, LinearMap.comp_sub, LinearMap.id_comp, LinearMap.comp_id, h_idem]
+    abel
+  -- E = (I-P) ∘ E follows from (I-P) ∘ E = E
+  have h_eq : (LinearMap.id - proj) ∘ₗ (complexifyDefect pi_dist hπ L P) =
+              complexifyDefect pi_dist hπ L P := by
+    calc (LinearMap.id - proj) ∘ₗ (complexifyDefect pi_dist hπ L P)
+        = (LinearMap.id - proj) ∘ₗ ((LinearMap.id - proj) ∘ₗ L_c ∘ₗ proj) := by rw [h_def]
+      _ = ((LinearMap.id - proj) ∘ₗ (LinearMap.id - proj)) ∘ₗ L_c ∘ₗ proj := by
+          simp only [LinearMap.comp_assoc]
+      _ = (LinearMap.id - proj) ∘ₗ L_c ∘ₗ proj := by rw [h_complement_idem]
+      _ = complexifyDefect pi_dist hπ L P := h_def.symm
+  exact h_eq.symm
 
 /-- **Lemma 6c**: E kills the complement, so Eψ = E(Pψ) for all ψ.
 
@@ -413,12 +492,37 @@ theorem KL_with_alpha_zero_implies_norm_sq_zero (pi_dist : V → ℝ) (hπ : ∀
   simp only [Complex.ofReal_zero, zero_mul] at h_prop
   exact h_prop
 
+/-- A constant real function is block-constant. -/
+lemma const_isBlockConstant (P : Partition V) (c : ℝ) :
+    IsBlockConstant P (fun _ => c) := fun _ _ _ => rfl
+
 /-- **Sum Rule Infrastructure**: The all-ones vector is in the code subspace.
 
-    For partition codes, 𝟙 = Σᵢ eᵢ where eᵢ are block indicators.
-    Since each eᵢ is in the code, their sum is too. -/
-axiom all_ones_in_code (pi_dist : V → ℝ) (P : Partition V) :
-    (partitionToCodeSubspace pi_dist P).proj (fun _ => (1 : ℂ)) = fun _ => 1
+    **PROVEN**: The all-ones function 𝟙 is block-constant (constant on every block).
+    By `partitionToCodeSubspace_proj_eq`, Π(𝟙) = CoarseProjector(Re 𝟙) + i·CoarseProjector(Im 𝟙).
+    Since Re(𝟙) = 1 and Im(𝟙) = 0 are both constant (hence block-constant),
+    and CoarseProjector fixes block-constant functions, we get Π(𝟙) = 1 + i·0 = 𝟙. -/
+theorem all_ones_in_code (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) (P : Partition V) :
+    (partitionToCodeSubspace pi_dist P).proj (fun _ => (1 : ℂ)) = fun _ => 1 := by
+  -- Use the characterization of the complex projector
+  have h_proj_eq := partitionToCodeSubspace_proj_eq pi_dist hπ P (fun _ => (1 : ℂ))
+  -- Re(1) = 1, Im(1) = 0
+  have h_re : (fun w => RCLike.re ((fun _ : V => (1 : ℂ)) w)) = fun _ => (1 : ℝ) := by
+    ext w; simp only [RCLike.one_re]
+  have h_im : (fun w => RCLike.im ((fun _ : V => (1 : ℂ)) w)) = fun _ => (0 : ℝ) := by
+    ext w; simp only [RCLike.one_im]
+  -- Constant functions are block-constant
+  have h_one_block : IsBlockConstant P (fun _ => (1 : ℝ)) := const_isBlockConstant P 1
+  have h_zero_block : IsBlockConstant P (fun _ => (0 : ℝ)) := const_isBlockConstant P 0
+  -- CoarseProjector fixes block-constant functions
+  have h_fix_one : CoarseProjector P pi_dist hπ (fun _ => (1 : ℝ)) = fun _ => 1 :=
+    CoarseProjector_fixes_block_constant P pi_dist hπ _ h_one_block
+  have h_fix_zero : CoarseProjector P pi_dist hπ (fun _ => (0 : ℝ)) = fun _ => 0 :=
+    CoarseProjector_fixes_block_constant P pi_dist hπ _ h_zero_block
+  -- Combine
+  rw [h_proj_eq, h_re, h_im, h_fix_one, h_fix_zero]
+  ext v
+  simp only [Complex.ofReal_one, Complex.ofReal_zero, mul_zero, add_zero]
 
 /-- **Sum Rule Infrastructure**: The all-ones vector has positive norm squared.
 
@@ -426,16 +530,37 @@ axiom all_ones_in_code (pi_dist : V → ℝ) (P : Partition V) :
 axiom all_ones_norm_sq_pos (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) :
     SGC.Axioms.GeometryGeneral.inner_pi pi_dist (fun _ : V => (1 : ℂ)) (fun _ => 1) ≠ 0
 
+/-- Conservation: A matrix with row sums = 0 kills the all-ones vector.
+    L_ℂ 𝟙 = 0 when ∀ v, Σ_w L(v,w) = 0. -/
+lemma matrixToLinearMapComplex_kills_ones (L : Matrix V V ℝ) (hL_conserv : ∀ v, ∑ w, L v w = 0) :
+    matrixToLinearMapComplex L (fun _ => 1) = 0 := by
+  ext v
+  simp only [matrixToLinearMapComplex, LinearMap.coe_mk, AddHom.coe_mk, Pi.zero_apply, mul_one]
+  rw [← Complex.ofReal_sum]
+  simp only [hL_conserv v, Complex.ofReal_zero]
+
 /-- **Sum Rule Infrastructure**: Conservation implies E(𝟙) = 0.
 
-    For stochastic generators with row sums = 0:
-    E𝟙 = (I-P)L(P𝟙) = (I-P)L𝟙 = (I-P)0 = 0
+    **PROVEN BY DEFINITION**: E = (I-P) L_c P, so
+    E𝟙 = (I-P) L_c (P𝟙) = (I-P) L_c 𝟙  (since P𝟙 = 𝟙 by all_ones_in_code)
+        = (I-P) 0 = 0                   (since L_c 𝟙 = 0 by conservation)
 
     This is the key conservation property that makes the Sum Rule work. -/
-axiom defect_kills_all_ones (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+theorem defect_kills_all_ones (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (L : Matrix V V ℝ) (P : Partition V)
     (hL_conserv : ∀ v, ∑ w, L v w = 0) :
-    (complexifyDefect pi_dist hπ L P) (fun _ => 1) = 0
+    (complexifyDefect pi_dist hπ L P) (fun _ => 1) = 0 := by
+  -- E = (I - proj) ∘ L_c ∘ proj by definition, applied to ones
+  show ((LinearMap.id - (partitionToCodeSubspace pi_dist P).proj) ∘ₗ
+        (matrixToLinearMapComplex L) ∘ₗ
+        (partitionToCodeSubspace pi_dist P).proj) (fun _ => 1) = 0
+  simp only [LinearMap.comp_apply]
+  -- P𝟙 = 𝟙 (all-ones is in the code)
+  rw [all_ones_in_code pi_dist hπ P]
+  -- L_c 𝟙 = 0 (conservation)
+  rw [matrixToLinearMapComplex_kills_ones L hL_conserv]
+  -- (I-P) 0 = 0
+  simp only [map_zero]
 
 /-- **Sum Rule Infrastructure**: KL implies zero norm squared for all-ones.
 
@@ -454,7 +579,7 @@ theorem partition_forces_alpha_zero (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_d
   -- The all-ones vector is a codeword
   let ones : V → ℂ := fun _ => 1
   have h_code : (partitionToCodeSubspace pi_dist P).proj ones = ones :=
-    all_ones_in_code pi_dist P
+    all_ones_in_code pi_dist hπ P
   -- E(𝟙) = 0 by conservation
   have h_E_ones : (complexifyDefect pi_dist hπ L P) ones = 0 :=
     defect_kills_all_ones pi_dist hπ L P hL_conserv
@@ -497,33 +622,6 @@ theorem KL_implies_norm_sq_zero (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist 
   rw [h_alpha_zero] at hKL
   -- Apply the α = 0 case theorem
   exact KL_with_alpha_zero_implies_norm_sq_zero pi_dist hπ L P hKL
-
-/-- **Key Derived Lemma**: For partition-derived codes with defect-derived errors,
-    the Knill-Laflamme condition P E† E P = α P forces E = 0.
-
-    **Proof sketch**:
-    1. P E P = 0 (by `complexifyDefect_orthogonal`)
-    2. For any codeword ψ (i.e., Pψ = ψ):
-       - KL says P E† E P ψ = α ψ
-       - Taking inner product with ψ: ⟨P E† E ψ, ψ⟩ = α⟨ψ, ψ⟩
-       - Since P is self-adjoint: ⟨E† E ψ, Pψ⟩ = ⟨E† E ψ, ψ⟩ = α‖ψ‖²
-       - By `inner_adjoint_self`: ⟨Eψ, Eψ⟩ = ‖Eψ‖² = α‖ψ‖²
-    3. Since ‖Eψ‖² ≥ 0 and ‖ψ‖² > 0, we need α ≥ 0 (actually α ∈ ℝ≥0)
-    4. But E maps code to complement, so for ψ in code, Eψ ⊥ code
-    5. The partition structure means different codewords have different "leakage patterns"
-    6. For uniform α, all codewords must leak equally → only possible if E = 0
-
-    We axiomatize the final step (partition-specific structure forces uniform leakage → E = 0). -/
-axiom partition_uniform_leakage_forces_zero (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (L : Matrix V V ℝ) (P : Partition V)
-    (h_orthog : (partitionToCodeSubspace pi_dist P).proj ∘ₗ
-                (complexifyDefect pi_dist hπ L P) ∘ₗ
-                (partitionToCodeSubspace pi_dist P).proj = 0)
-    (h_uniform : ∃ (α : ℂ), ∀ ψ,
-      SGC.Axioms.GeometryGeneral.inner_pi pi_dist ((complexifyDefect pi_dist hπ L P) ψ)
-                       ((complexifyDefect pi_dist hπ L P) ψ) =
-      α * SGC.Axioms.GeometryGeneral.inner_pi pi_dist ψ ψ) :
-    complexifyDefect pi_dist hπ L P = 0
 
 /-- The main structural theorem: KL conditions force the defect to zero.
 
