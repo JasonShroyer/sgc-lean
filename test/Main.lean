@@ -12,6 +12,7 @@ import SGC.Bridge.Quantum
 import SGC.Bridge.CoherenceObstruction
 import SGC.Bridge.Recovery
 import SGC.Bridge.Consolidation
+import SGC.Bridge.GeometricClosure
 import SGC.Axioms.GeometryGeneral
 import Mathlib.LinearAlgebra.Matrix.Notation
 
@@ -86,6 +87,24 @@ Red flag: If `sorry` appears, the proof is incomplete.
 -- Information loss interface
 #print axioms SGC.Bridge.Consolidation.InformationLoss_nonneg
 #print axioms SGC.Bridge.Consolidation.three_way_closure_from_approx_lumpable
+
+-- Geometric Closure (NEW - Second-Order Theory)
+-- Bakry-Émery Gamma operators
+#print axioms SGC.Bridge.GeometricClosure.Gamma
+#print axioms SGC.Bridge.GeometricClosure.Gamma2
+-- Ricci curvature bound (Bakry-Émery criterion)
+#print axioms SGC.Bridge.GeometricClosure.RicciCurvatureBound
+-- Intrinsic stability: d²E/dt² ≥ -2ρ dE/dt
+#print axioms SGC.Bridge.GeometricClosure.BakryEmery_implies_stability
+#print axioms SGC.Bridge.GeometricClosure.exponential_decay_from_convexity
+-- Defect bounded by Ricci curvature
+#print axioms SGC.Bridge.GeometricClosure.defect_bounded_by_ricci
+#print axioms SGC.Bridge.GeometricClosure.approx_lumpable_from_ricci
+-- Geometric three-way closure
+#print axioms SGC.Bridge.GeometricClosure.geometric_closure_from_ricci
+#print axioms SGC.Bridge.GeometricClosure.geometric_implies_first_order
+-- Geometric uncertainty principle
+#print axioms SGC.Bridge.GeometricClosure.geometric_uncertainty_principle
 
 -- Observables Pillar (NEW January 2026)
 -- Spectral Bridge: Connects abstract spectral gap to measurable autocorrelation
