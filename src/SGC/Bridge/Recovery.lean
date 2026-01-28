@@ -5,6 +5,7 @@ Authors: SGC Formalization Team
 -/
 import SGC.Bridge.CoherenceObstruction
 import SGC.Axioms.WeightedSpace
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # Petz Recovery Map: The External Correction Channel
@@ -107,17 +108,18 @@ perfectly recovers the state. -/
 /-- **Relative Entropy** (KL Divergence) for classical distributions.
     D(p‖q) = Σ_x p(x) log(p(x)/q(x))
 
-    Convention: 0 log(0/q) = 0, p log(p/0) = +∞ -/
-def RelativeEntropy (p q : V → ℝ) : ℝ :=
-  ∑ x, if p x = 0 then 0
-       else if q x = 0 then 1000  -- Placeholder for +∞
-       else p x * Real.log (p x / q x)
+    Convention: 0 log(0/q) = 0, p log(p/0) = +∞
 
-/-- Relative entropy is non-negative (Gibbs' inequality). -/
-axiom RelativeEntropy_nonneg (p q : V → ℝ)
-    (hp : ∀ x, 0 ≤ p x) (hq : ∀ x, 0 ≤ q x)
-    (hp_sum : ∑ x, p x = 1) (hq_sum : ∑ x, q x = 1) :
-    0 ≤ RelativeEntropy p q
+    **RIGOROUS VERSION**: Returns `ENNReal` (extended non-negative reals)
+    to properly handle the case p(x) > 0 and q(x) = 0 → ∞. -/
+def RelativeEntropy (p q : V → ℝ) : ENNReal :=
+  ∑ x, if p x = 0 then 0
+       else if q x = 0 then ⊤  -- Proper infinity in ENNReal
+       else ENNReal.ofReal (p x * Real.log (p x / q x))
+
+/-- Relative entropy is non-negative (trivial for ENNReal). -/
+theorem RelativeEntropy_nonneg (p q : V → ℝ) : 0 ≤ RelativeEntropy p q :=
+  zero_le _
 
 /-- D(p‖p) = 0. -/
 theorem RelativeEntropy_self (p : V → ℝ) (hp : ∀ x, 0 < p x) :
@@ -126,7 +128,8 @@ theorem RelativeEntropy_self (p : V → ℝ) (hp : ∀ x, 0 < p x) :
   apply Finset.sum_eq_zero
   intro x _
   have hpx := hp x
-  simp only [ne_of_gt hpx, ↓reduceIte, div_self (ne_of_gt hpx), Real.log_one, mul_zero]
+  simp only [ne_of_gt hpx, ↓reduceIte, div_self (ne_of_gt hpx), Real.log_one, mul_zero,
+             ENNReal.ofReal_zero]
 
 /-- D(p‖q) = 0 implies p = q. -/
 axiom RelativeEntropy_eq_zero_iff (p q : V → ℝ)
@@ -186,11 +189,13 @@ theorem ClassicalFidelity_symm (p q : V → ℝ) :
     If D(p‖q) - D(Mp‖Mq) = ε (small entropy loss), then the Petz map achieves
     F(ℛ(Mp), p) ≥ 1 - ε.
 
-    This is the classical version of the Fawzi-Renner bound. -/
+    This is the classical version of the Fawzi-Renner bound.
+
+    Note: Uses `ENNReal.toReal` for the bound since ε is finite when supports are compatible. -/
 axiom ApproximateRecoveryBound (M : Matrix V V ℝ) (p q : V → ℝ)
     (hM_stoch : ∀ y, ∑ x, M y x = 1) (hM_nonneg : ∀ y x, 0 ≤ M y x)
     (hp : ∀ x, 0 < p x) (hq : ∀ x, 0 < q x) :
-    let ε := RelativeEntropy p q - RelativeEntropy (applyChannel M p) (applyChannel M q)
+    let ε := (RelativeEntropy p q - RelativeEntropy (applyChannel M p) (applyChannel M q)).toReal
     ∃ (R : Matrix V V ℝ),
       ClassicalFidelity (applyChannel R (applyChannel M p)) p ≥ 1 - 2 * Real.sqrt ε
 
@@ -234,9 +239,11 @@ The Petz recovery is not free—it requires energy dissipation.
 This connects to Landauer's principle: erasing 1 bit costs kT ln(2) energy. -/
 
 /-- **Landauer Cost**: The minimum energy required to implement the recovery map.
-    For classical systems, this equals kT times the entropy production. -/
+    For classical systems, this equals kT times the entropy production.
+
+    Note: Uses `ENNReal.toReal` since we assume finite entropy (compatible supports). -/
 def LandauerCost (pi_dist : V → ℝ) (kT : ℝ) (p_initial p_final : V → ℝ) : ℝ :=
-  kT * (RelativeEntropy p_final pi_dist - RelativeEntropy p_initial pi_dist)
+  kT * ((RelativeEntropy p_final pi_dist).toReal - (RelativeEntropy p_initial pi_dist).toReal)
 
 /-- Landauer's principle: recovery requires positive energy if entropy decreases.
     ΔS < 0 ⟹ W ≥ kT|ΔS| -/

@@ -135,14 +135,16 @@ def RicciConstant (L : Matrix V V ℝ) : ℝ :=
 
 The second-order differential inequality that guarantees exponential decay. -/
 
-/-- **Energy functional** along the semigroup flow.
+/-- **Energy Functional**: The Lyapunov function E(t) = D(p_t ‖ pi_stat).
 
     E(t) = D(p_t ‖ pi_stat) where p_t = e^{tL}p₀
 
     This is the relative entropy (KL divergence) from the current state
-    to the stationary distribution pi_stat. -/
+    to the stationary distribution pi_stat.
+
+    Note: Uses `ENNReal.toReal` since RelativeEntropy returns ENNReal. -/
 def EnergyFunctional (L : Matrix V V ℝ) (p₀ pi_stat : V → ℝ) (t : ℝ) : ℝ :=
-  RelativeEntropy (applyChannel (HeatKernel L t) p₀) pi_stat
+  (RelativeEntropy (applyChannel (HeatKernel L t) p₀) pi_stat).toReal
 
 /-- **First derivative of energy** (entropy production rate).
 
