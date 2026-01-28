@@ -13,6 +13,7 @@ import SGC.Bridge.CoherenceObstruction
 import SGC.Bridge.Recovery
 import SGC.Bridge.Consolidation
 import SGC.Bridge.GeometricClosure
+import SGC.Bridge.CanonicalWavelet
 import SGC.Axioms.GeometryGeneral
 import Mathlib.LinearAlgebra.Matrix.Notation
 
@@ -105,6 +106,24 @@ Red flag: If `sorry` appears, the proof is incomplete.
 #print axioms SGC.Bridge.GeometricClosure.geometric_implies_first_order
 -- Geometric uncertainty principle
 #print axioms SGC.Bridge.GeometricClosure.geometric_uncertainty_principle
+
+-- Canonical Wavelet Frame (NEW - Spectral Analysis)
+-- Sectorial functional calculus
+#print axioms SGC.Bridge.CanonicalWavelet.SectorialFunctionalCalculus
+#print axioms SGC.Bridge.CanonicalWavelet.functional_calculus_commutes_semigroup
+-- Spectral frame and bounds
+#print axioms SGC.Bridge.CanonicalWavelet.SpectralFrame
+#print axioms SGC.Bridge.CanonicalWavelet.frame_condition_ge_one
+-- Representation error bound
+#print axioms SGC.Bridge.CanonicalWavelet.representation_error_bound
+-- Tight frame: A = B ⇒ zero error
+#print axioms SGC.Bridge.CanonicalWavelet.tight_frame_condition_one
+#print axioms SGC.Bridge.CanonicalWavelet.tight_frame_zero_error
+-- Geometric commutator constraint: |B/A - 1| ≤ C·‖[L, Γ₂]‖
+#print axioms SGC.Bridge.CanonicalWavelet.geometric_commutator_constraint
+#print axioms SGC.Bridge.CanonicalWavelet.constant_ricci_tight_frame_exists
+-- End-to-end: error ≤ C·‖[L, Γ₂]‖
+#print axioms SGC.Bridge.CanonicalWavelet.geometric_error_bound
 
 -- Observables Pillar (NEW January 2026)
 -- Spectral Bridge: Connects abstract spectral gap to measurable autocorrelation
