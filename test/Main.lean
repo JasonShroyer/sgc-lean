@@ -107,6 +107,20 @@ Red flag: If `sorry` appears, the proof is incomplete.
 -- Geometric uncertainty principle
 #print axioms SGC.Bridge.GeometricClosure.geometric_uncertainty_principle
 
+-- Tensorization of Ricci Curvature Bounds (Dimension Independence)
+-- Tensor product generator and functions
+#print axioms SGC.Bridge.GeometricClosure.TensorProductGenerator
+#print axioms SGC.Bridge.GeometricClosure.tensorProduct
+-- Γ additivity on tensor products
+#print axioms SGC.Bridge.GeometricClosure.Gamma_tensorProduct_additivity
+-- Γ₂ additivity on tensor products
+#print axioms SGC.Bridge.GeometricClosure.Gamma2_tensorProduct_additivity
+-- Main theorem: Ricci bound tensorizes with min
+#print axioms SGC.Bridge.GeometricClosure.Ricci_tensor_min
+-- Corollaries
+#print axioms SGC.Bridge.GeometricClosure.positive_Ricci_tensorizes
+#print axioms SGC.Bridge.GeometricClosure.dimension_independence
+
 -- Canonical Wavelet Frame (NEW - Spectral Analysis)
 -- Sectorial functional calculus
 #print axioms SGC.Bridge.CanonicalWavelet.SectorialFunctionalCalculus
