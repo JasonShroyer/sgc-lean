@@ -11,6 +11,7 @@ import SGC.Observables.EnergyUnification
 import SGC.Bridge.Quantum
 import SGC.Bridge.CoherenceObstruction
 import SGC.Bridge.Recovery
+import SGC.Bridge.Consolidation
 import SGC.Axioms.GeometryGeneral
 import Mathlib.LinearAlgebra.Matrix.Notation
 
@@ -71,6 +72,20 @@ Red flag: If `sorry` appears, the proof is incomplete.
 -- Landauer's Principle connection
 #print axioms SGC.Bridge.Recovery.LandauerPrinciple
 #print axioms SGC.Bridge.Recovery.ML_agent_pays_landauer
+
+-- Channel-Theoretic Consolidation (NEW - RG Monotonicity Sprint)
+-- RG Monotonicity: PROVED from DPI axiom + semigroup composition
+#print axioms SGC.Bridge.Consolidation.RG_monotonicity_step
+#print axioms SGC.Bridge.Consolidation.RG_monotonicity_composition
+#print axioms SGC.Bridge.Consolidation.RG_monotonicity_dyadic
+-- Recovery interface: equality in DPI ⟺ recoverability
+#print axioms SGC.Bridge.Consolidation.RG_equality_implies_recovery
+#print axioms SGC.Bridge.Consolidation.RG_preservation_iff_recovery
+-- Coarse-graining contracts entropy: PROVED from DPI
+#print axioms SGC.Bridge.Consolidation.coarse_graining_contracts_entropy
+-- Information loss interface
+#print axioms SGC.Bridge.Consolidation.InformationLoss_nonneg
+#print axioms SGC.Bridge.Consolidation.three_way_closure_from_approx_lumpable
 
 -- Observables Pillar (NEW January 2026)
 -- Spectral Bridge: Connects abstract spectral gap to measurable autocorrelation
