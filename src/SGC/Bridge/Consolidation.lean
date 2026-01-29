@@ -54,10 +54,24 @@ lemma isStochasticChannel_one : IsStochasticChannel (1 : Matrix V V ℝ) where
     · intro h; exact absurd (Finset.mem_univ y) h
   nonneg := fun y x => by simp only [Matrix.one_apply]; split_ifs <;> linarith
 
-/-- Composition of stochastic channels is stochastic. -/
-axiom isStochasticChannel_mul {M N : Matrix V V ℝ}
+/-- Composition of stochastic channels is stochastic.
+
+    **PROVED**: Pure linear algebra.
+    - Non-negativity: (M*N)ᵢⱼ = Σₖ Mᵢₖ·Nₖⱼ ≥ 0 (sum of non-negatives)
+    - Row sum: Σⱼ(M*N)ᵢⱼ = Σⱼ Σₖ Mᵢₖ·Nₖⱼ = Σₖ Mᵢₖ·(Σⱼ Nₖⱼ) = Σₖ Mᵢₖ·1 = 1 -/
+theorem isStochasticChannel_mul {M N : Matrix V V ℝ}
     (hM : IsStochasticChannel M) (hN : IsStochasticChannel N) :
-    IsStochasticChannel (M * N)
+    IsStochasticChannel (M * N) where
+  row_sum := fun i => by
+    simp only [Matrix.mul_apply]
+    -- Σⱼ Σₖ Mᵢₖ·Nₖⱼ = Σₖ Mᵢₖ·(Σⱼ Nₖⱼ) = Σₖ Mᵢₖ·1 = 1
+    rw [Finset.sum_comm]
+    simp_rw [← Finset.mul_sum, hN.row_sum, mul_one, hM.row_sum]
+  nonneg := fun i j => by
+    simp only [Matrix.mul_apply]
+    apply Finset.sum_nonneg
+    intro k _
+    exact mul_nonneg (hM.nonneg i k) (hN.nonneg k j)
 
 /-! ## 2. RG Monotonicity Pack (Sprint 1)
 
@@ -79,9 +93,23 @@ theorem RG_monotonicity_step (L : Matrix V V ℝ) (t : ℝ) (p q : V → ℝ)
 axiom HeatKernel_semigroup (L : Matrix V V ℝ) (s t : ℝ) :
     HeatKernel L (s + t) = HeatKernel L s * HeatKernel L t
 
-/-- Channel application distributes over matrix multiplication. -/
-axiom applyChannel_mul (M N : Matrix V V ℝ) (p : V → ℝ) :
-    applyChannel (M * N) p = applyChannel M (applyChannel N p)
+/-- Channel application distributes over matrix multiplication.
+
+    **PROVED**: Pure linear algebra (associativity of matrix-vector multiplication).
+    (M·N)p = M(Np) where p is treated as a column vector. -/
+theorem applyChannel_mul (M N : Matrix V V ℝ) (p : V → ℝ) :
+    applyChannel (M * N) p = applyChannel M (applyChannel N p) := by
+  funext y
+  simp only [applyChannel, Matrix.mul_apply]
+  -- LHS: Σₓ (Σⱼ Mᵧⱼ·Nⱼₓ)·pₓ
+  -- RHS: Σⱼ Mᵧⱼ·(Σₓ Nⱼₓ·pₓ)
+  simp_rw [Finset.sum_mul, Finset.mul_sum]
+  rw [Finset.sum_comm]
+  congr 1
+  funext j
+  congr 1
+  funext x
+  ring
 
 /-- Channel preserves non-negativity of distributions. -/
 lemma applyChannel_nonneg (M : Matrix V V ℝ) (hM : IsStochasticChannel M)
@@ -159,10 +187,42 @@ theorem RG_preservation_iff_recovery (L : Matrix V V ℝ) (t : ℝ) (p q : V →
 
 /-! ## 4. Coarse-Graining as Channel (DPI for Projections) -/
 
-/-- The coarse projector matrix is a stochastic channel. -/
-axiom CoarseProjectorMatrix_isStochastic (P : Partition V) (pi_dist : V → ℝ)
+/-- The coarse projector matrix is a stochastic channel.
+
+    **PROVED**: Pure algebra.
+    - Non-negativity: π(y)/π̄(⟦x⟧) ≥ 0 since both numerator and denominator are positive
+    - Row sum: Σ_y Π_{xy} = Σ_{y:⟦y⟧=⟦x⟧} π(y)/π̄(⟦x⟧) = π̄(⟦x⟧)/π̄(⟦x⟧) = 1 -/
+theorem CoarseProjectorMatrix_isStochastic (P : Partition V) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v) :
-    IsStochasticChannel (CoarseProjectorMatrix P pi_dist hπ)
+    IsStochasticChannel (CoarseProjectorMatrix P pi_dist hπ) where
+  row_sum := fun x => by
+    simp only [CoarseProjectorMatrix]
+    -- Σ_y (if ⟦x⟧=⟦y⟧ then π(y)/π̄(⟦x⟧) else 0) = π̄(⟦x⟧)/π̄(⟦x⟧) = 1
+    have h_pos := pi_bar_pos P hπ (P.quot_map x)
+    have h_ne : pi_bar P pi_dist (P.quot_map x) ≠ 0 := ne_of_gt h_pos
+    -- Transform: if cond then a/b else 0 = (if cond then a else 0) / b
+    have h_transform : ∀ y, (if P.quot_map x = P.quot_map y
+        then pi_dist y / pi_bar P pi_dist (P.quot_map x) else 0) =
+        (if P.quot_map x = P.quot_map y then pi_dist y else 0) / pi_bar P pi_dist (P.quot_map x) := by
+      intro y
+      by_cases h : P.quot_map x = P.quot_map y
+      · simp [h]
+      · simp [h, zero_div]
+    simp_rw [h_transform]
+    rw [← Finset.sum_div, div_eq_one_iff_eq h_ne]
+    -- Show Σ_y (if ⟦x⟧=⟦y⟧ then π(y) else 0) = π̄(⟦x⟧)
+    unfold pi_bar
+    congr 1
+    funext y
+    by_cases h : P.quot_map x = P.quot_map y
+    · rw [if_pos h, if_pos h.symm]
+    · rw [if_neg h, if_neg (Ne.symm h)]
+  nonneg := fun x y => by
+    simp only [CoarseProjectorMatrix]
+    by_cases h : P.quot_map x = P.quot_map y
+    · rw [if_pos h]
+      apply div_nonneg (le_of_lt (hπ y)) (le_of_lt (pi_bar_pos P hπ (P.quot_map x)))
+    · rw [if_neg h]
 
 /-- **Coarse-Graining Contracts Entropy**: Projection decreases relative entropy.
 
