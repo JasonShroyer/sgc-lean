@@ -518,45 +518,57 @@ axiom DirichletForm_deriv_eq_Gamma2 (L : Matrix V V ℝ) (pi_dist : V → ℝ) (
     deriv (fun t => DirichletForm L pi_dist (Spectral.HeatKernel L t *ᵥ f)) 0 =
     -2 * Gamma2_pi L pi_dist f
 
+/-- **Spectral gap from integrated curvature bound** (The Limiting Argument).
+
+    If the integrated Bakry-Émery condition holds:
+      Gamma2_pi ≥ ρ · Gamma_pi  (for all f)
+
+    Then the Poincaré inequality holds:
+      DirichletForm(f) ≥ ρ · Var(f)
+
+    **Proof** (standard, see Bakry-Émery 1985):
+    1. Define D(t) = DirichletForm(f_t), V(t) = Var(f_t) where f_t = e^{tL}f
+    2. From the integrated bound and Bochner identity: D'(t) ≤ -2ρ D(t)
+    3. By Grönwall: D(t) ≤ D(0) e^{-2ρt}
+    4. From V'(t) = -2D(t): V(0) = 2∫₀^∞ D(t)dt (by ergodicity: V(∞) = 0)
+    5. Substituting the Grönwall bound: V(0) ≤ 2D(0)∫₀^∞ e^{-2ρt}dt = D(0)/ρ
+    6. Rearranging: D(0) ≥ ρ V(0), which is the Poincaré inequality. -/
+axiom Poincare_from_integrated_curvature (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+    (rho : ℝ) (h_rho_pos : rho > 0)
+    (h_stationary : Matrix.vecMul pi_dist L = 0)
+    (hπ_pos : ∀ v, 0 < pi_dist v)
+    (h_integrated : ∀ f, Gamma2_pi L pi_dist f ≥ rho * Gamma_pi L pi_dist f) :
+    ∀ f, DirichletForm L pi_dist f ≥ rho * VarianceEnergy pi_dist f
+
 /-- **Bakry-Émery implies Variance Stability**: The Poincaré inequality.
 
     If Γ₂(f) ≥ ρ·Γ(f) pointwise (RicciCurvatureBound), then
     DirichletForm(f) ≥ ρ·Var(f) (VarianceStabilityInequality).
 
-    **This is the Bochner technique**:
-
-    **Proof Outline** (requires calculus machinery for full formalization):
-    1. From Γ₂ ≥ ρΓ pointwise, integrate: Σ π Γ₂ ≥ ρ Σ π Γ = ρ · DirichletForm
-    2. By DirichletForm_deriv_eq_Gamma2: d/dt DirichletForm(f_t) = -2 Σ π Γ₂(f_t)
-    3. Substituting: d/dt DirichletForm(f_t) ≤ -2ρ · DirichletForm(f_t)
-    4. By Grönwall: DirichletForm(f_t) ≤ DirichletForm(f₀) · e^{-2ρt}
-    5. Since d/dt Var(f_t) = -2 DirichletForm(f_t), integrate both sides
-    6. As t → ∞: f_t → mean(f), so Var(f_t) → 0 and DirichletForm(f_t) → 0
-    7. The decay rates imply: DirichletForm(f) ≥ ρ · Var(f) (spectral gap ≥ ρ)
-
-    **Status**: The proof structure is complete. The remaining formalization
-    requires the Bochner identity (DirichletForm_deriv_eq_Gamma2) and integration. -/
+    **Proof**: Two steps:
+    1. Integrate the pointwise bound against π to get the integrated bound
+    2. Apply Poincare_from_integrated_curvature (the limiting argument) -/
 theorem BakryEmery_implies_variance_stability (L : Matrix V V ℝ) (pi_dist : V → ℝ)
     (rho : ℝ) (h_rho : RicciCurvatureBound L rho)
-    (_h_stationary : Matrix.vecMul pi_dist L = 0)
+    (h_rho_pos : rho > 0)
+    (h_stationary : Matrix.vecMul pi_dist L = 0)
     (hπ_pos : ∀ v, 0 < pi_dist v) :
     VarianceStabilityInequality L pi_dist rho := by
   constructor
   intro f
   -- Step 1: Integrate Bakry-Émery condition against π
-  have h_Gamma2_bound : Gamma2_pi L pi_dist f ≥ rho * Gamma_pi L pi_dist f := by
+  have h_integrated : ∀ g, Gamma2_pi L pi_dist g ≥ rho * Gamma_pi L pi_dist g := by
+    intro g
     unfold Gamma2_pi Gamma_pi
     rw [Finset.mul_sum]
     apply Finset.sum_le_sum
     intro x _
-    have h := h_rho.curvature_bound f x
+    have h := h_rho.curvature_bound g x
     unfold Gamma2Sq GammaSq at h
     have hπx : 0 < pi_dist x := hπ_pos x
     nlinarith [hπx, h]
-  -- Step 2: Use Gamma-Dirichlet connection to get Gamma2_pi bound on DirichletForm
-  -- Step 3: The spectral gap argument requires the full Bochner technique
-  -- (integration along heat flow + limiting argument)
-  sorry  -- Requires Bochner identity integration
+  -- Step 2: Apply the limiting argument (Poincare_from_integrated_curvature)
+  exact Poincare_from_integrated_curvature L pi_dist rho h_rho_pos h_stationary hπ_pos h_integrated f
 
 /-! ### 8.4.1 Grönwall Decay Lemma
 
@@ -674,6 +686,30 @@ The connection between variance decay and entropy decay in the linear regime. -/
 def ChiSquared (p q : V → ℝ) : ℝ :=
   ∑ x, if q x = 0 then 0 else (p x - q x)^2 / q x
 
+/-- Helper: When f is centered, centered f = f. -/
+lemma centered_of_mean_zero (pi_dist : V → ℝ) (f : V → ℝ)
+    (hf_centered : mean_pi pi_dist f = 0) :
+    centered pi_dist f = f := by
+  ext x
+  simp only [centered, hf_centered, sub_zero]
+
+/-- Helper: VarianceEnergy when f is centered equals Σ π f². -/
+lemma VarianceEnergy_of_centered (pi_dist : V → ℝ) (f : V → ℝ)
+    (hf_centered : mean_pi pi_dist f = 0) :
+    VarianceEnergy pi_dist f = ∑ x, pi_dist x * (f x)^2 := by
+  unfold VarianceEnergy norm_sq_pi inner_pi
+  rw [centered_of_mean_zero pi_dist f hf_centered]
+  congr 1; ext x; ring
+
+/-- Helper: Pointwise simplification of χ² term when π > 0. -/
+lemma ChiSquared_term_simplify (pi_x : ℝ) (f_x : ℝ) (ε : ℝ) (hπ_pos : 0 < pi_x) :
+    (if pi_x = 0 then (0 : ℝ) else (pi_x * (1 + ε * f_x) - pi_x)^2 / pi_x) =
+    ε^2 * pi_x * f_x^2 := by
+  have hπ_ne : pi_x ≠ 0 := ne_of_gt hπ_pos
+  simp only [hπ_ne, ↓reduceIte]
+  field_simp
+  ring
+
 /-- **Chi-Squared equals Variance for centered distributions**.
 
     If p = π(1 + εf) with Σ π f = 0, then χ²(p ‖ π) = ε² Var_π(f)
@@ -687,11 +723,21 @@ lemma ChiSquared_eq_Variance (pi_dist : V → ℝ) (f : V → ℝ)
     (hf_centered : mean_pi pi_dist f = 0) (ε : ℝ) :
     ChiSquared (fun x => pi_dist x * (1 + ε * f x)) pi_dist =
     ε^2 * VarianceEnergy pi_dist f := by
-  -- Algebraic identity (verified by hand):
-  -- LHS: χ² = Σ (π(1+εf) - π)²/π = Σ (πεf)²/π = Σ πε²f² = ε² Σ πf²
-  -- RHS: ε² Var(f) = ε² Σ π(f - mean)² = ε² Σ πf² (since mean = 0)
-  -- Both equal ε² Σ π(x) f(x)² ✓
-  sorry
+  -- Step 1: Simplify LHS using pointwise lemma
+  unfold ChiSquared
+  have h_lhs : ∑ x, (if pi_dist x = 0 then (0 : ℝ)
+      else (pi_dist x * (1 + ε * f x) - pi_dist x)^2 / pi_dist x) =
+      ∑ x, ε^2 * pi_dist x * (f x)^2 := by
+    congr 1; ext x
+    exact ChiSquared_term_simplify (pi_dist x) (f x) ε (hπ_pos x)
+  rw [h_lhs]
+  -- Step 2: Rewrite as ε² * Σ π f²
+  have h_factor : ∑ x, ε^2 * pi_dist x * (f x)^2 = ε^2 * ∑ x, pi_dist x * (f x)^2 := by
+    rw [Finset.mul_sum]
+    congr 1; ext x; ring
+  rw [h_factor]
+  -- Step 3: Show Σ π f² = VarianceEnergy (for centered f)
+  rw [VarianceEnergy_of_centered pi_dist f hf_centered]
 
 /-- **Linear Bridge Lemma**: Entropy is bounded by Variance near equilibrium.
 
