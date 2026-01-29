@@ -6,10 +6,17 @@ Authors: SGC Formalization Team
 
 -- Foundation: The L²(π) Inner Product Structure
 import SGC.Axioms.Geometry
+import SGC.Axioms.GeometryGeneral
+import SGC.Axioms.WeightedSpace
 
 -- Spectral Pillar: Heat Kernel, Sector Envelope, and Core Stability Theorem
 import SGC.Spectral.Envelope
 import SGC.Spectral.Defs
+import SGC.Spectral.Diagonal
+import SGC.Spectral.Core.Assumptions
+import SGC.Spectral.Core.Projector
+import SGC.Spectral.Envelope.ODE
+import SGC.Spectral.Envelope.Sector
 
 -- Renormalization Pillar: Spectral Gap Monotonicity
 import SGC.Renormalization.Lumpability
@@ -23,6 +30,7 @@ import SGC.Topology.Blanket
 -- Thermodynamics Pillar: Stochastic Thermodynamics of Surprise
 import SGC.Thermodynamics.DoobMeyer
 import SGC.Thermodynamics.EntropyProduction
+import SGC.Thermodynamics.FluxDecomposition
 
 -- Variational Pillar: Principle of Least Action
 import SGC.Variational.LeastAction
@@ -30,6 +38,25 @@ import SGC.Variational.LeastAction
 -- Bridge Pillar: Continuum Limits and Quantum Correspondence
 import SGC.Bridge.Discretization
 import SGC.Bridge.Quantum
+import SGC.Bridge.CanonicalWavelet
+import SGC.Bridge.CoherenceObstruction
+import SGC.Bridge.Consolidation
+import SGC.Bridge.GeometricClosure
+import SGC.Bridge.Recovery
+
+-- Observables Pillar: Complexity Measures and Thermodynamic Bounds
+import SGC.Observables.ThermodynamicBounds
+import SGC.Observables.TopologicalPersistence
+import SGC.Observables.ValidityHorizon
+
+-- Examples: Validation and Smoke Tests
+import SGC.Examples.ThreeStateCycle
+
+-- Information Geometry: Tsallis Statistics
+import SGC.InformationGeometry.TsallisStatistics
+
+-- Dynamics: Escort Conductance and Boundary Mechanisms
+import SGC.Dynamics.EscortConductance
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- SGC Extensions: The Constructive Physics Layer

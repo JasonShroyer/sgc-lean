@@ -17,6 +17,7 @@ lean_txt_export/
 # Paper and publication materials (not for public release)
 paper/
 corpus/
+docs/COMMISSIONING_LETTER.md
 
 # Legacy ignored files
 FHDT Final Submission Package.txt

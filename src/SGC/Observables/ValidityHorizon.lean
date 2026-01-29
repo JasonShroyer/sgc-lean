@@ -3,10 +3,10 @@ Copyright (c) 2025 SGC Project. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: SGC Formalization Team
 
-# Validity Horizon: Observable Bounds on Effective Theory Lifetimes
+# Validity Horizon: Observable Bounds on Effective Model Lifetimes
 
 This module formalizes the **Validity Horizon** concept: the timescale T* beyond which
-an effective (coarse-grained) theory ceases to accurately predict the full dynamics.
+an effective (coarse-grained) model ceases to accurately predict the full dynamics.
 
 ## Main Results
 
@@ -19,7 +19,7 @@ an effective (coarse-grained) theory ceases to accurately predict the full dynam
 The validity horizon answers: "How long can we trust our coarse-grained model?"
 
 For a system with leakage defect ε, the `trajectory_closure_bound` gives error O(ε·t).
-When ε·t ~ 1, the effective theory fails. This occurs at T* = 1/ε.
+When ε·t ~ 1, the effective model fails. This occurs at T* = 1/ε.
 
 The key insight is that T* is **observable** via autocorrelation time τ_corr,
 making "emergence timescale" an empirically measurable quantity.
@@ -46,14 +46,14 @@ variable {V : Type*} [Fintype V] [DecidableEq V]
 
 /-! ### 1. Validity Horizon Definition -/
 
-/-- **Validity Horizon**: The timescale at which the effective theory breaks down.
+/-- **Validity Horizon**: The timescale at which the effective model breaks down.
 
     For a system with leakage defect ε > 0, the validity horizon is T* = 1/ε.
 
     **Physical Meaning**: Predictions from the coarse model are reliable for t < T*.
     Beyond T*, the accumulated error ε·t exceeds O(1) and the model fails.
 
-    **Note**: For ε = 0 (exact lumpability), T* = ∞ (effective theory is exact). -/
+    **Note**: For ε = 0 (exact lumpability), T* = ∞ (effective model is exact). -/
 def validity_horizon (ε : ℝ) (hε : 0 < ε) : ℝ := 1 / ε
 
 /-- The validity horizon is positive. -/
@@ -114,7 +114,7 @@ lemma autocorrelation_time_from_gap_pos (γ : ℝ) (hγ : 0 < γ) :
 /-! #### 4a. The Spectral Bridge: Deriving Decay from Sector Envelope
 
 The following theorem is the **Spectral Bridge**: it derives autocorrelation decay
-from `sector_envelope_bound_canonical`. This connects abstract spectral theory
+from `sector_envelope_bound_canonical`. This connects abstract spectral analysis
 to observable time-series data.
 
 **The Key Insight**: For mean-zero f, the autocorrelation C_f(t) = ⟨f, e^{tL} f⟩_π
@@ -225,7 +225,7 @@ axiom autocorrelation_decay_param (L : Matrix V V ℝ) (pi_dist : V → ℝ)
 
     **Physical Significance**: The validity horizon is observable!
     Measure τ_corr from autocorrelation data, estimate Q from partition structure,
-    and predict when the effective theory will fail. -/
+    and predict when the effective model will fail. -/
 theorem validity_horizon_lower_bound_param
     (ε γ Q : ℝ) (hε : 0 < ε) (hγ : 0 < γ) (hQ : 0 < Q)
     (h_bound : ε ≤ γ * Q) :
@@ -244,7 +244,7 @@ theorem validity_horizon_lower_bound_param
     T*_predicted = τ_corr / Q
 
     **Usage**: This formula allows experimental determination of effective
-    theory lifetimes without computing the leakage defect directly. -/
+    model lifetimes without computing the leakage defect directly. -/
 def predicted_validity_horizon (τ_corr Q : ℝ) (_hτ : 0 < τ_corr) (_hQ : 0 < Q) : ℝ :=
   τ_corr / Q
 
@@ -293,7 +293,7 @@ This module establishes the **observability of the validity horizon**:
 
 The key insight is that T* connects **microscopic properties** (leakage defect ε)
 to **macroscopic observables** (autocorrelation time τ_corr), making the abstract
-concept of "effective theory validity" experimentally accessible.
+concept of "effective model validity" experimentally accessible.
 -/
 
 end SGC.Observables

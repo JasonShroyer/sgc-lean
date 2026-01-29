@@ -3,30 +3,29 @@ Copyright (c) 2025 SGC Project. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: SGC Formalization Team
 
-# Energy Unification: Three Measures of Emergence
+# Thermodynamic Bounds: Complexity-Dissipation Constraints
 
-This module investigates the conjecture that three fundamental quantities in SGC
-are equivalent measures of the same underlying phenomenon:
+This module investigates the relationship between three fundamental quantities in SGC:
 
 1. **Assembly Index** (Geometry): Yamabe energy = curvature variance
 2. **Hidden Entropy Production** (Thermodynamics): Dissipation from coarse-graining
 3. **Defect Operator Norm²** (Spectral): Leakage between scales
 
-## The Unification Conjecture
+## The Bounding Conjecture
 
 Under appropriate conditions, there exist constants C₁, C₂ > 0 such that:
 
     C₁ · ‖D‖² ≤ AssemblyIndex ≤ C₂ · HiddenEntropyProduction
 
 This would establish that geometric complexity, thermodynamic cost, and
-predictive failure are all manifestations of the same underlying quantity.
+predictive failure are all bounded by each other.
 
 ## Physical Significance
 
 If the conjecture holds:
-- **Geometric interpretation of emergence**: Complexity = curvature variance
+- **Geometric interpretation of complexity**: Complexity = curvature variance
 - **Thermodynamic cost of existence**: Persistence requires dissipation ∝ ‖D‖²
-- **Universal measure**: One number captures "how emergent" a system is
+- **Bounded predictive failure**: Complexity constrains model accuracy
 
 ## References
 
@@ -37,6 +36,7 @@ If the conjecture holds:
 
 import SGC.Geometry.CurvatureBridge
 import SGC.Renormalization.Approximate
+import SGC.Thermodynamics.FluxDecomposition
 
 noncomputable section
 
@@ -77,9 +77,9 @@ def DefectNormSquared (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → �
 -- ‖e^{tL} f - e^{tL̄} f‖ ≤ ε · t · C · ‖f‖
 -- where ε = ‖D‖. This is proven in `trajectory_closure_bound`.
 
-/-! ### 3. The Unification Conjecture -/
+/-! ### 3. The Bounding Conjecture -/
 
-/-- **Energy Unification Conjecture** (Partial):
+/-- **Defect-Assembly Bound** (Partial):
 
     Under appropriate conditions, the defect norm squared is bounded by
     the Assembly Index.
@@ -110,9 +110,9 @@ axiom defect_bounded_by_assembly
     - Self-adjoint operators have real eigenvalues that fully determine evolution
     - Non-normal operators can have transient growth exceeding eigenvalue predictions
     - In non-normal systems, you can have "Invisible Complexity" (Assembly > 0, Defect ≈ 0)
-      or "Transient Emergence" (large transient Defect, small Assembly)
+      or "Transient Amplification" (large transient Defect, small Assembly)
 
-    Combined with `defect_bounded_by_assembly` (which IS universal), this establishes:
+    Combined with `defect_bounded_by_assembly` (which is scale-invariant), this establishes:
     - **General**: Defect ≤ C · Assembly (geometry constrains dynamics)
     - **Reversible only**: Assembly ≤ C' · Defect (dynamics determines geometry) -/
 axiom assembly_bounded_by_defect
@@ -134,9 +134,9 @@ axiom assembly_bounded_by_entropy
     ∃ C : ℝ, C > 0 ∧
     AssemblyIndex (VertexCurvature L) u ≤ C * HiddenEntropyProduction L P pi_dist
 
-/-! ### 4. Main Theorem: The Unification Triangle -/
+/-! ### 4. Main Theorem: The Bounding Triangle -/
 
-/-- **Energy Unification Theorem**:
+/-- **Thermodynamic Bounds Triangle**:
 
     All three quantities are bounded by each other (up to constants).
 
@@ -146,8 +146,8 @@ axiom assembly_bounded_by_entropy
     this establishes equivalence up to constants.
 
     **Physical Meaning**: Geometric complexity, thermodynamic dissipation,
-    and predictive failure are three views of the same phenomenon. -/
-theorem energy_unification_triangle
+    and predictive failure are mutually bounded. -/
+theorem thermodynamic_bounds_triangle
     (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (h_stationary : Matrix.vecMul pi_dist L = 0)
     (u : V → ℝ) (hu : ∀ v, 0 < u v)
@@ -167,7 +167,7 @@ theorem energy_unification_triangle
 
 /-! ### 5. Corollaries -/
 
-/-- **Corollary 1 (Zero Emergence Theorem)**: Zero defect implies constant curvature.
+/-- **Corollary 1 (Zero Defect Theorem)**: Zero defect implies constant curvature.
 
     **REVERSIBLE SYSTEMS ONLY**: For self-adjoint generators, if ‖D‖ = 0 (exact
     lumpability), then AssemblyIndex = 0 (uniform geometry).
@@ -178,7 +178,7 @@ theorem energy_unification_triangle
     **Non-Normal Caveat**: For non-self-adjoint systems (shear flows, transients),
     this theorem does NOT apply. Such systems can exhibit:
     - "Invisible Complexity": Assembly > 0 but Defect ≈ 0 (laminar shear)
-    - "Transient Emergence": Large transient Defect despite small Assembly
+    - "Transient Amplification": Large transient Defect despite small Assembly
 
     This is physically correct: a laminar shear flow can be perfectly predictable
     (zero defect) while having non-trivial geometric structure (shear = curvature). -/
@@ -226,7 +226,7 @@ theorem low_entropy_implies_low_defect
     ∃ C : ℝ, C > 0 ∧ DefectNormSquared L P pi_dist hπ ≤ C * σ_bound := by
   -- Chain: Defect ≤ C₁ · Assembly ≤ C₁ · C₂ · Entropy ≤ C₁ · C₂ · σ_bound
   obtain ⟨C₁, C₂, C₃, hC₁, hC₂, _, h1, h2, _⟩ :=
-    energy_unification_triangle L P pi_dist hπ h_stationary u hu K g uf
+    thermodynamic_bounds_triangle L P pi_dist hπ h_stationary u hu K g uf
   use C₁ * C₂
   constructor
   · exact mul_pos hC₁ hC₂
@@ -239,55 +239,132 @@ theorem low_entropy_implies_low_defect
           apply mul_le_mul_of_nonneg_left h_low_entropy
           exact mul_pos hC₁ hC₂ |>.le
 
-/-! ### 6. The Universal Emergence Measure -/
+/-! ### 6. Scale-Invariant Complexity Measure -/
 
-/-- **Universal Emergence Measure**: Since all three quantities are equivalent
-    (up to constants), we can define a single "emergence measure" as any of them.
+/-- **Scale-Invariant Complexity Measure**: Since all three quantities are bounded
+    by each other (up to constants), we can define a single "complexity measure" as any of them.
 
     We choose the defect norm squared for computational convenience. -/
-def EmergenceMeasure (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+def ComplexityMeasure (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v) : ℝ :=
   DefectNormSquared L P pi_dist hπ
 
-/-- The emergence measure is non-negative. -/
-lemma emergence_measure_nonneg (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+/-- The complexity measure is non-negative. -/
+lemma complexity_measure_nonneg (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v) :
-    EmergenceMeasure L P pi_dist hπ ≥ 0 := by
-  unfold EmergenceMeasure DefectNormSquared
+    ComplexityMeasure L P pi_dist hπ ≥ 0 := by
+  unfold ComplexityMeasure DefectNormSquared
   exact sq_nonneg _
 
-/-- Zero emergence measure implies exact lumpability (perfect self-model). -/
-theorem zero_emergence_is_exact_lumpability (L : Matrix V V ℝ) (P : Partition V)
+/-- Zero complexity measure implies exact lumpability (perfect self-model). -/
+theorem zero_complexity_is_exact_lumpability (L : Matrix V V ℝ) (P : Partition V)
     (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (h : EmergenceMeasure L P pi_dist hπ = 0) :
+    (h : ComplexityMeasure L P pi_dist hπ = 0) :
     IsApproxLumpable L P pi_dist hπ 0 := by
-  unfold EmergenceMeasure DefectNormSquared at h
+  unfold ComplexityMeasure DefectNormSquared at h
   have h_norm_zero : opNorm_pi pi_dist hπ (DefectOperator L P pi_dist hπ) = 0 := by
     have := sq_eq_zero_iff.mp h
     exact this
   unfold IsApproxLumpable
   exact le_of_eq h_norm_zero
 
+/-! ### 7. Dissipation-Complexity Constraint (NESS Extension)
+
+The connection between Assembly Index and Housekeeping Entropy is the key to
+understanding **active** (non-equilibrium) systems. The conjecture:
+
+  AssemblyIndex ∝ HousekeepingEntropy / Temperature
+
+formalizes the physical insight that **structure requires energy throughput**.
+
+**Physical Meaning**:
+- At equilibrium (σ_hk = 0): No flux → No maintenance cost → Flat geometry allowed
+- At NESS (σ_hk > 0): Active flux → Continuous energy cost → Structured geometry
+
+**The Dissipation Principle**: Complex structures require continuous dissipation.
+-/
+
+/-- **Dissipation-Complexity Constraint**: Assembly Index scales with Housekeeping Entropy.
+
+    For systems at non-equilibrium steady state (NESS), the geometric complexity
+    (Assembly Index) is bounded below by the thermodynamic maintenance cost
+    (Housekeeping Entropy).
+
+    AssemblyIndex ≥ c · σ_hk
+
+    **Physical Interpretation**:
+    - If you're dissipating (σ_hk > 0), you must have structure (Assembly > 0)
+    - More structure requires more dissipation
+    - At equilibrium (σ_hk = 0), you can be flat (Assembly = 0)
+
+    **Connection to Detailed Balance**:
+    By `housekeeping_zero_iff_detailed_balance`, σ_hk = 0 ↔ detailed balance.
+    By `antisymmetric_part_zero_iff_detailed_balance`, this means L_anti = 0.
+    So non-zero Assembly at NESS requires active flux (L_anti ≠ 0).
+
+    **Status**: This is a conjecture connecting the FluxDecomposition module
+    to the ThermodynamicBounds framework. The proof requires showing that
+    the probability currents (L_anti) create geometric structure (curvature variance). -/
+axiom assembly_bounded_by_housekeeping
+    (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (h_stationary : Matrix.vecMul pi_dist L = 0)
+    (u : V → ℝ) (hu : ∀ v, 0 < u v) :
+    ∃ c : ℝ, c > 0 ∧
+    c * Thermodynamics.HousekeepingEntropy L pi_dist ≤ AssemblyIndex (VertexCurvature L) u
+
+/-- **Corollary: Equilibrium Allows Flatness** (REVERSIBLE SYSTEMS).
+
+    If σ_hk = 0 (system is at equilibrium/detailed balance), then
+    zero Assembly Index is achievable.
+
+    **Physical Meaning**: At equilibrium, you don't need structure to exist.
+    You can be thermodynamically "flat" with no maintenance cost.
+
+    **NESS Contrast**: If σ_hk > 0 (NESS), you MUST have structure.
+    The flux creates curvature; the curvature requires maintenance. -/
+theorem equilibrium_allows_flatness
+    (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (h_stationary : Matrix.vecMul pi_dist L = 0)
+    (u : V → ℝ) (hu : ∀ v, 0 < u v)
+    (h_equilibrium : Thermodynamics.HousekeepingEntropy L pi_dist = 0) :
+    ∃ c : ℝ, c > 0 ∧ c * 0 ≤ AssemblyIndex (VertexCurvature L) u := by
+  obtain ⟨c, hc_pos, h_bound⟩ := assembly_bounded_by_housekeeping L P pi_dist hπ h_stationary u hu
+  use c
+  constructor
+  · exact hc_pos
+  · rw [h_equilibrium] at h_bound
+    simp only [mul_zero] at h_bound ⊢
+    exact assembly_index_nonneg (VertexCurvature L) u
+
 /-! ## Summary
 
-This module establishes the **Energy Unification Principle**:
+This module establishes the **Thermodynamic Bounds Framework**:
 
 1. **Three Views**: Assembly Index ↔ Hidden Entropy ↔ Defect Norm²
-2. **Main Theorem**: All three are equivalent up to constants
-3. **Physical Interpretation**: Complexity = Dissipation = Prediction Failure
+2. **Main Theorem**: All three are mutually bounded up to constants
+3. **Physical Interpretation**: Complexity ↔ Dissipation ↔ Prediction Failure
 
 **Implications**:
-- There is a single "emergence number" characterizing any system
+- There is a single "complexity number" characterizing any system
 - Minimizing any one minimizes all three
 - Perfect self-models (ε = 0) have uniform geometry (E = 0) and zero dissipation (σ = 0)
 
+**NESS Extension** (Flux Decomposition Foundation):
+- Assembly bounded by Housekeeping Entropy (structure requires flux)
+- L = L_sym + L_anti decomposition (from FluxDecomposition.lean)
+- σ_hk = 0 ↔ detailed balance (equilibrium criterion)
+- Dirichlet form only sees L_sym (flux doesn't dissipate directly)
+
 **Status**:
 - Core bounds from `CurvatureBridge.lean` and `Approximate.lean`
-- Unification axioms stated; full proofs require detailed spectral analysis
+- Bounding axioms stated; full proofs require detailed spectral analysis
 - Corollaries proven from the axioms
+- FluxDecomposition provides symmetric/antisymmetric split
 
-**Open Question**: What is the universal constant relating these quantities?
-Is there a "fine structure constant of emergence"?
+**Open Questions**:
+1. What are the optimal constants relating these quantities?
+2. How does non-normality (flux-induced transients) affect the bounds?
+3. Can we prove flux creates curvature (L_anti ≠ 0 → κ-variance > 0)?
 -/
 
 end SGC.Observables

@@ -9,10 +9,10 @@ import SGC.Renormalization.Lumpability
 import SGC.Spectral.Envelope
 
 /-!
-# Geometric Closure: The Second-Order Theory
+# Geometric Closure: Second-Order Ricci Curvature Framework
 
 This module upgrades the first-order `ThreeWayClosure` from `Consolidation.lean` to a
-second-order theory where the **Ricci curvature lower bound** acts as the geometric
+second-order framework where the **Ricci curvature lower bound** acts as the geometric
 source driving information contraction and defect bounds.
 
 ## The Theoretical Upgrade
@@ -94,7 +94,7 @@ def GammaSq (L : Matrix V V ℝ) (f : V → ℝ) : V → ℝ :=
 
     Γ₂(f,g) = ½(L(Γ(f,g)) - Γ(f,Lg) - Γ(Lf,g))
 
-    This is the key operator in Bakry-Émery theory. The condition
+    This is the key operator in the Bakry-Émery framework. The condition
     Γ₂(f,f) ≥ ρ·Γ(f,f) characterizes Ricci curvature ≥ ρ.
 
     **Physical Meaning**: Γ₂ measures the "curvature" of the dissipation.
@@ -110,7 +110,7 @@ def Gamma2Sq (L : Matrix V V ℝ) (f : V → ℝ) : V → ℝ :=
 
 /-! ## 2. Ricci Curvature Bound (Bakry-Émery Criterion)
 
-The fundamental condition that drives the entire theory. -/
+The fundamental condition that drives the entire framework. -/
 
 /-- **Ricci Curvature Bound**: The generator L has Ricci curvature ≥ ρ
     if the Bakry-Émery condition holds:
@@ -177,7 +177,7 @@ structure IntrinsicStabilityInequality (L : Matrix V V ℝ) (rho : ℝ) : Prop w
 /-- **Bakry-Émery implies Intrinsic Stability**: The key theorem connecting
     the algebraic criterion (Γ₂ ≥ ρΓ) to the dynamic inequality.
 
-    This is the heart of the Bakry-Émery theory. -/
+    This is the heart of the Bakry-Émery criterion. -/
 axiom BakryEmery_implies_stability (L : Matrix V V ℝ) (rho : ℝ)
     (h_rho : RicciCurvatureBound L rho) :
     IntrinsicStabilityInequality L rho
@@ -361,10 +361,10 @@ ThreeWayClosure { defect_bound ≤ C/ρ, ... }
 The geometry *is* the source. The defect is not a free parameter but a
 consequence of the curvature of the state space under the dynamics. -/
 
-/-! ## 8. Variance-Based Bakry-Émery Theory (The Linear Bridge)
+/-! ## 8. Variance-Based Bakry-Émery Framework (The Linear Bridge)
 
 **Operation Linear Bridge**: This section develops the Variance-based (L²) formulation
-of the Bakry-Émery theory. Unlike the entropy-based `EnergyFunctional` above, the
+of the Bakry-Émery framework. Unlike the entropy-based `EnergyFunctional` above, the
 variance formulation has **constructive derivatives** that connect directly to the
 `Gamma` and `DirichletForm` infrastructure.
 
@@ -380,7 +380,7 @@ Near equilibrium, Entropy ≈ Variance (Taylor expansion):
   D(p ‖ π) ≈ (1/2) Var_π(p/π) for p close to π
 
 Thus proving variance decay validates entropy decay in the **linear regime**,
-which is the regime where emergent systems are described by linear response theory.
+which is the regime where systems near equilibrium are described by linear response.
 
 ### Mathematical Content
 
@@ -745,7 +745,7 @@ lemma ChiSquared_eq_Variance (pi_dist : V → ℝ) (f : V → ℝ)
     D(p ‖ π) ≤ (1/2) χ²(p ‖ π) + O(ε³)
 
     **Impact**: Variance decay results imply entropy decay in the linear regime.
-    This validates the thermodynamic theory for emergent systems operating
+    This validates thermodynamic predictions for systems operating
     near their stationary distributions. -/
 axiom RelativeEntropy_bounded_by_ChiSquared (p pi_dist : V → ℝ)
     (hπ_pos : ∀ v, 0 < pi_dist v)
