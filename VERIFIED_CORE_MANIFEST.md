@@ -4,8 +4,8 @@
 
 | Field | Value |
 |-------|-------|
-| **Date** | January 27, 2026 |
-| **Status** | ✅ VERIFIED CORE (100%) + ⚠️ AXIOMATIC EXTENSIONS + 🧪 OBSERVABLES (Phase 1) |
+| **Date** | January 29, 2026 |
+| **Status** | ✅ VERIFIED CORE (100%) + ⚠️ AXIOMATIC EXTENSIONS + 🧪 OBSERVABLES + 🌐 TENSORIZATION |
 | **Lean Version** | Lean 4 |
 | **Mathlib** | v4.25.2 |
 
@@ -209,6 +209,76 @@ probability conservation law (row sums zero) provides the obstruction.
 | `approximate_qec_bound` | Approximate QEC error bound | Application layer |
 | Others | Auxiliary properties | Standard functional analysis |
 
+#### Recovery Module (Information Theory — Safety Hardened)
+
+The Recovery module formalizes the **Petz Recovery Map** and **Relative Entropy** with
+rigorous mathematical handling of edge cases.
+
+| Module | Path | Key Theorems | Status |
+|--------|------|--------------|--------|
+| **Recovery** | `src/SGC/Bridge/Recovery.lean` | `DataProcessingInequality` | ⚠️ Axiom |
+| **Recovery** | `src/SGC/Bridge/Recovery.lean` | `RelativeEntropy_nonneg` | ✅ Proved |
+| **Recovery** | `src/SGC/Bridge/Recovery.lean` | `RelativeEntropy_self` | ✅ Proved |
+| **Recovery** | `src/SGC/Bridge/Recovery.lean` | `PetzRecoveryTheorem` | ⚠️ Axiom |
+| **Recovery** | `src/SGC/Bridge/Recovery.lean` | `LandauerPrinciple` | ⚠️ Axiom |
+
+**Safety Hardening** (January 2026):
+- `RelativeEntropy` now returns `ENNReal` (Extended Non-Negative Reals)
+- Support mismatch (p(x) > 0, q(x) = 0) correctly returns `⊤` (infinity)
+- `RelativeEntropy_nonneg` is now **PROVED** (trivial for ENNReal), was previously axiom
+- Data Processing Inequality works naturally: `x ≤ ⊤` is always true
+
+#### Consolidation Module (Channel-Theoretic Unification)
+
+| Module | Path | Key Theorems | Status |
+|--------|------|--------------|--------|
+| **Consolidation** | `src/SGC/Bridge/Consolidation.lean` | `RG_monotonicity_step` | ✅ Proved (from DPI) |
+| **Consolidation** | `src/SGC/Bridge/Consolidation.lean` | `RG_monotonicity_composition` | ✅ Proved |
+| **Consolidation** | `src/SGC/Bridge/Consolidation.lean` | `coarse_graining_contracts_entropy` | ✅ Proved |
+| **Consolidation** | `src/SGC/Bridge/Consolidation.lean` | `ThreeWayClosure` | Structure |
+
+#### GeometricClosure Module (Second-Order Theory)
+
+The GeometricClosure module upgrades the first-order theory to use **Ricci curvature**
+as the geometric source driving information contraction.
+
+| Module | Path | Key Theorems | Status |
+|--------|------|--------------|--------|
+| **GeometricClosure** | `src/SGC/Bridge/GeometricClosure.lean` | `Gamma`, `Gamma2` | Definitions |
+| **GeometricClosure** | `src/SGC/Bridge/GeometricClosure.lean` | `RicciCurvatureBound` | Structure |
+| **GeometricClosure** | `src/SGC/Bridge/GeometricClosure.lean` | `BakryEmery_implies_stability` | ⚠️ Axiom |
+| **GeometricClosure** | `src/SGC/Bridge/GeometricClosure.lean` | `GeometricThreeWayClosure` | Structure |
+
+##### Tensorization of Ricci Bounds (Dimension Independence) — NEW
+
+| Module | Path | Key Theorems | Status |
+|--------|------|--------------|--------|
+| **GeometricClosure** | `src/SGC/Bridge/GeometricClosure.lean` | `TensorProductGenerator` | Definition |
+| **GeometricClosure** | `src/SGC/Bridge/GeometricClosure.lean` | `Ricci_tensor_min` | ⚠️ Axiom |
+| **GeometricClosure** | `src/SGC/Bridge/GeometricClosure.lean` | `positive_Ricci_tensorizes` | ✅ Proved |
+| **GeometricClosure** | `src/SGC/Bridge/GeometricClosure.lean` | `dimension_independence` | ✅ Proved |
+
+**Main Result** (Tensorization):
+If Ric(L_A) ≥ ρ_A and Ric(L_B) ≥ ρ_B, then Ric(L_{A×B}) ≥ min(ρ_A, ρ_B).
+
+**Physical Significance**:
+- No curse of dimensionality for stability
+- Weakest subsystem determines overall decay rate
+- Modular composition: Stable + Stable = Stable
+
+#### CanonicalWavelet Module (Spectral Analysis)
+
+| Module | Path | Key Theorems | Status |
+|--------|------|--------------|--------|
+| **CanonicalWavelet** | `src/SGC/Bridge/CanonicalWavelet.lean` | `SpectralFrame` | Structure |
+| **CanonicalWavelet** | `src/SGC/Bridge/CanonicalWavelet.lean` | `frame_condition_ge_one` | ✅ Proved |
+| **CanonicalWavelet** | `src/SGC/Bridge/CanonicalWavelet.lean` | `tight_frame_condition_one` | ✅ Proved |
+| **CanonicalWavelet** | `src/SGC/Bridge/CanonicalWavelet.lean` | `tight_frame_zero_error` | ✅ Proved |
+| **CanonicalWavelet** | `src/SGC/Bridge/CanonicalWavelet.lean` | `geometric_commutator_constraint` | ⚠️ Axiom |
+
+**Key Insight**: Frame tightness (A = B) implies zero representation error.
+The deviation from tightness is bounded by the commutator ‖[L, Γ₂]‖.
+
 ### Observables Pillar (Measurable Emergence) — NEW (January 2026)
 
 This pillar connects abstract theory to **experimentally measurable quantities**.
@@ -289,8 +359,12 @@ SGC Framework: Structural Persistence in Stochastic Systems
 │   └── Systems maximize consolidation rate
 ├── Observables (Phenomenology): Connecting algebra to experiment
 │   └── T* = τ_corr/Q: Observable validity horizon
-└── Bridge (Validity): Discrete theory converges to continuum
-    └── ε-graph Laplacian → Laplace-Beltrami operator
+├── Bridge (Validity): Discrete theory converges to continuum
+│   └── ε-graph Laplacian → Laplace-Beltrami operator
+└── Geometric (Second-Order): Ricci curvature as source
+    ├── Bakry-Émery: Γ₂(f) ≥ ρΓ(f)
+    ├── Tensorization: Ric(A×B) ≥ min(Ric(A), Ric(B))
+    └── Wavelet Frame: ‖error‖ ≤ C·‖[L, Γ₂]‖
 ```
 
 ---
@@ -347,5 +421,5 @@ SGC Framework: Structural Persistence in Stochastic Systems
 
 ---
 
-*Generated: January 27, 2026*
+*Generated: January 29, 2026*
 *Repository: https://github.com/JasonShroyer/sgc-lean*
