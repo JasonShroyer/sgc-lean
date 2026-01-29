@@ -231,13 +231,13 @@ theorem CoarseProjectorMatrix_isStochastic (P : Partition V) (pi_dist : V → �
     PROVED from DPI applied to the coarse projector. -/
 theorem coarse_graining_contracts_entropy (P : Partition V) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v) (p q : V → ℝ)
-    (hp : ∀ x, 0 ≤ p x) (hq : ∀ x, 0 ≤ q x) :
+    (_hp : ∀ x, 0 ≤ p x) (_hq : ∀ x, 0 ≤ q x) :
     RelativeEntropy (applyChannel (CoarseProjectorMatrix P pi_dist hπ) p)
                     (applyChannel (CoarseProjectorMatrix P pi_dist hπ) q) ≤
     RelativeEntropy p q := by
-  have hProj := CoarseProjectorMatrix_isStochastic P pi_dist hπ
+  have _hProj := CoarseProjectorMatrix_isStochastic P pi_dist hπ
   exact DataProcessingInequality (CoarseProjectorMatrix P pi_dist hπ) p q
-    hProj.row_sum hProj.nonneg hp hq
+    _hProj.row_sum _hProj.nonneg _hp _hq
 
 /-! ## 5. Defect ↔ Information Loss Interface (Sprint 3) -/
 
