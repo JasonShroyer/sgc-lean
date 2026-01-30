@@ -97,7 +97,7 @@ theorem vertex_dim (v : V) : (vertex v).dimension = 0 := by
 
 /-- Edge dimension is 1. -/
 theorem edge_dim (u v : V) (h : u ≠ v) : (edge u v h).dimension = 1 := by
-  simp only [dimension, edge, Finset.card_insert_of_not_mem (Finset.not_mem_singleton.mpr h),
+  simp only [dimension, edge, Finset.card_insert_of_notMem (Finset.notMem_singleton.mpr h),
     Finset.card_singleton]
 
 end Simplex

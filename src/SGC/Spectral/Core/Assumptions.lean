@@ -8,9 +8,9 @@ import Mathlib.Tactic
 
 /-!
   # SGC/Spectral/Core/Assumptions.lean
-  
+
   Core spectral assumptions and weighted inner product definitions.
-  
+
   **NOTE**: This module uses the **Explicit Weight Pattern** (`pi_dist` as an argument)
   rather than typeclasses. See `ARCHITECTURE.md` for the full rationale.
 -/
@@ -157,7 +157,7 @@ lemma inner_H_zero_of_psd_zero {pi_dist : V → ℝ} (hπ : ∀ v, 0 < pi_dist v
   --                      = ⟨Hu, u⟩ + t⟨H(Hu), u⟩ + t⟨Hu, Hu⟩ + t²⟨H(Hu), Hu⟩
   --                      = 0 + t⟨Hu, Hu⟩ + t⟨Hu, Hu⟩ + t²·b    (using hu and self-adjointness)
   --                      = 2t·a + t²·b
-  have h_expand : ∀ t : ℝ, inner_pi pi_dist (H *ᵥ (u + t • (H *ᵥ u))) (u + t • (H *ᵥ u)) = 
+  have h_expand : ∀ t : ℝ, inner_pi pi_dist (H *ᵥ (u + t • (H *ᵥ u))) (u + t • (H *ᵥ u)) =
       2 * t * a + t^2 * b := by
     intro t
     -- H *ᵥ (u + t • Hu) = Hu + t • H(Hu) by linearity
@@ -221,7 +221,7 @@ lemma SpectralGap_coercivity [Nontrivial V]
   -- The Rayleigh quotient ⟨Hv, v⟩ / ‖v‖² is in the set defining SpectralGap_pi
   have h_norm_pos : 0 < norm_sq_pi pi_dist v := norm_sq_pi_pos hπ hv
   -- The gap is the infimum of Rayleigh quotients, so gap ≤ ⟨Hv, v⟩ / ‖v‖²
-  have h_in_set : inner_pi pi_dist (H *ᵥ v) v / inner_pi pi_dist v v ∈ 
+  have h_in_set : inner_pi pi_dist (H *ᵥ v) v / inner_pi pi_dist v v ∈
       { r | ∃ u : V → ℝ, u ≠ 0 ∧ inner_pi pi_dist u constant_vec_one = 0 ∧
         r = inner_pi pi_dist (H *ᵥ u) u / inner_pi pi_dist u u } := by
     simp only [Set.mem_setOf_eq, norm_sq_pi] at *
@@ -239,7 +239,7 @@ lemma SpectralGap_coercivity [Nontrivial V]
       exact div_nonneg (h_psd u) (le_of_lt h_norm_u)
     · exact h_in_set
   -- Multiply both sides by ‖v‖² > 0
-  calc SpectralGap_pi pi_dist H * norm_sq_pi pi_dist v 
+  calc SpectralGap_pi pi_dist H * norm_sq_pi pi_dist v
       ≤ (inner_pi pi_dist (H *ᵥ v) v / norm_sq_pi pi_dist v) * norm_sq_pi pi_dist v := by
         exact mul_le_mul_of_nonneg_right h_gap_le (le_of_lt h_norm_pos)
     _ = inner_pi pi_dist (H *ᵥ v) v := by
@@ -327,7 +327,7 @@ theorem gap_pos_iff_ker_eq_span_one [Nontrivial V]
     -- Now show the infimum is positive
     -- The set defining SpectralGap_pi is {⟨Hu, u⟩/‖u‖² | u ≠ 0 ∧ u ⊥ 1}
     -- All elements are positive, so we need: nonempty and bounded below by ε > 0
-    -- 
+    --
     -- Strategy: find any nonzero u ⊥ 1 and use its Rayleigh quotient as evidence
     -- Then show the infimum is positive using sInf_pos
     --
@@ -350,7 +350,7 @@ theorem gap_pos_iff_ker_eq_span_one [Nontrivial V]
       · -- ⟨w, 1⟩_π = ∑ π(v) * w(v) * 1 = π(v₀) * π(v₁) + π(v₁) * (-π(v₀)) + 0 = 0
         simp only [inner_pi, constant_vec_one, mul_one]
         -- Split the sum
-        have h_split : ∑ x, pi_dist x * w x = 
+        have h_split : ∑ x, pi_dist x * w x =
             pi_dist v₀ * w v₀ + pi_dist v₁ * w v₁ + ∑ x ∈ Finset.univ.filter (fun x => x ≠ v₀ ∧ x ≠ v₁), pi_dist x * w x := by
           rw [← Finset.sum_filter_add_sum_filter_not Finset.univ (fun x => x = v₀ ∨ x = v₁)]
           congr 1
@@ -358,7 +358,7 @@ theorem gap_pos_iff_ker_eq_span_one [Nontrivial V]
             have h_filt : Finset.univ.filter (fun x => x = v₀ ∨ x = v₁) = {v₀, v₁} := by
               ext x
               simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_insert, Finset.mem_singleton]
-            rw [h_filt, Finset.sum_insert (Finset.not_mem_singleton.mpr hne), Finset.sum_singleton]
+            rw [h_filt, Finset.sum_insert (Finset.notMem_singleton.mpr hne), Finset.sum_singleton]
           · -- Filter complement
             congr 1
             ext x
@@ -386,7 +386,7 @@ theorem gap_pos_iff_ker_eq_span_one [Nontrivial V]
       use inner_pi pi_dist (H *ᵥ w) w / inner_pi pi_dist w w
       simp only [Set.mem_setOf_eq]
       exact ⟨w, hw_ne, hw_orth, rfl⟩
-    -- All elements of the set are positive  
+    -- All elements of the set are positive
     have h_all_pos : ∀ r ∈ { r | ∃ v : V → ℝ, v ≠ 0 ∧ inner_pi pi_dist v constant_vec_one = 0 ∧
         r = inner_pi pi_dist (H *ᵥ v) v / inner_pi pi_dist v v }, 0 < r := by
       intro r hr
@@ -399,7 +399,7 @@ theorem gap_pos_iff_ker_eq_span_one [Nontrivial V]
     -- The infimum of positive Rayleigh quotients is positive in finite dimensions.
     -- This follows from: (1) scale invariance of Rayleigh quotient, (2) compactness of the
     -- normalized constraint set {v | ‖v‖²_π = 1, v ⊥_π 1}, and (3) extreme value theorem.
-    -- 
+    --
     -- In finite V, the Rayleigh quotient R(v) = ⟨Hv, v⟩_π / ‖v‖²_π achieves its minimum
     -- ε > 0 on the compact set, so sInf S ≥ ε > 0.
     --
@@ -421,10 +421,10 @@ theorem gap_pos_iff_ker_eq_span_one [Nontrivial V]
     -- The set of Rayleigh quotients S = {⟨Hv,v⟩/‖v‖² | v≠0, v⊥1} equals, by scale invariance,
     -- the set {⟨Hv,v⟩ | ‖v‖²=1, v⊥1}. On this compact normalized set, the continuous
     -- function v ↦ ⟨Hv,v⟩ achieves its positive minimum, so sInf S > 0.
-    
+
     -- Define the normalized constraint set K = {v | ‖v‖²_π = 1 ∧ v ⊥_π 1}
     let K := {v : V → ℝ | inner_pi pi_dist v constant_vec_one = 0 ∧ norm_sq_pi pi_dist v = 1}
-    
+
     -- K is nonempty: normalize our witness w
     have h_K_nonempty : K.Nonempty := by
       have hw_pos : 0 < norm_sq_pi pi_dist w := norm_sq_pi_pos hπ hw_ne
@@ -439,7 +439,7 @@ theorem gap_pos_iff_ker_eq_span_one [Nontrivial V]
         have h_sqrt_pos : 0 < Real.sqrt (norm_sq_pi pi_dist w) := Real.sqrt_pos.mpr hw_pos
         field_simp
         rw [Real.sq_sqrt (le_of_lt hw_pos)]
-    
+
     -- Continuity of inner_pi (as a function of first argument with second fixed)
     have h_inner_cont : ∀ u₀ : V → ℝ, Continuous (fun v => inner_pi pi_dist v u₀) := by
       intro u₀
@@ -447,20 +447,20 @@ theorem gap_pos_iff_ker_eq_span_one [Nontrivial V]
       apply continuous_finset_sum
       intro x _
       exact (continuous_const.mul (continuous_apply x)).mul continuous_const
-    
+
     -- Continuity of norm_sq_pi
     have h_norm_sq_cont : Continuous (fun v => norm_sq_pi pi_dist v) := by
       simp only [norm_sq_pi, inner_pi]
       apply continuous_finset_sum
       intro x _
       exact (continuous_const.mul (continuous_apply x)).mul (continuous_apply x)
-    
+
     -- K is closed: intersection of level sets of continuous functions
     have hK_closed : IsClosed K := by
       apply IsClosed.inter
       · exact isClosed_eq (h_inner_cont constant_vec_one) continuous_const
       · exact isClosed_eq h_norm_sq_cont continuous_const
-    
+
     -- K is bounded in the standard sup norm
     -- Since ‖v‖²_π = 1 and π weights are positive, each |v(x)|² ≤ 1/π_min
     have hK_bounded : Bornology.IsBounded K := by
@@ -502,14 +502,14 @@ theorem gap_pos_iff_ker_eq_span_one [Nontrivial V]
       -- The sup norm is the maximum of |v x| over all x
       rw [pi_norm_le_iff_of_nonneg (Real.sqrt_nonneg _)]
       exact h_coord_bound
-    
+
     -- In finite dimension, closed + bounded = compact
     haveI : FiniteDimensional ℝ (V → ℝ) := Module.Finite.pi
     have hK_compact : IsCompact K := Metric.isCompact_of_isClosed_isBounded hK_closed hK_bounded
-    
+
     -- Define the Rayleigh numerator function R(v) = ⟨Hv, v⟩
     let R := fun v => inner_pi pi_dist (H *ᵥ v) v
-    
+
     -- R is continuous
     have hR_cont : Continuous R := by
       simp only [R, inner_pi, mulVec]
@@ -523,7 +523,7 @@ theorem gap_pos_iff_ker_eq_span_one [Nontrivial V]
         intro y _
         exact continuous_const.mul (continuous_apply y)
       · exact continuous_apply x
-    
+
     -- By extreme value theorem: R achieves minimum on compact nonempty K
     -- The image R(K) is compact (continuous image of compact)
     have hRK_compact : IsCompact (R '' K) := hK_compact.image hR_cont
@@ -535,26 +535,26 @@ theorem gap_pos_iff_ker_eq_span_one [Nontrivial V]
     have h_sInf_mem : sInf (R '' K) ∈ R '' K := hRK_compact.isClosed.csInf_mem hRK_nonempty hRK_bddBelow
     -- Get the minimizer v₀
     obtain ⟨v₀, hv₀_mem, hv₀_eq⟩ := h_sInf_mem
-    
+
     -- v₀ ∈ K means v₀ ⊥ 1 and ‖v₀‖²_π = 1
     have hv₀_orth : inner_pi pi_dist v₀ constant_vec_one = 0 := hv₀_mem.1
     have hv₀_norm : norm_sq_pi pi_dist v₀ = 1 := hv₀_mem.2
-    
+
     -- v₀ ≠ 0 since ‖v₀‖² = 1 > 0
     have hv₀_ne : v₀ ≠ 0 := by
       intro h
       rw [h, norm_sq_pi, inner_pi_zero_right] at hv₀_norm
       linarith
-    
+
     -- R(v₀) > 0 since v₀ is nonzero and orthogonal to 1
     have h_min_pos : 0 < R v₀ := h_rayleigh_pos v₀ hv₀_ne hv₀_orth
-    
+
     -- R(v₀) = sInf (R '' K), and R(v₀) is a lower bound for all R values on K
     have hv₀_is_min : ∀ u ∈ K, R v₀ ≤ R u := by
       intro u hu
       rw [hv₀_eq]
       exact csInf_le hRK_compact.bddBelow (Set.mem_image_of_mem R hu)
-    
+
     -- For any r ∈ S, we have r ≥ R(v₀) by scale invariance
     -- If r = ⟨Hu,u⟩/‖u‖² with u≠0, u⊥1, then normalizing u' = u/√‖u‖² gives r = R(u')
     have h_lower_bound : ∀ r ∈ { r | ∃ v : V → ℝ, v ≠ 0 ∧ inner_pi pi_dist v constant_vec_one = 0 ∧
@@ -587,10 +587,10 @@ theorem gap_pos_iff_ker_eq_span_one [Nontrivial V]
         rw [Real.sq_sqrt (le_of_lt hu_pos)]
       rw [hr_eq']
       exact hv₀_is_min u' hu'_mem
-    
+
     -- Therefore sInf S ≥ R(v₀) > 0
     have h_sInf_ge : R v₀ ≤ SpectralGap_pi pi_dist H := le_csInf h_set_nonempty h_lower_bound
-    
+
     -- But sInf S = 0, so R(v₀) ≤ 0, contradicting R(v₀) > 0
     linarith
 

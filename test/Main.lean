@@ -7,7 +7,7 @@ import SGC.Variational.LeastAction
 import SGC.Information.Equivalence
 import SGC.Observables.ValidityHorizon
 import SGC.Observables.TopologicalPersistence
-import SGC.Observables.EnergyUnification
+import SGC.Observables.ThermodynamicBounds
 import SGC.Bridge.Quantum
 import SGC.Bridge.CoherenceObstruction
 import SGC.Bridge.Recovery
@@ -147,8 +147,8 @@ Red flag: If `sorry` appears, the proof is incomplete.
 -- Topological Persistence: Markov blanket ⟹ positive survival time
 #print axioms SGC.Observables.expected_persistence_time_pos
 #print axioms SGC.Observables.persistence_cost_ratio_constant
--- Energy Unification Triangle
-#print axioms SGC.Observables.energy_unification_triangle
+-- Thermodynamic Bounds Triangle
+#print axioms SGC.Observables.thermodynamic_bounds_triangle
 
 end AxiomAudit
 

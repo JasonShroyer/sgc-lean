@@ -187,7 +187,7 @@ lemma EscortFlow_nonneg {q : ℝ} (hq : q > 0) (p : V → ℝ) (hp : ∀ v, 0 �
 
     **Normalization**: Dividing by min(vol_q(S), vol_q(Sᶜ)) ensures the
     measure is symmetric and bounded. -/
-def EscortConductance (q : ℝ) (p : V → ℝ) (hZ : EscortNormalization q p ≠ 0)
+def Conductance (q : ℝ) (p : V → ℝ) (hZ : EscortNormalization q p ≠ 0)
     (P_t : TransitionKernel V) (P : StatePartition V) : ℝ :=
   let vol_in := EscortVolume q p hZ P.inside
   let vol_out := EscortVolume q p hZ P.outside
@@ -195,10 +195,10 @@ def EscortConductance (q : ℝ) (p : V → ℝ) (hZ : EscortNormalization q p �
   flow / min vol_in vol_out
 
 /-- Conductance is non-negative. -/
-lemma EscortConductance_nonneg {q : ℝ} (hq : q > 0) (p : V → ℝ) (hp : ∀ v, 0 ≤ p v)
+lemma Conductance_nonneg {q : ℝ} (hq : q > 0) (p : V → ℝ) (hp : ∀ v, 0 ≤ p v)
     (hZ : EscortNormalization q p ≠ 0) (P_t : TransitionKernel V) (P : StatePartition V) :
-    0 ≤ EscortConductance q p hZ P_t P := by
-  unfold EscortConductance
+    0 ≤ Conductance q p hZ P_t P := by
+  unfold Conductance
   apply div_nonneg
   · exact EscortFlow_nonneg hq p hp hZ P_t P.inside
   · apply le_min
@@ -219,7 +219,7 @@ lemma EscortConductance_nonneg {q : ℝ} (hq : q > 0) (p : V → ℝ) (hp : ∀ 
     a minimum. We use `sInf` for generality. -/
 def CheegerConstant (q : ℝ) (p : V → ℝ) (hZ : EscortNormalization q p ≠ 0)
     (P_t : TransitionKernel V) : ℝ :=
-  sInf { φ | ∃ P : StatePartition V, φ = EscortConductance q p hZ P_t P }
+  sInf { φ | ∃ P : StatePartition V, φ = Conductance q p hZ P_t P }
 
 /-! ### 7. Scale-Dependent Conductance -/
 
@@ -285,7 +285,7 @@ axiom rg_monotonicity_of_cheeger {q : ℝ} [NonExtensiveSystem q]
     that resist the smoothing effect of diffusion. -/
 def IsPersistentBoundary (q : ℝ) (p : V → ℝ) (hZ : EscortNormalization q p ≠ 0)
     (P : HeatSemigroup V) (Part : StatePartition V) (threshold T : ℝ) : Prop :=
-  EscortConductance q p hZ (P.at_scale T) Part < threshold
+  Conductance q p hZ (P.at_scale T) Part < threshold
 
 /-- **Boundary Persistence Theorem**: If a partition has low conductance at
     scale T, it had low conductance at all earlier scales.
@@ -300,8 +300,8 @@ theorem boundary_persistence {q : ℝ} [NonExtensiveSystem q]
     (P : HeatSemigroup V) (Part : StatePartition V)
     (threshold t T : ℝ) (_ht : 0 ≤ t) (_htT : t ≤ T)
     (_h_persist : IsPersistentBoundary q p hZ P Part threshold T) :
-    EscortConductance q p hZ (P.at_scale t) Part ≤
-    EscortConductance q p hZ (P.at_scale T) Part := by
+    Conductance q p hZ (P.at_scale t) Part ≤
+    Conductance q p hZ (P.at_scale T) Part := by
   -- This requires showing that individual partition conductance is monotone
   -- For now, we note this follows from the structure but defer the proof
   sorry
