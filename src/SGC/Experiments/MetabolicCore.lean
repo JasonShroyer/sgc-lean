@@ -5,34 +5,31 @@ Authors: SGC Formalization Team
 -/
 
 /-!
-# Phase 8: The Metabolic Core Validator
+# Mathematical Demonstration: Driven Cycle vs Equilibrium
 
-This module is the "Lab Bench" of the SGC repository. We step out of the rigorous
-proving world (Real numbers, axioms) into the simulation world (Float, `#eval`)
-to generate tangible numerical data.
+This module demonstrates SGC metrics on a **synthetic 6-state cycle**.
 
-## Biological Model: The TCA Cycle
+## Purpose
 
-The tricarboxylic acid (TCA) cycle is the metabolic hub of aerobic respiration.
-We model it as a 6-state Markov chain representing the major intermediates:
+Illustrate the mathematical distinction between:
+- **Equilibrium** (detailed balance): Symmetric rates, normal generator
+- **Non-Equilibrium Steady State (NESS)**: Asymmetric rates, non-normal generator
 
-  0: Citrate
-  1: Isocitrate
-  2: α-Ketoglutarate
-  3: Succinyl-CoA
-  4: Succinate/Fumarate/Malate (lumped)
-  5: Oxaloacetate
+## Model
 
-## SGC Predictions
+A 6-node directed cycle with tunable forward/backward rates.
+This is a **toy model** - not a validated biological simulation.
 
-1. **Non-Normality**: Living systems (k_fwd ≫ k_bwd) have L·L† ≠ L†·L
-2. **Flux Creates Structure**: High flux leads to tighter dynamic boundaries
+## Metrics Demonstrated
 
-## Results Summary
+1. **Non-Normality** ||[L, L†]||_F: Zero at equilibrium, positive for NESS
+2. **Entropy Production**: Zero at equilibrium, positive for NESS
+3. **Probability Current**: Zero at equilibrium, circulating for NESS
 
-Run `#eval experiment_results` to see the comparison between:
-- **Dead Case**: k_fwd = k_bwd = 1.0 (detailed balance, equilibrium)
-- **Alive Case**: k_fwd = 100.0, k_bwd = 1.0 (driven cycle, NESS)
+## Limitations
+
+This demonstrates mathematical properties of Markov generators.
+It does NOT validate biological claims about metabolism.
 -/
 
 namespace SGC.Experiments.MetabolicCore

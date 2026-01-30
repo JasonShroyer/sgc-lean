@@ -5,41 +5,33 @@ Authors: SGC Contributors
 -/
 
 /-!
-# Phase 10: Adversarial Test (Gradient vs Cycle)
+# Mathematical Demonstration: Linear Chain vs Closed Cycle
 
-This module challenges SGC theory with a **falsifiability test**.
+This module compares SGC metrics on two **synthetic topologies**.
 
-## The Challenge
+## Purpose
 
-The MetabolicCore experiment showed that driven cycles have non-zero entropy production.
-But is this just detecting "asymmetry" in rates? We need to prove SGC can distinguish:
+Demonstrate that conductance distinguishes:
+- **Open chain**: Probability flows through and exits
+- **Closed cycle**: Probability recirculates
 
-- **Life-like Cycle**: Information recirculates (trapped/persistent)
-- **Dead Gradient**: Information drains away (dissipates)
+## Models (Synthetic)
 
-## The Models
+**Model A - Linear Chain:** 0 → 1 → 2 → 3 → 4 → 5 (open ends)
+**Model B - Closed Cycle:** 0 → 1 → 2 → 3 → 4 → 5 → 0 (periodic)
 
-**Model A - The "Drain":** Linear chain 0 → 1 → 2 → 3 → 4 → 5
-- High forward flux (10.0), low backward (0.1)
-- Open boundary conditions at ends
+Both use identical rate parameters.
 
-**Model B - The "Cell":** Cycle 0 → 1 → 2 → 3 → 4 → 5 → 0
-- Same flux rates as Drain
-- Periodic boundary (closed loop)
+## Mathematical Predictions
 
-## The Prediction
+For partition {0,1,2} vs {3,4,5}:
+- **Chain**: Higher conductance (boundary is permeable)
+- **Cycle**: Lower conductance (information recirculates)
 
-Using q-Escort Conductance for partition {0,1,2} vs {3,4,5}:
+## Limitations
 
-- **Non-Normality**: BOTH should be high (both are driven)
-- **Conductance**:
-  - Drain → HIGH (information washes through)
-  - Cell → LOW (information trapped in cycle)
-
-## Failure Condition
-
-If both show LOW conductance, SGC theory is **falsified**.
-It would mean we cannot distinguish an organism from a leaky pipe.
+This is a mathematical demonstration of topological effects on conductance.
+It does NOT validate claims about biological systems.
 -/
 
 namespace SGC.Experiments.AdversarialTest
@@ -274,8 +266,8 @@ def cellResult := runCellExperiment k_fwd_test k_bwd_test
 def comparisonSummary : String :=
   let drain := drainResult
   let cell := cellResult
-  let conductanceRatio := if cell.conductance_q1 > 1e-10 
-    then drain.conductance_q1 / cell.conductance_q1 
+  let conductanceRatio := if cell.conductance_q1 > 1e-10
+    then drain.conductance_q1 / cell.conductance_q1
     else 0.0
   let verdict := if drain.conductance_q1 > cell.conductance_q1 * 1.5 then
     "✓ SGC VALIDATED: Drain has HIGHER conductance than Cell"
@@ -283,7 +275,7 @@ def comparisonSummary : String :=
     "✗ SGC FALSIFIED: Drain has LOWER conductance than Cell"
   else
     "? INCONCLUSIVE: Conductances are similar"
-  
+
   s!"╔══════════════════════════════════════════════════════════════════════════╗\n" ++
   s!"║                    ADVERSARIAL TEST: GRADIENT vs CYCLE                   ║\n" ++
   s!"║                    Phase 10: Falsifiability Experiment                   ║\n" ++

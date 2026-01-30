@@ -5,45 +5,40 @@ Authors: SGC Contributors
 -/
 
 /-!
-# Phase 11: Rigorous Open System Experiment
+# Mathematical Demonstration: Topology and Non-Normality
 
-## Mathematical Analysis of the Three Topologies
+This module explores how **boundary conditions** affect Markov generator properties.
 
-### 1. Perfect Cycle (Circulant Matrix)
-- Circulant matrices are ALWAYS normal (diagonalizable by DFT)
-- Steady state: π = uniform (by cyclic symmetry)
-- Has constant circulating current J = (k_fwd - k_bwd) * π_i
-- This is a NESS (non-equilibrium steady state)
+## Three Synthetic Topologies
 
-### 2. Linear Drain (Open Boundaries)
+### 1. Perfect Cycle (Circulant)
+- Circulant matrices are normal (diagonalizable by DFT)
+- Uniform steady state by symmetry
+
+### 2. Linear Chain (Open Boundaries)
 - NOT circulant → NOT normal
-- Steady state: π_i ∝ (k_bwd/k_fwd)^i (geometric gradient)
-- For k_fwd/k_bwd = 100, probability piles up at node 0
-- At steady state, NET CURRENT IS ZERO (it's actually equilibrium-like!)
+- Probability accumulates at one end
 
-### 3. Open Cycle (Balanced Source/Sink)
-- Cycle with source into node 0, sink out of node 3
-- Source rate = Sink rate (probability conserved)
-- NOT circulant → NOT normal
-- Has non-trivial steady state with current flow
+### 3. Open Cycle (Source/Sink)
+- Cycle with external source and sink
+- Non-trivial steady state with current flow
 
-## The Key Mathematical Predictions
+## Mathematical Properties Demonstrated
 
 ### Non-Normality ||[L, L†]||_F
-Measures deviation from orthogonal eigenvectors.
 - Perfect Cycle: 0 (circulant = normal)
-- Linear Drain: HIGH (boundary breaks symmetry)
-- Open Cycle: MEDIUM (source/sink break symmetry moderately)
+- Linear Chain: High (boundary breaks symmetry)
+- Open Cycle: Intermediate
 
-### Current Flow at Steady State
-The DRAIN has NO net current at true steady state (probability gradient blocks flow).
-The CYCLE maintains constant current (probability recirculates).
-The OPEN CYCLE has current from source through cycle to sink.
+### Steady-State Current
+- Cycle: Circulating current
+- Chain: No net current at steady state
+- Open Cycle: Through-current from source to sink
 
-### Spectral Gap (Mixing Time)
-- Perfect Cycle: All modes decay at same rate λ = k_fwd + k_bwd
-- Linear Drain: Has slow mode at node 5 (λ = k_bwd = 0.1)
-- Open Cycle: Intermediate (source/sink create asymmetry but preserve mixing)
+## Limitations
+
+This demonstrates mathematical properties of different graph structures.
+These are synthetic models, not validated biological systems.
 -/
 
 namespace SGC.Experiments.OpenSystemTest
