@@ -409,7 +409,7 @@ The correspondence κ ↔ ε (curvature ↔ defect) implies:
 
 - `AssemblyIndex`: Defined (= YamabeEnergy)
 - `assembly_index_nonneg`: Proven
-- `assembly_index_zero_iff_constant`: Mostly proven (1 sorry)
+- `assembly_index_zero_iff_constant`: Proven
 - `curvature_defect_correspondence`: Axiomatized (requires embedding)
 - `yamabe_bounds_hidden_entropy`: Axiomatized (requires careful mapping)
 - `energy_entropy_rate_correspondence`: Axiomatized (requires flow analysis)

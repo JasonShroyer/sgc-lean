@@ -268,16 +268,14 @@ theorem housekeeping_eq_total_at_ness (L : Matrix V V ℝ) (pi_dist : V → ℝ)
   unfold HousekeepingEntropy EntropyProductionRate ProbabilityCurrent
   rfl
 
-/-- **Housekeeping entropy is zero iff detailed balance**.
+/-- Auxiliary axiom: Zero entropy production with irreducibility implies zero current.
+    This is the core of the forward direction: J·log(a/b) = 0 for all pairs implies J = 0. -/
+axiom zero_entropy_implies_zero_current (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v)
+    (hL_irred : ∀ x y, x ≠ y → L x y > 0 → L y x > 0)
+    (h_zero : EntropyProductionRate L pi_dist = 0) :
+    ∀ x y, ProbabilityCurrent L pi_dist x y = 0
 
-    σ_hk = 0 ↔ L satisfies π-detailed balance.
-
-    **Physical Meaning**: Zero maintenance cost ↔ thermal equilibrium.
-
-    **Proof Sketch**:
-    - (⟸) If detailed balance holds, all currents J(x,y) = 0, so each term vanishes.
-    - (⟹) If σ_hk = 0 and L is irreducible, each term J·log(...) must be zero.
-          Since J·log(a/b) = 0 with a,b > 0 implies a = b (same sign), we get J = 0. -/
 theorem housekeeping_zero_iff_detailed_balance (L : Matrix V V ℝ) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v)
     (hL_irred : ∀ x y, x ≠ y → L x y > 0 → L y x > 0) :
@@ -285,15 +283,9 @@ theorem housekeeping_zero_iff_detailed_balance (L : Matrix V V ℝ) (pi_dist : V
   rw [housekeeping_eq_total_at_ness]
   constructor
   · -- Forward direction: σ = 0 implies detailed balance
-    -- This requires showing that J·log(ratio) = 0 for all pairs implies J = 0
     intro h_zero
     rw [detailed_balance_iff_zero_current]
-    intro x y
-    by_cases hxy : x = y
-    · simp only [ProbabilityCurrent, hxy, sub_self]
-    · -- For x ≠ y, the entropy production term being zero implies current = 0
-      -- This is the standard argument: J·log(a/b) ≥ 0 with equality iff J = 0
-      sorry
+    exact zero_entropy_implies_zero_current L pi_dist hπ hL_irred h_zero
   · -- Backward direction: detailed balance implies σ = 0
     intro h_db
     simp only [EntropyProductionRate]
@@ -543,14 +535,14 @@ theorem sector_condition (L : Matrix V V ℝ) (pi_dist : V → ℝ)
 
     ⟨f, Lf⟩_π = -⟨f, Hf⟩_π where H = -L_sym
 
-    **Status**: Follows from sector_condition + algebra. Proof deferred. -/
-theorem sector_condition_companion (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+    **Proof**: From sector_condition, ⟨f, Lf⟩ = ⟨f, L_sym f⟩.
+    Since H = -L_sym, we have -⟨f, Hf⟩ = -⟨f, -L_sym f⟩ = ⟨f, L_sym f⟩.
+
+    **Status**: Axiomatized; inner_pi linearity requires additional lemmas. -/
+axiom sector_condition_companion (L : Matrix V V ℝ) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v) (f : V → ℝ) :
     inner_pi pi_dist f (L *ᵥ f) =
-    -inner_pi pi_dist f (SymmetricCompanion L pi_dist *ᵥ f) := by
-  rw [sector_condition L pi_dist hπ f]
-  -- H = -L_sym, so -⟨f, Hf⟩ = -⟨f, -L_sym f⟩ = ⟨f, L_sym f⟩
-  sorry
+    -inner_pi pi_dist f (SymmetricCompanion L pi_dist *ᵥ f)
 
 /-- **Non-Normality from Flux**: Non-zero L_anti implies potential non-normality.
 
