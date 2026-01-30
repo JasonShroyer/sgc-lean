@@ -219,12 +219,12 @@ def brainDecodingExperiment : String :=
   let complement := partitionNames (~~~best.bestPartition &&& 0xFFFFF)
 
   s!"╔══════════════════════════════════════════════════════════════════════════════╗\n" ++
-  s!"║       PHASE 19: UNSUPERVISED BRAIN DECODING                                  ║\n" ++
-  s!"║       Can SGC Find the Functional Modules Without Being Told?                ║\n" ++
+  s!"║       UNSUPERVISED MODULE DISCOVERY                                          ║\n" ++
+  s!"║       C. elegans Pharyngeal Nervous System                                   ║\n" ++
   s!"╠══════════════════════════════════════════════════════════════════════════════╣\n" ++
-  s!"║  Algorithm: Monte Carlo Cheeger Cut                                          ║\n" ++
-  s!"║  Objective: Find partition S that MINIMIZES Escort Conductance               ║\n" ++
-  s!"║  Network: C. elegans Pharyngeal (20 neurons, 60 edges)                       ║\n" ++
+  s!"║  Algorithm: Monte Carlo minimum-conductance partition search                 ║\n" ++
+  s!"║  Network: 20 neurons, 60 directed edges                                      ║\n" ++
+  s!"║  Data: Cook et al. (2019), WormAtlas                                         ║\n" ++
   s!"╠══════════════════════════════════════════════════════════════════════════════╣\n" ++
   s!"║                         SEARCH RESULTS                                       ║\n" ++
   s!"╠══════════════════════════════════════════════════════════════════════════════╣\n" ++
@@ -250,19 +250,16 @@ def brainDecodingExperiment : String :=
   s!"║  Cluster S^c:\n" ++
   s!"║    {analyzePartition (~~~best.bestPartition &&& 0xFFFFF)}\n" ++
   s!"╠══════════════════════════════════════════════════════════════════════════════╣\n" ++
-  s!"║  VERDICT:                                                                    ║\n" ++
+  s!"║  RESULT:                                                                     ║\n" ++
   (let motorCount := countMotorInPartition best.bestPartition
    let interCount := countInterneuronInPartition best.bestPartition
    let size := partitionSize best.bestPartition
    let motorPurity := if size > 0 then motorCount.toFloat / size.toFloat * 100.0 else 0.0
    let interPurity := if size > 0 then interCount.toFloat / size.toFloat * 100.0 else 0.0
    if motorPurity > 60.0 || interPurity > 60.0 then
-  s!"║  ✓ SGC SUCCESSFULLY IDENTIFIED FUNCTIONAL MODULES                            ║\n" ++
-  s!"║    The algorithm found a biologically meaningful partition                   ║\n" ++
-  s!"║    WITHOUT being told the neuron labels!                                     ║\n"
+  s!"║  Partition aligns with known functional groups (>{formatFloat (max motorPurity interPurity) 0}% purity)  ║\n"
    else
-  s!"║  ? MIXED RESULT - partition does not cleanly separate functional groups      ║\n" ++
-  s!"║    This may indicate overlapping functional roles in the network.            ║\n") ++
+  s!"║  Mixed partition - functional groups overlap in this network                 ║\n") ++
   s!"╚══════════════════════════════════════════════════════════════════════════════╝"
 
 #eval brainDecodingExperiment

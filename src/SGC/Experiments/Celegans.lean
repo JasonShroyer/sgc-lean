@@ -337,16 +337,13 @@ def celegansValidation : String :=
   let motorClosed := actionCond < controlCond
 
   s!"╔══════════════════════════════════════════════════════════════════════════════╗\n" ++
-  s!"║     PHASE 18: C. ELEGANS PHARYNGEAL NERVOUS SYSTEM VALIDATION                ║\n" ++
-  s!"║     Real Biological Data - Zero Parameter Tuning                             ║\n" ++
+  s!"║     C. ELEGANS PHARYNGEAL NERVOUS SYSTEM ANALYSIS                            ║\n" ++
   s!"╠══════════════════════════════════════════════════════════════════════════════╣\n" ++
   s!"║  Network: 20 neurons, {totalEdges} directed edges                                    ║\n" ++
-  s!"║  Source: Cook et al. (2019), WormAtlas                                       ║\n" ++
-  s!"╠══════════════════════════════════════════════════════════════════════════════╣\n" ++
-  s!"║                         SGC ANALYSIS RESULTS                                 ║\n" ++
+  s!"║  Data: Cook et al. (2019) Nature, WormAtlas                                  ║\n" ++
   s!"╠══════════════════════════════════════════════════════════════════════════════╣\n" ++
   s!"║  NON-NORMALITY: ||[L, L†]||_F = {formatFloat nonNorm 2}                               ║\n" ++
-  s!"║    → Network is NON-NORMAL (Directed information flow) ✓                     ║\n" ++
+  s!"║  (Non-zero indicates directed/asymmetric information flow)                   ║\n" ++
   s!"╠══════════════════════════════════════════════════════════════════════════════╣\n" ++
   s!"║  PARTITION ANALYSIS:                                                         ║\n" ++
   s!"║                                                                              ║\n" ++
@@ -360,26 +357,15 @@ def celegansValidation : String :=
   s!"║    Conductance: {formatFloat actionCond 3}  (LOW - Information Sink)                 ║\n" ++
   s!"║    Density: {formatFloat actionDens 3}                                                      ║\n" ++
   s!"╠══════════════════════════════════════════════════════════════════════════════╣\n" ++
-  s!"║  SGC DISCOVERY:                                                              ║\n" ++
-  s!"║                                                                              ║\n" ++
-  s!"║  Interneuron Conductance: {formatFloat controlCond 3} >> Motor Conductance: {formatFloat actionCond 3}   ║\n" ++
+  s!"║  OBSERVATION:                                                                ║\n" ++
+  s!"║  Interneuron Conductance ({formatFloat controlCond 3}) > Motor Conductance ({formatFloat actionCond 3})    ║\n" ++
   s!"║                                                                              ║\n" ++
   (if motorClosed then
-  s!"║  ✓ SGC identifies FUNCTIONAL ASYMMETRY:                                      ║\n" ++
-  s!"║    • Interneurons = HIGH conductance = BROADCAST layer                       ║\n" ++
-  s!"║      (Their job is to SEND information across the boundary)                  ║\n" ++
-  s!"║    • Motor neurons = LOW conductance = EXECUTION layer                       ║\n" ++
-  s!"║      (Their job is to RECEIVE and execute in isolation)                      ║\n" ++
-  s!"║                                                                              ║\n" ++
-  s!"║  This is CORRECT! The control layer's function IS boundary-crossing.         ║\n" ++
-  s!"║  SGC detected the SOURCE → SINK architecture of neural control.              ║\n"
+  s!"║  Interpretation: Interneurons have higher boundary flux (transmit role),    ║\n" ++
+  s!"║  while motor neurons form a more isolated execution chain.                   ║\n" ++
+  s!"║  This is consistent with known source→sink neural architecture.              ║\n"
   else
-  s!"║  Unexpected result - further analysis needed.                                ║\n") ++
-  s!"╠══════════════════════════════════════════════════════════════════════════════╣\n" ++
-  s!"║  KEY INSIGHT: Conductance measures ROLE, not IMPORTANCE                      ║\n" ++
-  s!"║    • High conductance = Interface/Transmitter (Interneurons)                 ║\n" ++
-  s!"║    • Low conductance = Closed executor (Motor chain)                         ║\n" ++
-  s!"║  SGC found the correct functional architecture WITHOUT being told.           ║\n" ++
+  s!"║  Unexpected ordering - further analysis needed.                              ║\n") ++
   s!"╚══════════════════════════════════════════════════════════════════════════════╝"
 
 #eval celegansValidation
