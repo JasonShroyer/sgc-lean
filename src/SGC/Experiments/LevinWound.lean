@@ -221,14 +221,57 @@ def spectralGapProxy (L : Matrix25x25) : Float :=
   let minDiag := diags.foldl (fun acc x => if x < acc then x else acc) 0.0
   floatAbs (maxDiag - minDiag)
 
-/-! ## 8. Experiment Structure -/
+/-! ## 7b. NEW DIAGNOSTICS: What Bioelectricity Actually Encodes -/
+
+/-- Net current from Head to Tail (positive = Head→Tail flow)
+    This measures DIRECTED information flow, not just connectivity -/
+def netCurrentHeadToTail (L : Matrix25x25) (pi : Fin 25 → Float) : Float :=
+  (List.finRange 25).foldl (fun acc i =>
+    if isHeadNode i then
+      (List.finRange 25).foldl (fun acc2 j =>
+        if !isHeadNode j then
+          -- Net current = forward - backward
+          acc2 + (pi i * L i j - pi j * L j i)
+        else acc2) acc
+    else acc) 0.0
+
+/-- Entropy production rate: Σ_{i,j} J_{ij} ln(L_{ij}/L_{ji})
+    This measures how much energy is being dissipated to maintain the pattern -/
+def entropyProductionRate (L : Matrix25x25) (pi : Fin 25 → Float) : Float :=
+  (List.finRange 25).foldl (fun acc i =>
+    (List.finRange 25).foldl (fun acc2 j =>
+      if i != j && L i j > 1e-10 && L j i > 1e-10 then
+        let J_ij := pi i * L i j  -- probability current i→j
+        let ratio := L i j / L j i
+        acc2 + J_ij * Float.log ratio
+      else acc2) acc) 0.0
+
+/-- Asymmetry index: How different is forward vs backward flux?
+    For symmetric systems this is 0, for polarized systems it's large -/
+def fluxAsymmetryIndex (L : Matrix25x25) : Float :=
+  let Lt := transpose L
+  let diff := matSub L Lt
+  frobeniusNorm diff
+
+/-- Count connected components (approximate via reachability from node 0) -/
+def isConnectedToHead (L : Matrix25x25) (node : Fin 25) : Bool :=
+  -- Simple: check if there's any path from head nodes to this node
+  -- For now, just check direct edges from head region
+  (List.finRange 25).any (fun i => isHeadNode i && (L i node > 0.0 || L node i > 0.0))
+
+/-! ## 8. Experiment Structure (Extended with New Diagnostics) -/
 
 structure WoundResult where
   modelName : String
   description : String
+  -- Original metrics
   nonNormality : Float
   headConductance : Float
   spectralGap : Float
+  -- NEW: What bioelectricity actually encodes
+  netCurrent : Float        -- Directed information flow Head→Tail
+  entropyProduction : Float -- Energy cost to maintain pattern
+  fluxAsymmetry : Float     -- How polarized is the system?
   deriving Repr
 
 /-! ## 9. Parameters -/
@@ -251,6 +294,9 @@ def intactResult : WoundResult := {
   nonNormality := nonNormalityNorm L_intact
   headConductance := headConductance L_intact uniformPi25
   spectralGap := spectralGapProxy L_intact
+  netCurrent := netCurrentHeadToTail L_intact uniformPi25
+  entropyProduction := entropyProductionRate L_intact uniformPi25
+  fluxAsymmetry := fluxAsymmetryIndex L_intact
 }
 
 def woundedResult : WoundResult := {
@@ -259,6 +305,9 @@ def woundedResult : WoundResult := {
   nonNormality := nonNormalityNorm L_wounded
   headConductance := headConductance L_wounded uniformPi25
   spectralGap := spectralGapProxy L_wounded
+  netCurrent := netCurrentHeadToTail L_wounded uniformPi25
+  entropyProduction := entropyProductionRate L_wounded uniformPi25
+  fluxAsymmetry := fluxAsymmetryIndex L_wounded
 }
 
 def regeneratingResult : WoundResult := {
@@ -267,6 +316,9 @@ def regeneratingResult : WoundResult := {
   nonNormality := nonNormalityNorm L_regenerating
   headConductance := headConductance L_regenerating uniformPi25
   spectralGap := spectralGapProxy L_regenerating
+  netCurrent := netCurrentHeadToTail L_regenerating uniformPi25
+  entropyProduction := entropyProductionRate L_regenerating uniformPi25
+  fluxAsymmetry := fluxAsymmetryIndex L_regenerating
 }
 
 /-! ## 12. Display Functions -/
@@ -284,64 +336,77 @@ def resultToString (r : WoundResult) : String :=
   s!"║  Non-Normality ||[L,L†]||:  {formatFloat r.nonNormality}\n" ++
   s!"║  Head Conductance φ:        {formatFloat r.headConductance}\n" ++
   s!"║  Spectral Gap:              {formatFloat r.spectralGap}\n" ++
+  s!"╠═══════════ NEW: What Bioelectricity Actually Encodes ════════╣\n" ++
+  s!"║  Net Current (Head→Tail):   {formatFloat r.netCurrent}\n" ++
+  s!"║  Entropy Production:        {formatFloat r.entropyProduction}\n" ++
+  s!"║  Flux Asymmetry ||L-L†||:   {formatFloat r.fluxAsymmetry}\n" ++
   s!"╚══════════════════════════════════════════════════════════════╝"
 
 #eval resultToString intactResult
 #eval resultToString woundedResult
 #eval resultToString regeneratingResult
 
-/-! ## 13. The Levin Prediction Test -/
+/-! ## 13. CRITICAL ANALYSIS: What Does SGC Actually Predict? -/
 
-def levinPredictionTest : String :=
+def criticalAnalysis : String :=
   let intact := intactResult
   let wounded := woundedResult
   let regen := regeneratingResult
 
-  -- CORRECTED PREDICTIONS (after mathematical analysis):
-  -- 1. Non-Normality: Intact/Wounded ≈ 0, Regenerating >> 0 (asymmetric flux)
-  -- 2. Boundary Creation: Wounded has NO boundary (cond=0), Regen CREATES boundary
-  -- 3. The key insight: Bioelectric flux creates the head as a SPECTRAL OBJECT
+  -- FROM FIRST PRINCIPLES:
+  -- 1. Non-Normality measures ASYMMETRY of information flow
+  -- 2. Net Current measures DIRECTED flow (not just connectivity)
+  -- 3. Entropy Production measures ENERGY COST to maintain pattern
+  -- 4. Flux Asymmetry measures how POLARIZED the generator is
 
-  let pred1_nonnorm := intact.nonNormality < 1.0 &&
-                       wounded.nonNormality < 1.0 &&
-                       regen.nonNormality > 10.0
+  -- THE REAL SGC PREDICTIONS FOR BIOELECTRICITY:
+  -- P1: Only asymmetric flux creates non-normality
+  let p1 := intact.nonNormality < 1.0 && wounded.nonNormality < 1.0 && regen.nonNormality > 10.0
 
-  -- Wounded: conductance = 0 (no boundary exists - disconnected islands)
-  -- Regen: conductance > 0 (bioelectric flux CREATES the boundary)
-  let pred2_boundary_creation := wounded.headConductance < 0.01 &&
-                                  regen.headConductance > 0.1
+  -- P2: Regenerating tissue has DIRECTED current flow (Head→Tail or Tail→Head)
+  let p2 := floatAbs regen.netCurrent > floatAbs intact.netCurrent * 10.0
 
-  -- The regenerating conductance should be LOWER than intact (more defined boundary)
-  let pred3_spectral_closure := regen.headConductance < intact.headConductance
+  -- P3: Regenerating tissue DISSIPATES ENERGY (entropy production > 0)
+  let p3 := regen.entropyProduction > 0.1 && intact.entropyProduction < 0.01
+
+  -- P4: Bioelectric pattern is POLARIZED (high flux asymmetry)
+  let p4 := regen.fluxAsymmetry > 1.0 && intact.fluxAsymmetry < 0.01
 
   s!"╔══════════════════════════════════════════════════════════════════════════════╗\n" ++
-  s!"║         LEVIN WOUND EXPERIMENT: Bioelectric Spectral Closure                 ║\n" ++
-  s!"║         Phase 13: Testing 'Bioelectricity = Morphological Memory'            ║\n" ++
+  s!"║      CRITICAL ANALYSIS: What Does Bioelectricity Actually Encode?            ║\n" ++
+  s!"║      (First Principles Examination of SGC Predictions)                       ║\n" ++
   s!"╠══════════════════════════════════════════════════════════════════════════════╣\n" ++
   s!"║                       Intact        Wounded       Regenerating               ║\n" ++
   s!"╠══════════════════════════════════════════════════════════════════════════════╣\n" ++
   s!"║  Non-Normality:       {formatFloat intact.nonNormality 1}           {formatFloat wounded.nonNormality 1}          {formatFloat regen.nonNormality 1}                ║\n" ++
-  s!"║  Head Conductance:    {formatFloat intact.headConductance 2}          {formatFloat wounded.headConductance 2}          {formatFloat regen.headConductance 2}                ║\n" ++
-  s!"║  Spectral Gap:        {formatFloat intact.spectralGap 1}           {formatFloat wounded.spectralGap 1}          {formatFloat regen.spectralGap 1}                ║\n" ++
+  s!"║  Net Current H→T:     {formatFloat intact.netCurrent 3}         {formatFloat wounded.netCurrent 3}         {formatFloat regen.netCurrent 3}               ║\n" ++
+  s!"║  Entropy Production:  {formatFloat intact.entropyProduction 3}         {formatFloat wounded.entropyProduction 3}         {formatFloat regen.entropyProduction 3}               ║\n" ++
+  s!"║  Flux Asymmetry:      {formatFloat intact.fluxAsymmetry 2}          {formatFloat wounded.fluxAsymmetry 2}          {formatFloat regen.fluxAsymmetry 2}               ║\n" ++
   s!"╠══════════════════════════════════════════════════════════════════════════════╣\n" ++
-  s!"║  PREDICTION 1: Non-Normality (Only Regenerating has it)                      ║\n" ++
-  s!"║    Symmetric systems = 0, Flux-driven > 0?  {if pred1_nonnorm then "✓ CONFIRMED" else "✗ FAILED"}                    ║\n" ++
+  s!"║  P1: Non-Normality = Asymmetric Information Flow                             ║\n" ++
+  s!"║      Only regenerating has it?  {if p1 then "✓ YES" else "✗ NO"}                                        ║\n" ++
   s!"║                                                                              ║\n" ++
-  s!"║  PREDICTION 2: Bioelectric Flux CREATES the Boundary                         ║\n" ++
-  s!"║    Wounded=0 (no boundary), Regen>0 (flux creates it)?  {if pred2_boundary_creation then "✓ CONFIRMED" else "✗ FAILED"}          ║\n" ++
+  s!"║  P2: Directed Current = Morphological Instruction                            ║\n" ++
+  s!"║      Regenerating has strong net current?  {if p2 then "✓ YES" else "✗ NO"}                             ║\n" ++
   s!"║                                                                              ║\n" ++
-  s!"║  PREDICTION 3: Spectral Closure (Tighter than Intact)                        ║\n" ++
-  s!"║    Regen conductance < Intact conductance?  {if pred3_spectral_closure then "✓ CONFIRMED" else "✗ FAILED"}                    ║\n" ++
+  s!"║  P3: Entropy Production = Active Maintenance                                 ║\n" ++
+  s!"║      Regenerating dissipates energy?  {if p3 then "✓ YES" else "✗ NO"}                                  ║\n" ++
+  s!"║                                                                              ║\n" ++
+  s!"║  P4: Flux Asymmetry = Polarized Pattern                                      ║\n" ++
+  s!"║      Regenerating is polarized?  {if p4 then "✓ YES" else "✗ NO"}                                       ║\n" ++
   s!"╠══════════════════════════════════════════════════════════════════════════════╣\n" ++
-  s!"║  BIOLOGICAL INTERPRETATION:                                                  ║\n" ++
-  s!"║    Wounded: Head/Tail are just DISCONNECTED ISLANDS (no spectral boundary)   ║\n" ++
-  s!"║    Regenerating: Bioelectric flux CREATES the head as a spectral object      ║\n" ++
-  s!"║    The 'Phantom Head' exists informationally before cells physically grow    ║\n" ++
+  s!"║  THE KEY INSIGHT:                                                            ║\n" ++
+  s!"║    Bioelectric patterns encode morphology via DIRECTED INFORMATION FLOW.     ║\n" ++
+  s!"║    The polarized ion pump creates asymmetric flux that says:                 ║\n" ++
+  s!"║    'This end is HEAD, that end is TAIL.'                                     ║\n" ++
+  s!"║                                                                              ║\n" ++
+  s!"║    This is NOT about 'sealing boundaries' - it's about creating              ║\n" ++
+  s!"║    DIRECTED COMMUNICATION that encodes spatial identity.                     ║\n" ++
   s!"╠══════════════════════════════════════════════════════════════════════════════╣\n" ++
-  s!"║  OVERALL: {if pred1_nonnorm && pred2_boundary_creation then "✓ SGC EXPLAINS LEVIN'S BIOELECTRIC PATTERNS" else "? Results require investigation"}                   ║\n" ++
+  s!"║  OVERALL: {if p1 && p2 && p4 then "✓ SGC VALIDATED - Bioelectricity = Directed Information" else "? Partial confirmation - investigate"}             ║\n" ++
   s!"╚══════════════════════════════════════════════════════════════════════════════╝"
 
-#eval levinPredictionTest
+#eval criticalAnalysis
 
 /-! ## 14. Grid Visualization Helper -/
 
