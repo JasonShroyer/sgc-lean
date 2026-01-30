@@ -55,6 +55,14 @@ abbrev Matrix20 := Fin 20 → Fin 20 → Float
 
 /-! ## Neuron Names and Classifications -/
 
+/-- Neuron class enumeration -/
+inductive NeuronClass where
+  | Interneuron
+  | Motor
+  | Pacemaker
+  | Neurosecretory
+  deriving Repr, BEq
+
 def neuronName (i : Fin 20) : String :=
   match i.val with
   | 0 => "I1L" | 1 => "I1R" | 2 => "I2L" | 3 => "I2R"
@@ -63,6 +71,14 @@ def neuronName (i : Fin 20) : String :=
   | 11 => "M3L" | 12 => "M3R" | 13 => "M4" | 14 => "M5"
   | 15 => "MCL" | 16 => "MCR" | 17 => "MI"
   | 18 => "NSML" | 19 => "NSMR" | _ => "?"
+
+def neuronClass (i : Fin 20) : NeuronClass :=
+  match i.val with
+  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 => .Interneuron
+  | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 17 => .Motor
+  | 15 | 16 => .Pacemaker
+  | 18 | 19 => .Neurosecretory
+  | _ => .Motor
 
 /-- Interneurons: I1L, I1R, I2L, I2R, I3, I4, I5, I6 -/
 def isInterneuron (i : Fin 20) : Bool :=
