@@ -3,19 +3,36 @@ import SGC.Experiments.CelegansPharynxData
 /-!
 # C. elegans Pharyngeal Nervous System Analysis
 
-This experiment applies SGC diagnostics to the C. elegans pharyngeal connectome.
-Data source and methodology documented in `CelegansPharynxData.lean`.
+## Theorem Under Test
 
-## What This Experiment Measures
+**Coherence Obstruction** (`SGC.Spectral.Conductance`):
+  Low conductance partitions indicate information trapping.
+  The conductance φ(S) = cut(S,Sᶜ) / min(vol(S), vol(Sᶜ)) bounds mixing time.
 
-1. **Non-Normality**: ||[L, L†]||_F - deviation from symmetric dynamics
-2. **Partition Conductance**: Weighted boundary flux for interneuron vs motor partitions
+**Prediction**: Interneurons (information sources) have HIGHER conductance than
+motor neurons (information sinks), reflecting directional information flow.
+
+## Methodology
+
+1. Compute weighted conductance for biologically-defined partitions
+2. Compare conductance ratios between interneuron and motor layers
+3. Verify that topology (not just edge count) determines information flow
+
+## Data Source
+
+Cook et al. (2020) pharyngeal connectome. See `CelegansPharynxData.lean`.
+
+## Interpretation Guidelines
+
+- **Conductance ratios** measure relative information permeability
+- **Non-normality** indicates directed (irreversible) dynamics
+- Results describe INFORMATION FLOW, not biological function claims
 
 ## Limitations
 
-- Chemical synapses only (gap junctions analyzed separately in original paper)
-- Self-loops (autapses) included in original data
+- Chemical synapses only (gap junctions analyzed separately)
 - This is ONE network; generalization requires validation on other connectomes
+- No claims about consciousness, awareness, or subjective experience
 -/
 
 namespace SGC.Experiments.Celegans

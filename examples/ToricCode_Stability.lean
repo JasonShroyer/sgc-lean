@@ -8,47 +8,48 @@ import SGC.Bridge.Quantum
 /-!
 # Toric Code Stability Example
 
-This file demonstrates how the SGC quantum bridge theorems apply to a
-concrete quantum error correction scenario: the **Toric Code** under
-local noise.
+## Theorem Under Test
+
+**Quantum Bridge Theorem** (`SGC.Bridge.Quantum.quantum_validity_horizon_bound`):
+  For a code subspace with lumpability defect ε and spectral gap δ:
+    T_validity ≥ δ / ε
+
+This bounds the time horizon over which quantum error correction maintains
+logical coherence against local noise.
+
+## Algebraic Isomorphism
+
+The Toric Code's error correction structure maps to SGC lumpability:
+
+| Toric Code Concept | SGC Bridge Definition |
+|--------------------|----------------------|
+| Code space projection P | `CodeSubspace.proj` |
+| Local noise channel | Lindbladian generator `ℒ` |
+| Physical error rate ε | Defect operator norm `‖D‖` |
+| Logical error time | `quantumValidityHorizon` |
 
 ## Physical Setup
 
-The Toric Code is a 2D topological quantum error correcting code defined on
-a square lattice with periodic boundary conditions (a torus). It has:
-
-- **Physical qubits**: One per edge of the lattice
-- **Logical qubits**: 2 (encoded in the homology of the torus)
+The Toric Code is defined on a square lattice with periodic boundaries:
+- **Physical qubits**: One per edge
+- **Logical qubits**: 2 (torus homology)
 - **Stabilizers**: Star (A_v) and Plaquette (B_p) operators
-- **Code space**: Ground state of H = -Σ_v A_v - Σ_p B_p
 
-## SGC Bridge Application
+## Key Prediction
 
-The Toric Code's stability under local noise maps to our lumpability framework:
-
-| Toric Code | SGC Bridge |
-|------------|------------|
-| Code space projection P | `CodeSubspace.proj` |
-| Local noise channel | Lindbladian `ℒ` |
-| Error rate ε | Defect operator norm `‖D‖` |
-| Logical error time | `quantumValidityHorizon` |
-
-## Key Insight
-
-**Theorem** (Informal): For the Toric Code under local depolarizing noise
-with error rate p per qubit per unit time:
-
+For local depolarizing noise with rate p:
   T_logical ≥ exp(c · L) / p
 
-where L is the linear size of the lattice. This exponential protection
-arises because:
+where L is the lattice size. The exponential protection arises from:
+1. Local errors create anyon pairs
+2. Logical errors require anyons to traverse the torus
+3. Error correction suppresses this exponentially in L
 
-1. Local errors create anyons (defects in stabilizers)
-2. Logical errors require anyon pairs to traverse the torus
-3. Random walks take time ~L² to traverse distance L
-4. With error correction, the effective "logical defect" ε ~ exp(-cL)
+## Interpretation Guidelines
 
-Our `quantum_validity_horizon_bound` captures this: T ≥ δ/ε.
+- Results describe ERROR CORRECTION HORIZONS, not computational power
+- The bound is algebraic (from lumpability), not computational
+- No claims about quantum speedup or computational advantage
 
 ## References
 
