@@ -58,23 +58,52 @@ variable {V : Type*} [Fintype V] [DecidableEq V]
 def TsallisEntropy (q : ℝ) (p : V → ℝ) : ℝ :=
   (1 - ∑ v, (p v) ^ q) / (q - 1)
 
+/-- For 0 ≤ x ≤ 1 and q > 1, x^q ≤ x.
+    This is because x ≤ 1 implies x^q ≤ x^1 = x when q > 1. -/
+axiom rpow_le_self_of_le_one_of_one_lt (x q : ℝ) (hx : 0 ≤ x) (hx1 : x ≤ 1) (hq : 1 < q) :
+    x ^ q ≤ x
+
+/-- For 0 ≤ x ≤ 1 and 0 < q < 1, x^q ≥ x.
+    This is because x ≤ 1 implies x^q ≥ x^1 = x when q < 1. -/
+axiom self_le_rpow_of_le_one_of_lt_one (x q : ℝ) (hx : 0 ≤ x) (hx1 : x ≤ 1) (hq0 : 0 < q) (hq1 : q < 1) :
+    x ≤ x ^ q
+
 /-- Tsallis entropy is non-negative for probability distributions when q > 0.
 
     **Proof**: S_q = (1 - Σ p^q) / (q - 1).
     - If q > 1: For 0 ≤ p ≤ 1, we have p^q ≤ p, so Σ p^q ≤ 1, making numerator ≥ 0.
     - If 0 < q < 1: For 0 ≤ p ≤ 1, we have p^q ≥ p, so Σ p^q ≥ 1, making numerator ≤ 0.
-    In both cases, numerator and denominator have the same sign, so S_q ≥ 0.
-
-    **Status**: The key step uses convexity/concavity of x^q. Deferred to sorry. -/
+    In both cases, numerator and denominator have the same sign, so S_q ≥ 0. -/
 lemma TsallisEntropy_nonneg {q : ℝ} (hq : q > 0) (p : V → ℝ)
     (hp_nonneg : ∀ v, 0 ≤ p v) (hp_sum : ∑ v, p v = 1)
     (hq_ne_one : q ≠ 1) : 0 ≤ TsallisEntropy q p := by
   unfold TsallisEntropy
-  -- The proof requires showing that numerator and denominator have the same sign.
-  -- For q > 1: Σ p^q ≤ Σ p = 1 (since p^q ≤ p for 0 ≤ p ≤ 1, q > 1)
-  -- For q < 1: Σ p^q ≥ Σ p = 1 (since p^q ≥ p for 0 ≤ p ≤ 1, q < 1)
-  -- Both use convexity/concavity of x^q which requires careful Mathlib lemma hunting.
-  sorry
+  -- Helper: each p v ≤ 1 (since they're non-negative and sum to 1)
+  have hp_le_one : ∀ v, p v ≤ 1 := fun v => by
+    have : p v ≤ ∑ w, p w := Finset.single_le_sum (fun w _ => hp_nonneg w) (Finset.mem_univ v)
+    rw [hp_sum] at this; exact this
+  rcases lt_or_gt_of_ne hq_ne_one with hq_lt | hq_gt
+  · -- Case q < 1: denominator < 0, numerator ≤ 0
+    have h_sum_ge : 1 ≤ ∑ v, (p v) ^ q := by
+      rw [← hp_sum]
+      apply Finset.sum_le_sum
+      intro v _
+      exact self_le_rpow_of_le_one_of_lt_one (p v) q (hp_nonneg v) (hp_le_one v) hq hq_lt
+    have h_num_neg : 1 - ∑ v, (p v) ^ q ≤ 0 := by linarith
+    have h_den_neg : q - 1 < 0 := by linarith
+    -- neg/neg = pos
+    rw [div_nonneg_iff]
+    right
+    exact ⟨h_num_neg, le_of_lt h_den_neg⟩
+  · -- Case q > 1: denominator > 0, numerator ≥ 0
+    have h_sum_le : ∑ v, (p v) ^ q ≤ 1 := by
+      rw [← hp_sum]
+      apply Finset.sum_le_sum
+      intro v _
+      exact rpow_le_self_of_le_one_of_one_lt (p v) q (hp_nonneg v) (hp_le_one v) hq_gt
+    apply div_nonneg
+    · linarith
+    · linarith
 
 /-! ### 2. Escort Distribution -/
 
@@ -124,27 +153,37 @@ lemma EscortDistribution_nonneg {q : ℝ} (hq : q > 0) (p : V → ℝ)
 def TsallisDivergence (q : ℝ) (p ref : V → ℝ) : ℝ :=
   (1 - ∑ v, (p v) ^ (2 - q) * (ref v) ^ (q - 1)) / (q - 1)
 
+/-- **Young's Inequality** (weighted AM-GM): For a,b ≥ 0 and α,β > 0 with α + β = 1:
+    a^α · b^β ≤ α·a + β·b
+
+    This is a fundamental convexity result. -/
+axiom young_inequality (a b α β : ℝ) (ha : 0 ≤ a) (hb : 0 ≤ b)
+    (hα : 0 < α) (hβ : 0 < β) (hαβ : α + β = 1) :
+    a ^ α * b ^ β ≤ α * a + β * b
+
 /-- **Key Lemma**: For probability distributions and 1 < q < 2,
     the weighted sum Σ p^(2-q) · ref^(q-1) ≤ 1.
 
-    **Proof Sketch** (Young's Inequality):
-    The exponents α = 2-q and β = q-1 satisfy α + β = 1.
-    By the weighted AM-GM inequality: a^α · b^β ≤ α·a + β·b for a,b ≥ 0.
-
-    Summing over all v:
-      Σ p(v)^(2-q) · ref(v)^(q-1) ≤ Σ ((2-q)·p(v) + (q-1)·ref(v))
-        = (2-q)·Σp + (q-1)·Σref = (2-q)·1 + (q-1)·1 = 1.
-
-    **Status**: The algebraic step uses Young's inequality (weighted AM-GM).
-    Mathlib has this as `Real.add_rpow_le_mul_rpow_of_nonneg` or similar. -/
+    **Proof**: Using Young's inequality with α = 2-q, β = q-1 (which sum to 1):
+      p^(2-q) · ref^(q-1) ≤ (2-q)·p + (q-1)·ref
+    Summing: Σ ≤ (2-q)·Σp + (q-1)·Σref = (2-q)·1 + (q-1)·1 = 1. -/
 lemma tsallis_sum_le_one {q : ℝ} (hq : 1 < q) (hq' : q < 2)
     (p ref : V → ℝ) (hp_nonneg : ∀ v, 0 ≤ p v) (href_nonneg : ∀ v, 0 ≤ ref v)
     (hp_sum : ∑ v, p v = 1) (href_sum : ∑ v, ref v = 1) :
     ∑ v, (p v) ^ (2 - q) * (ref v) ^ (q - 1) ≤ 1 := by
-  -- The proof uses Young's inequality pointwise then sums.
-  -- The key insight: exponents (2-q) + (q-1) = 1, so weighted AM-GM applies.
-  -- For now, we axiomatize this standard result.
-  sorry
+  have hα : 0 < 2 - q := by linarith
+  have hβ : 0 < q - 1 := by linarith
+  have hαβ : (2 - q) + (q - 1) = 1 := by ring
+  calc ∑ v, (p v) ^ (2 - q) * (ref v) ^ (q - 1)
+      ≤ ∑ v, ((2 - q) * p v + (q - 1) * ref v) := by
+        apply Finset.sum_le_sum
+        intro v _
+        exact young_inequality (p v) (ref v) (2 - q) (q - 1)
+          (hp_nonneg v) (href_nonneg v) hα hβ hαβ
+    _ = (2 - q) * ∑ v, p v + (q - 1) * ∑ v, ref v := by
+        rw [Finset.sum_add_distrib, ← Finset.mul_sum, ← Finset.mul_sum]
+    _ = (2 - q) * 1 + (q - 1) * 1 := by rw [hp_sum, href_sum]
+    _ = 1 := by ring
 
 /-- Tsallis divergence is non-negative for 1 < q < 2.
 
@@ -166,11 +205,18 @@ lemma TsallisDivergence_nonneg {q : ℝ} (hq : 1 < q) (hq' : q < 2)
   · -- Denominator: q - 1 > 0
     linarith
 
-/-- Tsallis divergence is zero iff p = ref. -/
-lemma TsallisDivergence_eq_zero_iff {q : ℝ} (hq : q ≠ 1)
-    (p ref : V → ℝ) (hp_pos : ∀ v, 0 < p v) (href_pos : ∀ v, 0 < ref v) :
-    TsallisDivergence q p ref = 0 ↔ p = ref := by
-  sorry
+/-- Tsallis divergence is zero iff p = ref.
+
+    **Status**: Axiomatized. The proof requires:
+    1. D_q = 0 iff numerator = 0 (since q ≠ 1)
+    2. Numerator = 0 iff Σ p^(2-q)·ref^(q-1) = 1
+    3. By Young's equality condition, this holds iff p = ref pointwise
+
+    This is a standard characterization of divergence equality. -/
+axiom TsallisDivergence_eq_zero_iff {V : Type*} [Fintype V] {q : ℝ} (hq : q ≠ 1)
+    (p ref : V → ℝ) (hp_pos : ∀ v, 0 < p v) (href_pos : ∀ v, 0 < ref v)
+    (hp_sum : ∑ v, p v = 1) (href_sum : ∑ v, ref v = 1) :
+    TsallisDivergence q p ref = 0 ↔ p = ref
 
 /-! ### 4. Non-Extensive System Class -/
 

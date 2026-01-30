@@ -80,20 +80,17 @@ theorem detailed_balance_of_symmetric (r : ℝ) : hasDetailedBalance r r := by
   fin_cases i <;> fin_cases j <;> simp [Fin.val] <;> ring
 
 /-- Asymmetric rates violate detailed balance.
-    **Proof**: The (0,1) edge witnesses: π(0)L(0,1) = α/3 ≠ β/3 = π(1)L(1,0).
-
-    **Status**: The algebra is straightforward but Fin 3 indexing is tedious. -/
+    **Proof**: The (0,1) edge witnesses: π(0)L(0,1) = α/3 ≠ β/3 = π(1)L(1,0). -/
 theorem no_detailed_balance_of_asymmetric {α β : ℝ} (h : α ≠ β) :
     ¬ hasDetailedBalance α β := by
   unfold hasDetailedBalance DetailedBalance
   push_neg
   use ⟨0, by norm_num⟩, ⟨1, by norm_num⟩
   unfold L pi_unif
-  -- π(0)L(0,1) = (1/3)α ≠ (1/3)β = π(1)L(1,0) when α ≠ β
   simp only [Fin.val, Fin.isValue]
-  -- Goal: α/3 ≠ β/3, which follows from α ≠ β
-  -- Tedious Fin 3 indexing; deferred
-  sorry
+  -- Goal reduces to: 1/3 * α ≠ 1/3 * β
+  simp only [one_div]
+  exact fun heq => h (mul_left_cancel₀ (by norm_num : (3 : ℝ)⁻¹ ≠ 0) heq)
 
 /-! ### 3. Antisymmetric Part (Flux) -/
 
