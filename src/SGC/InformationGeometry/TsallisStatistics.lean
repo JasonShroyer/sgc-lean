@@ -58,10 +58,22 @@ variable {V : Type*} [Fintype V] [DecidableEq V]
 def TsallisEntropy (q : ℝ) (p : V → ℝ) : ℝ :=
   (1 - ∑ v, (p v) ^ q) / (q - 1)
 
-/-- Tsallis entropy is non-negative for probability distributions when q > 0. -/
+/-- Tsallis entropy is non-negative for probability distributions when q > 0.
+
+    **Proof**: S_q = (1 - Σ p^q) / (q - 1).
+    - If q > 1: For 0 ≤ p ≤ 1, we have p^q ≤ p, so Σ p^q ≤ 1, making numerator ≥ 0.
+    - If 0 < q < 1: For 0 ≤ p ≤ 1, we have p^q ≥ p, so Σ p^q ≥ 1, making numerator ≤ 0.
+    In both cases, numerator and denominator have the same sign, so S_q ≥ 0.
+
+    **Status**: The key step uses convexity/concavity of x^q. Deferred to sorry. -/
 lemma TsallisEntropy_nonneg {q : ℝ} (hq : q > 0) (p : V → ℝ)
     (hp_nonneg : ∀ v, 0 ≤ p v) (hp_sum : ∑ v, p v = 1)
     (hq_ne_one : q ≠ 1) : 0 ≤ TsallisEntropy q p := by
+  unfold TsallisEntropy
+  -- The proof requires showing that numerator and denominator have the same sign.
+  -- For q > 1: Σ p^q ≤ Σ p = 1 (since p^q ≤ p for 0 ≤ p ≤ 1, q > 1)
+  -- For q < 1: Σ p^q ≥ Σ p = 1 (since p^q ≥ p for 0 ≤ p ≤ 1, q < 1)
+  -- Both use convexity/concavity of x^q which requires careful Mathlib lemma hunting.
   sorry
 
 /-! ### 2. Escort Distribution -/
@@ -84,9 +96,10 @@ def EscortDistribution (q : ℝ) (p : V → ℝ) (hZ : EscortNormalization q p �
 /-- The escort distribution sums to 1. -/
 lemma EscortDistribution_sum {q : ℝ} (p : V → ℝ) (hZ : EscortNormalization q p ≠ 0) :
     ∑ v, EscortDistribution q p hZ v = 1 := by
-  unfold EscortDistribution EscortNormalization at *
+  unfold EscortDistribution
   -- Σ (p^q / Z) = (Σ p^q) / Z = Z / Z = 1
-  sorry
+  rw [← Finset.sum_div]
+  exact div_self hZ
 
 /-- The escort is non-negative when p is non-negative and q > 0. -/
 lemma EscortDistribution_nonneg {q : ℝ} (hq : q > 0) (p : V → ℝ)
