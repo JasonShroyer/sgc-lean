@@ -9,24 +9,24 @@ import Mathlib.Tactic
 
 /-!
   # SGC/Axioms/Geometry.lean
-  
+
   Core L²(π) Geometry for the Stochastic Geometry of Consolidation.
-  
+
   This file provides the foundational weighted inner product space structure
-  used throughout SGC, using explicit structures to handle the dynamic sigma-algebras 
+  used throughout SGC, using explicit structures to handle the dynamic sigma-algebras
   required by renormalization.
-  
+
   ## Design Pattern: Explicit Weight Pattern
   - All geometry takes `pi_dist : V → ℝ` explicitly
   - Positivity via `(hπ : ∀ v, 0 < pi_dist v)` hypothesis
   - No custom wrapper types like WeightedSpace
-  
+
   **NOTE**: This module uses an **Explicit Weight Pattern** (`pi_dist` as an argument)
-  rather than Mathlib's `InnerProductSpace` typeclasses. This design handles the 
-  dynamic sigma-algebras required by renormalization (where standard static typeclasses 
+  rather than Mathlib's `InnerProductSpace` typeclasses. This design handles the
+  dynamic sigma-algebras required by renormalization (where standard static typeclasses
   imply a single fixed measure). See `ARCHITECTURE.md` for the full rationale.
-  
-  **TODO (Bridge Module)**: Prove that at any fixed snapshot, these structures instantiate 
+
+  **TODO (Bridge Module)**: Prove that at any fixed snapshot, these structures instantiate
   `Mathlib.Probability.Kernel` and are isomorphic to `PhysLean.IsHamiltonian` generators.
 -/
 
@@ -36,16 +36,20 @@ namespace SGC
 section Geometry
 open Finset LinearMap Matrix Real ContinuousLinearMap Submodule Topology EuclideanSpace
 
+-- Suppress unused variable warnings (many lemmas don't need all type constraints)
+set_option linter.unusedSectionVars false
+set_option linter.unusedVariables false
+
 variable {V : Type*} [Fintype V] [DecidableEq V]
 
 /-! ### 1. Probability Measure Structure -/
 
 /-- A probability measure on a finite type V.
     Bundles the mass function with positivity and normalization hypotheses.
-    
+
     This structure is intentionally NOT a typeclass. It is passed explicitly to
     support measure transformations in renormalization (π → π̄) without type coercions.
-    
+
     **Usage:** For new code, prefer passing `μ : ProbabilityMeasure V` over the
     unbundled triple `(pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (h_sum : ...)`.
     Existing code uses the unbundled form for compatibility. -/
@@ -77,7 +81,7 @@ end ProbabilityMeasure
 
 /-! ### 2. Weighted L²(π) Inner Product -/
 
-/-- The constant vector of ones. Using `abbrev` ensures definitional equality 
+/-- The constant vector of ones. Using `abbrev` ensures definitional equality
     with `fun _ => 1` is immediate for the elaborator. -/
 abbrev constant_vec_one : V → ℝ := fun _ => 1
 
@@ -185,7 +189,7 @@ lemma norm_sq_pi_eq_zero_iff (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v
   constructor
   · intro h_zero v
     rw [norm_sq_pi_eq_sum] at h_zero
-    have h_nonneg : ∀ x ∈ univ, 0 ≤ pi_dist x * (h x)^2 := 
+    have h_nonneg : ∀ x ∈ univ, 0 ≤ pi_dist x * (h x)^2 :=
       fun x _ => mul_nonneg (le_of_lt (h_pos x)) (sq_nonneg (h x))
     have h_term := Finset.sum_eq_zero_iff_of_nonneg h_nonneg
     have h_eq : pi_dist v * (h v)^2 = 0 := h_term.mp h_zero v (mem_univ v)
@@ -218,7 +222,7 @@ lemma norm_pi_eq_zero_iff (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (
     simp [hf, norm_pi, norm_sq_pi, inner_pi]
 
 /-- norm_pi is positive for nonzero functions. -/
-lemma norm_pi_pos_of_ne_zero (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (f : V → ℝ) 
+lemma norm_pi_pos_of_ne_zero (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (f : V → ℝ)
     (hf : f ≠ 0) : 0 < norm_pi pi_dist f := by
   unfold norm_pi
   apply Real.sqrt_pos_of_pos
@@ -246,13 +250,13 @@ lemma pointwise_quad (f g : V → ℝ) (t : ℝ) (v : V) :
 /-- Helper: Sum-level quadratic expansion. -/
 lemma sum_quad (pi_dist : V → ℝ) (f g : V → ℝ) (t : ℝ) :
     ∑ v, pi_dist v * (f v + t * g v)^2 =
-    ∑ v, pi_dist v * (f v)^2 + 2 * t * (∑ v, pi_dist v * (f v * g v)) + 
+    ∑ v, pi_dist v * (f v)^2 + 2 * t * (∑ v, pi_dist v * (f v * g v)) +
       t^2 * (∑ v, pi_dist v * (g v)^2) := by
   have h1 : ∑ v, pi_dist v * (f v + t * g v)^2 =
             ∑ v, pi_dist v * ((f v)^2 + 2 * t * (f v * g v) + t^2 * (g v)^2) := by
     congr 1; ext v; rw [pointwise_quad]
   have h2 : ∑ v, pi_dist v * ((f v)^2 + 2 * t * (f v * g v) + t^2 * (g v)^2) =
-            ∑ v, pi_dist v * (f v)^2 + ∑ v, pi_dist v * (2 * t * (f v * g v)) + 
+            ∑ v, pi_dist v * (f v)^2 + ∑ v, pi_dist v * (2 * t * (f v * g v)) +
               ∑ v, pi_dist v * (t^2 * (g v)^2) := by
     simp only [mul_add, sum_add_distrib]
   have h3 : ∑ v, pi_dist v * (2 * t * (f v * g v)) = 2 * t * ∑ v, pi_dist v * (f v * g v) := by
@@ -261,9 +265,9 @@ lemma sum_quad (pi_dist : V → ℝ) (f g : V → ℝ) (t : ℝ) :
     simp only [mul_assoc, mul_comm (pi_dist _), mul_left_comm, mul_sum]
   calc ∑ v, pi_dist v * (f v + t * g v)^2
       = ∑ v, pi_dist v * ((f v)^2 + 2 * t * (f v * g v) + t^2 * (g v)^2) := h1
-    _ = ∑ v, pi_dist v * (f v)^2 + ∑ v, pi_dist v * (2 * t * (f v * g v)) + 
+    _ = ∑ v, pi_dist v * (f v)^2 + ∑ v, pi_dist v * (2 * t * (f v * g v)) +
           ∑ v, pi_dist v * (t^2 * (g v)^2) := h2
-    _ = ∑ v, pi_dist v * (f v)^2 + 2 * t * ∑ v, pi_dist v * (f v * g v) + 
+    _ = ∑ v, pi_dist v * (f v)^2 + 2 * t * ∑ v, pi_dist v * (f v * g v) +
           t^2 * ∑ v, pi_dist v * (g v)^2 := by rw [h3, h4]
 
 /-- **Cauchy-Schwarz for L²(π)**.
@@ -280,19 +284,19 @@ lemma cauchy_schwarz_pi (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (f 
   have hP_quad : ∀ t, P t = c + 2 * t * b + t^2 * a := by
     intro t
     unfold P a b c
-    have h_left : norm_sq_pi pi_dist (fun v => f v + t * g v) = 
-                  ∑ v, pi_dist v * (f v + t * g v)^2 := 
+    have h_left : norm_sq_pi pi_dist (fun v => f v + t * g v) =
+                  ∑ v, pi_dist v * (f v + t * g v)^2 :=
       norm_sq_pi_eq_sum pi_dist (fun v => f v + t * g v)
-    have h_c : norm_sq_pi pi_dist f = ∑ v, pi_dist v * (f v)^2 := 
+    have h_c : norm_sq_pi pi_dist f = ∑ v, pi_dist v * (f v)^2 :=
       norm_sq_pi_eq_sum pi_dist f
-    have h_a : norm_sq_pi pi_dist g = ∑ v, pi_dist v * (g v)^2 := 
+    have h_a : norm_sq_pi pi_dist g = ∑ v, pi_dist v * (g v)^2 :=
       norm_sq_pi_eq_sum pi_dist g
     have h_b : inner_pi pi_dist f g = ∑ v, pi_dist v * (f v * g v) := by
       unfold inner_pi; congr 1; ext v; rw [mul_assoc]
     have h_sum := sum_quad pi_dist f g t
     calc norm_sq_pi pi_dist (fun v => f v + t * g v)
         = ∑ v, pi_dist v * (f v + t * g v)^2 := h_left
-      _ = ∑ v, pi_dist v * (f v)^2 + 2 * t * (∑ v, pi_dist v * (f v * g v)) + 
+      _ = ∑ v, pi_dist v * (f v)^2 + 2 * t * (∑ v, pi_dist v * (f v * g v)) +
             t^2 * (∑ v, pi_dist v * (g v)^2) := h_sum
       _ = norm_sq_pi pi_dist f + 2 * t * inner_pi pi_dist f g + t^2 * norm_sq_pi pi_dist g := by
           rw [← h_c, ← h_b, ← h_a]
@@ -372,22 +376,22 @@ lemma norm_pi_eq_euclidean_norm (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dis
   rfl
 
 /-- The operator norm set is nonempty. -/
-lemma opNorm_set_nonempty (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) 
+lemma opNorm_set_nonempty (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v)
     (A : (V → ℝ) →ₗ[ℝ] (V → ℝ)) : (opNorm_set pi_dist h_pos A).Nonempty := by
   let iso := iso_L2_to_std pi_dist h_pos
   let E := EuclideanSpace ℝ V
   let toE : (V → ℝ) → E := (WithLp.equiv 2 (V → ℝ)).symm
   let fromE : E → (V → ℝ) := WithLp.equiv 2 (V → ℝ)
-  let A_E : E →ₗ[ℝ] E := 
+  let A_E : E →ₗ[ℝ] E :=
     { toFun := fun g => toE (iso (A (iso.symm (fromE g))))
       map_add' := fun x y => by
-        change toE (iso (A (iso.symm (fromE (x + y))))) = 
+        change toE (iso (A (iso.symm (fromE (x + y))))) =
                toE (iso (A (iso.symm (fromE x)))) + toE (iso (A (iso.symm (fromE y))))
         have h1 : fromE (x + y) = fromE x + fromE y := rfl
         rw [h1, map_add, map_add, map_add]
         rfl
       map_smul' := fun m x => by
-        change toE (iso (A (iso.symm (fromE (m • x))))) = 
+        change toE (iso (A (iso.symm (fromE (m • x))))) =
                m • toE (iso (A (iso.symm (fromE x))))
         have h1 : fromE (m • x) = m • fromE x := rfl
         rw [h1, map_smul, map_smul, map_smul]
@@ -396,24 +400,24 @@ lemma opNorm_set_nonempty (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v)
   use C
   refine ⟨norm_nonneg _, ?_⟩
   intro f
-  have h_Af : norm_pi pi_dist (A f) = ‖toE (iso (A f))‖ := 
+  have h_Af : norm_pi pi_dist (A f) = ‖toE (iso (A f))‖ :=
     norm_pi_eq_euclidean_norm pi_dist h_pos (A f)
-  have h_f : norm_pi pi_dist f = ‖toE (iso f)‖ := 
+  have h_f : norm_pi pi_dist f = ‖toE (iso f)‖ :=
     norm_pi_eq_euclidean_norm pi_dist h_pos f
   have h_conj : toE (iso (A f)) = A_E (toE (iso f)) := by
     simp only [A_E, LinearMap.coe_mk, AddHom.coe_mk, iso, fromE, toE]
     congr 1
     rw [Equiv.apply_symm_apply, LinearEquiv.symm_apply_apply]
-  have h_bound : ‖A_E (toE (iso f))‖ ≤ C * ‖toE (iso f)‖ := 
+  have h_bound : ‖A_E (toE (iso f))‖ ≤ C * ‖toE (iso f)‖ :=
     ContinuousLinearMap.le_opNorm A_E.toContinuousLinearMap (toE (iso f))
-  calc norm_pi pi_dist (A f) 
+  calc norm_pi pi_dist (A f)
       = ‖toE (iso (A f))‖ := h_Af
     _ = ‖A_E (toE (iso f))‖ := by rw [h_conj]
     _ ≤ C * ‖toE (iso f)‖ := h_bound
     _ = C * norm_pi pi_dist f := by rw [h_f]
 
 /-- The operator norm set is bounded below by 0. -/
-lemma opNorm_set_bddBelow (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) 
+lemma opNorm_set_bddBelow (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v)
     (A : (V → ℝ) →ₗ[ℝ] (V → ℝ)) : BddBelow (opNorm_set pi_dist h_pos A) :=
   ⟨0, fun _ hc => hc.1⟩
 
@@ -426,23 +430,23 @@ lemma opNorm_pi_nonneg (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (A :
   exact hc.1
 
 /-- **The Bound Lemma**: ‖A f‖_π ≤ ‖A‖_π * ‖f‖_π. -/
-lemma opNorm_pi_bound (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) 
+lemma opNorm_pi_bound (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v)
     (A : (V → ℝ) →ₗ[ℝ] (V → ℝ)) (f : V → ℝ) :
     norm_pi pi_dist (A f) ≤ opNorm_pi pi_dist h_pos A * norm_pi pi_dist f := by
   unfold opNorm_pi
   by_cases hf : f = 0
   · simp [hf, norm_pi, norm_sq_pi, inner_pi]
   · have hf_pos : 0 < norm_pi pi_dist f := norm_pi_pos_of_ne_zero pi_dist h_pos f hf
-    have h_ratio_le : ∀ c ∈ opNorm_set pi_dist h_pos A, 
+    have h_ratio_le : ∀ c ∈ opNorm_set pi_dist h_pos A,
         norm_pi pi_dist (A f) / norm_pi pi_dist f ≤ c := by
       intro c hc
       rw [div_le_iff₀ hf_pos]
       exact hc.2 f
-    have h_ratio_le_sInf : norm_pi pi_dist (A f) / norm_pi pi_dist f ≤ 
+    have h_ratio_le_sInf : norm_pi pi_dist (A f) / norm_pi pi_dist f ≤
         sInf (opNorm_set pi_dist h_pos A) := by
       apply le_csInf (opNorm_set_nonempty pi_dist h_pos A)
       exact h_ratio_le
-    calc norm_pi pi_dist (A f) 
+    calc norm_pi pi_dist (A f)
         = (norm_pi pi_dist (A f) / norm_pi pi_dist f) * norm_pi pi_dist f := by field_simp
       _ ≤ sInf (opNorm_set pi_dist h_pos A) * norm_pi pi_dist f := by
           apply mul_le_mul_of_nonneg_right h_ratio_le_sInf (le_of_lt hf_pos)
@@ -472,7 +476,7 @@ lemma opNorm_pi_comp (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (A B :
       _ = sInf (opNorm_set pi_dist h_pos A) * sInf (opNorm_set pi_dist h_pos B) * norm_pi pi_dist f := by ring
 
 /-- If c ≥ 0 and ‖A f‖_π ≤ c * ‖f‖_π for all f, then ‖A‖_π ≤ c. -/
-lemma opNorm_pi_le_of_bound (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) 
+lemma opNorm_pi_le_of_bound (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v)
     (A : (V → ℝ) →ₗ[ℝ] (V → ℝ)) (c : ℝ) (hc : 0 ≤ c)
     (h_bound : ∀ f, norm_pi pi_dist (A f) ≤ c * norm_pi pi_dist f) :
     opNorm_pi pi_dist h_pos A ≤ c := by

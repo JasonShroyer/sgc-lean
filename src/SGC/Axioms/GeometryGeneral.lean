@@ -10,6 +10,10 @@ namespace GeometryGeneral
 
 open Finset
 
+-- Suppress unused variable warnings (many lemmas don't need all type constraints)
+set_option linter.unusedSectionVars false
+set_option linter.unusedVariables false
+
 variable {V : Type*} [Fintype V] [DecidableEq V]
 variable {𝕜 : Type*} [RCLike 𝕜]
 

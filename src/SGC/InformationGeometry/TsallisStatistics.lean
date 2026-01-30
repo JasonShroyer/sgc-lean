@@ -43,6 +43,10 @@ namespace SGC.InformationGeometry.Tsallis
 
 open Finset Real
 
+-- Suppress unused variable warnings in this section (many theorems don't need all type constraints)
+set_option linter.unusedSectionVars false
+set_option linter.unusedVariables false
+
 variable {V : Type*} [Fintype V] [DecidableEq V]
 
 /-! ### 1. Tsallis Entropy -/

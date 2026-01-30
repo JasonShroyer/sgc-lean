@@ -21,6 +21,10 @@ namespace SGC.Spectral
 section Assumptions
 open Finset LinearMap Matrix Real ContinuousLinearMap Submodule Topology EuclideanSpace
 
+-- Suppress unused variable warnings (many lemmas don't need all type constraints)
+set_option linter.unusedSectionVars false
+set_option linter.unusedVariables false
+
 variable {V : Type*} [Fintype V] [DecidableEq V]
 
 /-- Assumptions for an irreducible, lazy Markov chain. -/

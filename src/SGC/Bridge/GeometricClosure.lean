@@ -67,6 +67,10 @@ open SGC.Approximate
 open SGC.Bridge
 open Finset Matrix Real
 
+-- Suppress unused variable warnings (many theorems don't need all type constraints)
+set_option linter.unusedSectionVars false
+set_option linter.unusedVariables false
+
 variable {V : Type*} [Fintype V] [DecidableEq V] [Nonempty V]
 
 /-! ## 1. The Bakry-Émery Framework

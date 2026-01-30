@@ -35,6 +35,10 @@ open SGC.Bridge.Recovery
 open SGC.Approximate
 open Finset Matrix Real
 
+-- Suppress unused variable warnings (many theorems don't need all type constraints)
+set_option linter.unusedSectionVars false
+set_option linter.unusedVariables false
+
 variable {V : Type*} [Fintype V] [DecidableEq V] [Nonempty V]
 
 /-! ## 1. Markov Semigroup as Channel Composition -/

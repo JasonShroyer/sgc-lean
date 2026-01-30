@@ -8,7 +8,7 @@ Authors: SGC Formalization Team
 
 # Doob-Meyer Decomposition of the Surprise Potential
 
-This module formalizes the decomposition of the self-information (surprise) 
+This module formalizes the decomposition of the self-information (surprise)
 process into predictable drift (A_n) and martingale innovation (M_n).
 
 ## Mathematical Background
@@ -33,7 +33,7 @@ where:
 ## Design Philosophy
 
 Following SGC constraints:
-1. **Discrete time only** - using explicit structures to handle the dynamic sigma-algebras 
+1. **Discrete time only** - using explicit structures to handle the dynamic sigma-algebras
    required by renormalization (where standard static typeclasses imply a single fixed measure)
 2. **Finset sums** - E[f(X')|X=x] = Σ_y P_{xy} f(y)
 3. **No sorries** - elementary algebra on expectations
@@ -41,7 +41,7 @@ Following SGC constraints:
 ## Key Result
 
 **Doob Decomposition**: For a Markov chain with transition matrix P,
-the change in surprise decomposes as ΔΦ = ΔA + ΔM where ΔA is 
+the change in surprise decomposes as ΔΦ = ΔA + ΔM where ΔA is
 predictable (F_n-measurable) and E[ΔM | F_n] = 0.
 
 ## References
@@ -50,16 +50,20 @@ predictable (F_n-measurable) and E[ΔM | F_n] = 0.
 * [Friston] The free-energy principle
 
 **NOTE**: This module restricts thermodynamic analysis to **discrete time** and
-`[Fintype V]` state spaces, using explicit structures to handle the dynamic sigma-algebras 
+`[Fintype V]` state spaces, using explicit structures to handle the dynamic sigma-algebras
 required by renormalization. See `ARCHITECTURE.md` for the full rationale.
 
-**TODO (Bridge Module)**: Connect to `Mathlib.Probability.Martingale` (see Kexing Ying's 
+**TODO (Bridge Module)**: Connect to `Mathlib.Probability.Martingale` (see Kexing Ying's
 formalization work) via a Bridge module that proves isomorphism at fixed snapshots.
 -/
 
 namespace SGC
 section DoobMeyer
 open Finset BigOperators Matrix
+
+-- Suppress unused variable warnings (many lemmas don't need all type constraints)
+set_option linter.unusedSectionVars false
+set_option linter.unusedVariables false
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
 
@@ -74,7 +78,7 @@ def IsStochastic (P : Matrix V V ℝ) : Prop :=
 def IsStationary (P : Matrix V V ℝ) (pi_dist : V → ℝ) : Prop :=
   ∀ y, ∑ x, pi_dist x * P x y = pi_dist y
 
-/-- P satisfies **detailed balance** with respect to π if π_x P_{xy} = π_y P_{yx}. 
+/-- P satisfies **detailed balance** with respect to π if π_x P_{xy} = π_y P_{yx}.
     This implies reversibility. -/
 def IsDetailedBalance (P : Matrix V V ℝ) (pi_dist : V → ℝ) : Prop :=
   ∀ x y, pi_dist x * P x y = pi_dist y * P y x
@@ -82,16 +86,16 @@ def IsDetailedBalance (P : Matrix V V ℝ) (pi_dist : V → ℝ) : Prop :=
 /-! ### 2. The Surprise Potential -/
 
 /-- The **Surprise Potential** Φ(x) = -log π(x).
-    
+
     This measures the "unexpectedness" of state x.
     Lower probability states have higher surprise.
-    
+
     We require π(x) > 0 for all x to ensure this is well-defined. -/
 noncomputable def SurprisePotential (pi_dist : V → ℝ) (_hπ : ∀ x, 0 < pi_dist x) : V → ℝ :=
   fun x => -Real.log (pi_dist x)
 
 /-- Surprise is non-negative when π(x) ≤ 1. -/
-lemma surprise_nonneg (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x) 
+lemma surprise_nonneg (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x)
     (h_sum : ∑ x, pi_dist x = 1) (x : V) :
     0 ≤ SurprisePotential pi_dist hπ x := by
   simp only [SurprisePotential]
@@ -105,10 +109,10 @@ lemma surprise_nonneg (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x)
 /-! ### 3. Conditional Expectation (Discrete) -/
 
 /-- The **conditional expectation** of f(X') given X = x, using transition matrix P.
-    
+
     E[f(X') | X = x] = Σ_y P_{xy} f(y)
-    
-    This explicit Finset-based definition supports the dynamic sigma-algebras required 
+
+    This explicit Finset-based definition supports the dynamic sigma-algebras required
     by renormalization. Bridge module will prove isomorphism to `Mathlib.Probability.Kernel.integral`. -/
 def condExp (P : Matrix V V ℝ) (f : V → ℝ) (x : V) : ℝ :=
   ∑ y, P x y * f y
@@ -137,25 +141,25 @@ lemma condExp_const (P : Matrix V V ℝ) (hP : IsStochastic P) (c : ℝ) (x : V)
 /-! ### 4. The Doob Decomposition (Discrete Time) -/
 
 /-- The **one-step predictable increment** of a potential function Φ.
-    
+
     ΔA(x) = E[Φ(X') | X = x] - Φ(x)
-    
+
     This is the expected change in Φ, which is predictable given X = x. -/
 def predictableIncrement (P : Matrix V V ℝ) (Φ : V → ℝ) (x : V) : ℝ :=
   condExp P Φ x - Φ x
 
 /-- The **martingale increment** is the unpredictable part.
-    
+
     ΔM(x, y) = Φ(y) - E[Φ(X') | X = x]
-    
+
     For a transition x → y, this is the "surprise" beyond what was expected. -/
 def martingaleIncrement (P : Matrix V V ℝ) (Φ : V → ℝ) (x y : V) : ℝ :=
   Φ y - condExp P Φ x
 
 /-- **Doob Decomposition Identity**: The actual change equals predictable + martingale.
-    
+
     Φ(y) - Φ(x) = ΔA(x) + ΔM(x, y)
-    
+
     This is the fundamental decomposition of any process. -/
 theorem doob_decomposition (P : Matrix V V ℝ) (Φ : V → ℝ) (x y : V) :
     Φ y - Φ x = predictableIncrement P Φ x + martingaleIncrement P Φ x y := by
@@ -163,19 +167,19 @@ theorem doob_decomposition (P : Matrix V V ℝ) (Φ : V → ℝ) (x y : V) :
   ring
 
 /-- The martingale increment has **zero conditional expectation**.
-    
+
     E[ΔM(X, X') | X = x] = 0
-    
+
     This is the defining property of a martingale. -/
-theorem martingale_increment_zero_expectation (P : Matrix V V ℝ) (Φ : V → ℝ) 
+theorem martingale_increment_zero_expectation (P : Matrix V V ℝ) (Φ : V → ℝ)
     (hP : IsStochastic P) (x : V) :
     condExp P (fun y => martingaleIncrement P Φ x y) x = 0 := by
   simp only [martingaleIncrement, condExp]
   -- Σ_y P_{xy} (Φ(y) - E[Φ|x]) = Σ_y P_{xy} Φ(y) - E[Φ|x] * Σ_y P_{xy}
   --                            = E[Φ|x] - E[Φ|x] * 1 = 0
-  have h1 : ∑ y, P x y * (Φ y - ∑ z, P x z * Φ z) = 
+  have h1 : ∑ y, P x y * (Φ y - ∑ z, P x z * Φ z) =
             ∑ y, P x y * Φ y - (∑ y, P x y) * (∑ z, P x z * Φ z) := by
-    conv_lhs => 
+    conv_lhs =>
       arg 2
       ext y
       rw [mul_sub]
@@ -185,20 +189,20 @@ theorem martingale_increment_zero_expectation (P : Matrix V V ℝ) (Φ : V → �
 /-! ### 5. Martingale Properties -/
 
 /-- A potential Φ is a **supermartingale** under P if E[Φ(X') | X = x] ≤ Φ(x).
-    
+
     Equivalently, the predictable increment is non-positive.
     For surprise, this means expected surprise decreases (consolidation). -/
 def IsSupermartingale (P : Matrix V V ℝ) (Φ : V → ℝ) : Prop :=
   ∀ x, condExp P Φ x ≤ Φ x
 
 /-- A potential Φ is a **submartingale** under P if E[Φ(X') | X = x] ≥ Φ(x).
-    
+
     For surprise, this means expected surprise increases (dissolution). -/
 def IsSubmartingale (P : Matrix V V ℝ) (Φ : V → ℝ) : Prop :=
   ∀ x, Φ x ≤ condExp P Φ x
 
 /-- Φ is a **martingale** under P if E[Φ(X') | X = x] = Φ(x).
-    
+
     For surprise, this is the equilibrium condition. -/
 def IsMartingale (P : Matrix V V ℝ) (Φ : V → ℝ) : Prop :=
   ∀ x, condExp P Φ x = Φ x
@@ -214,14 +218,14 @@ theorem martingale_iff_super_and_sub (P : Matrix V V ℝ) (Φ : V → ℝ) :
     exact le_antisymm (hsup x) (hsub x)
 
 /-- For a supermartingale, the predictable drift is non-positive. -/
-theorem supermartingale_predictable_nonpos (P : Matrix V V ℝ) (Φ : V → ℝ) 
+theorem supermartingale_predictable_nonpos (P : Matrix V V ℝ) (Φ : V → ℝ)
     (h : IsSupermartingale P Φ) (x : V) :
     predictableIncrement P Φ x ≤ 0 := by
   simp only [predictableIncrement]
   linarith [h x]
 
 /-- For a submartingale, the predictable drift is non-negative. -/
-theorem submartingale_predictable_nonneg (P : Matrix V V ℝ) (Φ : V → ℝ) 
+theorem submartingale_predictable_nonneg (P : Matrix V V ℝ) (Φ : V → ℝ)
     (h : IsSubmartingale P Φ) (x : V) :
     0 ≤ predictableIncrement P Φ x := by
   simp only [predictableIncrement]
@@ -235,19 +239,19 @@ is constant, but the *conditional* surprise E[-log π(X')|X=x] depends on x.
 The surprise process is NOT a martingale in general - what IS preserved
 is the relative entropy (KL divergence) decrease over time.
 
-Systems evolving toward equilibrium have decreasing expected surprise 
+Systems evolving toward equilibrium have decreasing expected surprise
 (supermartingale property). -/
 
 /-! ### 7. Free Energy Minimization Implies Consolidation -/
 
 /-- **Consolidation Theorem**: If the system is "contracting" toward the stationary
     distribution (relative entropy decreasing), then surprise is a supermartingale.
-    
+
     This formalizes the "Rate of Consolidation" - systems naturally evolve
     toward lower surprise (higher probability) states. -/
 theorem contraction_implies_supermartingale (P : Matrix V V ℝ) (pi_dist : V → ℝ)
     (hπ : ∀ x, 0 < pi_dist x) (_hP : IsStochastic P)
-    (h_contract : ∀ x, condExp P (SurprisePotential pi_dist hπ) x ≤ 
+    (h_contract : ∀ x, condExp P (SurprisePotential pi_dist hπ) x ≤
                        SurprisePotential pi_dist hπ x) :
     IsSupermartingale P (SurprisePotential pi_dist hπ) := h_contract
 
@@ -255,19 +259,19 @@ theorem contraction_implies_supermartingale (P : Matrix V V ℝ) (pi_dist : V �
 
 /-- The **leakage** at the blanket is the martingale increment for transitions
     crossing the blanket boundary.
-    
+
     For x ∈ internal, y ∈ external (or vice versa), this measures
     the unpredictable information flow across the boundary. -/
-def blanketLeakage (P : Matrix V V ℝ) (B : BlanketPartition V) (Φ : V → ℝ) 
+def blanketLeakage (P : Matrix V V ℝ) (B : BlanketPartition V) (Φ : V → ℝ)
     (x : V) (_hx : x ∈ B.internal) : ℝ :=
   ∑ y ∈ B.external, P x y * martingaleIncrement P Φ x y
 
 /-- **Bottleneck Variance Bound**: If the blanket is small (bottleneck),
     the variance of leakage is bounded.
-    
+
     Intuition: A small blanket restricts information flow, bounding
     the unpredictable component of cross-boundary dynamics. -/
-theorem bottleneck_bounds_leakage_variance (P : Matrix V V ℝ) (B : BlanketPartition V) 
+theorem bottleneck_bounds_leakage_variance (P : Matrix V V ℝ) (B : BlanketPartition V)
     (Φ : V → ℝ) (_pi_dist : V → ℝ) (_hπ : ∀ x, 0 < _pi_dist x)
     (hResp : RespectsBlank P B) (x : V) (hx : x ∈ B.internal) :
     blanketLeakage P B Φ x hx = 0 := by
@@ -282,9 +286,9 @@ theorem bottleneck_bounds_leakage_variance (P : Matrix V V ℝ) (B : BlanketPart
 /-! ### 9. Summary: Doob-Meyer Structure -/
 
 /-- **Doob Structure Theorem**: Decomposition of surprise dynamics.
-    
+
     For any Markov chain on a state space:
-    
+
     1. Surprise Φ = -log π decomposes as ΔΦ = ΔA + ΔM
     2. M_n is a martingale (E[ΔM|F_n] = 0)
     3. A_n is predictable (F_n-measurable)
@@ -293,8 +297,8 @@ theorem bottleneck_bounds_leakage_variance (P : Matrix V V ℝ) (B : BlanketPart
     6. Blanket structure bounds cross-boundary leakage -/
 theorem doob_structure (P : Matrix V V ℝ) (pi_dist : V → ℝ)
     (hπ : ∀ x, 0 < pi_dist x) (_hP : IsStochastic P) :
-    ∀ x y, (SurprisePotential pi_dist hπ y - SurprisePotential pi_dist hπ x) = 
-           predictableIncrement P (SurprisePotential pi_dist hπ) x + 
+    ∀ x y, (SurprisePotential pi_dist hπ y - SurprisePotential pi_dist hπ x) =
+           predictableIncrement P (SurprisePotential pi_dist hπ) x +
            martingaleIncrement P (SurprisePotential pi_dist hπ) x y := by
   intro x y
   exact doob_decomposition P (SurprisePotential pi_dist hπ) x y

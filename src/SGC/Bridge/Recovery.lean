@@ -61,6 +61,10 @@ open SGC.Bridge.Quantum
 open SGC.Bridge.Coherence
 open Finset Complex
 
+-- Suppress unused variable warnings (many lemmas don't need all type constraints)
+set_option linter.unusedSectionVars false
+set_option linter.unusedVariables false
+
 variable {V : Type*} [Fintype V] [DecidableEq V] [Nonempty V]
 
 /-! ## 1. The Petz Recovery Map
