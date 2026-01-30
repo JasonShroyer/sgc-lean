@@ -1,41 +1,41 @@
 /-!
-# Real Data Validation: C. elegans Pharyngeal Nervous System
-
-## Overview
-
-This experiment applies SGC metrics to **real biological connectivity data**
-with **zero parameter tuning**.
+# C. elegans Pharyngeal Nervous System Analysis
 
 ## Data Source
 
-- **Network**: C. elegans pharyngeal nervous system (20 neurons, ~60 synapses)
-- **Source**: Cook et al. (2019) "Whole-animal connectomes of both C. elegans sexes." Nature.
-- **Reference**: WormAtlas (wormatlas.org)
+**Cook SJ, Crouse CM, Yemini E, Hall DH, Emmons SW, Hobert O.**
+"The connectome of the Caenorhabditis elegans pharynx"
+*J Comp Neurol.* 2020; 528: 2767-2784
+DOI: 10.1002/cne.24932
 
-## Known Biological Structure
+Data extracted from supplementary file `cne24932-sup-0004-supinfo4.csv`
+Available at: https://github.com/openworm/ConnectomeToolbox/
 
-- **Interneurons** (I1-I6): Integration and control
-- **Motor neurons** (M1-M5): Muscle activation
-- **Pacemakers** (MC): Rhythm generation
+## Network Statistics
 
-## What SGC Measures
+- **Neurons**: 20 pharyngeal neurons
+- **Connections**: 161 neuron-to-neuron directed edges
+- **Total synapse weight**: 737.0
+- **Edge weights**: Synapse counts (not binary)
 
-1. **Non-Normality**: Detects directed information flow in the network
-2. **Partition Conductance**: Measures boundary flux between neuron groups
+## Neuron Classes
 
-## Result
+- **Interneurons** (8): I1L, I1R, I2L, I2R, I3, I4, I5, I6
+- **Motor neurons** (7): M1, M2L, M2R, M3L, M3R, M4, M5
+- **Motor-interneuron** (1): MI
+- **Pacemakers** (2): MCL, MCR
+- **Neurosecretory** (2): NSML, NSMR
 
-SGC correctly identifies functional asymmetry:
-- Interneurons have HIGH conductance (broadcast/transmit role)
-- Motor neurons have LOW conductance (receive/execute role)
+## What This Experiment Measures
 
-This matches the known source→sink architecture of neural control circuits.
+1. **Non-Normality**: ||[L, L†]||_F - deviation from symmetric dynamics
+2. **Partition Conductance**: Boundary flux for interneuron vs motor partitions
 
 ## Limitations
 
-- Connectivity data is simplified (major synapses only)
-- Edge weights are binary (1 or 0), not weighted by synapse count
-- This validates SGC on ONE network; generalization requires more tests
+- Chemical synapses only (gap junctions analyzed separately in original paper)
+- Self-loops (autapses) included in original data
+- This is ONE network; generalization requires validation on other connectomes
 -/
 
 namespace SGC.Experiments.Celegans
@@ -144,64 +144,55 @@ def isActionLayer (i : Fin 20) : Bool :=
   | .Neurosecretory => true
   | _ => false
 
-/-! ## 3. The Real Adjacency Matrix (From C. elegans Connectome Data)
+/-! ## 3. Adjacency Matrix from Cook et al. 2020
 
-Based on Cook et al. (2019) and WormAtlas pharyngeal connectivity.
-Edges represent chemical synapses (directed) and gap junctions (symmetric).
-
-**Key connections in the pharyngeal circuit:**
-- I1 → M1, M2 (Interneuron drives early motor)
-- I2 → M3, M4 (Interneuron drives late motor)
-- I3 ↔ I4 ↔ I5 ↔ I6 (Interneuron chain - the control loop)
-- MC → M3, M4 (Pacemaker drives contraction)
-- M1 → M2 → M3 → M4 → M5 (Motor sequence)
-- NSM modulates the entire circuit
-
-This is a SIMPLIFIED but REAL connectivity pattern.
+Weighted adjacency matrix extracted from cne24932-sup-0004-supinfo4.csv
+Edge weights represent synapse counts (chemical synapses only).
+Row = source neuron, Column = target neuron.
 -/
 
-/-- Build adjacency matrix: A(i,j) = 1 if neuron i synapses onto neuron j -/
+/-- Weighted adjacency matrix: A(i,j) = synapse count from neuron i to neuron j
+    Data source: Cook et al. 2020, J Comp Neurol 528:2767-2784 -/
 def adjacencyMatrix : Matrix20 := fun i j =>
-  let idx := fun (a b : Nat) => i.val == a && j.val == b
-  -- I1L connections
-  if idx 0 1 then 1.0 else if idx 0 8 then 1.0 else if idx 0 9 then 1.0 else if idx 0 4 then 1.0 else
-  -- I1R connections
-  if idx 1 0 then 1.0 else if idx 1 8 then 1.0 else if idx 1 10 then 1.0 else if idx 1 4 then 1.0 else
-  -- I2L connections
-  if idx 2 3 then 1.0 else if idx 2 11 then 1.0 else if idx 2 13 then 1.0 else if idx 2 5 then 1.0 else
-  -- I2R connections
-  if idx 3 2 then 1.0 else if idx 3 12 then 1.0 else if idx 3 13 then 1.0 else if idx 3 5 then 1.0 else
-  -- I3 connections (Central hub)
-  if idx 4 0 then 1.0 else if idx 4 1 then 1.0 else if idx 4 5 then 1.0 else if idx 4 6 then 1.0 else
-  -- I4 connections
-  if idx 5 4 then 1.0 else if idx 5 6 then 1.0 else if idx 5 7 then 1.0 else if idx 5 2 then 1.0 else if idx 5 3 then 1.0 else
-  -- I5 connections
-  if idx 6 4 then 1.0 else if idx 6 5 then 1.0 else if idx 6 7 then 1.0 else if idx 6 13 then 1.0 else
-  -- I6 connections
-  if idx 7 5 then 1.0 else if idx 7 6 then 1.0 else if idx 7 14 then 1.0 else
-  -- M1 connections
-  if idx 8 9 then 1.0 else if idx 8 10 then 1.0 else
-  -- M2L connections
-  if idx 9 10 then 1.0 else if idx 9 11 then 1.0 else
-  -- M2R connections
-  if idx 10 9 then 1.0 else if idx 10 12 then 1.0 else
-  -- M3L connections
-  if idx 11 12 then 1.0 else if idx 11 13 then 1.0 else
-  -- M3R connections
-  if idx 12 11 then 1.0 else if idx 12 13 then 1.0 else
-  -- M4 connections
-  if idx 13 14 then 1.0 else
-  -- MCL connections (Pacemaker)
-  if idx 15 16 then 1.0 else if idx 15 11 then 1.0 else if idx 15 13 then 1.0 else if idx 15 4 then 1.0 else
-  -- MCR connections
-  if idx 16 15 then 1.0 else if idx 16 12 then 1.0 else if idx 16 13 then 1.0 else if idx 16 4 then 1.0 else
-  -- MI connections
-  if idx 17 8 then 1.0 else if idx 17 13 then 1.0 else if idx 17 4 then 1.0 else
-  -- NSML connections
-  if idx 18 19 then 1.0 else if idx 18 4 then 1.0 else if idx 18 13 then 1.0 else
-  -- NSMR connections
-  if idx 19 18 then 1.0 else if idx 19 4 then 1.0 else if idx 19 13 then 1.0 else
-  0.0
+  let w := fun (a b : Nat) (v : Float) => if i.val == a && j.val == b then v else 0.0
+  -- Row 0: I1L
+  w 0 2 13.0 + w 0 4 2.5 + w 0 6 4.5 + w 0 9 3.0 + w 0 11 11.0 + w 0 12 1.5 + w 0 15 2.0 + w 0 16 3.0 + w 0 17 2.0 + w 0 18 5.5 +
+  -- Row 1: I1R
+  w 1 2 1.0 + w 1 3 8.0 + w 1 4 7.0 + w 1 6 2.0 + w 1 8 3.0 + w 1 9 0.5 + w 1 10 3.5 + w 1 11 0.5 + w 1 12 6.0 + w 1 13 1.0 + w 1 15 4.0 + w 1 16 8.5 + w 1 17 1.0 + w 1 18 1.0 + w 1 19 3.5 +
+  -- Row 2: I2L
+  w 2 0 1.5 + w 2 3 4.0 + w 2 5 15.5 + w 2 6 2.0 + w 2 7 1.0 + w 2 8 1.5 + w 2 12 2.0 + w 2 13 2.0 + w 2 18 16.0 + w 2 19 25.0 +
+  -- Row 3: I2R
+  w 3 1 1.0 + w 3 2 3.0 + w 3 5 15.5 + w 3 6 4.0 + w 3 8 2.5 + w 3 10 1.5 + w 3 13 1.0 + w 3 15 0.5 + w 3 18 32.5 + w 3 19 8.5 +
+  -- Row 4: I3
+  w 4 0 0.5 + w 4 1 0.5 + w 4 6 2.5 + w 4 8 1.5 + w 4 9 1.5 + w 4 10 0.5 + w 4 11 2.0 + w 4 12 3.0 + w 4 13 2.0 + w 4 15 2.5 + w 4 16 2.5 + w 4 17 1.5 + w 4 19 1.5 +
+  -- Row 5: I4
+  w 5 3 7.0 + w 5 6 2.0 + w 5 9 5.0 + w 5 10 2.0 + w 5 11 6.5 + w 5 12 23.5 + w 5 17 1.0 + w 5 18 8.5 + w 5 19 15.5 +
+  -- Row 6: I5
+  w 6 0 1.5 + w 6 1 2.0 + w 6 2 3.5 + w 6 3 3.0 + w 6 4 10.5 + w 6 5 7.0 + w 6 8 3.0 + w 6 9 5.0 + w 6 10 1.0 + w 6 11 12.5 + w 6 12 2.0 + w 6 13 26.5 + w 6 14 2.0 + w 6 16 3.5 + w 6 17 7.5 + w 6 18 5.0 + w 6 19 20.5 +
+  -- Row 7: I6
+  w 7 2 2.0 + w 7 13 12.5 + w 7 18 21.0 + w 7 19 4.0 +
+  -- Row 8: M1
+  w 8 1 1.0 + w 8 2 3.0 + w 8 3 3.5 + w 8 4 8.0 + w 8 5 0.5 + w 8 6 2.5 + w 8 13 1.0 + w 8 14 1.0 + w 8 17 7.5 + w 8 18 5.0 +
+  -- Row 9: M2L
+  w 9 2 1.0 + w 9 4 1.5 + w 9 5 8.0 + w 9 6 2.0 + w 9 11 3.0 + w 9 12 0.5 + w 9 15 1.0 +
+  -- Row 10: M2R
+  w 10 3 1.0 + w 10 5 1.0 + w 10 6 3.0 + w 10 9 1.0 + w 10 11 2.0 + w 10 12 3.0 + w 10 16 9.0 + w 10 17 5.0 + w 10 19 1.0 +
+  -- Row 11: M3L
+  w 11 12 1.0 + w 11 15 0.5 + w 11 17 0.5 + w 11 18 1.0 +
+  -- Row 12: M3R
+  w 12 0 3.0 + w 12 13 2.0 + w 12 15 1.0 + w 12 17 3.0 +
+  -- Row 13: M4
+  w 13 2 0.5 + w 13 5 5.5 + w 13 6 1.5 + w 13 7 5.0 + w 13 9 2.0 + w 13 11 1.0 + w 13 13 31.0 + w 13 15 0.5 +
+  -- Row 14: M5
+  w 14 6 4.0 + w 14 8 1.0 + w 14 13 2.0 + w 14 14 1.0 +
+  -- Row 15: MCL (no outgoing neuron-to-neuron connections in data)
+  -- Row 16: MCR (no outgoing neuron-to-neuron connections in data)
+  -- Row 17: MI
+  w 17 0 0.5 + w 17 4 1.5 + w 17 5 1.0 + w 17 8 7.0 + w 17 9 3.5 + w 17 10 2.0 + w 17 11 5.5 + w 17 12 2.0 + w 17 15 2.5 + w 17 18 2.0 + w 17 19 1.5 +
+  -- Row 18: NSML
+  w 18 2 0.5 + w 18 3 0.5 + w 18 5 2.0 + w 18 6 0.5 + w 18 11 20.5 + w 18 12 0.5 + w 18 13 12.5 + w 18 18 0.5 + w 18 19 7.0 +
+  -- Row 19: NSMR
+  w 19 2 1.0 + w 19 3 2.0 + w 19 5 2.5 + w 19 7 2.0 + w 19 11 1.0 + w 19 12 22.5 + w 19 18 2.0
 
 /-! ## 4. Convert Adjacency to Markov Generator -/
 
@@ -340,7 +331,7 @@ def celegansValidation : String :=
   s!"║     C. ELEGANS PHARYNGEAL NERVOUS SYSTEM ANALYSIS                            ║\n" ++
   s!"╠══════════════════════════════════════════════════════════════════════════════╣\n" ++
   s!"║  Network: 20 neurons, {totalEdges} directed edges                                    ║\n" ++
-  s!"║  Data: Cook et al. (2019) Nature, WormAtlas                                  ║\n" ++
+  s!"║  Data: Cook et al. (2020) J Comp Neurol 528:2767-2784                        ║\n" ++
   s!"╠══════════════════════════════════════════════════════════════════════════════╣\n" ++
   s!"║  NON-NORMALITY: ||[L, L†]||_F = {formatFloat nonNorm 2}                               ║\n" ++
   s!"║  (Non-zero indicates directed/asymmetric information flow)                   ║\n" ++

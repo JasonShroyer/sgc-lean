@@ -1,10 +1,12 @@
 /-!
-# Unsupervised Module Discovery on C. elegans Data
+# Unsupervised Module Discovery on C. elegans Pharynx
 
-## Overview
+## Data Source
 
-This experiment tests whether SGC can **discover** functional modules
-without being given the neuron labels.
+**Cook SJ, Crouse CM, Yemini E, Hall DH, Emmons SW, Hobert O.**
+"The connectome of the Caenorhabditis elegans pharynx"
+*J Comp Neurol.* 2020; 528: 2767-2784
+DOI: 10.1002/cne.24932
 
 ## Algorithm
 
@@ -13,24 +15,16 @@ without being given the neuron labels.
 2. Compute conductance for each partition
 3. Return the partition with minimum conductance
 
-## Result
+## Objective
 
-The algorithm discovered a partition that:
-- Groups motor neurons together (77.8% motor purity)
-- Separates them from interneurons (72.7% inter purity)
-
-This matches the known biological structure.
-
-## Significance
-
-SGC identified functional modules from topology alone,
-without supervision or parameter tuning.
+Test whether conductance-based clustering recovers known
+functional groups (interneurons vs motor neurons) without supervision.
 
 ## Limitations
 
 - Monte Carlo search is approximate (may miss global optimum)
 - Validated on one network only
-- Binary edge weights (no synapse strength information)
+- Uses weighted synapse counts from Cook et al. 2020
 -/
 
 namespace SGC.Experiments.BrainDecoding
@@ -58,30 +52,30 @@ def isInterneuron (i : Fin 20) : Bool :=
   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 => true  -- I1-I6
   | _ => false
 
-/-! ## 2. The Adjacency Matrix (copied from Celegans.lean) -/
+/-! ## 2. Adjacency Matrix from Cook et al. 2020 -/
 
+/-- Weighted adjacency matrix: A(i,j) = synapse count from neuron i to neuron j
+    Data source: Cook et al. 2020, J Comp Neurol 528:2767-2784 -/
 def adjacencyMatrix : Matrix20 := fun i j =>
-  let idx := fun (a b : Nat) => i.val == a && j.val == b
-  if idx 0 1 then 1.0 else if idx 0 8 then 1.0 else if idx 0 9 then 1.0 else if idx 0 4 then 1.0 else
-  if idx 1 0 then 1.0 else if idx 1 8 then 1.0 else if idx 1 10 then 1.0 else if idx 1 4 then 1.0 else
-  if idx 2 3 then 1.0 else if idx 2 11 then 1.0 else if idx 2 13 then 1.0 else if idx 2 5 then 1.0 else
-  if idx 3 2 then 1.0 else if idx 3 12 then 1.0 else if idx 3 13 then 1.0 else if idx 3 5 then 1.0 else
-  if idx 4 0 then 1.0 else if idx 4 1 then 1.0 else if idx 4 5 then 1.0 else if idx 4 6 then 1.0 else
-  if idx 5 4 then 1.0 else if idx 5 6 then 1.0 else if idx 5 7 then 1.0 else if idx 5 2 then 1.0 else if idx 5 3 then 1.0 else
-  if idx 6 4 then 1.0 else if idx 6 5 then 1.0 else if idx 6 7 then 1.0 else if idx 6 13 then 1.0 else
-  if idx 7 5 then 1.0 else if idx 7 6 then 1.0 else if idx 7 14 then 1.0 else
-  if idx 8 9 then 1.0 else if idx 8 10 then 1.0 else
-  if idx 9 10 then 1.0 else if idx 9 11 then 1.0 else
-  if idx 10 9 then 1.0 else if idx 10 12 then 1.0 else
-  if idx 11 12 then 1.0 else if idx 11 13 then 1.0 else
-  if idx 12 11 then 1.0 else if idx 12 13 then 1.0 else
-  if idx 13 14 then 1.0 else
-  if idx 15 16 then 1.0 else if idx 15 11 then 1.0 else if idx 15 13 then 1.0 else if idx 15 4 then 1.0 else
-  if idx 16 15 then 1.0 else if idx 16 12 then 1.0 else if idx 16 13 then 1.0 else if idx 16 4 then 1.0 else
-  if idx 17 8 then 1.0 else if idx 17 13 then 1.0 else if idx 17 4 then 1.0 else
-  if idx 18 19 then 1.0 else if idx 18 4 then 1.0 else if idx 18 13 then 1.0 else
-  if idx 19 18 then 1.0 else if idx 19 4 then 1.0 else if idx 19 13 then 1.0 else
-  0.0
+  let w := fun (a b : Nat) (v : Float) => if i.val == a && j.val == b then v else 0.0
+  w 0 2 13.0 + w 0 4 2.5 + w 0 6 4.5 + w 0 9 3.0 + w 0 11 11.0 + w 0 12 1.5 + w 0 15 2.0 + w 0 16 3.0 + w 0 17 2.0 + w 0 18 5.5 +
+  w 1 2 1.0 + w 1 3 8.0 + w 1 4 7.0 + w 1 6 2.0 + w 1 8 3.0 + w 1 9 0.5 + w 1 10 3.5 + w 1 11 0.5 + w 1 12 6.0 + w 1 13 1.0 + w 1 15 4.0 + w 1 16 8.5 + w 1 17 1.0 + w 1 18 1.0 + w 1 19 3.5 +
+  w 2 0 1.5 + w 2 3 4.0 + w 2 5 15.5 + w 2 6 2.0 + w 2 7 1.0 + w 2 8 1.5 + w 2 12 2.0 + w 2 13 2.0 + w 2 18 16.0 + w 2 19 25.0 +
+  w 3 1 1.0 + w 3 2 3.0 + w 3 5 15.5 + w 3 6 4.0 + w 3 8 2.5 + w 3 10 1.5 + w 3 13 1.0 + w 3 15 0.5 + w 3 18 32.5 + w 3 19 8.5 +
+  w 4 0 0.5 + w 4 1 0.5 + w 4 6 2.5 + w 4 8 1.5 + w 4 9 1.5 + w 4 10 0.5 + w 4 11 2.0 + w 4 12 3.0 + w 4 13 2.0 + w 4 15 2.5 + w 4 16 2.5 + w 4 17 1.5 + w 4 19 1.5 +
+  w 5 3 7.0 + w 5 6 2.0 + w 5 9 5.0 + w 5 10 2.0 + w 5 11 6.5 + w 5 12 23.5 + w 5 17 1.0 + w 5 18 8.5 + w 5 19 15.5 +
+  w 6 0 1.5 + w 6 1 2.0 + w 6 2 3.5 + w 6 3 3.0 + w 6 4 10.5 + w 6 5 7.0 + w 6 8 3.0 + w 6 9 5.0 + w 6 10 1.0 + w 6 11 12.5 + w 6 12 2.0 + w 6 13 26.5 + w 6 14 2.0 + w 6 16 3.5 + w 6 17 7.5 + w 6 18 5.0 + w 6 19 20.5 +
+  w 7 2 2.0 + w 7 13 12.5 + w 7 18 21.0 + w 7 19 4.0 +
+  w 8 1 1.0 + w 8 2 3.0 + w 8 3 3.5 + w 8 4 8.0 + w 8 5 0.5 + w 8 6 2.5 + w 8 13 1.0 + w 8 14 1.0 + w 8 17 7.5 + w 8 18 5.0 +
+  w 9 2 1.0 + w 9 4 1.5 + w 9 5 8.0 + w 9 6 2.0 + w 9 11 3.0 + w 9 12 0.5 + w 9 15 1.0 +
+  w 10 3 1.0 + w 10 5 1.0 + w 10 6 3.0 + w 10 9 1.0 + w 10 11 2.0 + w 10 12 3.0 + w 10 16 9.0 + w 10 17 5.0 + w 10 19 1.0 +
+  w 11 12 1.0 + w 11 15 0.5 + w 11 17 0.5 + w 11 18 1.0 +
+  w 12 0 3.0 + w 12 13 2.0 + w 12 15 1.0 + w 12 17 3.0 +
+  w 13 2 0.5 + w 13 5 5.5 + w 13 6 1.5 + w 13 7 5.0 + w 13 9 2.0 + w 13 11 1.0 + w 13 13 31.0 + w 13 15 0.5 +
+  w 14 6 4.0 + w 14 8 1.0 + w 14 13 2.0 + w 14 14 1.0 +
+  w 17 0 0.5 + w 17 4 1.5 + w 17 5 1.0 + w 17 8 7.0 + w 17 9 3.5 + w 17 10 2.0 + w 17 11 5.5 + w 17 12 2.0 + w 17 15 2.5 + w 17 18 2.0 + w 17 19 1.5 +
+  w 18 2 0.5 + w 18 3 0.5 + w 18 5 2.0 + w 18 6 0.5 + w 18 11 20.5 + w 18 12 0.5 + w 18 13 12.5 + w 18 18 0.5 + w 18 19 7.0 +
+  w 19 2 1.0 + w 19 3 2.0 + w 19 5 2.5 + w 19 7 2.0 + w 19 11 1.0 + w 19 12 22.5 + w 19 18 2.0
 
 /-! ## 3. Partition Representation -/
 
@@ -223,8 +217,8 @@ def brainDecodingExperiment : String :=
   s!"║       C. elegans Pharyngeal Nervous System                                   ║\n" ++
   s!"╠══════════════════════════════════════════════════════════════════════════════╣\n" ++
   s!"║  Algorithm: Monte Carlo minimum-conductance partition search                 ║\n" ++
-  s!"║  Network: 20 neurons, 60 directed edges                                      ║\n" ++
-  s!"║  Data: Cook et al. (2019), WormAtlas                                         ║\n" ++
+  s!"║  Network: 20 neurons, 161 connections (weighted)                              ║\n" ++
+  s!"║  Data: Cook et al. (2020) J Comp Neurol 528:2767-2784                        ║\n" ++
   s!"╠══════════════════════════════════════════════════════════════════════════════╣\n" ++
   s!"║                         SEARCH RESULTS                                       ║\n" ++
   s!"╠══════════════════════════════════════════════════════════════════════════════╣\n" ++
