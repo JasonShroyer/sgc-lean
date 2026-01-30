@@ -95,30 +95,31 @@ def partitionNames (p : Partition) : String :=
   let members := partitionMembers p
   String.intercalate ", " (members.map neuronName)
 
-/-! ## 4. Conductance Calculation -/
+/-! ## 4. Conductance Calculation (Weighted) -/
 
-/-- Count edges from S to S^c (boundary edges) -/
-def boundaryEdges (p : Partition) : Nat :=
+/-- Row sum of adjacency matrix -/
+def rowSum (i : Fin 20) : Float :=
+  (List.finRange 20).foldl (fun acc j => acc + adjacencyMatrix i j) 0.0
+
+/-- Sum of edge weights from S to S^c (cut weight) -/
+def boundaryWeight (p : Partition) : Float :=
   (List.finRange 20).foldl (fun acc i =>
     (List.finRange 20).foldl (fun acc2 j =>
-      if inPartition p i && !inPartition p j && adjacencyMatrix i j > 0.5
-      then acc2 + 1 else acc2) acc) 0
+      if inPartition p i && !inPartition p j then acc2 + adjacencyMatrix i j else acc2) acc) 0.0
 
-/-- Count edges within S (internal edges) -/
-def internalEdges (p : Partition) : Nat :=
+/-- Volume of partition: total outgoing weight from nodes in S -/
+def partitionVolume (p : Partition) : Float :=
   (List.finRange 20).foldl (fun acc i =>
-    (List.finRange 20).foldl (fun acc2 j =>
-      if inPartition p i && inPartition p j && adjacencyMatrix i j > 0.5
-      then acc2 + 1 else acc2) acc) 0
+    if inPartition p i then acc + rowSum i else acc) 0.0
 
-/-- Conductance: boundary / min(vol(S), vol(S^c)) -/
+/-- Weighted conductance: cut(S, S^c) / min(vol(S), vol(S^c)) -/
 def conductance (p : Partition) : Float :=
-  let boundary := boundaryEdges p
-  let volS := internalEdges p
-  let volSc := internalEdges (~~~p &&& 0xFFFFF)  -- Complement within 20 bits
-  let minVol := min volS volSc
-  if minVol == 0 then 1000.0  -- Disconnected partition
-  else boundary.toFloat / minVol.toFloat
+  let cutWeight := boundaryWeight p
+  let volS := partitionVolume p
+  let volSc := partitionVolume (~~~p &&& 0xFFFFF)  -- Complement within 20 bits
+  let minVol := if volS < volSc then volS else volSc
+  if minVol < 0.001 then 1000.0  -- Avoid division by zero
+  else cutWeight / minVol
 
 /-! ## 5. Monte Carlo Search for Minimum Conductance Partition -/
 

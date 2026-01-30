@@ -200,7 +200,9 @@ def adjacencyMatrix : Matrix20 := fun i j =>
 def rowSum20 (A : Matrix20) (i : Fin 20) : Float :=
   (List.finRange 20).foldl (fun acc j => acc + A i j) 0.0
 
-/-- Convert adjacency matrix to Markov generator (row-stochastic with uniform rates) -/
+/-- Convert adjacency matrix to continuous-time Markov generator.
+    Off-diagonal: L(i,j) = A(i,j); Diagonal: L(i,i) = -sum of row.
+    Note: This is a generator matrix (rows sum to 0), not a stochastic matrix. -/
 def adjacencyToGenerator (A : Matrix20) : Matrix20 := fun i j =>
   let degree := rowSum20 A i
   if i == j then
@@ -236,25 +238,42 @@ def nonNormality20 (L : Matrix20) : Float :=
   let Lt := transpose20 L
   frobNorm20 (commutator20 L Lt)
 
-/-- Total edge count -/
+/-- Total edge count (edges with weight > 0) -/
 def totalEdges : Nat :=
   (List.finRange 20).foldl (fun acc i =>
     (List.finRange 20).foldl (fun acc2 j =>
-      if adjacencyMatrix i j > 0.5 then acc2 + 1 else acc2) acc) 0
+      if adjacencyMatrix i j > 0.0 then acc2 + 1 else acc2) acc) 0
 
 /-- Count edges within a partition -/
 def internalEdges (inPartition : Fin 20 → Bool) : Nat :=
   (List.finRange 20).foldl (fun acc i =>
     (List.finRange 20).foldl (fun acc2 j =>
-      if inPartition i && inPartition j && adjacencyMatrix i j > 0.5
+      if inPartition i && inPartition j && adjacencyMatrix i j > 0.0
       then acc2 + 1 else acc2) acc) 0
+
+/-- Sum of edge weights within a partition -/
+def internalWeight (inPartition : Fin 20 → Bool) : Float :=
+  (List.finRange 20).foldl (fun acc i =>
+    (List.finRange 20).foldl (fun acc2 j =>
+      if inPartition i && inPartition j then acc2 + adjacencyMatrix i j else acc2) acc) 0.0
 
 /-- Count edges leaving a partition -/
 def boundaryEdges (inPartition : Fin 20 → Bool) : Nat :=
   (List.finRange 20).foldl (fun acc i =>
     (List.finRange 20).foldl (fun acc2 j =>
-      if inPartition i && !inPartition j && adjacencyMatrix i j > 0.5
+      if inPartition i && !inPartition j && adjacencyMatrix i j > 0.0
       then acc2 + 1 else acc2) acc) 0
+
+/-- Sum of edge weights leaving a partition (cut weight) -/
+def boundaryWeight (inPartition : Fin 20 → Bool) : Float :=
+  (List.finRange 20).foldl (fun acc i =>
+    (List.finRange 20).foldl (fun acc2 j =>
+      if inPartition i && !inPartition j then acc2 + adjacencyMatrix i j else acc2) acc) 0.0
+
+/-- Volume of partition: total outgoing weight from nodes in S -/
+def partitionVolume (inPartition : Fin 20 → Bool) : Float :=
+  (List.finRange 20).foldl (fun acc i =>
+    if inPartition i then acc + rowSum20 adjacencyMatrix i else acc) 0.0
 
 /-- Partition size -/
 def partitionSize (inPartition : Fin 20 → Bool) : Nat :=
@@ -262,16 +281,16 @@ def partitionSize (inPartition : Fin 20 → Bool) : Nat :=
     if inPartition i then acc + 1 else acc) 0
 
 /--
-Conductance of a partition: boundary / min(internal, complement_internal)
-Lower conductance = tighter closure
+Weighted conductance: cut(S, S^c) / min(vol(S), vol(S^c))
+Lower conductance = partition is more isolated from its complement.
 -/
 def partitionConductance (inPartition : Fin 20 → Bool) : Float :=
-  let boundary := boundaryEdges inPartition
-  let internal := internalEdges inPartition
-  let complementInternal := internalEdges (fun i => !inPartition i)
-  let minInternal := min internal complementInternal
-  if minInternal == 0 then 1000.0  -- Disconnected
-  else boundary.toFloat / minInternal.toFloat
+  let cutWeight := boundaryWeight inPartition
+  let volS := partitionVolume inPartition
+  let volSc := partitionVolume (fun i => !inPartition i)
+  let minVol := if volS < volSc then volS else volSc
+  if minVol < 0.001 then 1000.0  -- Avoid division by zero
+  else cutWeight / minVol
 
 /-- Density of a partition: internal_edges / possible_edges -/
 def partitionDensity (inPartition : Fin 20 → Bool) : Float :=
@@ -363,15 +382,15 @@ def celegansValidation : String :=
 
 /-! ## 8. Detailed Neuron Analysis -/
 
-/-- Compute out-degree for each neuron -/
+/-- Compute out-degree for each neuron (count of outgoing edges) -/
 def outDegree (i : Fin 20) : Nat :=
   (List.finRange 20).foldl (fun acc j =>
-    if adjacencyMatrix i j > 0.5 then acc + 1 else acc) 0
+    if adjacencyMatrix i j > 0.0 then acc + 1 else acc) 0
 
-/-- Compute in-degree for each neuron -/
+/-- Compute in-degree for each neuron (count of incoming edges) -/
 def inDegree (i : Fin 20) : Nat :=
   (List.finRange 20).foldl (fun acc j =>
-    if adjacencyMatrix j i > 0.5 then acc + 1 else acc) 0
+    if adjacencyMatrix j i > 0.0 then acc + 1 else acc) 0
 
 def neuronTable : String :=
   let header := "║  Neuron │ Class      │ Out │ In  │ Control? ║\n"
