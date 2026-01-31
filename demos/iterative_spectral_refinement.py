@@ -317,45 +317,155 @@ class SudokuDataset(Dataset):
         return np.array(puzzles), np.array(solutions), stats
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# ISR SOLVER MODEL (< 100k params)
+# FISHER-AXIAL SOLVER (< 100k params)
+# Implements Log-Linear Evidence Combination (Product of Experts)
+# Based on Fisher-Rao Geometry: updates are ADDITIVE in logit space
+# Reference: Chentsov's Theorem - Fisher metric is unique coarse-graining invariant
 # ═══════════════════════════════════════════════════════════════════════════════
 
-class ISRSolver(nn.Module):
-    def __init__(self, hidden_dim: int = 128, num_layers: int = 2):
+class FisherAxialBlock(nn.Module):
+    """Single block of Fisher-correct constraint propagation.
+    
+    The key insight: In Fisher-Rao geometry, combining independent evidence
+    corresponds to ADDING log-potentials (multiplying probabilities).
+    
+    Update rule: Z_{t+1} = Z_t + α(Δ_row + Δ_col + Δ_box)
+    This is the Product of Experts formula in tangent space.
+    """
+    def __init__(self, hidden_dim: int = 64):
         super().__init__()
         self.hidden_dim = hidden_dim
-        self.input_dim = 19  # 10 (puzzle) + 9 (y logits)
         
-        layers = []
-        in_dim = self.input_dim + hidden_dim
-        for _ in range(num_layers):
-            layers.extend([nn.Linear(in_dim, hidden_dim), nn.LayerNorm(hidden_dim), nn.GELU()])
-            in_dim = hidden_dim
-        self.core = nn.Sequential(*layers)
-        self.y_head = nn.Linear(hidden_dim, 9)
-        self.z_head = nn.Linear(hidden_dim, hidden_dim)
+        # Row constraint branch: aggregate info across each row
+        # Input: (B, 9, 9, D) -> apply along dim=2 (columns within row)
+        self.row_net = nn.Sequential(
+            nn.Linear(hidden_dim * 9, hidden_dim),
+            nn.GELU(),
+            nn.Linear(hidden_dim, hidden_dim)
+        )
+        
+        # Column constraint branch: aggregate info across each column  
+        # Input: (B, 9, 9, D) -> apply along dim=1 (rows within column)
+        self.col_net = nn.Sequential(
+            nn.Linear(hidden_dim * 9, hidden_dim),
+            nn.GELU(),
+            nn.Linear(hidden_dim, hidden_dim)
+        )
+        
+        # Box constraint branch: aggregate info within each 3x3 box
+        self.box_net = nn.Sequential(
+            nn.Linear(hidden_dim * 9, hidden_dim),
+            nn.GELU(),
+            nn.Linear(hidden_dim, hidden_dim)
+        )
+        
+        # Gating for stable updates
+        self.gate = nn.Sequential(
+            nn.Linear(hidden_dim * 3, hidden_dim),
+            nn.Sigmoid()
+        )
+        
+        # Step size (learnable)
+        self.alpha = nn.Parameter(torch.tensor(0.1))
+    
+    def forward(self, z: torch.Tensor) -> torch.Tensor:
+        """z: (B, 81, D) -> (B, 81, D)"""
+        B, _, D = z.shape
+        z_grid = z.view(B, 9, 9, D)  # Reshape to grid
+        
+        # Row updates: for each cell, gather all cells in same row
+        row_context = z_grid.reshape(B, 9, 9 * D)  # (B, 9, 9*D) - each row
+        row_update = self.row_net(row_context)  # (B, 9, D)
+        row_update = row_update.unsqueeze(2).expand(-1, -1, 9, -1)  # Broadcast to all cols
+        
+        # Column updates: for each cell, gather all cells in same column
+        col_context = z_grid.permute(0, 2, 1, 3).reshape(B, 9, 9 * D)  # (B, 9, 9*D) - each col
+        col_update = self.col_net(col_context)  # (B, 9, D)
+        col_update = col_update.unsqueeze(1).expand(-1, 9, -1, -1)  # Broadcast to all rows
+        
+        # Box updates: for each cell, gather all cells in same 3x3 box
+        # Reshape to (B, 3, 3, 3, 3, D) then gather boxes
+        z_boxes = z_grid.view(B, 3, 3, 3, 3, D)
+        z_boxes = z_boxes.permute(0, 1, 3, 2, 4, 5).reshape(B, 9, 9 * D)  # (B, 9, 9*D) - each box
+        box_update = self.box_net(z_boxes)  # (B, 9, D)
+        # Broadcast back to cells within each box
+        box_update = box_update.view(B, 3, 3, D)
+        box_update = box_update.unsqueeze(3).unsqueeze(5).expand(-1, -1, -1, 3, -1, 3).reshape(B, 9, 9, D)
+        
+        # Fisher-correct combination: ADD the log-potentials (Product of Experts)
+        # This is the key insight from Chentsov's theorem
+        delta_sum = row_update + col_update + box_update
+        
+        # Gated update for stability
+        gate_input = torch.cat([row_update, col_update, box_update], dim=-1).view(B, 81, -1)
+        gate = self.gate(gate_input).view(B, 9, 9, D)
+        
+        # Residual update in log space
+        z_new = z_grid + self.alpha * gate * delta_sum
+        
+        return z_new.view(B, 81, D)
+
+
+class ISRSolver(nn.Module):
+    """Fisher-Axial ISR Solver with log-linear evidence combination.
+    
+    Architecture respects Fisher-Rao geometry:
+    - State is logits (natural parameters)
+    - Updates are additive (Product of Experts)
+    - Cross-cell communication via row/col/box constraints
+    """
+    def __init__(self, hidden_dim: int = 64, num_blocks: int = 2):
+        super().__init__()
+        self.hidden_dim = hidden_dim
+        
+        # Encode puzzle clues into hidden space
+        self.clue_embed = nn.Embedding(10, hidden_dim)  # 0-9
+        
+        # Fisher-Axial blocks for constraint propagation
+        self.blocks = nn.ModuleList([FisherAxialBlock(hidden_dim) for _ in range(num_blocks)])
+        
+        # Project hidden state to logits (natural parameters)
+        self.to_logits = nn.Linear(hidden_dim, 9)
+        
+        # Initialize hidden state
         self.z_init = nn.Parameter(torch.randn(hidden_dim) * 0.01)
         
         total = sum(p.numel() for p in self.parameters() if p.requires_grad)
-        print(f"[ISRSolver] Parameters: {total:,}")
+        print(f"[ISRSolver] Fisher-Axial, Parameters: {total:,}")
     
-    def encode_puzzle(self, puzzle): return F.one_hot(puzzle, num_classes=10).float()
+    def encode_puzzle(self, puzzle: torch.Tensor) -> torch.Tensor:
+        """Encode puzzle clues into hidden representations."""
+        return self.clue_embed(puzzle)  # (B, 81, D)
     
-    def forward_step(self, y_t, z_t, x_enc):
-        combined = torch.cat([x_enc, y_t, z_t], dim=-1)
-        h = self.core(combined.view(-1, combined.shape[-1])).view(y_t.shape[0], 81, self.hidden_dim)
-        return self.y_head(h), self.z_head(h)
+    def forward_step(self, z_t: torch.Tensor, x_enc: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+        """Single refinement step with Fisher-correct updates."""
+        # Combine current state with puzzle encoding
+        z_combined = z_t + x_enc  # Additive (log-linear)
+        
+        # Apply Fisher-Axial blocks
+        for block in self.blocks:
+            z_combined = block(z_combined)
+        
+        # Project to logits
+        y_t = self.to_logits(z_combined)
+        
+        return y_t, z_combined
     
-    def forward(self, puzzle, T=30, return_trajectory=False):
+    def forward(self, puzzle: torch.Tensor, T: int = 30, return_trajectory: bool = False):
         batch_size, device = puzzle.shape[0], puzzle.device
         x_enc = self.encode_puzzle(puzzle)
-        y_t = torch.zeros(batch_size, 81, 9, device=device)
-        z_t = self.z_init.unsqueeze(0).unsqueeze(0).expand(batch_size, 81, -1)
+        
+        # Initialize hidden state
+        z_t = self.z_init.unsqueeze(0).unsqueeze(0).expand(batch_size, 81, -1).clone()
+        y_t = self.to_logits(z_t + x_enc)
         
         y_traj, z_traj = [y_t], [z_t] if return_trajectory else (None, None)
+        
         for _ in range(T):
-            y_t, z_t = self.forward_step(y_t, z_t, x_enc)
-            if return_trajectory: y_traj.append(y_t); z_traj.append(z_t)
+            y_t, z_t = self.forward_step(z_t, x_enc)
+            if return_trajectory:
+                y_traj.append(y_t)
+                z_traj.append(z_t)
         
         result = {'y_final': y_t, 'z_final': z_t}
         if return_trajectory:
@@ -363,15 +473,16 @@ class ISRSolver(nn.Module):
             result['z_traj'] = torch.stack(z_traj, dim=0)
         return result
     
-    def compute_loss(self, y_final, solution, puzzle):
+    def compute_loss(self, y_final: torch.Tensor, solution: torch.Tensor, puzzle: torch.Tensor) -> torch.Tensor:
+        """Cross-entropy loss on empty cells only."""
         mask = (puzzle == 0).float().view(-1)
-        target = (solution - 1).view(-1)
+        target = (solution - 1).view(-1)  # Convert 1-9 to 0-8
         ce = F.cross_entropy(y_final.view(-1, 9), target, reduction='none')
         return (ce * mask).sum() / (mask.sum() + 1e-8)
     
-    def compute_accuracy(self, y_final, solution, puzzle):
-        pred = y_final.argmax(dim=-1) + 1
-        pred = torch.where(puzzle > 0, puzzle, pred)
+    def compute_accuracy(self, y_final: torch.Tensor, solution: torch.Tensor, puzzle: torch.Tensor) -> Dict:
+        pred = y_final.argmax(dim=-1) + 1  # Convert 0-8 to 1-9
+        pred = torch.where(puzzle > 0, puzzle, pred)  # Keep given clues
         mask = (puzzle == 0)
         cell_acc = ((pred == solution) & mask).float().sum() / (mask.float().sum() + 1e-8)
         solved_acc = (pred == solution).all(dim=-1).float().mean()
@@ -518,7 +629,7 @@ class SGCAnalyzer:
         """
         batch_size = min(z_t.shape[0], self.config.eta_batch_subsample)
         indices = torch.randperm(z_t.shape[0], device=z_t.device)[:batch_size]
-        y_sub, z_sub, x_sub = y_t[indices], z_t[indices], x_enc[indices]
+        z_sub, x_sub = z_t[indices], x_enc[indices]
         
         eta_sq_estimates = []
         
@@ -528,7 +639,7 @@ class SGCAnalyzer:
             v = v / (v.numel() ** 0.5)  # Normalize for numerical stability
             
             def fwd(z):
-                _, zn = model.forward_step(y_sub, z, x_sub)
+                _, zn = model.forward_step(z, x_sub)
                 return zn
             
             try:
@@ -591,13 +702,12 @@ class SGCAnalyzer:
         
         # Finite difference approximation of Jv
         z_t_full = z_t[indices]
-        y_t_sub = y_t[indices]
         x_sub = x_enc[indices]
         
         with torch.no_grad():
-            _, z_fwd = model.forward_step(y_t_sub, z_t_full, x_sub)
+            _, z_fwd = model.forward_step(z_t_full, x_sub)
             z_pert = z_t_full + eps * v.unsqueeze(1).expand_as(z_t_full)
-            _, z_fwd_pert = model.forward_step(y_t_sub, z_pert, x_sub)
+            _, z_fwd_pert = model.forward_step(z_pert, x_sub)
             
             # Approximate Jv
             Jv_approx = (z_fwd_pert - z_fwd).mean(dim=1) / eps
@@ -626,6 +736,76 @@ class SGCAnalyzer:
         probs = F.softmax(y, dim=-1)
         log_probs = F.log_softmax(y, dim=-1)
         return -(probs * log_probs).sum(dim=-1).mean().item()
+    
+    def compute_leakage_kl(self, y_t: torch.Tensor, y_next: torch.Tensor) -> Dict:
+        """
+        Compute Fisher-Rao leakage as KL divergence between consecutive steps.
+        
+        This is the CORRECT information-geometric metric per Chentsov's theorem:
+        D_Fisher(t) = KL(P(·|y_t) || P(·|y_{t+1}))
+        
+        Measures the "velocity" of belief state on the statistical manifold.
+        SGC predicts that successful reasoning minimizes this (geodesic motion).
+        
+        Returns:
+        - kl_forward: KL(p_t || p_{t+1}) - information gained
+        - kl_backward: KL(p_{t+1} || p_t) - information lost  
+        - kl_symmetric: (kl_forward + kl_backward) / 2 - symmetric Fisher distance
+        - mean_kl: mean across batch
+        """
+        # Convert logits to log-probabilities
+        log_p_t = F.log_softmax(y_t, dim=-1)  # [B, 81, 9]
+        log_p_next = F.log_softmax(y_next, dim=-1)
+        p_t = torch.exp(log_p_t)
+        p_next = torch.exp(log_p_next)
+        
+        # KL divergence per cell: KL(p || q) = Σ p log(p/q)
+        # Forward: how much info gained going from t to t+1
+        kl_forward = (p_t * (log_p_t - log_p_next)).sum(dim=-1)  # [B, 81]
+        
+        # Backward: how much info lost
+        kl_backward = (p_next * (log_p_next - log_p_t)).sum(dim=-1)  # [B, 81]
+        
+        # Symmetric KL (approximates Fisher-Rao distance^2 locally)
+        kl_symmetric = 0.5 * (kl_forward + kl_backward)
+        
+        # Mean across cells and batch
+        kl_per_sample = kl_symmetric.mean(dim=-1)  # [B]
+        
+        return {
+            'kl_forward': kl_forward.mean(dim=-1),  # [B]
+            'kl_backward': kl_backward.mean(dim=-1),  # [B]
+            'kl_symmetric': kl_per_sample,  # [B]
+            'mean_kl': kl_per_sample.mean().item(),
+            'max_kl': kl_per_sample.max().item(),
+        }
+    
+    def compute_trajectory_velocity(self, y_traj: torch.Tensor) -> Dict:
+        """
+        Compute the Fisher "velocity" profile along the entire trajectory.
+        
+        y_traj: [T+1, B, 81, 9] - trajectory of logits
+        
+        Returns KL divergences at each step, allowing us to see:
+        - High velocity = rapid belief changes (exploration/instability)
+        - Low velocity = slow, geodesic motion (convergence)
+        """
+        T = y_traj.shape[0] - 1
+        velocities = []
+        
+        for t in range(T):
+            kl_info = self.compute_leakage_kl(y_traj[t], y_traj[t+1])
+            velocities.append(kl_info['mean_kl'])
+        
+        velocities = np.array(velocities)
+        
+        return {
+            'velocities': velocities,
+            'mean_velocity': velocities.mean(),
+            'max_velocity': velocities.max(),
+            'final_velocity': velocities[-1] if len(velocities) > 0 else 0.0,
+            'velocity_decay': velocities[0] / (velocities[-1] + 1e-8) if len(velocities) > 0 else 1.0
+        }
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # VISUALIZER
@@ -714,11 +894,21 @@ def train_epoch(model, loader, opt, analyzer, viz, epoch, step, cfg, device):
         if step % cfg.log_interval == 0:
             with torch.no_grad():
                 y_traj, z_traj = result['y_traj'], result['z_traj']
-                # Compute leakage with improved metrics
+                
+                # Euclidean leakage (original metric)
                 leak_info = analyzer.compute_leakage(z_traj[-1], y_traj[-1])
-                avg_leak = leak_info['mean'].item()
-                singleton_ratio_samples = leak_info['singleton_ratio_samples']
+                leak_euc = leak_info['mean'].item()
+                singleton_ratio = leak_info['singleton_ratio_samples']
                 num_groups = leak_info['num_groups']
+                
+                # KL-based leakage (Fisher-Rao correct metric)
+                kl_info = analyzer.compute_leakage_kl(y_traj[-2], y_traj[-1])
+                leak_kl = kl_info['mean_kl']
+                
+                # Trajectory velocity (Fisher speed profile)
+                vel_info = analyzer.compute_trajectory_velocity(y_traj)
+                fisher_velocity = vel_info['mean_velocity']
+                velocity_decay = vel_info['velocity_decay']
                 
                 x_enc = model.encode_puzzle(puzzles)
                 # Use configured eta mode
@@ -731,16 +921,19 @@ def train_epoch(model, loader, opt, analyzer, viz, epoch, step, cfg, device):
                 rank = analyzer.compute_effective_rank(z_traj[-1])
                 y_entropy = analyzer.compute_y_entropy(y_traj[-1])
             
-            pbar.set_postfix(Loss=f'{loss.item():.4f}', Acc=f'{acc["solved_acc"]*100:.1f}%', 
-                            Leak=f'{avg_leak:.4f}', η=f'{eta:.4f}', Rank=f'{rank:.1f}')
+            pbar.set_postfix(Loss=f'{loss.item():.4f}', Acc=f'{acc["cell_acc"]*100:.1f}%', 
+                            KL=f'{leak_kl:.4f}', Vel=f'{fisher_velocity:.4f}')
             viz.log_scalars(step, {
                 'Loss/train': loss.item(), 
                 'Acc/solved': acc['solved_acc'],
                 'Acc/cell': acc['cell_acc'],
-                'SGC/Leakage': avg_leak, 
+                'SGC/Leakage_Euc': leak_euc, 
+                'SGC/Leakage_KL': leak_kl,
+                'SGC/Fisher_Velocity': fisher_velocity,
+                'SGC/Velocity_Decay': velocity_decay,
                 'SGC/Eta': eta, 
                 'SGC/Rank': rank,
-                'SGC/Singleton_Ratio_Samples': singleton_ratio_samples,
+                'SGC/Singleton_Ratio': singleton_ratio,
                 'SGC/Num_Groups': num_groups,
                 'SGC/Y_Entropy': y_entropy,
             })
