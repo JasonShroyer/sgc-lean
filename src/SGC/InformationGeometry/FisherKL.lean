@@ -271,29 +271,78 @@ def RegularizedFisher.regularized (RF : RegularizedFisher n) : Matrix (Fin n) (F
 axiom RegularizedFisher.posDef (RF : RegularizedFisher n) :
     ∀ v : Fin n → ℝ, v ≠ 0 → 0 < ∑ i, ∑ j, v i * RF.regularized i j * v j
 
-/-- **Fisher-Orthogonal Projector Matrix** (CONSTRUCTIVE DEFINITION):
+/-! ## TWO PROJECTORS: EUCLIDEAN VS FISHER
 
-    P_⊥ = I - (F + λI)⁻¹ Sᵀ (S (F + λI)⁻¹ Sᵀ)⁻¹ S
+**Critical Distinction** (addressing the "one projector, two contracts" issue):
 
-    This is the projection onto the Fisher-orthogonal complement of the
-    subspace spanned by S, with regularization for numerical stability.
+1. **Euclidean Projector** (Primal): Minimizes ‖Δθ - g‖²_Euclidean subject to SΔθ = 0
+   - Formula: P_E = I - Sᵀ(SSᵀ)⁻¹S
+   - Use for: Standard gradient descent with frozen parameters
 
-    **Derivation**: This is the closed-form solution to the Lagrange system:
+2. **Fisher Projector** (Natural): Minimizes ‖Δθ - g‖²_Fisher subject to SΔθ = 0
+   - Formula: P_F = I - F⁻¹Sᵀ(SF⁻¹Sᵀ)⁻¹S
+   - Use for: Natural gradient descent (information geometry)
+
+**Key Insight**: Both projectors enforce the SAME primal constraint (SΔθ = 0),
+but they minimize distance in DIFFERENT metrics. The Fisher projector is the
+correct one for learning because it respects the geometry of the parameter space.
+
+**When do they coincide?** When F = I (flat geometry), P_E = P_F.
+-/
+
+/-- **Euclidean Projector Matrix** (PRIMAL CONSTRAINT, EUCLIDEAN METRIC):
+
+    P_E = I - Sᵀ (S Sᵀ)⁻¹ S
+
+    This is the standard orthogonal projection onto ker(S).
+
+    **Optimization problem solved**:
+    - Minimize: ½ ‖Δθ - g‖²_Euclidean
+    - Subject to: S Δθ = 0
+
+    **Use case**: Standard gradient descent where we want to freeze certain
+    linear combinations of parameters. -/
+def EuclideanProjector (S : ConsolidatedSubspace n k)
+    (Gram_inv : Matrix (Fin k) (Fin k) ℝ)  -- (S Sᵀ)⁻¹
+    : Matrix (Fin n) (Fin n) ℝ :=
+  let S_mat := SubspaceMatrix S
+  (1 : Matrix (Fin n) (Fin n) ℝ) - S_matᵀ * Gram_inv * S_mat
+
+/-- **Fisher Projector Matrix** (PRIMAL CONSTRAINT, FISHER METRIC):
+
+    P_F = I - F⁻¹ Sᵀ (S F⁻¹ Sᵀ)⁻¹ S
+
+    This is the projection onto ker(S) that minimizes Fisher distance.
+
+    **Optimization problem solved**:
     - Minimize: ½ (Δθ - g)ᵀ F (Δθ - g)
-    - Subject to: Sᵀ F Δθ = 0
+    - Subject to: S Δθ = 0
 
-    The KKT conditions give:
-    F(Δθ - g) + Sᵀ μ = 0  (stationarity)
-    Sᵀ F Δθ = 0           (feasibility)
+    **Use case**: Natural gradient descent where we want to freeze certain
+    linear combinations of parameters while respecting the information geometry.
 
-    Solving: Δθ = g - F⁻¹ Sᵀ (S F⁻¹ Sᵀ)⁻¹ S g = P_⊥ g -/
-def FisherOrthogonalProjector (RF : RegularizedFisher n)
+    **Note**: This is the SAME formula as FisherOrthogonalProjector below,
+    but with clearer semantic intent: we enforce a PRIMAL constraint (SΔθ=0)
+    while minimizing in the FISHER metric. -/
+def FisherProjector (RF : RegularizedFisher n)
     (S : ConsolidatedSubspace n k)
     (F_reg_inv : Matrix (Fin n) (Fin n) ℝ)  -- (F + λI)⁻¹
     (Gram_inv : Matrix (Fin k) (Fin k) ℝ)   -- (S (F + λI)⁻¹ Sᵀ)⁻¹
     : Matrix (Fin n) (Fin n) ℝ :=
   let S_mat := SubspaceMatrix S
   (1 : Matrix (Fin n) (Fin n) ℝ) - F_reg_inv * S_matᵀ * Gram_inv * S_mat
+
+/-- **Fisher-Orthogonal Projector Matrix** (LEGACY NAME, SAME AS FisherProjector):
+
+    P_⊥ = I - (F + λI)⁻¹ Sᵀ (S (F + λI)⁻¹ Sᵀ)⁻¹ S
+
+    This is kept for backwards compatibility. Prefer `FisherProjector` for clarity. -/
+def FisherOrthogonalProjector (RF : RegularizedFisher n)
+    (S : ConsolidatedSubspace n k)
+    (F_reg_inv : Matrix (Fin n) (Fin n) ℝ)  -- (F + λI)⁻¹
+    (Gram_inv : Matrix (Fin k) (Fin k) ℝ)   -- (S (F + λI)⁻¹ Sᵀ)⁻¹
+    : Matrix (Fin n) (Fin n) ℝ :=
+  FisherProjector RF S F_reg_inv Gram_inv
 
 /-- **Constrained Optimization Problem**: The objective we're minimizing.
     J(Δθ) = ½ (Δθ - g)ᵀ F (Δθ - g) = ½ ‖Δθ - g‖²_F -/
@@ -585,7 +634,7 @@ def sumSquaredSteps {K : ℕ} (traj : LearningTrajectory n K) : ℝ :=
     - Total drift ≤ K · ε
     - Validity horizon T* = 1/ε gives "how long until we forget"
 
-**AXIOM: No-Forgetting Horizon Bound**
+**AXIOM: No-Forgetting Horizon Bound (Riemannian Path Boundedness)**
 
     For Fisher-orthogonal learning trajectories, accumulated KL drift is bounded
     by the sum of squared step sizes.
@@ -593,7 +642,18 @@ def sumSquaredSteps {K : ℕ} (traj : LearningTrajectory n K) : ℝ :=
     **Mathematical content**: The bound follows from:
     1. KL-Fisher local bound: each step contributes O(η² ‖Δθ‖²)
     2. Fisher-orthogonality: first-order drift in S-directions vanishes
-    3. Triangle inequality for KL: total drift ≤ sum of per-step drifts
+    3. **Riemannian path integral bound** (NOT triangle inequality for KL):
+       In the small-step regime, KL ≈ ½ d²_Fisher, and squared Fisher distance
+       along a quasi-geodesic path satisfies:
+         d²(p_0, p_K) ≤ C · Σ_k d²(p_k, p_{k+1})
+       This is the "quasi-geodesic" assumption: the learning trajectory does not
+       take large detours in parameter space.
+
+    **Domain of validity**: Small steps (η → 0), smooth parametric families.
+    This selects the "thermodynamic limit" where Riemannian geometry applies.
+
+    **WARNING**: KL divergence is NOT a metric and does NOT satisfy the triangle
+    inequality globally. This axiom is valid only in the small-step Riemannian regime.
 
     The constant C depends on eigenvalue bounds of the Fisher matrix. -/
 axiom no_forgetting_horizon_bound {K : ℕ} [NeZero K] (P : ParametricFamily n V)
