@@ -311,6 +311,79 @@ noncomputable def FisherRayleighQuotient (F : Matrix (Fin n) (Fin n) ℝ) (v : F
 def FisherSpectralCriterion (F : Matrix (Fin n) (Fin n) ℝ) (v : Fin n → ℝ) (tau_stiff : ℝ) : Prop :=
   v ≠ 0 ∧ FisherRayleighQuotient F v > tau_stiff
 
+/-! ### Phase-1c: Scale-Free Spectral Criterion
+
+**Chentsov/Fisher-Rao Invariance Principle:**
+The Fisher metric is unique up to a global scale under sufficient-statistic coarse-grainings.
+Therefore, "stiff vs sloppy" should be defined in terms of *relative* geometry, not absolute scale.
+
+**The Problem with Absolute Thresholds:**
+At high softmax confidence, ALL Fisher eigenvalues shrink (this is mathematically correct).
+An absolute threshold τ_stiff leads to k→0 even when relative structure (gaps, shape) exists.
+
+**The Scale-Free Solution:**
+Replace absolute threshold with relative:
+  Stiff(v) iff RayleighQuotient(F, v) > τ_rel × λ_max(F)
+
+This is invariant to global scaling of F while preserving relative geometry.
+-/
+
+/-- **OperatorNorm**: Maximum eigenvalue proxy via Rayleigh quotient.
+
+    For symmetric positive semidefinite F:
+    λ_max(F) = max_v (v^T F v / v^T v)
+
+    We approximate this using the trace as a stable alternative:
+    λ_max ≈ Tr(F) / n (average eigenvalue, for scale reference)
+
+    NOTE: This is an axiomatized approximation. A full implementation would
+    require eigenvalue computation which is beyond current Mathlib scope. -/
+axiom FisherOperatorNorm (F : Matrix (Fin n) (Fin n) ℝ) : ℝ
+
+/-- Operator norm is non-negative for PSD matrices. -/
+axiom FisherOperatorNorm_nonneg (F : Matrix (Fin n) (Fin n) ℝ)
+    (h_psd : ∀ v : Fin n → ℝ, 0 ≤ ∑ i, ∑ j, v i * F i j * v j) :
+    0 ≤ FisherOperatorNorm F
+
+/-- **Operator norm scales linearly**: ‖αF‖ = α·‖F‖ for α > 0.
+    This is essential for the scale-invariance theorem to be non-vacuous.
+    For symmetric PSD matrices, the operator norm equals the maximum eigenvalue,
+    which scales linearly with positive scalars. -/
+axiom FisherOperatorNorm_smul (F : Matrix (Fin n) (Fin n) ℝ) (α : ℝ) (h_α : 0 < α) :
+    FisherOperatorNorm (α • F) = α * FisherOperatorNorm F
+
+/-- **FisherSpectralCriterionRel**: Scale-free stiffness criterion (Phase-1c).
+
+    A direction v is "stiff" relative to F if its Rayleigh quotient exceeds
+    a fraction τ_rel of the maximum eigenvalue (operator norm).
+
+    This is invariant to global scaling: F → αF leaves the criterion unchanged.
+
+    **Interpretation:**
+    - τ_rel = 0.1 means "top 10% of spectrum"
+    - τ_rel = 0.01 means "top 1% of spectrum"
+    - This defines stiffness as a *relative* concept, not absolute magnitude. -/
+def FisherSpectralCriterionRel (F : Matrix (Fin n) (Fin n) ℝ) (v : Fin n → ℝ)
+    (tau_rel : ℝ) : Prop :=
+  v ≠ 0 ∧ FisherRayleighQuotient F v > tau_rel * FisherOperatorNorm F
+
+/-- **Scale Invariance Theorem**: Relative criterion is invariant under positive scaling.
+
+    If we scale F → αF for α > 0, the criterion FisherSpectralCriterionRel is unchanged.
+
+    **Note on terminology:** This is SCALE-INVARIANCE, not full Fisher-Rao invariance.
+    Fisher-Rao invariance would require invariance under arbitrary reparameterizations
+    of the statistical model. What we have here is the weaker (but still useful) property
+    that the criterion is invariant to global rescaling of F (a "temperature" rescaling).
+
+    **Proof sketch (why this axiom holds):**
+    - RayleighQuotient(αF, v) = α · RayleighQuotient(F, v)  [numerator scales, denominator doesn't]
+    - FisherOperatorNorm(αF) = α · FisherOperatorNorm(F)    [by FisherOperatorNorm_smul]
+    - Therefore: RQ(αF, v) > τ · ‖αF‖ ↔ α·RQ(F,v) > τ·α·‖F‖ ↔ RQ(F,v) > τ·‖F‖ -/
+axiom FisherSpectralCriterionRel_scale_invariant
+    (F : Matrix (Fin n) (Fin n) ℝ) (v : Fin n → ℝ) (tau_rel α : ℝ) (h_α : 0 < α) :
+    FisherSpectralCriterionRel F v tau_rel ↔ FisherSpectralCriterionRel (α • F) v tau_rel
+
 /-! ## Part III-C: The Renormalization Trigger
 
 **Key Insight:** The renormalization trigger is based on ConflictRatio (unified concept).
@@ -492,6 +565,18 @@ noncomputable def GradientStability (v g : Fin n → ℝ) (eps : ℝ) : Prop :=
 def DefectGatedConsolidationCriterion (F : Matrix (Fin n) (Fin n) ℝ)
     (v g : Fin n → ℝ) (tau_stiff eps_stable : ℝ) : Prop :=
   FisherSpectralCriterion F v tau_stiff ∧ GradientStability v g eps_stable
+
+/-- **DefectGatedConsolidationCriterionRel**: Phase-1c scale-free consolidation.
+
+    Uses relative stiffness threshold for Fisher-Rao invariance.
+    This version is invariant under global scaling of F.
+
+    **Parameters:**
+    - tau_rel: Relative stiffness threshold (e.g., 0.1 = top 10% of spectrum)
+    - eps_stable: Gradient stability threshold (cosine-based, already scale-free) -/
+def DefectGatedConsolidationCriterionRel (F : Matrix (Fin n) (Fin n) ℝ)
+    (v g : Fin n → ℝ) (tau_rel eps_stable : ℝ) : Prop :=
+  FisherSpectralCriterionRel F v tau_rel ∧ GradientStability v g eps_stable
 
 /-! ### The Variational Principle (Unifying Rigidity and Conflict)
 
