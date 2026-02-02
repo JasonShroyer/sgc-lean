@@ -5,7 +5,7 @@
 **Authors:** SGC Research Team  
 **Date:** February 1, 2026  
 **Version:** 1.0  
-**Repository Commit:** `6bf761a` (report), `2434336` (implementation)  
+**Repository Commit:** `22d20c6` (this report), `2434336` (implementation)  
 **Branch:** `wip-quantum-bridge`
 
 ---
@@ -282,8 +282,8 @@ The results support the principle that **SGC structure should be defined by rela
 ```
 Repository: sgc-lean
 Branch: wip-quantum-bridge
-Implementation commit: 243433610a8ccc0fcd9aea0bd3175bfada8681d1
-Report commit: 6bf761a
+Implementation commit: 2434336
+Report commit: 22d20c6
 ```
 
 ### 7.3 Reproduction Commands
