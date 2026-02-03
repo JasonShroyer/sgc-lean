@@ -1120,14 +1120,17 @@ structure IsNCD (L L_fast L_slow : Matrix V V ℝ) (P : Partition V) (pi_dist : 
 /-! ### 7b. NCD Algebraic Split -/
 
 /-- Scaling property for norm_pi: ‖c • f‖_π = |c| * ‖f‖_π.
-    For non-negative c, this simplifies to c * ‖f‖_π. -/
-axiom norm_pi_smul_abs (pi_dist : V → ℝ) (c : ℝ) (f : V → ℝ) :
-    norm_pi pi_dist (c • f) = |c| * norm_pi pi_dist f
+    For non-negative c, this simplifies to c * ‖f‖_π.
+
+    **NOTE**: This is now a re-export of the proved lemma from SGC.Axioms.Geometry. -/
+lemma norm_pi_smul_abs' (pi_dist : V → ℝ) (c : ℝ) (f : V → ℝ) :
+    norm_pi pi_dist (c • f) = |c| * norm_pi pi_dist f :=
+  SGC.norm_pi_smul_abs pi_dist c f
 
 /-- Corollary: For non-negative scalars, ‖c • f‖_π = c * ‖f‖_π. -/
 lemma norm_pi_smul (pi_dist : V → ℝ) (hc : 0 ≤ c) (f : V → ℝ) :
     norm_pi pi_dist (c • f) = c * norm_pi pi_dist f := by
-  rw [norm_pi_smul_abs, abs_of_nonneg hc]
+  rw [norm_pi_smul_abs', abs_of_nonneg hc]
 
 /-- **NCD Defect Operator Split**: When L_fast commutes with Π, the defect of L
     comes entirely from the slow perturbation.

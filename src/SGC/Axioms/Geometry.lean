@@ -183,6 +183,20 @@ lemma norm_sq_pi_nonneg (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (h 
   intro v _
   apply mul_nonneg (le_of_lt (h_pos v)) (sq_nonneg _)
 
+/-- Scaling property for norm_sq_pi: ‖c • f‖²_π = c² * ‖f‖²_π. -/
+lemma norm_sq_pi_smul (pi_dist : V → ℝ) (c : ℝ) (f : V → ℝ) :
+    norm_sq_pi pi_dist (c • f) = c^2 * norm_sq_pi pi_dist f := by
+  unfold norm_sq_pi
+  rw [inner_pi_smul_left, inner_pi_smul_right]
+  ring
+
+/-- Scaling property for norm_pi: ‖c • f‖_π = |c| * ‖f‖_π. -/
+lemma norm_pi_smul_abs (pi_dist : V → ℝ) (c : ℝ) (f : V → ℝ) :
+    norm_pi pi_dist (c • f) = |c| * norm_pi pi_dist f := by
+  unfold norm_pi
+  rw [norm_sq_pi_smul]
+  rw [Real.sqrt_mul (sq_nonneg c), Real.sqrt_sq_eq_abs]
+
 /-- norm_sq_pi = 0 iff the function is zero. -/
 lemma norm_sq_pi_eq_zero_iff (pi_dist : V → ℝ) (h_pos : ∀ v, 0 < pi_dist v) (h : V → ℝ) :
     norm_sq_pi pi_dist h = 0 ↔ ∀ v, h v = 0 := by
