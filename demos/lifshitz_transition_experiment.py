@@ -747,11 +747,11 @@ def run_lifshitz_experiment(
                 func_d, class_sep, _ = compute_functional_defect(hidden, targets, num_classes)
                 
                 # Functorial defect (NEW: arXiv:2602.01992 connection)
-                func_tor_d, disp_norm, disp_var = compute_functorial_defect(model, p, device)
+                func_tor_d, disp_norm, disp_var = compute_functorial_defect(model, int(num_classes), device)
                 
                 # Dirichlet energy (computed less frequently - expensive)
                 if epoch % (measure_interval * 5) == 0 or epoch == 1:
-                    dir_energy = compute_dirichlet_energy(model, p, device)
+                    dir_energy = compute_dirichlet_energy(model, int(num_classes), device)
                 else:
                     dir_energy = metrics_history[-1].dirichlet_energy if metrics_history else 0.0
                 
