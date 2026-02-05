@@ -29,6 +29,7 @@ This index provides navigation through the SGC documentation. Start with `RESEAR
 | [unified_theory_sgc_active_inference.md](unified_theory_sgc_active_inference.md) | SGC + Active Inference connection | Feb 4, 2026 |
 | [synthesis_toward_intelligence.md](synthesis_toward_intelligence.md) | Path to emergent intelligence | Feb 5, 2026 |
 | [noise_cooling_theory.md](noise_cooling_theory.md) | Universe cooling analogy | Feb 4, 2026 |
+| [arxiv_2602_01992_connection.md](arxiv_2602_01992_connection.md) | arXiv paper connection + experimental results | Feb 5, 2026 |
 
 ### Experimental Findings
 
