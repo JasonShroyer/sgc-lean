@@ -678,9 +678,9 @@ def run_lifshitz_experiment(
     grokking_detected = False
     grokking_epoch = -1
     
-    print(f"{'Epoch':>6} | {'Train':>6} | {'Test':>6} | {'FuncD':>7} | {'ClassSep':>8} | "
-          f"{'q':>5} | {'Extropy':>7} | {'H_trace':>8} | Phase")
-    print("-" * 90)
+    print(f"{'Epoch':>6} | {'Train':>6} | {'Test':>6} | {'FuncD':>7} | "
+          f"{'FunctorD':>7} | {'q':>5} | {'DirE':>7} | Phase")
+    print("-" * 80)
     
     for epoch in range(1, epochs + 1):
         # Training
@@ -746,6 +746,15 @@ def run_lifshitz_experiment(
                 # Functional defect
                 func_d, class_sep, _ = compute_functional_defect(hidden, targets, num_classes)
                 
+                # Functorial defect (NEW: arXiv:2602.01992 connection)
+                func_tor_d, disp_norm, disp_var = compute_functorial_defect(model, p, device)
+                
+                # Dirichlet energy (computed less frequently - expensive)
+                if epoch % (measure_interval * 5) == 0 or epoch == 1:
+                    dir_energy = compute_dirichlet_energy(model, p, device)
+                else:
+                    dir_energy = metrics_history[-1].dirichlet_energy if metrics_history else 0.0
+                
                 # Tsallis q from hidden state distribution
                 tsallis_q = estimate_tsallis_q(hidden)
                 tsallis_ent = compute_tsallis_entropy(
@@ -788,13 +797,14 @@ def run_lifshitz_experiment(
                     tsallis_entropy=tsallis_ent,
                     relative_extropy=rel_extropy,
                     normalized_extropy=norm_extropy,
-                    output_entropy=output_entropy
+                    output_entropy=output_entropy,
+                    functorial_defect=func_tor_d,
+                    dirichlet_energy=dir_energy
                 )
                 metrics_history.append(metrics)
                 
                 print(f"{epoch:6d} | {train_acc:6.1%} | {test_acc:6.1%} | {func_d:7.4f} | "
-                      f"{class_sep:8.2f} | {tsallis_q:5.2f} | {norm_extropy:7.4f} | "
-                      f"{hessian_trace:8.1f} | {phase}")
+                      f"{func_tor_d:7.4f} | {tsallis_q:5.2f} | {dir_energy:7.4f} | {phase}")
     
     # Summary
     print(f"\n{'='*70}")
@@ -808,12 +818,24 @@ def run_lifshitz_experiment(
         pre_grok = [m for m in metrics_history if m.epoch < grokking_epoch][-1] if grokking_epoch > 100 else metrics_history[0]
         post_grok = metrics_history[-1]
         
-        print(f"\nMetric Transitions:")
-        print(f"  Functional Defect: {pre_grok.functional_defect:.4f} -> {grok_metrics.functional_defect:.4f} -> {post_grok.functional_defect:.4f}")
-        print(f"  Class Separation:  {pre_grok.class_separation:.2f} -> {grok_metrics.class_separation:.2f} -> {post_grok.class_separation:.2f}")
-        print(f"  Tsallis q:         {pre_grok.tsallis_q:.3f} -> {grok_metrics.tsallis_q:.3f} -> {post_grok.tsallis_q:.3f}")
-        print(f"  Normalized Extropy:{pre_grok.normalized_extropy:.4f} -> {grok_metrics.normalized_extropy:.4f} -> {post_grok.normalized_extropy:.4f}")
-        print(f"  Hessian Trace:     {pre_grok.hessian_trace:.1f} -> {grok_metrics.hessian_trace:.1f} -> {post_grok.hessian_trace:.1f}")
+        print(f"\nMetric Transitions (Pre -> Grok -> Post):")
+        print(f"  Functional Defect:  {pre_grok.functional_defect:.4f} -> {grok_metrics.functional_defect:.4f} -> {post_grok.functional_defect:.4f}")
+        print(f"  Functorial Defect:  {pre_grok.functorial_defect:.4f} -> {grok_metrics.functorial_defect:.4f} -> {post_grok.functorial_defect:.4f}")
+        print(f"  Dirichlet Energy:   {pre_grok.dirichlet_energy:.4f} -> {grok_metrics.dirichlet_energy:.4f} -> {post_grok.dirichlet_energy:.4f}")
+        print(f"  Tsallis q:          {pre_grok.tsallis_q:.3f} -> {grok_metrics.tsallis_q:.3f} -> {post_grok.tsallis_q:.3f}")
+        print(f"  Class Separation:   {pre_grok.class_separation:.2f} -> {grok_metrics.class_separation:.2f} -> {post_grok.class_separation:.2f}")
+        
+        # Verify SGC predictions
+        print(f"\n*** SGC PREDICTION VERIFICATION ***")
+        func_collapsed = post_grok.functional_defect < 0.15
+        functor_collapsed = post_grok.functorial_defect < pre_grok.functorial_defect * 0.5
+        q_dropped = post_grok.tsallis_q < pre_grok.tsallis_q
+        dir_dropped = post_grok.dirichlet_energy < pre_grok.dirichlet_energy * 0.5
+        
+        print(f"  [{'✓' if func_collapsed else '✗'}] Functional Defect < 0.15 (Blanket formed)")
+        print(f"  [{'✓' if functor_collapsed else '✗'}] Functorial Defect dropped 50%+ (Manifold flattened)")
+        print(f"  [{'✓' if dir_dropped else '✗'}] Dirichlet Energy dropped 50%+ (Harmonic kernel reached)")
+        print(f"  [{'✓' if q_dropped else '✗'}] Tsallis q decreased (Thermalization)")
     
     print(f"{'='*70}\n")
     
