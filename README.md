@@ -1,4 +1,4 @@
-# SGC-Lean: The Stochastic Geometry of Consolidation
+# SGC-Lean: The Spectral Geometry of Consolidation
 
 **Formal Verification of Emergence in Lean 4**
 
