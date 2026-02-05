@@ -451,6 +451,152 @@ def compute_functional_defect(
 
 
 # =============================================================================
+# FUNCTORIAL DEFECT (NEW: arXiv:2602.01992 Connection)
+# =============================================================================
+
+def compute_functorial_defect(
+    model: nn.Module,
+    p: int,
+    device: str,
+    n_samples: int = 100
+) -> Tuple[float, float, float]:
+    """
+    Compute Functorial Defect: measures whether vector displacements are parallel.
+    
+    Based on arXiv:2602.01992 "Emergent Analogical Reasoning in Transformers":
+    - If the model has grokked, the mapping is an affine transformation
+    - "A is to B as C is to D" means (B-A) should equal (D-C) in embedding space
+    
+    For modular addition: (a+1, b) - (a, b) should equal (a'+1, b') - (a', b')
+    i.e., the "+1" operation should be a consistent vector in embedding space.
+    
+    **Connection to SGC**:
+    - High functorial defect = manifold is crumpled (pre-grokking)
+    - Low functorial defect = manifold is flat/toroidal (post-grokking)
+    
+    **Use in Controller**:
+    If functorial defect is high, increase temperature to "iron out wrinkles".
+    
+    Returns:
+        (functorial_defect, mean_displacement_norm, displacement_variance)
+    """
+    model.eval()
+    
+    with torch.no_grad():
+        # Sample random base points
+        a_vals = torch.randint(0, p-1, (n_samples,), device=device)
+        b_vals = torch.randint(0, p, (n_samples,), device=device)
+        
+        # Get embeddings for (a, b) and (a+1, b)
+        h_base = model.get_hidden(a_vals, b_vals)
+        h_plus1 = model.get_hidden(a_vals + 1, b_vals)
+        
+        # Displacement vectors for "+1 in first argument"
+        displacements = h_plus1 - h_base  # Shape: (n_samples, hidden_dim)
+        
+        # Mean displacement (should be consistent if grokked)
+        mean_disp = displacements.mean(dim=0)
+        mean_disp_norm = mean_disp.norm().item()
+        
+        # Variance of displacements (should be low if grokked)
+        disp_centered = displacements - mean_disp.unsqueeze(0)
+        disp_variance = (disp_centered ** 2).mean().item()
+        
+        # Functorial defect = variance / norm^2 (normalized measure)
+        if mean_disp_norm > 1e-10:
+            functorial_defect = disp_variance / (mean_disp_norm ** 2 + 1e-10)
+        else:
+            functorial_defect = float('inf')
+        
+        # Also check second argument displacement consistency
+        a_vals2 = torch.randint(0, p, (n_samples,), device=device)
+        b_vals2 = torch.randint(0, p-1, (n_samples,), device=device)
+        
+        h_base2 = model.get_hidden(a_vals2, b_vals2)
+        h_plus1_b = model.get_hidden(a_vals2, b_vals2 + 1)
+        
+        displacements_b = h_plus1_b - h_base2
+        mean_disp_b = displacements_b.mean(dim=0)
+        disp_centered_b = displacements_b - mean_disp_b.unsqueeze(0)
+        disp_variance_b = (disp_centered_b ** 2).mean().item()
+        
+        mean_disp_norm_b = mean_disp_b.norm().item()
+        if mean_disp_norm_b > 1e-10:
+            functorial_defect_b = disp_variance_b / (mean_disp_norm_b ** 2 + 1e-10)
+        else:
+            functorial_defect_b = float('inf')
+        
+        # Average of both directions
+        if functorial_defect == float('inf') or functorial_defect_b == float('inf'):
+            avg_functorial_defect = float('inf')
+        else:
+            avg_functorial_defect = (functorial_defect + functorial_defect_b) / 2
+        
+        avg_norm = (mean_disp_norm + mean_disp_norm_b) / 2
+        avg_variance = (disp_variance + disp_variance_b) / 2
+    
+    return avg_functorial_defect, avg_norm, avg_variance
+
+
+def compute_dirichlet_energy(
+    model: nn.Module,
+    p: int,
+    device: str
+) -> float:
+    """
+    Compute Dirichlet Energy of the hidden representation on the input graph.
+    
+    Dirichlet Energy E_Dir = f^T L f where L is the graph Laplacian.
+    For modular addition, the natural graph has edges between (a,b) and (a±1,b), (a,b±1).
+    
+    **Connection to arXiv:2602.01992**:
+    They observe Dirichlet energy decreases during analogical reasoning emergence.
+    SGC predicts this: Diffusion minimizes E_Dir, driving system to harmonic functions.
+    
+    Low Dirichlet energy = smooth representation = grokked algebraic structure.
+    
+    Returns:
+        Normalized Dirichlet energy
+    """
+    model.eval()
+    
+    with torch.no_grad():
+        # Sample all points on a smaller grid for efficiency
+        sample_p = min(p, 31)  # Use smaller prime for efficiency
+        
+        total_energy = 0.0
+        n_edges = 0
+        
+        for a in range(sample_p):
+            for b in range(sample_p):
+                a_t = torch.tensor([a], device=device)
+                b_t = torch.tensor([b], device=device)
+                h_center = model.get_hidden(a_t, b_t)
+                
+                # Neighbors in the +1 direction (mod p)
+                neighbors = [
+                    ((a + 1) % sample_p, b),
+                    (a, (b + 1) % sample_p),
+                ]
+                
+                for na, nb in neighbors:
+                    na_t = torch.tensor([na], device=device)
+                    nb_t = torch.tensor([nb], device=device)
+                    h_neighbor = model.get_hidden(na_t, nb_t)
+                    
+                    # Edge contribution to Dirichlet energy
+                    diff = h_center - h_neighbor
+                    total_energy += (diff ** 2).sum().item()
+                    n_edges += 1
+        
+        # Normalize by number of edges and hidden dimension
+        hidden_dim = h_center.shape[-1]
+        normalized_energy = total_energy / (n_edges * hidden_dim)
+    
+    return normalized_energy
+
+
+# =============================================================================
 # MAIN EXPERIMENT
 # =============================================================================
 
@@ -480,6 +626,10 @@ class LifshitzMetrics:
     
     # Output distribution
     output_entropy: float
+    
+    # Functorial metrics (NEW: arXiv:2602.01992 connection)
+    functorial_defect: float = 0.0      # Displacement vector consistency
+    dirichlet_energy: float = 0.0       # Smoothness on input graph
 
 
 def run_lifshitz_experiment(

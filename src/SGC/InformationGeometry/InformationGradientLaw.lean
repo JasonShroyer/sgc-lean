@@ -62,7 +62,52 @@ open Finset Real BigOperators Matrix
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
 
-/-! ### 1. Energy Gradient (Standard Loss Gradient) -/
+/-! ### 1. Fisher Information Metric Tensor -/
+
+/-- **Fisher Information Matrix** (Metric Tensor):
+
+    G_{ij}(θ) = E_p[∂log p/∂θ_i · ∂log p/∂θ_j]
+
+    This is the Riemannian metric on the statistical manifold.
+    By Chentsov's theorem, it is the unique (up to scale) invariant metric.
+
+    **Connection to Experiments**:
+    The "Class Separation" metric is related to the Fisher metric:
+    - High class separation = large Fisher eigenvalues = "stiff" directions
+    - Low class separation = small Fisher eigenvalues = "soft" directions
+
+    **Physical Interpretation**:
+    The Fisher metric measures the "curvature" of probability space.
+    Directions with high Fisher information are geometrically important. -/
+structure FisherMetricTensor (V : Type*) [Fintype V] where
+  /-- The metric tensor G_ij -/
+  G : Matrix V V ℝ
+  /-- Symmetry: G_ij = G_ji -/
+  symmetric : ∀ i j, G i j = G j i
+  /-- Positive semi-definiteness -/
+  pos_semidef : ∀ v : V → ℝ, 0 ≤ ∑ i, ∑ j, v i * G i j * v j
+
+/-- **Fisher Metric Norm**: The norm of a vector with respect to the Fisher metric.
+
+    ||v||_F² = v^T G v = Σ_ij v_i G_ij v_j
+
+    This is the "information-geometric" length of a vector. -/
+def FisherMetricNorm (metric : FisherMetricTensor V) (v : V → ℝ) : ℝ :=
+  Real.sqrt (∑ i, ∑ j, v i * metric.G i j * v j)
+
+/-- **Fisher Inner Product**: The inner product induced by the Fisher metric.
+
+    ⟨u, v⟩_F = u^T G v = Σ_ij u_i G_ij v_j -/
+def FisherInnerProduct (metric : FisherMetricTensor V) (u v : V → ℝ) : ℝ :=
+  ∑ i, ∑ j, u i * metric.G i j * v j
+
+/-- **Inverse Fisher Metric**: G^{-1}, used for natural gradient computation.
+
+    The natural gradient is: ∇̃f = G^{-1} ∇f -/
+def InverseFisherMetric (metric : FisherMetricTensor V) : Matrix V V ℝ :=
+  sorry -- Matrix inverse of metric.G
+
+/-! ### 2. Energy Gradient (Standard Loss Gradient) -/
 
 /-- **Energy Gradient**: The standard gradient of the loss function.
     This is what vanilla SGD follows.
@@ -78,7 +123,12 @@ def EnergyGradient (loss : V → ℝ) : V → ℝ :=
 def EnergyGradientNorm (loss : V → ℝ) (pi_dist : V → ℝ) : ℝ :=
   Real.sqrt (inner_pi pi_dist (EnergyGradient loss) (EnergyGradient loss))
 
-/-! ### 2. Information Gradient (Natural Gradient) -/
+/-- **Energy Gradient Norm (Fisher)**: Norm with respect to Fisher metric.
+    This is the geometrically correct measure of gradient magnitude. -/
+def EnergyGradientNormFisher (loss : V → ℝ) (metric : FisherMetricTensor V) : ℝ :=
+  FisherMetricNorm metric (EnergyGradient loss)
+
+/-! ### 3. Information Gradient (Natural Gradient) -/
 
 /-- **Information Gradient**: The gradient of the KL divergence, adjusted
     by the Fisher Information Matrix.
@@ -96,7 +146,7 @@ def InformationGradientNorm (kl_div : V → ℝ) (fisher_inv : Matrix V V ℝ) (
   let info_grad := InformationGradient kl_div fisher_inv
   Real.sqrt (inner_pi pi_dist info_grad info_grad)
 
-/-! ### 3. The Gradient Ratio -/
+/-! ### 4. The Gradient Ratio -/
 
 /-- **Gradient Ratio**: The ratio of information gradient to energy gradient.
 
@@ -108,7 +158,7 @@ def GradientRatio (loss kl_div : V → ℝ) (fisher_inv : Matrix V V ℝ) (pi_di
   let info_norm := InformationGradientNorm kl_div fisher_inv pi_dist
   if energy_norm > 0 then info_norm / energy_norm else 0
 
-/-! ### 4. Topological Transition Condition -/
+/-! ### 5. Topological Transition Condition -/
 
 /-- **Topological Transition Condition**: The condition for a phase transition.
 
@@ -141,7 +191,7 @@ theorem information_gradient_law
     True := by  -- Placeholder: connect to FunctionalBlanket.FunctionalDefect
   trivial
 
-/-! ### 5. Phase Dynamics -/
+/-! ### 6. Phase Dynamics -/
 
 /-- **Phase of Learning**: Characterizes which gradient dominates.
 
@@ -162,7 +212,7 @@ def determineLearningPhase
   else if ratio > 2.0 then LearningPhase.Generalization
   else LearningPhase.Transition
 
-/-! ### 6. Connection to Functional Blanket -/
+/-! ### 7. Connection to Functional Blanket -/
 
 /-- **Functional Defect as Information Accumulator**: The functional defect
     measures how much "information pressure" has accumulated.
@@ -191,7 +241,7 @@ theorem gradient_ratio_functional_defect_correspondence
     True := by  -- Placeholder for the precise statement
   trivial
 
-/-! ### 7. The Natural Gradient Update -/
+/-! ### 8. The Natural Gradient Update -/
 
 /-- **Natural Gradient Update**: The geometrically correct update rule.
 
@@ -217,7 +267,7 @@ def FunctionalBlanketConstrainedUpdate
   let projected_grad := fun v => energy_grad v - projection_coeff * func_defect_grad v
   fun v => w v - lr * projected_grad v
 
-/-! ### 8. Chentsov's Theorem Connection -/
+/-! ### 9. Chentsov's Theorem Connection -/
 
 /-- **Chentsov's Theorem** (Axiom): The Fisher metric is the unique (up to scale)
     Riemannian metric on statistical manifolds that is invariant under
@@ -240,7 +290,7 @@ theorem natural_gradient_geometric_optimality :
     True := by
   trivial
 
-/-! ### 9. Experimental Predictions -/
+/-! ### 10. Experimental Predictions -/
 
 /-- **Prediction 1**: Tracking GradientRatio during training should show:
     - R < 1 during memorization phase
