@@ -541,7 +541,8 @@ def compute_functorial_defect(
 def compute_dirichlet_energy(
     model: nn.Module,
     p: int,
-    device: str
+    device: str,
+    n_samples: int = 200
 ) -> float:
     """
     Compute Dirichlet Energy of the hidden representation on the input graph.
@@ -556,42 +557,32 @@ def compute_dirichlet_energy(
     Low Dirichlet energy = smooth representation = grokked algebraic structure.
     
     Returns:
-        Normalized Dirichlet energy
+        Normalized Dirichlet energy (estimated via sampling)
     """
     model.eval()
     
     with torch.no_grad():
-        # Sample all points on a smaller grid for efficiency
-        sample_p = min(p, 31)  # Use smaller prime for efficiency
+        # Sample random edges instead of full grid (much faster)
+        a_vals = torch.randint(0, p, (n_samples,), device=device)
+        b_vals = torch.randint(0, p, (n_samples,), device=device)
         
-        total_energy = 0.0
-        n_edges = 0
+        # Get hidden states for base points
+        h_base = model.get_hidden(a_vals, b_vals)
         
-        for a in range(sample_p):
-            for b in range(sample_p):
-                a_t = torch.tensor([a], device=device)
-                b_t = torch.tensor([b], device=device)
-                h_center = model.get_hidden(a_t, b_t)
-                
-                # Neighbors in the +1 direction (mod p)
-                neighbors = [
-                    ((a + 1) % sample_p, b),
-                    (a, (b + 1) % sample_p),
-                ]
-                
-                for na, nb in neighbors:
-                    na_t = torch.tensor([na], device=device)
-                    nb_t = torch.tensor([nb], device=device)
-                    h_neighbor = model.get_hidden(na_t, nb_t)
-                    
-                    # Edge contribution to Dirichlet energy
-                    diff = h_center - h_neighbor
-                    total_energy += (diff ** 2).sum().item()
-                    n_edges += 1
+        # Neighbors: +1 in first dimension
+        h_plus_a = model.get_hidden((a_vals + 1) % p, b_vals)
+        # Neighbors: +1 in second dimension  
+        h_plus_b = model.get_hidden(a_vals, (b_vals + 1) % p)
         
-        # Normalize by number of edges and hidden dimension
-        hidden_dim = h_center.shape[-1]
-        normalized_energy = total_energy / (n_edges * hidden_dim)
+        # Dirichlet energy = sum of squared differences along edges
+        diff_a = h_base - h_plus_a
+        diff_b = h_base - h_plus_b
+        
+        energy_a = (diff_a ** 2).sum(dim=1).mean().item()
+        energy_b = (diff_b ** 2).sum(dim=1).mean().item()
+        
+        # Average over both edge directions
+        normalized_energy = (energy_a + energy_b) / 2
     
     return normalized_energy
 
@@ -832,10 +823,10 @@ def run_lifshitz_experiment(
         q_dropped = post_grok.tsallis_q < pre_grok.tsallis_q
         dir_dropped = post_grok.dirichlet_energy < pre_grok.dirichlet_energy * 0.5
         
-        print(f"  [{'✓' if func_collapsed else '✗'}] Functional Defect < 0.15 (Blanket formed)")
-        print(f"  [{'✓' if functor_collapsed else '✗'}] Functorial Defect dropped 50%+ (Manifold flattened)")
-        print(f"  [{'✓' if dir_dropped else '✗'}] Dirichlet Energy dropped 50%+ (Harmonic kernel reached)")
-        print(f"  [{'✓' if q_dropped else '✗'}] Tsallis q decreased (Thermalization)")
+        print(f"  [{'Y' if func_collapsed else 'N'}] Functional Defect < 0.15 (Blanket formed)")
+        print(f"  [{'Y' if functor_collapsed else 'N'}] Functorial Defect dropped 50%+ (Manifold flattened)")
+        print(f"  [{'Y' if dir_dropped else 'N'}] Dirichlet Energy dropped 50%+ (Harmonic kernel reached)")
+        print(f"  [{'Y' if q_dropped else 'N'}] Tsallis q decreased (Thermalization)")
     
     print(f"{'='*70}\n")
     
