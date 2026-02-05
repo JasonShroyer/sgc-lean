@@ -7,6 +7,20 @@
 
 SGC-Lean is a formal library for the **Physics of Emergence**. It provides a rigorous mathematical framework for "Approximate Lumpability"—the conditions under which a complex micro-system can be validly described by a simpler macro-theory.
 
+> **🎯 New to this project?** Start with [docs/RESEARCH_NARRATIVE.md](docs/RESEARCH_NARRATIVE.md) for a guided tour.
+
+## 🔥 Recent Breakthrough (February 2026)
+
+**Grokking = Topological Lifshitz Transition** — We experimentally validated that neural network grokking is a topological phase transition where the *functional blanket* (algebraic symmetry) collapses while the *geometric blanket* (PCA closure) increases.
+
+| Metric | Pre-Grok | At Grok | Post-Grok |
+|--------|----------|---------|----------|
+| **Functional Defect** | 1.01 | 0.13 | **0.003** |
+| **Class Separation** | 0.01 | 6.45 | **346** |
+| **Geometric Defect** | 0.23 | 0.35 | 0.33 |
+
+Key insight: Grokking learns the **symmetry group**, not dimensionality reduction. See [docs/functional_blanket_breakthrough.md](docs/functional_blanket_breakthrough.md).
+
 ## 🌌 Quantum Error Correction Bridge
 
 We have established a **formal correspondence** between classical Markov chain lumpability and quantum error correction.
@@ -47,6 +61,13 @@ After this time, the macro-description is mathematically guaranteed to drift fro
 ### 3. Renormalization Bounds
 We provide formal bounds on the error accumulation of "Effective Theories" derived via spectral clustering.
 
+### 4. Grokking Formalization (NEW)
+We formalize the physics of grokking:
+- **Functional Blanket**: Algebraic equivalence classes learned by the model
+- **Kramers Escape**: Temperature-assisted barrier crossing (2x speedup validated)
+- **Information Gradient Law**: Transitions occur when ||∇I|| > ||∇E||
+- **Adiabatic Invariants**: Functional blanket freezing for continual learning
+
 ## 🛠 Installation
 
 1.  **Install Lean 4**: Follow the [official instructions](https://leanprover.github.io/lean4/doc/setup.html).
@@ -62,13 +83,33 @@ We provide formal bounds on the error accumulation of "Effective Theories" deriv
 *   `SGC/Axioms`: Foundational geometric structures (Weighted L² spaces).
 *   `SGC/Spectral`: Theorems on spectral gaps and timescales.
 *   `SGC/Renormalization`: The core "Renormalization Group" flow for Markov chains.
-*   `SGC/Bridge`: **(Experimental)** Connectors to Quantum Information (`SGC.Bridge.Quantum`).
+*   `SGC/Bridge`: Connectors to Quantum Information (`SGC.Bridge.Quantum`).
+*   `SGC/FunctionalBlanket`: **(NEW)** Functional defect and grokking detection.
+*   `SGC/Grokking`: **(NEW)** Unified grokking formalization.
+*   `SGC/ContinualLearning`: **(NEW)** Adiabatic invariants for continual learning.
+
+### Documentation
+
+*   `docs/RESEARCH_NARRATIVE.md`: **Start here** - Guided tour of the project
+*   `docs/INDEX.md`: Documentation index
+*   `docs/functional_blanket_breakthrough.md`: Key discovery documentation
+*   `docs/lifshitz_transition_theory.md`: Complete theoretical synthesis
+
+### Experiments
+
+*   `demos/lifshitz_transition_experiment.py`: Validates Lifshitz transition
+*   `demos/functional_grokking_detector.py`: Intrinsic grokking detection
+*   `reports/`: Phase reports and analysis
 
 ## 🤝 Contributing
 
 We welcome contributions from physicists, mathematicians, and formal verification experts.
 *   **Classical Emergence**: Help us prove the "Manifold Hypothesis" for specific datasets.
 *   **Quantum Information**: Help us extend the Knill-Laflamme bridge to "Approximate Quantum Error Correction" (AQEC).
+*   **Grokking Theory**: Help us remove `sorry` placeholders from the grokking formalization.
+*   **Continual Learning**: Help validate functional blanket freezing experiments.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for workflow details.
 
 ## 📜 License
 
