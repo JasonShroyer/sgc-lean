@@ -32,6 +32,7 @@ ones: they have more topological "spare parts."
 
 import SGC.Evolution.Conservation
 import SGC.Renormalization.Approximate
+import SGC.Topology.Blanket
 
 noncomputable section
 

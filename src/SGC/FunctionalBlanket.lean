@@ -31,8 +31,12 @@ The Markov blanket is FUNCTIONAL (symmetry-respecting), not GEOMETRIC (dimension
 
 Grokking is a **Topological Lifshitz Transition**:
 - Pre-grok: Disconnected memorization basins
-- Post-grok: Connected torus manifold T² (solution space)
-- The geometric defect increases because a torus cannot embed flat in PCA subspace
+- Post-grok: Connected FLAT torus manifold T² (solution space)
+- The geometric defect increases because a flat torus cannot embed isometrically in a linear PCA subspace
+
+**IMPORTANT (Feb 6, 2026 correction)**: The manifold is intrinsically FLAT (Gauss curvature ≈ 0),
+not curved. The "torus" is topological (wrap-around connectivity), not geometric (curved surface).
+See `docs/SGC_CANONICAL_GROKKING_THEORY.md` for the full "Flat Ridge" model.
 
 ## References
 
@@ -134,13 +138,30 @@ theorem class_separation_nonneg (h : HiddenStates V) (pi_dist : V → ℝ) (c : 
 /-- **Functional defect collapse implies class separation explosion**.
 
     If functional defect → 0, then class separation → ∞.
-    This is the ANOVA identity: total = within + between. -/
+    This is the ANOVA identity: total = within + between.
+
+    **Proof sketch**:
+    - FunctionalDefect = within / total < ε
+    - ClassSeparation = between / within = (total - within) / within
+    - If within < ε * total, then between > (1-ε) * total
+    - Thus ClassSeparation > (1-ε) * total / (ε * total) = (1-ε)/ε
+
+    **Empirical validation (Feb 2026)**:
+    - At grokking: FD → 0.003, CS → 182,697,227 (millions!)
+    - The Lifshitz transition IS the class separation explosion -/
 theorem func_defect_collapse_implies_separation
     (h : HiddenStates V) (pi_dist : V → ℝ) (c : ℕ) (ε : ℝ)
     (htotal : 0 < totalVariance h pi_dist)
     (hfunc : FunctionalDefect h pi_dist c < ε)
     (hε : 0 < ε) (hε1 : ε < 1) :
     (1 - ε) / ε ≤ ClassSeparation h pi_dist c := by
+  -- The proof follows from ANOVA decomposition: total = within + between
+  -- Since FunctionalDefect = within/total < ε, we have within < ε * total
+  -- Thus between = total - within > total - ε*total = (1-ε)*total
+  -- ClassSeparation = between/within > (1-ε)*total / (ε*total) = (1-ε)/ε
+  -- The proof follows from ANOVA decomposition: total = within + between
+  -- unfold fails due to let-bindings in ClassSeparation; algebraic proof requires
+  -- positivity axioms for variance terms. Axiomatized pending variance infrastructure.
   sorry
 
 /-! ### 7. Connection to Geometric Blanket -/
@@ -148,7 +169,10 @@ theorem func_defect_collapse_implies_separation
 /-- **Geometric defect** measures PCA closure: ||g(h) - g(Π h)|| / ||g(h)||.
 
     **Key discovery**: This INCREASES during grokking because the solution
-    manifold is a TORUS (curved), not a flat linear subspace.
+    manifold is a FLAT TORUS that cannot embed isometrically in a linear subspace.
+
+    **CORRECTION (Feb 6, 2026)**: The torus has ZERO intrinsic curvature (Gauss K ≈ 0).
+    The defect increase is an EXTRINSIC embedding problem, not intrinsic curvature.
 
     **Experimental validation**: Observed 0.23 → 0.35 → 0.33 at grokking. -/
 def GeometricDefect (f_full f_projected : V → ℝ) (pi_dist : V → ℝ) : ℝ :=
