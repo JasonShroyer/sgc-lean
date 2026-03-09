@@ -117,19 +117,76 @@ def compute_spectral_signature(grid: np.ndarray, dims: int = 16) -> np.ndarray:
 # 2. ATLAS INTEGRATION
 # ============================================================================
 
+def learn_stalk_transforms(input_grid: np.ndarray, target_grid: np.ndarray,
+                           stalks: List[Dict]) -> List[Dict]:
+    """
+    Learn the per-stalk transformation from input to target.
+    Captures: color changes, translations, and the global color map.
+
+    These are the INTENSIVE variables (what changes) stored alongside
+    the EXTENSIVE topology (edge weights, b1) in the Atlas.
+    """
+    H, W = input_grid.shape
+    transforms = []
+
+    # Global color map: for each input color, what output color appears in same region?
+    color_map = {}
+    for stalk in stalks:
+        in_color = int(stalk['color'])
+        mask = stalk['mask']
+        # What color(s) appear in the target at this stalk's location?
+        target_colors_at_mask = target_grid[mask]
+        if len(target_colors_at_mask) > 0:
+            out_color = int(np.bincount(target_colors_at_mask.astype(int)).argmax())
+            color_map[in_color] = out_color
+
+    # Per-stalk: detect translation (centroid shift)
+    out_stalks = decompose_stalks(target_grid)
+    for in_stalk in stalks:
+        in_color = int(in_stalk['color'])
+        out_color = color_map.get(in_color, in_color)
+
+        # Find matching output stalk by color (after mapping)
+        best_match = None
+        best_dist = float('inf')
+        for out_stalk in out_stalks:
+            if int(out_stalk['color']) == out_color:
+                dist = np.linalg.norm(in_stalk['centroid'] - out_stalk['centroid'])
+                if dist < best_dist:
+                    best_dist = dist
+                    best_match = out_stalk
+
+        dr, dc = 0, 0
+        if best_match is not None:
+            dr = float(best_match['centroid'][0] - in_stalk['centroid'][0])
+            dc = float(best_match['centroid'][1] - in_stalk['centroid'][1])
+
+        transforms.append({
+            'in_color': in_color,
+            'out_color': out_color,
+            'dr': dr, 'dc': dc,
+        })
+
+    return transforms
+
+
 def store_crystallized_rule(atlas: EmergentSheafAtlas,
                             result: Dict,
                             input_grid: np.ndarray,
+                            target_grid: np.ndarray,
                             stalks: List[Dict],
                             task_id: str = "") -> Optional[int]:
     """
-    Store a crystallized b1>=1 Laplacian in the Atlas.
+    Store a crystallized b1>=1 Laplacian in the Atlas WITH transformation data.
     Returns chart_id if stored, None if rejected (b1=0).
     """
     if not result.get('grokked', False) or result.get('b1', 0) < 1:
-        return None  # GENERALIZATION BOUNDARY: reject b1=0 memorizations
+        return None
 
     sig = compute_spectral_signature(input_grid)
+
+    # Learn the actual transformation (color map + translations)
+    transforms = learn_stalk_transforms(input_grid, target_grid, stalks)
 
     operators = [{
         'type': 'crystallized_laplacian',
@@ -137,6 +194,8 @@ def store_crystallized_rule(atlas: EmergentSheafAtlas,
         'structural_complexity': result.get('structural_complexity', 1.0),
         'grokked': True,
         'b1': result['b1'],
+        'stalk_transforms': transforms,
+        'n_stalks': len(stalks),
     }]
 
     chart_id = atlas.add_chart(
@@ -181,9 +240,70 @@ def retrieve_prior(atlas: EmergentSheafAtlas,
                 'operator': op,
                 'similarity': matches[0]['similarity'],
                 'chart_id': chart_id,
+                'metadata': matches[0].get('metadata', {}),
             }
 
     return None
+
+
+def apply_crystallized_rule(input_grid: np.ndarray, stalks: List[Dict],
+                            rule: Dict, n_colors: int = 10) -> Optional[np.ndarray]:
+    """
+    ZERO-SHOT FORWARD PASS: Apply a stored crystallized rule to an input grid
+    WITHOUT seeing the target output.
+
+    The rule contains:
+    - edge_weights: topology (which stalks relate)
+    - stalk_transforms: the actual transformation (color map + translation per stalk)
+
+    The forward pass applies the learned transforms to each stalk in the new input.
+    """
+    H, W = input_grid.shape
+    transforms = rule.get('stalk_transforms', [])
+
+    if not transforms:
+        return None
+
+    # Build color map from stored transforms
+    color_map = {}
+    for t in transforms:
+        color_map[t['in_color']] = t['out_color']
+
+    # Apply transformation: for each pixel, apply color map
+    output = input_grid.copy()
+
+    for stalk in stalks:
+        in_color = int(stalk['color'])
+        out_color = color_map.get(in_color, in_color)
+        mask = stalk['mask']
+
+        # Find matching transform for this stalk's color
+        matching_transform = None
+        for t in transforms:
+            if t['in_color'] == in_color:
+                matching_transform = t
+                break
+
+        if matching_transform is None:
+            # No transform learned for this color — keep as-is
+            continue
+
+        dr = int(round(matching_transform.get('dr', 0)))
+        dc = int(round(matching_transform.get('dc', 0)))
+
+        # Apply: translate + recolor
+        positions = np.argwhere(mask)
+        # Clear original positions
+        for r, c in positions:
+            output[r, c] = 0  # background
+
+        # Write to new positions with new color
+        for r, c in positions:
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < H and 0 <= nc < W:
+                output[nr, nc] = out_color
+
+    return output
 
 
 # ============================================================================
@@ -325,13 +445,15 @@ def run_arc_gauntlet(max_tasks: int = 20, atlas_path: str = "jax_atlas.pkl"):
                 stats['grokked'] += 1
                 task_grokked = True
 
-                # Store in Atlas (b1>=1 gate enforced inside store_crystallized_rule)
+                # Store in Atlas WITH transformation data
                 chart_id = store_crystallized_rule(
-                    atlas, result, inp, stalks, task_id)
+                    atlas, result, inp, out, stalks, task_id)
                 if chart_id is not None:
                     stats['atlas_additions'] += 1
 
-        # --- TEST PHASE: Try to solve test examples ---
+        # --- TEST PHASE: TRUE ZERO-SHOT (target output is HIDDEN) ---
+        # The engine must predict the output using ONLY the Atlas prior.
+        # It NEVER sees the ground truth test output during inference.
         for test_ex in test_examples:
             inp = np.array(test_ex['input'], dtype=np.float32)
             out = np.array(test_ex['output'], dtype=np.float32) if 'output' in test_ex else None
@@ -341,24 +463,27 @@ def run_arc_gauntlet(max_tasks: int = 20, atlas_path: str = "jax_atlas.pkl"):
             if out is None:
                 continue
 
-            # Try Atlas retrieval first
-            prior = retrieve_prior(atlas, inp, min_similarity=0.6)
-            if prior is not None:
-                # Apply crystallized Laplacian as prior
-                # For now: check if the operator's stalk structure matches
-                pass  # TODO: implement prior-guided SGLD
+            stalks = decompose_stalks(inp)
 
-            # Full SGLD solve (if no prior or prior failed)
-            if inp.shape == out.shape:
-                stalks = decompose_stalks(inp)
-                if 2 <= len(stalks) <= 6 and inp.size <= 225:
-                    test_result = engine.crystallize(
-                        inp, out, stalks,
-                        max_iterations=80,
-                        sparsity_lambda=0.1
-                    )
-                    if test_result.get('final_accuracy', 0) > 0.95:
+            # Try Atlas retrieval — this is the ONLY path to solving
+            prior = retrieve_prior(atlas, inp, min_similarity=0.5)
+            if prior is not None:
+                stats['atlas_hits'] = stats.get('atlas_hits', 0) + 1
+
+                # ZERO-SHOT FORWARD PASS: apply crystallized rule WITHOUT seeing target
+                predicted = apply_crystallized_rule(
+                    inp, stalks, prior['operator'], n_colors=10)
+
+                if predicted is not None and out is not None:
+                    if predicted.shape == out.shape and np.array_equal(predicted, out):
                         stats['test_solved'] += 1
+                    elif predicted.shape == out.shape:
+                        match = float(np.mean(predicted == out))
+                        if match > 0.95:
+                            stats['test_solved'] += 1
+                        stats['test_near_misses'] = stats.get('test_near_misses', 0) + (1 if match > 0.5 else 0)
+            else:
+                stats['atlas_misses'] = stats.get('atlas_misses', 0) + 1
 
         stats['tasks_processed'] += 1
 
@@ -483,22 +608,26 @@ def run_frozen_atlas_eval(atlas_path: str = "jax_atlas.pkl",
             if len(stalks) < 2 or len(stalks) > 6 or inp.size > 225:
                 continue
 
-            # Try Atlas retrieval (zero-shot)
+            # TRUE ZERO-SHOT: Apply Atlas rule WITHOUT seeing target
             prior = retrieve_prior(atlas, inp, min_similarity=0.5)
             if prior is not None:
                 stats['atlas_hits'] += 1
+
+                predicted = apply_crystallized_rule(
+                    inp, stalks, prior['operator'], n_colors=10)
+
+                if predicted is not None and out is not None:
+                    if predicted.shape == out.shape and np.array_equal(predicted, out):
+                        stats['test_solved'] += 1
+                    elif predicted.shape == out.shape:
+                        match = float(np.mean(predicted == out))
+                        if match > 0.95:
+                            stats['test_solved'] += 1
+                        stats.setdefault('near_misses', 0)
+                        if match > 0.5:
+                            stats['near_misses'] += 1
             else:
                 stats['atlas_misses'] += 1
-
-            # Run SGLD (with or without prior)
-            result = engine.crystallize(
-                inp, out, stalks,
-                max_iterations=80,
-                sparsity_lambda=0.1
-            )
-
-            if result.get('final_accuracy', 0) > 0.95:
-                stats['test_solved'] += 1
 
         if (task_idx + 1) % 10 == 0 or task_idx == len(tasks) - 1:
             elapsed = time.time() - t_start
