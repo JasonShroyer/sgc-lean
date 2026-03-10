@@ -559,27 +559,59 @@ def run_bipartite_gauntlet(max_tasks: int = 97):
         test_examples = task['test']
         stats['tasks'] += 1
         
-        # --- TRAINING: Forge pipes for each example ---
-        best_rule = None
-        best_b1 = 0
+        # --- TRAINING: Learn from ALL examples via consensus ---
+        all_rules = []
         
         for ex in train_examples:
             inp = np.array(ex['input'], dtype=np.float32)
             out = np.array(ex['output'], dtype=np.float32)
             
-            if inp.shape != out.shape or inp.size > 225:
+            if inp.shape != out.shape or inp.size > 900:
                 continue
             
             stats['crystallized'] += 1
             result = engine.train_crystallize(inp, out, max_iterations=40)
             
-            if result['grokked'] and result['b1'] > best_b1:
-                best_b1 = result['b1']
-                best_rule = result
+            if result['grokked']:
+                all_rules.append(result)
                 stats['grokked'] += 1
         
-        if best_rule is not None:
-            atlas[task_id] = best_rule
+        # Build CONSENSUS rule from all training examples
+        if all_rules:
+            # Merge stalk maps: for each color, average the translations
+            color_dr = {}
+            color_dc = {}
+            color_out = {}
+            bg_outs = []
+            
+            for rule in all_rules:
+                bg_outs.append(rule.get('bg_out', 0))
+                for sm in rule.get('stalk_maps', []):
+                    c = sm['in_color']
+                    color_out.setdefault(c, []).append(sm['out_color'])
+                    color_dr.setdefault(c, []).append(sm['dr'])
+                    color_dc.setdefault(c, []).append(sm['dc'])
+            
+            consensus_maps = []
+            for c in color_dr:
+                # Use median for robustness against outliers
+                consensus_maps.append({
+                    'in_color': c,
+                    'out_color': int(np.median(color_out[c])),
+                    'dr': float(np.median(color_dr[c])),
+                    'dc': float(np.median(color_dc[c])),
+                })
+            
+            consensus_rule = {
+                'grokked': True,
+                'b1': max(r['b1'] for r in all_rules),
+                'stalk_maps': consensus_maps,
+                'bg_in': all_rules[0].get('bg_in', 0),
+                'bg_out': int(np.median(bg_outs)),
+                'grid_shape': all_rules[0]['grid_shape'],
+                'n_examples': len(all_rules),
+            }
+            atlas[task_id] = consensus_rule
         
         # --- TEST: TRUE ZERO-SHOT via Dirichlet relaxation ---
         for test_ex in test_examples:
