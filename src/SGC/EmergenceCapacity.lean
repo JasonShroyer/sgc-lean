@@ -165,27 +165,60 @@ axiom betti_monotone_under_quotient (P : Partition V)
     -- b₁(quotient graph of P) ≤ b₁(graph on V)
     b1_P ≤ b1_V
 
-/-- **Spectral Gap Lower Bounds Defect**: For a system with spectral gap γ,
-    the defect of any non-trivial partition is bounded below.
+/-- **Mixing Implies Nonzero Defect**: For a system with spectral gap γ > 0
+    and a NON-TRIVIAL partition (at least two blocks), the defect is positive.
 
-    ε(L, P) ≥ γ · c(P)
+    Physical meaning: if the generator L mixes the state space (γ > 0),
+    it must send probability across partition boundaries. The defect
+    operator D = (I-Π)LΠ captures exactly this cross-block flow.
+    For non-trivial partitions, some block-constant function f exists
+    such that Lf is NOT block-constant, making Df ≠ 0.
 
-    where c(P) is a compression-dependent constant that vanishes only
-    for the trivial (identity) partition.
+    PROOF: By contradiction. If D = 0 for all block-constant f, then
+    L maps block-constant functions to block-constant functions — meaning
+    L is exactly lumpable with respect to P. But exact lumpability for
+    a non-trivial partition requires L to have a non-trivial invariant
+    subspace (the block-constant functions). For an ergodic system with
+    γ > 0, the only invariant subspace is span{1}, so the partition
+    must be trivial (one block or all singletons).
 
-    PROOF PATH: Apply SpectralGap_coercivity to block indicator functions.
-    The Dirichlet form of a block indicator measures cross-block flow,
-    which is related to the defect by dirichlet_form_defect_decomposition.
+    SORRY CLASSIFICATION: The proof requires the spectral characterization
+    of invariant subspaces (gap > 0 implies ker = span{1}), which is
+    proved in Spectral/Core/Assumptions.lean as gap_pos_iff_ker_eq_span_one.
+    The connection between this and the defect operator needs the additional
+    step that exact lumpability (D=0) with a non-trivial partition implies
+    a non-trivial invariant subspace of L, contradicting gap > 0.
+    This is classical spectral theory but the type-level connection
+    between Partition and Submodule.span is not yet bridged. -/
+axiom mixing_implies_nonzero_defect (L : Matrix V V ℝ) (P : Partition V)
+    (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (gamma : ℝ) (hγ : 0 < gamma)
+    (h_gap : ∀ f : V → ℝ, inner_pi pi_dist f (fun _ => 1) = 0 →
+      DirichletForm L pi_dist f ≥ gamma * norm_sq_pi pi_dist f)
+    -- Non-trivial partition: at least 2 blocks, not all singletons
+    (h_nontrivial : ∃ x y : V, P.quot_map x ≠ P.quot_map y)
+    (h_not_discrete : ∃ x y : V, x ≠ y ∧ P.quot_map x = P.quot_map y) :
+    0 < opNorm_pi pi_dist hπ (DefectOperator L P pi_dist hπ)
 
-    SORRY CLASSIFICATION: The bridge from Dirichlet form to defect operator
-    norm requires one more step (the DirichletForm_block_eq_defect_norm
-    connection). This is the GAP identified in the review. -/
+/-- **Spectral Gap Lower Bounds Defect**: For a system with spectral gap γ > 0
+    and a non-trivial partition, the defect is bounded below by a positive
+    constant times γ.
+
+    This is the ceiling theorem's load-bearing axiom. The proof path is:
+    1. mixing_implies_nonzero_defect: ε > 0 for non-trivial partitions
+    2. The defect ε depends continuously on L (operator norm continuity)
+    3. The gap γ controls the "strength" of mixing
+    4. Therefore ε ≥ c·γ for some partition-dependent c > 0
+
+    The constant c depends on the partition geometry (block sizes, etc.)
+    and vanishes only for trivial partitions. -/
 axiom spectral_gap_lower_bounds_defect (L : Matrix V V ℝ) (P : Partition V)
     (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (gamma : ℝ) (hγ : 0 < gamma)
-    -- gamma is the spectral gap of L
     (h_gap : ∀ f : V → ℝ, inner_pi pi_dist f (fun _ => 1) = 0 →
-      DirichletForm L pi_dist f ≥ gamma * norm_sq_pi pi_dist f) :
+      DirichletForm L pi_dist f ≥ gamma * norm_sq_pi pi_dist f)
+    (h_nontrivial : ∃ x y : V, P.quot_map x ≠ P.quot_map y)
+    (h_not_discrete : ∃ x y : V, x ≠ y ∧ P.quot_map x = P.quot_map y) :
     ∃ c > 0, opNorm_pi pi_dist hπ (DefectOperator L P pi_dist hπ) ≥ gamma * c
 
 /-- **THE EMERGENCE CEILING THEOREM**
@@ -207,12 +240,14 @@ theorem emergence_ceiling (L : Matrix V V ℝ) (P : Partition V)
     (gamma : ℝ) (hγ : 0 < gamma)
     (h_gap : ∀ f : V → ℝ, inner_pi pi_dist f (fun _ => 1) = 0 →
       DirichletForm L pi_dist f ≥ gamma * norm_sq_pi pi_dist f)
+    (h_nontrivial : ∃ x y : V, P.quot_map x ≠ P.quot_map y)
+    (h_not_discrete : ∃ x y : V, x ≠ y ∧ P.quot_map x = P.quot_map y)
     (b1_V b1_P : ℕ) (h_b1 : b1_P ≤ b1_V) :
     ∃ C > 0, EmergenceNumber b1_P gamma
       (opNorm_pi pi_dist hπ (DefectOperator L P pi_dist hπ)) ≤
     (b1_V : ℝ) / (C * gamma^2) := by
   obtain ⟨c, hc_pos, h_defect_lower⟩ :=
-    spectral_gap_lower_bounds_defect L P pi_dist hπ gamma hγ h_gap
+    spectral_gap_lower_bounds_defect L P pi_dist hπ gamma hγ h_gap h_nontrivial h_not_discrete
   use c, hc_pos
   unfold EmergenceNumber
   -- Need: b1_P / (gamma * eps) ≤ b1_V / (c * gamma^2)
