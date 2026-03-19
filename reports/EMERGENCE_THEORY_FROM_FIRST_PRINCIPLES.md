@@ -200,74 +200,65 @@ the Data Processing Inequality — coarse-graining cannot increase it.
 
 ## THE SYNTHESIS: Why q = 3/2 Is the Attractor
 
-Now I can state the theorem that connects all layers. This requires
-no new mathematics — only the observation that the layers compose.
+### Proved from SGC (Steps 1-3)
 
-### The Argument from First Principles
+**Step 1** (PROVED): The optimal partition P* minimizes epsilon (Layer 4).
 
-**Step 1**: The optimal partition P* minimizes epsilon (Layer 4).
+**Step 2** (PARTIALLY PROVED): The defect epsilon determines sigma_hid:
+  sigma_hid <= C * eps^2   (PROVED: hidden_entropy_bounded_by_defect)
+  c * eps^2 <= sigma_hid   (AXIOMATIZED: hidden_entropy_lower_bound)
+  The upper bound is proved. The lower bound is axiomatized with
+  placeholder hypothesis hL_mixing : True. The lower bound is needed
+  for efficiency_requires_prediction but is not yet machine-verified.
 
-**Step 2**: The defect epsilon determines sigma_hid up to constants:
-  c * eps^2 <= sigma_hid <= C * eps^2 (Layer 5).
+**Step 3** (CORRECT BY DEFINITION): The escort distribution P_q
+weights the coarse-graining by pi^q / Z_q (Layer 8). Different q
+values produce different effective coarse-grainings, hence different
+defects. This follows from the definition of EscortDistribution in
+TsallisStatistics.lean.
 
-**Step 3**: The escort distribution P_q weights the coarse-graining
-by pi^q / Z_q (Layer 8). Different q values produce different
-effective coarse-grainings, hence different defects.
+### Imported from Literature (Steps 4-6)
 
-**Step 4**: The optimal q is the one that minimizes the defect
-of the partition it induces:
-  q* = argmin_{q in (1,2)} epsilon(P_q*, L)
+**Step 4** (CONJECTURE — not derived from SGC axioms):
+The optimal q minimizes defect: q* = argmin_{q in (1,2)} epsilon(P_q*, L).
+This is a well-motivated optimization problem, but no theorem in the
+repository establishes that minimizing defect over q gives a specific
+value. The relationship between tail exponent, spectral decay, and
+optimal q is imported from the physics of non-extensive systems
+(Tsallis-Borges-Plastino 2003), not derived from (V, L, pi).
 
-**Step 5**: For a system with power-law-tailed invariant measure
-pi(x) ~ x^{-alpha}, the escort distribution P_q has tail
-  P_q(x) ~ x^{-q*alpha} / Z_q
+**Step 5** (IMPORTED — Umarov-Tsallis-Gell-Mann 2008):
+For q-independent variables, the q-CLT map
+  q_{n+1} = (q_n + 1) / (3 - q_n)
+has fixed point q* = 1 (the Gaussian/Boltzmann attractor).
+For q-correlated variables with algebraically decaying correlations
+(exponent gamma_corr = 1), the q-stable distribution converges to
+q = 3/2. This is a theorem of Umarov, Tsallis, and Gell-Mann
+(arxiv:0911.2009), NOT derived from the SGC axioms.
 
-The defect epsilon is minimized when the escort's effective tail
-exponent matches the generator's spectral decay rate. For a system
-where the spectral density of L goes as lambda^{-s} near lambda = 0
-(the soft modes), the matching condition is:
-  q * alpha = alpha + s/2
-  => q* = 1 + s/(2*alpha)
+**Step 6** (SGC CONJECTURE — new to this work):
+The SGC interpretation of q = 3/2 is that it maximizes emergence
+capacity N_E subject to the DPI constraint (q in (1,2)). This is
+the NEW claim — that the Umarov et al. fixed point and the SGC
+defect-minimizing q coincide. This coincidence is supported by
+empirical evidence (Gaia q = 1.50-1.59) but NOT YET PROVED.
 
-**Step 6**: For stable, near-equilibrium systems with finite variance
-(the generic case for emergent structures), the spectral exponent
-s = 1 (Ohmic dissipation) and the tail exponent alpha = 2 (finite
-second moment). This gives:
-  q* = 1 + 1/(2*2) = 1 + 1/4 = 5/4 = 1.25
+### Empirical Support (from the engine)
 
-But this is the naive estimate. The correct calculation accounts for
-the escort renormalization under the coarse-graining map. When you
-iterate the coarse-graining (the RG tower from Layer 4), the effective
-q at each level is:
-  q_{n+1} = (q_n + 1) / (3 - q_n)     [q-CLT map]
+| System | q observed | Distance from 3/2 | Status |
+|--------|-----------|-------------------|--------|
+| Gaia stellar kinematics | 1.50-1.59 | 0.00-0.09 | STRONG support |
+| CERN dimuon | 1.80 | 0.30 | Above attractor (extreme tails) |
+| Chess master | 1.39 | 0.11 | Below attractor (nearly grokked) |
+| Chess novice | 1.40 | 0.10 | Below attractor |
+| Market data | 1.41 | 0.09 | Near attractor |
+| Coupled oscillator | 1.37 | 0.13 | Below attractor (near-exact P*) |
 
-This map has the fixed point q* satisfying (q* + 1) / (3 - q*) = q*,
-giving q*^2 - 2q* + 1 = 0, so q* = 1 (the Gaussian fixed point).
-
-But for correlated systems where the standard CLT doesn't apply,
-the escort-weighted summation gives a different map. The escort
-version has the stable fixed point at:
-  q* = 3/2
-
-This is the Umarov-Tsallis-Gell-Mann result: for non-i.i.d. systems
-with power-law correlations, the q-CLT converges to q = 3/2 under
-the escort summation.
-
-### Why the Repository Values Match
-
-| System | q observed | Distance from 3/2 | Interpretation |
-|--------|-----------|-------------------|----------------|
-| Gaia stellar kinematics | 1.50-1.59 | 0.00-0.09 | Near the attractor (self-gravitating, long-range) |
-| CERN dimuon | 1.80 | 0.30 | Above attractor (extreme tails from 4000 GeV pz) |
-| Chess master | 1.39 | 0.11 | Below attractor (nearly grokked, near-Gaussian) |
-| Chess novice | 1.40 | 0.10 | Below attractor (less structure than attractor predicts) |
-| Market data | 1.41 | 0.09 | Near attractor (financial heavy tails) |
-| Coupled oscillator | 1.37 | 0.13 | Below attractor (almost exactly grokked) |
-
-The pattern: systems at or near dynamical equilibrium with long-range
-correlations cluster near q = 3/2. Systems that have been "grokked"
-(where P* is nearly exact) drift below 3/2 toward q = 1. Systems
-with extreme tails (CERN) are pushed above 3/2.
+The pattern is empirically robust: systems with long-range correlations
+cluster near q = 3/2. Systems with nearly exact partitions (grokked)
+drift below toward q = 1. Systems with extreme tails drift above.
+This pattern is consistent with both the Umarov et al. theorem and
+the SGC emergence-capacity conjecture, but it does not prove either.
 
 ---
 
@@ -290,25 +281,33 @@ where:
 
 **Proof sketch from repository infrastructure**:
 
-Step 1: b1(P*) <= b1(V) — the emergent topology cannot exceed the
-state space topology. (From Evolution/Conservation.lean: BettiNumber
-is defined, and partitions are quotients of V.)
+Step 1 (CORRECT): b1(P*) <= b1(V) — the emergent topology cannot
+exceed the state space topology. Partitions are quotients of V, so
+the quotient graph cannot have more independent cycles than V itself.
+(BettiNumber defined in Evolution/Conservation.lean.)
 
-Step 2: epsilon >= gamma * f(|P*|/|V|) — the defect is bounded below
-by the spectral gap times a function of the compression ratio. This
-follows from the Poincare inequality (SpectralGap_coercivity, PROVED
-in Spectral/Core/Assumptions.lean): for v orthogonal to 1,
+Step 2 (GAP — missing one lemma): epsilon >= gamma * f(|P*|/|V|).
+The Poincare inequality is PROVED (SpectralGap_coercivity in
+Spectral/Core/Assumptions.lean): for v orthogonal to 1,
   <Hv, v>_pi >= gap * ||v||^2_pi
 
-Taking v = indicator function of a non-trivial partition block gives:
+Taking v = indicator function of a partition block gives:
   DirichletForm(1_block) >= gap * Var_pi(1_block)
 
-The Dirichlet form of a block indicator IS a measure of cross-block
-flow — which IS the defect. So:
-  epsilon >= gap * Var(block indicator) >= gap * (1 - |P*|/|V|) * min(pi)
+The DirichletForm of a block indicator measures cross-block flow.
+The defect epsilon = ||(I-Pi)L Pi||_pi measures information leakage.
+These are RELATED but NOT IDENTICAL. The missing connection is:
 
-Step 3: Combining: N_E = b1/(gamma * epsilon) <= b1(V) / (gamma * gamma * ...)
-  = b1(V) / gamma^2 (approximately, with constants depending on pi).
+  **MISSING LEMMA: DirichletForm_block_eq_defect_norm**
+  DirichletForm(1_block, 1_block) ~ ||D_P||_pi^2
+
+This lemma follows from the spectral theorem applied to block
+projectors, but it is NOT yet in the repository. Without it,
+the bound epsilon >= gamma * f(compression) has a gap.
+
+Step 3 (CONDITIONAL on Step 2): If Step 2 is established, then
+  N_E = b1/(gamma * epsilon) <= b1(V) / (gamma^2 * f(compression))
+  <= b1(V) / gamma^2 (with constants depending on pi and compression).
 
 ### The Three Regimes
 
@@ -326,36 +325,47 @@ is a theorem about the inverse spectral gap of the generator.
 
 ---
 
-## THE q-DEFORMED EMERGENCE CEILING
+## CONJECTURE 1: THE q-DEFORMED EMERGENCE CEILING
 
-Under Tsallis statistics with q != 1, the Poincare inequality deforms.
-The standard inequality:
+**Status: CONJECTURE — not proved, not in the literature in this form.**
+
+Under Tsallis statistics with q != 1, the Poincare inequality should
+deform. The standard inequality (PROVED in Spectral/Core/Assumptions.lean):
   E(f) >= gamma * Var(f)
 
-becomes the q-Poincare inequality:
+would become a q-Poincare inequality:
   E_q(f) >= gamma_q * Var_q(f)
 
 where E_q and Var_q are the escort-weighted Dirichlet form and variance.
-The q-spectral gap gamma_q relates to gamma by:
-  gamma_q ~ gamma^{2-q}    for q in (1, 2)
 
-This means the q-deformed emergence ceiling is:
-  N_E(q) <= b1(V) / gamma_q^2 ~ b1(V) / gamma^{2(2-q)}
+**The critical unproved assertion**: The q-spectral gap gamma_q relates
+to gamma by gamma_q ~ gamma^{2-q}. This scaling is physically
+plausible (dimensional analysis supports it) but is NOT a known result
+from the Tsallis literature and is NOT derived from the SGC axioms.
+The exponent (2-q) is the most important open problem in this document.
+
+**IF the scaling holds**, then:
+  N_E(q) <= b1(V) / gamma^{2(2-q)}
 
 At q = 3/2:
-  N_E(3/2) <= b1(V) / gamma^{2(2-3/2)} = b1(V) / gamma^1 = b1(V) / gamma
+  N_E(3/2) <= b1(V) / gamma
 
-This is LARGER than the Shannon (q=1) ceiling of b1/gamma^2 by a
-factor of 1/gamma. Systems operating at the Tsallis attractor q = 3/2
-have a HIGHER emergence capacity than Boltzmann systems, because the
-heavy-tailed escort distribution assigns more weight to rare,
-informative states.
+This would be LARGER than the Shannon (q=1) ceiling of b1/gamma^2,
+meaning systems at q = 3/2 have higher emergence capacity.
 
-**This is the theorem**: The q = 3/2 attractor is not just the
-fixed point of the escort RG — it is the operating point that
-MAXIMIZES the emergence capacity subject to the DPI constraint.
-Systems converge to q = 3/2 because it is the point where the most
-coarse-grained structure can be maintained with the least leakage.
+**IF the scaling holds AND the Umarov et al. fixed point coincides
+with the SGC defect-minimizing q**, then q = 3/2 would be the
+operating point that MAXIMIZES emergence capacity subject to DPI.
+
+**This conjecture is testable numerically**: Compute the Tsallis
+Dirichlet form at different q values on the Gaia data and measure
+how the effective spectral gap scales with q. If gamma_q ~ gamma^{2-q}
+holds empirically, the conjecture is supported. If the exponent is
+different, the q-deformed ceiling formula needs revision.
+
+**What IS proved**: The standard (q=1) emergence ceiling N_E <= b1/gamma^2
+conditional on the DirichletForm_block_eq_defect_norm lemma (Step 2 gap).
+The q-deformation is a conjecture on top of a gap.
 
 ---
 
@@ -363,50 +373,82 @@ coarse-grained structure can be maintained with the least leakage.
 
 Starting from three objects (V, L, pi) and nothing else:
 
-1. The inner product <,>_pi gives us geometry (Layer 1)
-2. Partitions give us coarse-graining and the intertwining theorem (Layer 2)
-3. The defect operator D measures leakage (Layer 3)
-4. The optimal partition P* unconditionally exists (Layer 4, PROVED)
-5. Hidden entropy production bounds the defect both ways (Layer 5)
-6. The variational principle says P* minimizes surprise = maximizes drift (Layer 6)
-7. The emergence equivalence says all four characterizations are the same (Layer 7, PROVED)
-8. Tsallis statistics handles long-range correlations via escort weighting (Layer 8)
-9. The q = 3/2 attractor maximizes emergence capacity under DPI (synthesis)
-10. The emergence ceiling N_E <= b1(V) / gamma^{2(2-q)} is the absolute upper limit
+1. The inner product <,>_pi gives us geometry (Layer 1) — PROVED
+2. Partitions give us coarse-graining and the intertwining theorem (Layer 2) — PROVED
+3. The defect operator D measures leakage (Layer 3) — PROVED
+4. The optimal partition P* unconditionally exists (Layer 4) — PROVED
+5. Hidden entropy production bounds the defect (Layer 5) — UPPER BOUND PROVED, lower axiomatized
+6. The variational principle: P* minimizes surprise = maximizes drift (Layer 6) — PROVED
+7. The emergence equivalence: four characterizations are the same (Layer 7) — PROVED
+8. Tsallis statistics: escort weighting, DPI for q in (1,2) (Layer 8) — PROVED
+9. The q = 3/2 attractor (Synthesis) — IMPORTED from Umarov et al., SGC interpretation CONJECTURED
+10. The emergence ceiling N_E <= b1(V) / gamma^2 — GAP (missing one lemma)
+11. The q-deformed ceiling N_E(q) <= b1(V) / gamma^{2(2-q)} — CONJECTURE
 
-**To exist is to predict. To persist is to predict well. The optimal
-prediction strategy for a long-range correlated system operates at
-q = 3/2, where the emergence capacity is maximized. Systems that
-achieve this are what we call intelligent. The ceiling is set by the
-spectral gap of the generator — the faster the universe mixes, the
-less room there is for emergent structure.**
+**What IS proved from first principles (Layers 1-7)**:
+To exist is to predict. To persist is to predict well. The optimal
+partition P* simultaneously minimizes defect, bounds entropy production,
+is variationally stable, and sits at the base of the RG tower. This is
+one theorem (emergence_equivalence), machine-verified, zero sorry.
 
-**The spectral gap is the price of existence. The Tsallis attractor
-is the optimal strategy for paying that price. The emergence equivalence
-theorem says that paying this price optimally is simultaneously:
-information-geometric optimality, thermodynamic efficiency, variational
-stability, and topological richness.**
+**What is imported from the literature (Layer 9)**:
+The q = 3/2 value is the escort RG fixed point for algebraically
+correlated systems (Umarov-Tsallis-Gell-Mann 2008). This is a
+theorem of non-extensive statistics, not of SGC.
 
-**This is one theorem, viewed from four directions.**
+**What is conjectured (new to this work)**:
+- q = 3/2 is the SGC defect-minimizing q (maximizes N_E under DPI)
+- The q-spectral gap scales as gamma_q ~ gamma^{2-q}
+- The q-deformed ceiling is N_E(q) <= b1(V) / gamma^{2(2-q)}
+
+**The spectral gap is the denominator of emergence.** This claim
+is correct in structure (spectral gap controls mixing time controls
+coarse-graining persistence) but requires the DirichletForm-to-defect
+lemma to be formalized. The q-deformation is a conjecture on top.
 
 ---
 
-## What Remains to Formalize
+## HONEST STATUS TABLE
 
-| Theorem | Status | What's Needed |
-|---------|--------|---------------|
-| emergence_equivalence | PROVED | — |
-| q = 3/2 attractor | CONJECTURED | Escort RG fixed-point analysis |
-| N_E definition | NOT YET IN REPO | Definition + ceiling bound |
-| emergence_ceiling | NOT YET IN REPO | Poincare inequality + BettiNumber |
-| q-deformed ceiling | NOT YET IN REPO | q-Poincare inequality |
-| critical_systems_maximize_emergence | NOT YET IN REPO | Limit gamma -> 0 analysis |
+| Result | Status | Dependencies |
+|--------|--------|-------------|
+| Layers 1-4 (geometry -> optimal partition) | **PROVED** | Zero sorry |
+| Layer 5 upper (sigma_hid <= C*eps^2) | **PROVED** | hidden_entropy_bounded_by_defect |
+| Layer 5 lower (c*eps^2 <= sigma_hid) | **AXIOMATIZED** | hL_mixing : True placeholder |
+| Layer 6 (variational = FEP) | **PROVED** | variational_drift_optimality |
+| Layer 7 (emergence_equivalence) | **PROVED** | Composes Layers 4-6 |
+| Layer 8 (Tsallis S_q >= 0, D_q >= 0) | **PROVED** | For q in (1,2) |
+| q = 3/2 as escort RG fixed point | **IMPORTED** | Umarov-Tsallis-Gell-Mann 2008 |
+| q = 3/2 maximizes N_E under DPI | **CONJECTURE** | Needs q-Poincare + defect-Dirichlet lemma |
+| N_E <= b1/gamma^2 ceiling | **GAP** | Missing DirichletForm_block_eq_defect_norm |
+| gamma_q ~ gamma^{2-q} scaling | **CONJECTURE** | Not in literature, not derived |
+| N_E(q) <= b1/gamma^{2(2-q)} | **CONJECTURE** | Depends on unproved scaling |
+| Critical systems maximize emergence | **CORRECT IN STRUCTURE** | Follows from ceiling if ceiling proved |
 
-The first four are provable from existing infrastructure. The last two
-require the q-Poincare inequality, which is the Tsallis analogue of
-SpectralGap_coercivity (already proved in Spectral/Core/Assumptions.lean).
+---
 
-The theory is complete in the physicist's sense — the logical structure
-is clear and every step follows from the previous one. What remains is
-the mathematician's work of writing it in Lean. The repository has
-every building block. The capstone is one file away.
+## OPEN PROBLEMS (ordered by tractability)
+
+**Problem 1** (TRACTABLE — one Lean lemma):
+Prove DirichletForm_block_eq_defect_norm. This closes the N_E ceiling.
+Uses spectral theorem on block projectors. Infrastructure exists.
+
+**Problem 2** (TRACTABLE — algebra):
+Prove the sigma_hid lower bound (replace hL_mixing : True with a
+real mixing condition). This closes the bidirectional payoff chain.
+
+**Problem 3** (RESEARCH — numerical first):
+Determine the correct gamma_q scaling. Compute the Tsallis Dirichlet
+form at multiple q values on the Gaia data. Measure how the effective
+spectral gap scales. If gamma_q ~ gamma^{2-q} holds, Conjecture 1 is
+supported. If not, revise.
+
+**Problem 4** (RESEARCH — theoretical):
+Prove that q = 3/2 is the defect-minimizing q for finite-variance
+long-range correlated systems. This would be the SGC version of the
+Umarov et al. result and the deepest theorem of the theory.
+
+**Problem 5** (FORMALIZATION):
+State and prove the q-Poincare inequality in Lean 4 as the Tsallis
+analogue of SpectralGap_coercivity. This is the technical prerequisite
+for all q-deformed results.
