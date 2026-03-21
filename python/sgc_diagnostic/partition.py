@@ -141,6 +141,28 @@ def _defect_lloyd(
     return assignment, final_epsilon
 
 
+def _numpy_kmeans(features: np.ndarray, k: int, seed: int) -> np.ndarray:
+    """Pure numpy k-means on rows of features matrix. No sklearn dependency."""
+    rng = np.random.default_rng(seed)
+    n = features.shape[0]
+    centers = features[rng.choice(n, k, replace=False)]
+    for _ in range(50):
+        dists = np.linalg.norm(features[:, None, :] - centers[None, :, :], axis=2)
+        assignment = np.argmin(dists, axis=1)
+        for b in range(k):
+            if b not in assignment:
+                assignment[rng.integers(n)] = b
+        new_centers = np.array([
+            features[assignment == b].mean(axis=0) if np.any(assignment == b)
+            else centers[b]
+            for b in range(k)
+        ])
+        if np.allclose(centers, new_centers, atol=1e-10):
+            break
+        centers = new_centers
+    return assignment
+
+
 def find_optimal_partition(
     L: np.ndarray,
     pi: np.ndarray,
@@ -186,13 +208,9 @@ def find_optimal_partition(
         for restart in range(n_restarts):
             # Initialize assignment
             if restart == 0 and k <= slow_modes.shape[1]:
-                # Spectral initialization: assign by dominant eigenvector component
-                # This is the correct prior for Markov chain generators (no sklearn needed)
+                # Spectral initialization: k-means on eigenvector coordinates
                 features = slow_modes[:, :k]
-                # Normalize each row so assignment is by relative eigenvector weight
-                row_norms = np.abs(features).sum(axis=1, keepdims=True) + 1e-12
-                features_norm = features / row_norms
-                assignment = np.argmax(features_norm, axis=1) % k
+                assignment = _numpy_kmeans(features, k, seed=restart)
             else:
                 assignment = np.random.randint(0, k, size=n)
             
@@ -207,7 +225,9 @@ def find_optimal_partition(
                 best_k_assignment = assignment.copy()
         
         defect_curve[k] = best_k_epsilon
-        if best_k_epsilon < best_epsilon:
+        # Prefer smaller k when defects are comparable (within tolerance)
+        # This prevents trivial partition (k=n) from winning with epsilon=0
+        if best_k_epsilon < best_epsilon - 1e-10:
             best_epsilon = best_k_epsilon
             best_assignment = best_k_assignment.copy()
     
