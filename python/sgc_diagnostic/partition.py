@@ -186,13 +186,13 @@ def find_optimal_partition(
         for restart in range(n_restarts):
             # Initialize assignment
             if restart == 0 and k <= slow_modes.shape[1]:
-                # Use k-means on the k slowest eigenvectors as initial guess
-                try:
-                    from sklearn.cluster import KMeans
-                    km = KMeans(n_clusters=k, n_init=1, random_state=restart, max_iter=100)
-                    assignment = km.fit_predict(slow_modes[:, :k])
-                except ImportError:
-                    assignment = np.random.randint(0, k, size=n)
+                # Spectral initialization: assign by dominant eigenvector component
+                # This is the correct prior for Markov chain generators (no sklearn needed)
+                features = slow_modes[:, :k]
+                # Normalize each row so assignment is by relative eigenvector weight
+                row_norms = np.abs(features).sum(axis=1, keepdims=True) + 1e-12
+                features_norm = features / row_norms
+                assignment = np.argmax(features_norm, axis=1) % k
             else:
                 assignment = np.random.randint(0, k, size=n)
             
