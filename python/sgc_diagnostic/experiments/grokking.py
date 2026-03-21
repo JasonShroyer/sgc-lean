@@ -20,19 +20,6 @@ from typing import List, Tuple, Optional
 import sys
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-# Lazy matplotlib import
-plt = None
-
-def _ensure_matplotlib():
-    global plt
-    if plt is None:
-        try:
-            import matplotlib.pyplot as _plt
-            plt = _plt
-            return True
-        except ImportError:
-            return False
-    return True
 
 
 def create_modular_addition_data(p: int = 97, 
@@ -403,7 +390,9 @@ def run_grokking_experiment(output_dir: str = "output/") -> dict:
         print(f"  4. N_E increase: {pred4_result}")
     
     # Generate figure (if matplotlib available)
-    if not _ensure_matplotlib():
+    try:
+        import matplotlib.pyplot as plt
+    except ImportError:
         print("\n  Warning: matplotlib not available, skipping figure generation")
         return {
             'checkpoints': checkpoints,
