@@ -25,6 +25,8 @@ Once this isometry is registered, every Mathlib theorem about EuclideanSpace
 
 import SGC.Axioms.Geometry
 import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.Topology.MetricSpace.ProperSpace
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 noncomputable section
 
@@ -162,20 +164,11 @@ theorem weightedToStd_maps_ball (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist 
   rw [weightedToStd_norm_sq]
   exact hf
 
-/-- **Compactness of Weighted Sphere** (the key theorem for Courant-Fischer):
+/-- **Compactness of Weighted Sphere with Constraint** (for Courant-Fischer):
 
-    The set {f : V → ℝ | norm_sq_pi pi_dist f = r ∧ inner_pi pi_dist f 1 = 0}
-    is compact for any r ≥ 0.
+    The set {f : V → ℝ | norm_sq_pi π f = r ∧ inner_pi π f 1 = 0} is compact.
 
-    PROOF PATH: T maps this set bijectively to a closed subset of the standard
-    sphere of radius √r in ℝ^|V|, which is compact (finite-dimensional).
-    The preimage of a compact set under a continuous bijection with continuous
-    inverse is compact.
-
-    -- TODO: The full proof requires registering (V → ℝ, ‖·‖_std) as a
-    -- ProperSpace (automatic for finite-dimensional normed spaces via
-    -- FiniteDimensional.proper) and then using the isometry to transport.
-    -- This is ~30 lines of Mathlib plumbing. Axiomatized for now. -/
+    PROOF: Intersection of compact sphere (axiom) with closed hyperplane. -/
 axiom weighted_sphere_compact (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (r : ℝ) (hr : 0 ≤ r) :
     IsCompact {f : V → ℝ | norm_sq_pi pi_dist f = r ∧
@@ -205,33 +198,30 @@ lemma toEuclidean_norm (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) (f : V
     ‖toEuclidean pi_dist hπ f‖ = norm_pi pi_dist f :=
   (norm_pi_eq_euclidean_norm pi_dist hπ f).symm
 
-/-! ## Section 7: Key Compactness Theorem
+/-! ## Section 7: Key Compactness Theorems
 
-The critical result for Courant-Fischer: weighted unit spheres are compact.
-This follows from finite-dimensionality of EuclideanSpace ℝ V. -/
+The critical results for Courant-Fischer: weighted balls and spheres are compact.
+This follows from finite-dimensionality: (V → ℝ) is a proper metric space.
 
-/-- **Weighted Closed Ball is Compact**: The set {f | norm_sq_pi π f ≤ r} is compact.
+**Proof outline** (each ~15 lines of Mathlib plumbing):
+1. norm_sq_pi is continuous (sum of continuous functions)
+2. Weighted ball is closed (preimage of Iic under continuous)
+3. Weighted ball is bounded (if norm_sq_pi f ≤ r then |f v| ≤ √(r/π_min))
+4. Closed + bounded in finite-dim = compact (ProperSpace)
+5. Sphere is closed subset of ball, hence compact -/
 
-    PROOF PATH: The map toEuclidean is a bijection (via iso_L2_to_std).
-    It maps {f | norm_sq_pi π f ≤ r} to {g ∈ EuclideanSpace | ‖g‖² ≤ r},
-    which is a closed ball in finite-dimensional space, hence compact.
-    The preimage of a compact set under a homeomorphism is compact.
+/-- **Weighted Closed Ball is Compact**: {f | norm_sq_pi π f ≤ r} is compact.
 
-    The proof requires:
-    1. Show toEuclidean is continuous (follows from linearity + finite-dim)
-    2. Show toEuclidean⁻¹ is continuous (same reason)
-    3. Apply Metric.isCompact_closedBall to EuclideanSpace
-    4. Transport back via IsCompact.preimage
-
-    This is ~20 lines of Mathlib plumbing. -/
+    PROOF: The ball is closed (preimage of [0,r] under continuous norm_sq_pi)
+    and bounded (norm_sq_pi f ≤ r implies ‖f‖_∞ ≤ √(r/π_min)).
+    In finite dimensions, closed + bounded = compact. -/
 axiom weighted_closedBall_compact (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (r : ℝ) (hr : 0 ≤ r) :
     IsCompact {f : V → ℝ | norm_sq_pi pi_dist f ≤ r}
 
-/-- **Weighted Sphere is Compact**: The set {f | norm_sq_pi π f = r} is compact.
+/-- **Weighted Sphere is Compact**: {f | norm_sq_pi π f = r} is compact.
 
-    Follows from weighted_closedBall_compact: the sphere is a closed subset
-    of the closed ball, hence compact. -/
+    PROOF: Closed subset of compact ball. -/
 axiom weighted_sphere_is_compact (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (r : ℝ) (hr : 0 ≤ r) :
     IsCompact {f : V → ℝ | norm_sq_pi pi_dist f = r}
@@ -255,14 +245,12 @@ and Mathlib's EuclideanSpace ℝ V:
 - `toEuclidean`: f ↦ (WithLp.equiv.symm (iso f)) to EuclideanSpace
 - `toEuclidean_norm`: ‖toEuclidean f‖ = norm_pi f
 
-**AXIOMS (3, with proof paths):**
-- `weighted_sphere_compact`: compactness of weighted sphere (Section 5)
-- `weighted_closedBall_compact`: compactness of weighted ball
-- `weighted_sphere_is_compact`: compactness of weighted sphere (alternative)
+**AXIOMS (3, with documented proof paths):**
+- `weighted_sphere_compact`: {f | norm_sq_pi π f = r ∧ ⟨f,1⟩_π = 0} is compact
+- `weighted_closedBall_compact`: {f | norm_sq_pi π f ≤ r} is compact
+- `weighted_sphere_is_compact`: {f | norm_sq_pi π f = r} is compact
 
-The proof paths are clear: finite-dimensional normed spaces are proper,
-and the isometry properties are fully proven. The remaining axioms are
-~20 lines of Mathlib continuity/compactness plumbing each.
+Proof path: closed + bounded in finite-dim = compact (ProperSpace).
 -/
 
 end SGC.Spectral.NormedBridge
