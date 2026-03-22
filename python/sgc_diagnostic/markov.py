@@ -80,10 +80,20 @@ def generator_from_activations(
     """
     T, d = activations.shape
     
+    # Shape check: need enough samples per cluster
+    if T < 3 * n_clusters:
+        old_k = n_clusters
+        n_clusters = max(2, T // 5)
+        print(f"  [WARNING] T={T} too small for k={old_k}. Reducing to k={n_clusters}.")
+    
     if method == "kmeans":
-        from sklearn.cluster import KMeans
-        km = KMeans(n_clusters=n_clusters, n_init=10, random_state=42)
-        labels = km.fit_predict(activations)
+        try:
+            from sklearn.cluster import KMeans
+            km = KMeans(n_clusters=n_clusters, n_init=10, random_state=42)
+            labels = km.fit_predict(activations)
+        except Exception as e:
+            print(f"  [WARNING] KMeans failed: {e}. Falling back to discretize.")
+            labels = _discretize_activations(activations, n_clusters)
     elif method == "discretize":
         # Simple grid-based discretization
         labels = _discretize_activations(activations, n_clusters)
@@ -103,12 +113,18 @@ def generator_from_activations(
 
 
 def _discretize_activations(activations: np.ndarray, n_clusters: int) -> np.ndarray:
-    """Simple discretization by binning the first principal component."""
-    # Use first PC for discretization
+    """Simple discretization by binning the first principal component (numpy-only)."""
+    # Use first PC for discretization via SVD (no sklearn dependency)
     if activations.shape[1] > 1:
-        from sklearn.decomposition import PCA
-        pca = PCA(n_components=1)
-        proj = pca.fit_transform(activations).flatten()
+        # Center the data
+        centered = activations - activations.mean(axis=0)
+        # SVD to get first principal component
+        try:
+            U, S, Vt = np.linalg.svd(centered, full_matrices=False)
+            proj = U[:, 0] * S[0]  # First PC scores
+        except np.linalg.LinAlgError:
+            # Fallback: just use first column
+            proj = activations[:, 0]
     else:
         proj = activations.flatten()
     
@@ -178,6 +194,19 @@ def generator_from_connectivity(
         row_sums = W_norm.sum(axis=1, keepdims=True)
         P = W_norm / np.clip(row_sums, 1e-10, None)
         L = P - np.eye(n)
+        pi = compute_stationary_distribution(L)
+        
+    elif normalize == "directed":
+        # True directed random walk: P[i,j] = W[i,j] / out-degree_i
+        # This is the correct construction for directed graphs where
+        # the stationary distribution must be computed via eigenvector solve,
+        # NOT hardcoded to degree distribution.
+        row_sums = W_offdiag.sum(axis=1, keepdims=True)
+        row_sums = np.clip(row_sums, 1e-10, None)
+        P = W_offdiag / row_sums
+        L = P - np.eye(n)
+        # Compute TRUE stationary distribution via eigenvector solve
+        # (NOT pi = d/sum(d) which is only valid for reversible graphs)
         pi = compute_stationary_distribution(L)
         
     else:

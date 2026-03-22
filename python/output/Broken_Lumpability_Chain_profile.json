@@ -1,6 +1,6 @@
 {
   "system_name": "Broken_Lumpability_Chain",
-  "timestamp": "2026-03-22T11:35:25.325422",
+  "timestamp": "2026-03-22T12:01:54.878791",
   "commit": "fb0c260",
   "repository": "https://github.com/JasonShroyer/sgc-lean",
   "epsilon": 0.10897247358851679,
@@ -15,9 +15,9 @@
   "regime": "EMERGENT (intermediate gamma)",
   "validity_horizon_label": "FRAGILE (1 < T* <= 10)",
   "partition": [
-    0,
     2,
     0,
+    2,
     1
   ],
   "defect_curve": {

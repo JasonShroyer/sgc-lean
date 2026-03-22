@@ -331,13 +331,24 @@ def run_celegans_experiment(output_dir: str = "output/") -> dict:
     print(f"  Data source: [{data_source}]")
     
     # Build generator from connectivity
+    # CRITICAL: Use normalize="directed" for directed biological networks
+    # This computes the TRUE stationary distribution via eigenvector solve,
+    # not the degree distribution (which is only valid for reversible graphs).
     print("\n  Building generator from connectivity matrix...")
-    from sgc_diagnostic.markov import generator_from_connectivity, validate_generator
-    L, pi = generator_from_connectivity(W, symmetrize=True, normalize="laplacian")
+    from sgc_diagnostic.markov import generator_from_connectivity, validate_generator, check_detailed_balance
+    L, pi = generator_from_connectivity(W, symmetrize=False, normalize="directed")
     
     # Validate
     validation = validate_generator(L, pi)
     print(f"  Validation: {'[OK] PASS' if validation['is_valid'] else '[X] FAIL'}")
+    
+    # Check reversibility (detailed balance)
+    # The pharyngeal connectome should NOT be reversible (has feedforward structure)
+    is_reversible, db_violation = check_detailed_balance(L, pi)
+    print(f"  Detailed balance: {'[OK] REVERSIBLE' if is_reversible else '[X] NON-REVERSIBLE'}")
+    print(f"    Max violation: {db_violation:.6f}")
+    if not is_reversible:
+        print("    (This is expected for directed biological networks)")
     
     # PREDICTIONS (stated before measurement)
     print("\n  PREDICTIONS (stated before measurement):")
@@ -368,15 +379,28 @@ def run_celegans_experiment(output_dir: str = "output/") -> dict:
     print(f"  1. d = {profile.autopoietic_depth} [{pred1_result}]")
     
     # Prediction 2: Partition correlation with neuron types
+    # NOTE: The prediction is specifically ARI > 0.30 at k=3, not at optimal k
     if neuron_types and profile.n_blocks >= 2:
-        ari, corr_info = compute_partition_type_correlation(
+        # First compute ARI at k* (optimal k)
+        ari_kstar, corr_info = compute_partition_type_correlation(
             profile.P_star, neuron_types, labels
         )
+        print(f"  2a. ARI at k*={profile.n_blocks} (optimal): {ari_kstar:.3f}")
+        
+        # Now compute ARI specifically at k=3 for the stated prediction
+        from sgc_diagnostic.partition import find_optimal_partition
+        P_k3, eps_k3, _ = find_optimal_partition(L, pi, k_min=3, k_max=3, n_restarts=50)
+        ari_k3, _ = compute_partition_type_correlation(P_k3, neuron_types, labels)
+        print(f"  2b. ARI at k=3 (prediction target): {ari_k3:.3f}")
+        
+        # The prediction is for k=3
+        ari = ari_k3
         pred2_result = "[OK] CONFIRMED" if ari > pred2_ari_min else "[X] REFUTED"
-        print(f"  2. ARI = {ari:.3f} [{pred2_result}]")
-        print(f"      Details: {corr_info}")
+        print(f"  2. Verdict: ARI(k=3) = {ari:.3f} [{pred2_result}]")
     else:
         ari = 0.0
+        ari_kstar = 0.0
+        ari_k3 = 0.0
         pred2_result = "~ INCONCLUSIVE"
         print(f"  2. Type correlation: {pred2_result}")
     
