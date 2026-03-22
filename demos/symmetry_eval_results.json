@@ -1,0 +1,3412 @@
+{
+  "summary": {
+    "total": 97,
+    "perfect": 0,
+    "high": 1,
+    "medium": 0,
+    "low": 1,
+    "zero": 95,
+    "symmetry_tasks": 1
+  },
+  "results": [
+    {
+      "task_id": "007bbfb7",
+      "n_examples": 5,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 4,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "00d62c1b",
+      "n_examples": 5,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 4,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "017c7c7b",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "025d127b",
+      "n_examples": 2,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "045e512c",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": "False",
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 12.0,
+          "body_cols": [
+            12,
+            12
+          ],
+          "n_protrusions": 1,
+          "predicted_additions": 0,
+          "actual_additions": 13,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": true,
+          "axis": 10.0,
+          "body_cols": [
+            10,
+            10
+          ],
+          "n_protrusions": 1,
+          "predicted_additions": 1,
+          "actual_additions": 0,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "0520fde7",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "05269061",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": "False",
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 4.0,
+          "body_cols": [
+            2,
+            6
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 13,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "05f2a901",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "06df4c85",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": "False",
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 9.5,
+          "body_cols": [
+            9,
+            10
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 16,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 11.0,
+          "body_cols": [
+            2,
+            20
+          ],
+          "n_protrusions": 14,
+          "predicted_additions": 0,
+          "actual_additions": 12,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "08ed6ac7",
+      "n_examples": 2,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "09629e4f",
+      "n_examples": 4,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "0962bcdd",
+      "n_examples": 2,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "0a938d79",
+      "n_examples": 4,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 5.0,
+          "body_cols": [
+            5,
+            5
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": true,
+          "axis": 0.0,
+          "body_cols": [
+            0,
+            0
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "0b148d64",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "0ca9ddb6",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 6.0,
+          "body_cols": [
+            6,
+            6
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 4.0,
+          "body_cols": [
+            2,
+            6
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": true,
+          "axis": 3.0,
+          "body_cols": [
+            3,
+            3
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "0d3d703e",
+      "n_examples": 4,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 1.0,
+          "body_cols": [
+            1,
+            1
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "0dfd9992",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": "False",
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 11.0,
+          "body_cols": [
+            2,
+            20
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 13,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 12.0,
+          "body_cols": [
+            5,
+            19
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 11,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": true,
+          "axis": 10.0,
+          "body_cols": [
+            1,
+            19
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 20,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "0e206a2e",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 9.5,
+          "body_cols": [
+            2,
+            17
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 6.5,
+          "body_cols": [
+            4,
+            9
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": true,
+          "axis": 3.0,
+          "body_cols": [
+            1,
+            5
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "10fcaaa3",
+      "n_examples": 4,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "11852cab",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": true,
+          "axis": 5.0,
+          "body_cols": [
+            5,
+            5
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "1190e5a7",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "150deff5",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "1a07d186",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": "False",
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 6.0,
+          "body_cols": [
+            2,
+            10
+          ],
+          "n_protrusions": 3,
+          "predicted_additions": 0,
+          "actual_additions": 3,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": true,
+          "axis": 7.5,
+          "body_cols": [
+            3,
+            12
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "1b2d62fb",
+      "n_examples": 5,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        },
+        {
+          "example": 4,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "1b60fb0c",
+      "n_examples": 3,
+      "avg_iou": 0.8148148148148149,
+      "perfect_examples": 2,
+      "is_symmetry_task": "True",
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 4.5,
+          "body_cols": [
+            4,
+            5
+          ],
+          "n_protrusions": 7,
+          "predicted_additions": 7,
+          "actual_additions": 6,
+          "iou": 0.4444444444444444
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 5.0,
+          "body_cols": [
+            5,
+            5
+          ],
+          "n_protrusions": 20,
+          "predicted_additions": 12,
+          "actual_additions": 12,
+          "iou": 1.0
+        },
+        {
+          "example": 2,
+          "success": true,
+          "axis": 5.0,
+          "body_cols": [
+            5,
+            5
+          ],
+          "n_protrusions": 16,
+          "predicted_additions": 10,
+          "actual_additions": 10,
+          "iou": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "1bfc4729",
+      "n_examples": 2,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 6.0,
+          "body_cols": [
+            6,
+            6
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "1c786137",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "1caeab9d",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": "False",
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 7.5,
+          "body_cols": [
+            7,
+            8
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 2,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 5.0,
+          "body_cols": [
+            4,
+            6
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 6,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": true,
+          "axis": 1.0,
+          "body_cols": [
+            1,
+            1
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 1,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "1cf80156",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "1e0a9b12",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": "False",
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 0.0,
+          "body_cols": [
+            0,
+            0
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": true,
+          "axis": 3.0,
+          "body_cols": [
+            3,
+            3
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 1,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "1e32b0e9",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": "False",
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 8.0,
+          "body_cols": [
+            1,
+            15
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 63,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": true,
+          "axis": 8.0,
+          "body_cols": [
+            5,
+            11
+          ],
+          "n_protrusions": 10,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "1f0c79e5",
+      "n_examples": 4,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "1f642eb9",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 5.0,
+          "body_cols": [
+            5,
+            5
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "1f85a75f",
+      "n_examples": 2,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "2013d3e2",
+      "n_examples": 2,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "2204b7a8",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 0.0,
+          "body_cols": [
+            0,
+            0
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "22168020",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 2.5,
+          "body_cols": [
+            0,
+            5
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "22233c11",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "2281f1f4",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "228f6490",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "22eb0ac0",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 4.5,
+          "body_cols": [
+            0,
+            9
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "234bbc79",
+      "n_examples": 4,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "23581191",
+      "n_examples": 2,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "239be575",
+      "n_examples": 6,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 4,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 5,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "23b5c85d",
+      "n_examples": 5,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 4,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "253bf280",
+      "n_examples": 8,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 4,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 5,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 6,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 7,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "25d487eb",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 3.0,
+          "body_cols": [
+            3,
+            3
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "25d8a9c8",
+      "n_examples": 4,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": true,
+          "axis": 1.0,
+          "body_cols": [
+            0,
+            2
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "25ff71a9",
+      "n_examples": 4,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 1.0,
+          "body_cols": [
+            0,
+            2
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 1.0,
+          "body_cols": [
+            0,
+            2
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": true,
+          "axis": 1.0,
+          "body_cols": [
+            1,
+            1
+          ],
+          "n_protrusions": 1,
+          "predicted_additions": 1,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "264363fd",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 10.0,
+          "body_cols": [
+            2,
+            18
+          ],
+          "n_protrusions": 63,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 14.5,
+          "body_cols": [
+            0,
+            29
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "272f95fa",
+      "n_examples": 2,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "27a28665",
+      "n_examples": 7,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        },
+        {
+          "example": 4,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 5,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 6,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "28bf18c6",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "28e73c20",
+      "n_examples": 5,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 4,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "29623171",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 5.0,
+          "body_cols": [
+            0,
+            10
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "29c11459",
+      "n_examples": 2,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": "False",
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 0.0,
+          "body_cols": [
+            0,
+            0
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 4,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "29ec7d0e",
+      "n_examples": 4,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": "False",
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 7.5,
+          "body_cols": [
+            0,
+            15
+          ],
+          "n_protrusions": 8,
+          "predicted_additions": 0,
+          "actual_additions": 4,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 6.0,
+          "body_cols": [
+            0,
+            12
+          ],
+          "n_protrusions": 24,
+          "predicted_additions": 0,
+          "actual_additions": 5,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": true,
+          "axis": 7.0,
+          "body_cols": [
+            0,
+            14
+          ],
+          "n_protrusions": 8,
+          "predicted_additions": 0,
+          "actual_additions": 5,
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": true,
+          "axis": 8.0,
+          "body_cols": [
+            0,
+            16
+          ],
+          "n_protrusions": 3,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "2bee17df",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "2c608aff",
+      "n_examples": 4,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 4.0,
+          "body_cols": [
+            3,
+            5
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": true,
+          "axis": 5.5,
+          "body_cols": [
+            0,
+            11
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": true,
+          "axis": 8.5,
+          "body_cols": [
+            0,
+            17
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "2dc579da",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "2dd70a9a",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "2dee498d",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "31aa019c",
+      "n_examples": 3,
+      "avg_iou": 0.047619047619047616,
+      "perfect_examples": 0,
+      "is_symmetry_task": "False",
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 2.0,
+          "body_cols": [
+            2,
+            2
+          ],
+          "n_protrusions": 4,
+          "predicted_additions": 2,
+          "actual_additions": 6,
+          "iou": 0.14285714285714285
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 5.5,
+          "body_cols": [
+            3,
+            8
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 6,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": true,
+          "axis": 5.0,
+          "body_cols": [
+            1,
+            9
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 8,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "321b1fc6",
+      "n_examples": 2,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "32597951",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 8.0,
+          "body_cols": [
+            0,
+            16
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 8.0,
+          "body_cols": [
+            0,
+            16
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": true,
+          "axis": 8.0,
+          "body_cols": [
+            0,
+            16
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "3345333e",
+      "n_examples": 2,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 7.5,
+          "body_cols": [
+            6,
+            9
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "3428a4f5",
+      "n_examples": 4,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "3618c87e",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 2.0,
+          "body_cols": [
+            2,
+            2
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 2.0,
+          "body_cols": [
+            1,
+            3
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": true,
+          "axis": 2.5,
+          "body_cols": [
+            1,
+            4
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "3631a71a",
+      "n_examples": 4,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 13.5,
+          "body_cols": [
+            0,
+            27
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 13.5,
+          "body_cols": [
+            0,
+            27
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": true,
+          "axis": 15.5,
+          "body_cols": [
+            2,
+            29
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": true,
+          "axis": 14.5,
+          "body_cols": [
+            0,
+            29
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "36d67576",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 3.0,
+          "body_cols": [
+            2,
+            4
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 5.0,
+          "body_cols": [
+            5,
+            5
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": true,
+          "axis": 2.0,
+          "body_cols": [
+            1,
+            3
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "36fdfd69",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 6.0,
+          "body_cols": [
+            6,
+            6
+          ],
+          "n_protrusions": 76,
+          "predicted_additions": 23,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "3906de3d",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": "False",
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 4.0,
+          "body_cols": [
+            2,
+            6
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 3,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 5.0,
+          "body_cols": [
+            2,
+            8
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 5,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": true,
+          "axis": 5.0,
+          "body_cols": [
+            1,
+            9
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 11,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "39a8645d",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "39e1d7f9",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "3aa6fb7a",
+      "n_examples": 2,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "3ac3eb23",
+      "n_examples": 2,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "3af2c5a8",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "3bd67248",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "3bdb4ada",
+      "n_examples": 2,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 5.0,
+          "body_cols": [
+            1,
+            9
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "3befdf3e",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": true,
+          "axis": 3.5,
+          "body_cols": [
+            3,
+            4
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "3c9b0459",
+      "n_examples": 4,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 2.0,
+          "body_cols": [
+            2,
+            2
+          ],
+          "n_protrusions": 1,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "3de23699",
+      "n_examples": 4,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "3e980e27",
+      "n_examples": 4,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 4.0,
+          "body_cols": [
+            4,
+            4
+          ],
+          "n_protrusions": 1,
+          "predicted_additions": 1,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": true,
+          "axis": 11.0,
+          "body_cols": [
+            11,
+            11
+          ],
+          "n_protrusions": 2,
+          "predicted_additions": 1,
+          "actual_additions": 0,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "3eda0437",
+      "n_examples": 4,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 14.5,
+          "body_cols": [
+            1,
+            28
+          ],
+          "n_protrusions": 1,
+          "predicted_additions": 1,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 10.0,
+          "body_cols": [
+            1,
+            19
+          ],
+          "n_protrusions": 2,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": true,
+          "axis": 5.0,
+          "body_cols": [
+            1,
+            9
+          ],
+          "n_protrusions": 7,
+          "predicted_additions": 1,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": true,
+          "axis": 7.0,
+          "body_cols": [
+            2,
+            12
+          ],
+          "n_protrusions": 8,
+          "predicted_additions": 3,
+          "actual_additions": 0,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "3f7978a0",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "40853293",
+      "n_examples": 2,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "4093f84a",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": true,
+          "axis": 6.5,
+          "body_cols": [
+            1,
+            12
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "41e4d17e",
+      "n_examples": 2,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 5.0,
+          "body_cols": [
+            3,
+            7
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 7.5,
+          "body_cols": [
+            3,
+            12
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 0,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "4258a5f9",
+      "n_examples": 2,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "4290ef0e",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "shape_mismatch",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "42a50994",
+      "n_examples": 4,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "4347f46a",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "444801d8",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": "False",
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 3.0,
+          "body_cols": [
+            1,
+            5
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 14,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 4.5,
+          "body_cols": [
+            4,
+            5
+          ],
+          "n_protrusions": 7,
+          "predicted_additions": 7,
+          "actual_additions": 11,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": true,
+          "axis": 4.5,
+          "body_cols": [
+            4,
+            5
+          ],
+          "n_protrusions": 7,
+          "predicted_additions": 7,
+          "actual_additions": 0,
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "44d8ac46",
+      "n_examples": 4,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "44f52bb0",
+      "n_examples": 6,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 3,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 4,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 5,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "4522001f",
+      "n_examples": 2,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": false,
+      "example_results": [
+        {
+          "example": 0,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": false,
+          "reason": "No pixels found",
+          "iou": 0.0
+        }
+      ]
+    },
+    {
+      "task_id": "4612dd53",
+      "n_examples": 3,
+      "avg_iou": 0.0,
+      "perfect_examples": 0,
+      "is_symmetry_task": "False",
+      "example_results": [
+        {
+          "example": 0,
+          "success": true,
+          "axis": 6.0,
+          "body_cols": [
+            2,
+            10
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 12,
+          "iou": 0.0
+        },
+        {
+          "example": 1,
+          "success": true,
+          "axis": 5.0,
+          "body_cols": [
+            2,
+            8
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 9,
+          "iou": 0.0
+        },
+        {
+          "example": 2,
+          "success": true,
+          "axis": 6.0,
+          "body_cols": [
+            2,
+            10
+          ],
+          "n_protrusions": 0,
+          "predicted_additions": 0,
+          "actual_additions": 12,
+          "iou": 0.0
+        }
+      ]
+    }
+  ]
+}

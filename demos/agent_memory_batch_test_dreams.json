@@ -1,0 +1,358 @@
+{
+  "version": 2,
+  "programs": {
+    "4cbe9415b515d170": {
+      "description": "fill(4|enclosed_by_fg)",
+      "structural_sig": "fill(?|enclosed_by_fg)",
+      "source_task_id": "00d62c1b",
+      "task_signature": "shape:same|transform:colormap|palette:tiny|bg:stable|cc:less",
+      "success_count": 12,
+      "failure_count": 0,
+      "alpha_prior": 2.0,
+      "beta_prior": 1.0
+    },
+    "17894fe6b65b253e": {
+      "description": "cmap(2->6,3->4,8->9,1->5,5->1,6->2,9->8,4->3)",
+      "structural_sig": "cmap(?->?,?->?,?->?,?->?,?->?,?->?,?->?,?->?)",
+      "source_task_id": "0d3d703e",
+      "task_signature": "shape:same|transform:colormap|palette:small|bg:changed|cc:same",
+      "success_count": 12,
+      "failure_count": 0,
+      "alpha_prior": 2.0,
+      "beta_prior": 1.0
+    },
+    "e0eff59472cbf4cf": {
+      "description": "line_connect_all",
+      "structural_sig": "line_connect_all",
+      "source_task_id": "2c608aff",
+      "task_signature": "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same",
+      "success_count": 12,
+      "failure_count": 0,
+      "alpha_prior": 2.0,
+      "beta_prior": 1.0
+    },
+    "c20a73ca7e6c11d3": {
+      "description": "erase(1|is_color_1)",
+      "structural_sig": "erase(?|is_color_?)",
+      "source_task_id": "3618c87e",
+      "task_signature": "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same",
+      "success_count": 0,
+      "failure_count": 0,
+      "alpha_prior": 2.0,
+      "beta_prior": 1.0
+    },
+    "0f0f3961ab14f7c0": {
+      "description": "fill(2|between_2_any&enclosed_by_fg) -> fill(3|between_3_any) -> fill(9|between_9_h&same_shape_as_9) -> fill(8|between_8_any&same_shape_as_8)",
+      "structural_sig": "fill(?|between_?_any&enclosed_by_fg) -> fill(?|between_?_any) -> fill(?|between_?_h&same_shape_as_?) -> fill(?|between_?_any&same_shape_as_?)",
+      "source_task_id": "06df4c85",
+      "task_signature": "shape:same|transform:mixed|palette:small|bg:stable|cc:same",
+      "success_count": 12,
+      "failure_count": 0,
+      "alpha_prior": 2.0,
+      "beta_prior": 1.0
+    },
+    "f1d182fc7d1a0a48": {
+      "description": "fill(2|between_2_any&enclosed_by_fg) -> fill(3|between_3_any)",
+      "structural_sig": "fill(?|between_?_any&enclosed_by_fg) -> fill(?|between_?_any)",
+      "source_task_id": "06df4c85",
+      "task_signature": "shape:same|transform:mixed|palette:small|bg:stable|cc:same",
+      "success_count": 0,
+      "failure_count": 0,
+      "alpha_prior": 2.0,
+      "beta_prior": 1.0
+    },
+    "d9b00cbce82997b3": {
+      "description": "recolor(5->1|large_obj&in_largest_cc) -> recolor(5->2|in_largest_cc) -> recolor(5->3) -> recolor(3->4|not_in_largest_cc)",
+      "structural_sig": "recolor(?->?|large_obj&in_largest_cc) -> recolor(?->?|in_largest_cc) -> recolor(?->?) -> recolor(?->?|not_in_largest_cc)",
+      "source_task_id": "08ed6ac7",
+      "task_signature": "shape:same|transform:colormap|palette:small|bg:stable|cc:same",
+      "success_count": 12,
+      "failure_count": 0,
+      "alpha_prior": 2.0,
+      "beta_prior": 1.0
+    },
+    "ca1eeca4987812b6": {
+      "description": "recolor(1->3|cross_8&is_color_1) -> recolor(1->3|between_8_any) -> recolor(1->3|between_3_h&exactly2_adj_3)",
+      "structural_sig": "recolor(?->?|cross_?&is_color_?) -> recolor(?->?|between_?_any) -> recolor(?->?|between_?_h&exactly?_adj_?)",
+      "source_task_id": "32597951",
+      "task_signature": "shape:same|transform:colormap|palette:small|bg:stable|cc:same",
+      "success_count": 12,
+      "failure_count": 0,
+      "alpha_prior": 2.0,
+      "beta_prior": 1.0
+    },
+    "55f53300b10a4479": {
+      "description": "fill(1|exactly2_adj_8)",
+      "structural_sig": "fill(?|exactly?_adj_?)",
+      "source_task_id": "3aa6fb7a",
+      "task_signature": "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same",
+      "success_count": 12,
+      "failure_count": 0,
+      "alpha_prior": 2.0,
+      "beta_prior": 1.0
+    },
+    "c01d4d3a949d7313": {
+      "description": "fill(1|near8_5)",
+      "structural_sig": "fill(?|near?_?)",
+      "source_task_id": "4258a5f9",
+      "task_signature": "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same",
+      "success_count": 12,
+      "failure_count": 0,
+      "alpha_prior": 2.0,
+      "beta_prior": 1.0
+    },
+    "dda1de69f0b3b608": {
+      "description": "fill(4|near8_2&!adj_to_2) -> fill(7|exactly1_adj_1)",
+      "structural_sig": "fill(?|near?_?&!adj_to_?) -> fill(?|exactly?_adj_?)",
+      "source_task_id": "0ca9ddb6",
+      "task_signature": "shape:same|transform:colormap|palette:small|bg:stable|cc:more",
+      "success_count": 12,
+      "failure_count": 0,
+      "alpha_prior": 2.0,
+      "beta_prior": 1.0
+    },
+    "d975b023a1b4d947": {
+      "description": "rot180",
+      "structural_sig": "rot180",
+      "source_task_id": "3c9b0459",
+      "task_signature": "shape:same|transform:geometric|palette:tiny|bg:stable|cc:same",
+      "success_count": 12,
+      "failure_count": 0,
+      "alpha_prior": 2.0,
+      "beta_prior": 1.0
+    },
+    "5f05e3afc0ce5290": {
+      "description": "fill(3|between_fg_v) -> fill(3|between_8_h)",
+      "structural_sig": "fill(?|between_fg_v) -> fill(?|between_?_h)",
+      "source_task_id": "253bf280",
+      "task_signature": "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same",
+      "success_count": 4,
+      "failure_count": 0,
+      "alpha_prior": 2.0,
+      "beta_prior": 1.0
+    },
+    "ee9d38ddbfcd064d": {
+      "description": "fill(3|between_fg_v)",
+      "structural_sig": "fill(?|between_fg_v)",
+      "source_task_id": "253bf280",
+      "task_signature": "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same",
+      "success_count": 0,
+      "failure_count": 0,
+      "alpha_prior": 2.0,
+      "beta_prior": 1.0
+    },
+    "04864ed43a7dda3c": {
+      "description": "erase(1|is_color_1) -> fill(1|color_not_mode_of_col&!differs_from_up) -> recolor(5->1|color_not_mode_of_col&!differs_from_up)",
+      "structural_sig": "erase(?|is_color_?) -> fill(?|color_not_mode_of_col&!differs_from_up) -> recolor(?->?|color_not_mode_of_col&!differs_from_up)",
+      "source_task_id": "3618c87e",
+      "task_signature": "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same",
+      "success_count": 3,
+      "failure_count": 0,
+      "alpha_prior": 2.0,
+      "beta_prior": 1.0
+    }
+  },
+  "near_misses": {
+    "4093f84a": {
+      "description": "fill(5|between_fg_h&adj_to_5) -> recolor(3->5|contained_by_5) -> erase_dynamic(small_obj)",
+      "structural_sig": "fill(?|between_fg_h&adj_to_?) -> recolor(?->?|contained_by_?) -> erase_dynamic(small_obj)",
+      "source_task_id": "4093f84a",
+      "task_signature": "shape:same|transform:colormap|palette:tiny|bg:stable|cc:less",
+      "best_defect": 0.015306122448979591
+    },
+    "4612dd53": {
+      "description": "fill(2|between_1_any&adj_to_1) -> erase(2|contained_by_1) -> erase(2|between_1_hv)",
+      "structural_sig": "fill(?|between_?_any&adj_to_?) -> erase(?|contained_by_?) -> erase(?|between_?_hv)",
+      "source_task_id": "4612dd53",
+      "task_signature": "shape:same|transform:colormap|palette:tiny|bg:stable|cc:less",
+      "best_defect": 0.047337278106508875
+    },
+    "025d127b": {
+      "description": "shift(0,1)",
+      "structural_sig": "shift(?,?)",
+      "source_task_id": "025d127b",
+      "task_signature": "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less",
+      "best_defect": 0.04
+    },
+    "42a50994": {
+      "description": "erase_dynamic(shape_majority)",
+      "structural_sig": "erase_dynamic(shape_majority)",
+      "source_task_id": "42a50994",
+      "task_signature": "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less",
+      "best_defect": 0.04201680672268908
+    },
+    "05f2a901": {
+      "description": "erase(2|is_color_2)",
+      "structural_sig": "erase(?|is_color_?)",
+      "source_task_id": "05f2a901",
+      "task_signature": "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same",
+      "best_defect": 0.05454545454545454
+    },
+    "25d487eb": {
+      "description": "fill(1|same_row_1) -> erase(1|small_obj) -> fill(1|between_fg_v)",
+      "structural_sig": "fill(?|same_row_?) -> erase(?|small_obj) -> fill(?|between_fg_v)",
+      "source_task_id": "25d487eb",
+      "task_signature": "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same",
+      "best_defect": 0.0625
+    },
+    "3906de3d": {
+      "description": "recolor(2->0|is_color_2&!is_color_1) -> fill(2|between_1_h)",
+      "structural_sig": "recolor(?->?|is_color_?&!is_color_?) -> fill(?|between_?_h)",
+      "source_task_id": "3906de3d",
+      "task_signature": "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same",
+      "best_defect": 0.08
+    },
+    "264363fd": {
+      "description": "recolor(4->1|enclosed_by_3) -> recolor(2->3|same_row_4) -> recolor(2->3|same_col_4&within2_4)",
+      "structural_sig": "recolor(?->?|enclosed_by_?) -> recolor(?->?|same_row_?) -> recolor(?->?|same_col_?&within?_?)",
+      "source_task_id": "264363fd",
+      "task_signature": "shape:same|transform:mixed|palette:small|bg:stable|cc:same",
+      "best_defect": 0.08333333333333333
+    },
+    "2204b7a8": {
+      "description": "recolor(3->1|not_in_largest_cc&shape_majority) -> cmap(3->2)",
+      "structural_sig": "recolor(?->?|not_in_largest_cc&shape_majority) -> cmap(?->?)",
+      "source_task_id": "2204b7a8",
+      "task_signature": "shape:same|transform:colormap|palette:small|bg:stable|cc:same",
+      "best_defect": 0.09
+    },
+    "23581191": {
+      "description": "fill(7|same_row_7&!same_col_8) -> fill(8|same_row_8) -> fill(2|same_row_7) -> fill(8|same_col_2)",
+      "structural_sig": "fill(?|same_row_?&!same_col_?) -> fill(?|same_row_?) -> fill(?|same_row_?) -> fill(?|same_col_?)",
+      "source_task_id": "23581191",
+      "task_signature": "shape:same|transform:colormap|palette:small|bg:stable|cc:same",
+      "best_defect": 0.09876543209876543
+    },
+    "0e206a2e": {
+      "description": "erase_dynamic(unique_shape) -> erase(4|between_8_any) -> erase(8|is_color_8) -> erase(2|is_color_2&in_largest_cc) -> erase(1|between_3_h) -> erase(3|is_color_3) -> erase(4|in_largest_cc)",
+      "structural_sig": "erase_dynamic(unique_shape) -> erase(?|between_?_any) -> erase(?|is_color_?) -> erase(?|is_color_?&in_largest_cc) -> erase(?|between_?_h) -> erase(?|is_color_?) -> erase(?|in_largest_cc)",
+      "source_task_id": "0e206a2e",
+      "task_signature": "shape:same|transform:mixed|palette:small|bg:stable|cc:less",
+      "best_defect": 0.05263157894736842
+    },
+    "40853293": {
+      "description": "fill(3|between_3_any&!between_fg_v) -> fill(4|between_4_v) -> fill(9|between_9_v) -> fill(8|between_8_any)",
+      "structural_sig": "fill(?|between_?_any&!between_fg_v) -> fill(?|between_?_v) -> fill(?|between_?_v) -> fill(?|between_?_any)",
+      "source_task_id": "40853293",
+      "task_signature": "shape:same|transform:mixed|palette:small|bg:stable|cc:less",
+      "best_defect": 0.095
+    },
+    "3345333e": {
+      "description": "recolor(1->6|large_obj&!differs_from_right) -> cmap(3->0,1->0)",
+      "structural_sig": "recolor(?->?|large_obj&!differs_from_right) -> cmap(?->?,?->?)",
+      "source_task_id": "3345333e",
+      "task_signature": "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same",
+      "best_defect": 0.078125
+    },
+    "44d8ac46": {
+      "description": "fill(2|enclosed_by_fg) -> fill(0|between_5_hv) -> recolor(2->0|between_5_hv)",
+      "structural_sig": "fill(?|enclosed_by_fg) -> fill(?|between_?_hv) -> recolor(?->?|between_?_hv)",
+      "source_task_id": "44d8ac46",
+      "task_signature": "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same",
+      "best_defect": 0.0625
+    },
+    "11852cab": {
+      "description": "fill(2|cross_3)",
+      "structural_sig": "fill(?|cross_?)",
+      "source_task_id": "11852cab",
+      "task_signature": "shape:same|transform:mixed|palette:small|bg:stable|cc:more",
+      "best_defect": 0.03
+    },
+    "36fdfd69": {
+      "description": "recolor(1->4|adj_to_2&same_col_2) -> recolor(4->1|same_shape_as_1&exactly1_adj_2) -> recolor(1->4|obj_span_h_4&exactly3_adj_4)",
+      "structural_sig": "recolor(?->?|adj_to_?&same_col_?) -> recolor(?->?|same_shape_as_?&exactly?_adj_?) -> recolor(?->?|obj_span_h_?&exactly?_adj_?)",
+      "source_task_id": "36fdfd69",
+      "task_signature": "shape:same|transform:colormap|palette:small|bg:stable|cc:same",
+      "best_defect": 0.0457516339869281
+    },
+    "0dfd9992": {
+      "description": "cmap(0->2) -> line_connect_all -> recolor(2->1|cross_1) -> recolor(3->5|exactly2_adj_5) -> fill(3|cross_3&cross_6) -> recolor(2->3|cross_3&cross_6) -> recolor(4->3|cross_3&cross_6) -> fill(4|adj_to_4&cross_4) -> recolor(1->4|adj_to_4&cross_4) -> recolor(2->4|adj_to_4&cross_4) -> recolor(3->4|adj_to_4&cross_4) -> fill(5|cross_5&!within2_5) -> recolor(1->5|cross_5&!within2_5) -> recolor(2->5|cross_5&!within2_5) -> recolor(3->5|cross_5&!within2_5) -> fill(6|!adj_to_6&cross_6) -> recolor(2->6|!adj_to_6&cross_6) -> fill(7|between_fg_v&cross_7) -> recolor(2->7|between_fg_v&cross_7) -> recolor(3->7|between_fg_v&cross_7) -> recolor(4->7|between_fg_v&cross_7)",
+      "structural_sig": "cmap(?->?) -> line_connect_all -> recolor(?->?|cross_?) -> recolor(?->?|exactly?_adj_?) -> fill(?|cross_?&cross_?) -> recolor(?->?|cross_?&cross_?) -> recolor(?->?|cross_?&cross_?) -> fill(?|adj_to_?&cross_?) -> recolor(?->?|adj_to_?&cross_?) -> recolor(?->?|adj_to_?&cross_?) -> recolor(?->?|adj_to_?&cross_?) -> fill(?|cross_?&!within?_?) -> recolor(?->?|cross_?&!within?_?) -> recolor(?->?|cross_?&!within?_?) -> recolor(?->?|cross_?&!within?_?) -> fill(?|!adj_to_?&cross_?) -> recolor(?->?|!adj_to_?&cross_?) -> fill(?|between_fg_v&cross_?) -> recolor(?->?|between_fg_v&cross_?) -> recolor(?->?|between_fg_v&cross_?) -> recolor(?->?|between_fg_v&cross_?)",
+      "source_task_id": "0dfd9992",
+      "task_signature": "shape:same|transform:colormap|palette:large|bg:changed|cc:same",
+      "best_defect": 0.07029478458049887
+    },
+    "1a07d186": {
+      "description": "erase_dynamic(small_obj)",
+      "structural_sig": "erase_dynamic(small_obj)",
+      "source_task_id": "1a07d186",
+      "task_signature": "shape:same|transform:colormap|palette:small|bg:stable|cc:less",
+      "best_defect": 0.01417004048582996
+    },
+    "2281f1f4": {
+      "description": "fill(2|cross_5)",
+      "structural_sig": "fill(?|cross_?)",
+      "source_task_id": "2281f1f4",
+      "task_signature": "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more",
+      "best_defect": 0.01
+    },
+    "3631a71a": {
+      "description": "cmap(9->0)",
+      "structural_sig": "cmap(?->?)",
+      "source_task_id": "3631a71a",
+      "task_signature": "shape:same|transform:colormap|palette:large|bg:stable|cc:more",
+      "best_defect": 0.042222222222222223
+    },
+    "22168020": {
+      "description": "fill(3|between_fg_h) -> fill(1|between_1_any) -> recolor(3->1|between_1_any) -> fill(4|between_4_any) -> recolor(3->4|between_4_any) -> fill(6|between_6_any) -> recolor(3->6|between_6_any) -> fill(8|between_8_any) -> recolor(3->8|between_8_any)",
+      "structural_sig": "fill(?|between_fg_h) -> fill(?|between_?_any) -> recolor(?->?|between_?_any) -> fill(?|between_?_any) -> recolor(?->?|between_?_any) -> fill(?|between_?_any) -> recolor(?->?|between_?_any) -> fill(?|between_?_any) -> recolor(?->?|between_?_any)",
+      "source_task_id": "22168020",
+      "task_signature": "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less",
+      "best_defect": 0.09
+    },
+    "31aa019c": {
+      "description": "fill(2|near8_6) -> cmap(2->0,7->0,1->0,3->0,9->0,5->0,4->0) -> fill(0|is_color_8) -> recolor(6->0|is_color_8) -> recolor(8->0|is_color_8) -> fill(0|is_color_6) -> recolor(6->0|is_color_6)",
+      "structural_sig": "fill(?|near?_?) -> cmap(?->?,?->?,?->?,?->?,?->?,?->?,?->?) -> fill(?|is_color_?) -> recolor(?->?|is_color_?) -> recolor(?->?|is_color_?) -> fill(?|is_color_?) -> recolor(?->?|is_color_?)",
+      "source_task_id": "31aa019c",
+      "task_signature": "shape:same|transform:colormap|palette:large|bg:stable|cc:less",
+      "best_defect": 0.09
+    },
+    "3bd67248": {
+      "description": "fill(4|border_row) -> erase(4|in_largest_cc)",
+      "structural_sig": "fill(?|border_row) -> erase(?|in_largest_cc)",
+      "source_task_id": "3bd67248",
+      "task_signature": "shape:same|transform:colormap|palette:small|bg:stable|cc:more",
+      "best_defect": 0.09
+    },
+    "272f95fa": {
+      "description": "fill(1|between_fg_h) -> recolor(1->2|in_largest_cc&repeated_shape) -> recolor(1->6|enclosed_by_8) -> fill(2|between_8_any&border_row) -> recolor(1->2|between_8_any&border_row) -> fill(3|between_8_any&!between_8_h) -> fill(4|between_8_any&border_col) -> fill(1|between_8_any&border_row) -> recolor(2->1|between_8_any&border_row) -> fill(2|between_8_h&differs_from_down) -> recolor(1->2|between_8_h&differs_from_down) -> fill(4|between_8_any&border_col) -> recolor(3->4|between_8_any&border_col)",
+      "structural_sig": "fill(?|between_fg_h) -> recolor(?->?|in_largest_cc&repeated_shape) -> recolor(?->?|enclosed_by_?) -> fill(?|between_?_any&border_row) -> recolor(?->?|between_?_any&border_row) -> fill(?|between_?_any&!between_?_h) -> fill(?|between_?_any&border_col) -> fill(?|between_?_any&border_row) -> recolor(?->?|between_?_any&border_row) -> fill(?|between_?_h&differs_from_down) -> recolor(?->?|between_?_h&differs_from_down) -> fill(?|between_?_any&border_col) -> recolor(?->?|between_?_any&border_col)",
+      "source_task_id": "272f95fa",
+      "task_signature": "shape:same|transform:colormap|palette:large|bg:stable|cc:same",
+      "best_defect": 0.07058823529411765
+    }
+  },
+  "sig_to_programs": {
+    "shape:same|transform:colormap|palette:tiny|bg:stable|cc:less": [
+      "4cbe9415b515d170"
+    ],
+    "shape:same|transform:colormap|palette:small|bg:changed|cc:same": [
+      "17894fe6b65b253e"
+    ],
+    "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+      "e0eff59472cbf4cf",
+      "c20a73ca7e6c11d3",
+      "04864ed43a7dda3c"
+    ],
+    "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+      "0f0f3961ab14f7c0",
+      "f1d182fc7d1a0a48"
+    ],
+    "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+      "d9b00cbce82997b3",
+      "ca1eeca4987812b6"
+    ],
+    "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+      "55f53300b10a4479",
+      "c01d4d3a949d7313",
+      "5f05e3afc0ce5290",
+      "ee9d38ddbfcd064d"
+    ],
+    "shape:same|transform:colormap|palette:small|bg:stable|cc:more": [
+      "dda1de69f0b3b608"
+    ],
+    "shape:same|transform:geometric|palette:tiny|bg:stable|cc:same": [
+      "d975b023a1b4d947"
+    ]
+  }
+}

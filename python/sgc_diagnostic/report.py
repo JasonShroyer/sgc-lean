@@ -12,21 +12,44 @@ from .certificates import REPO, COMMIT
 # Lazy import for matplotlib (may not be available or compatible)
 plt = None
 gridspec = None
+_matplotlib_checked = False
+_matplotlib_available = False
 
 def _ensure_matplotlib():
-    """Lazy import matplotlib."""
-    global plt, gridspec
-    if plt is None:
-        try:
-            import matplotlib.pyplot as _plt
-            import matplotlib.gridspec as _gridspec
-            plt = _plt
-            gridspec = _gridspec
-        except ImportError as e:
-            print(f"  Warning: matplotlib not available ({e})")
-            print("  Figures will not be generated.")
-            return False
-    return True
+    """Lazy import matplotlib with safety checks."""
+    global plt, gridspec, _matplotlib_checked, _matplotlib_available
+    
+    # Skip if already checked and failed
+    if _matplotlib_checked:
+        return _matplotlib_available
+    
+    _matplotlib_checked = True
+    
+    # Check for explicit disable
+    import os
+    if os.environ.get('SGC_NO_MATPLOTLIB', '').lower() in ('1', 'true', 'yes'):
+        print("  Warning: matplotlib disabled via SGC_NO_MATPLOTLIB")
+        print("  Figures will not be generated.")
+        return False
+    
+    # Try to import with Agg backend (non-interactive, avoids some crashes)
+    os.environ.setdefault('MPLBACKEND', 'Agg')
+    
+    try:
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as _plt
+        import matplotlib.gridspec as _gridspec
+        plt = _plt
+        gridspec = _gridspec
+        _matplotlib_available = True
+        return True
+    except Exception as e:
+        # Catch all exceptions including numpy binary compatibility errors
+        print(f"  Warning: matplotlib not available ({type(e).__name__})")
+        print("  Figures will not be generated.")
+        _matplotlib_available = False
+        return False
 
 
 def generate_report(profile, output_dir: str = "output/"):

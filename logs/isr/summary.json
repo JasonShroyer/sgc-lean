@@ -1,0 +1,36 @@
+{
+  "config": {
+    "hidden_dim": 32,
+    "num_layers": 2,
+    "T_steps": 30,
+    "max_params": 100000,
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "epochs": 50,
+    "data_path": null,
+    "generate": true,
+    "num_puzzles": 5000,
+    "seed": 42,
+    "log_dir": "logs/isr",
+    "log_interval": 25,
+    "snapshot_interval": 5,
+    "eta_mode": "pooled",
+    "eta_probes": 4,
+    "eta_batch_subsample": 8,
+    "weights_mode": "entropy",
+    "min_clues_start": 50,
+    "max_clues_start": 60,
+    "min_clues_end": 30,
+    "max_clues_end": 45,
+    "curriculum_epochs": 50,
+    "validate_puzzles": true,
+    "require_unique": true,
+    "sanity_check_data": false,
+    "defect_weight": 0.1
+  },
+  "metrics": {
+    "final_loss": 0.5176858901977539,
+    "final_acc": 0.0
+  },
+  "ts": "2026-01-30T18:39:14.281989"
+}

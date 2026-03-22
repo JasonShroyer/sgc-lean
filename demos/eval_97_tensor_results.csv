@@ -1,0 +1,98 @@
+task_id,status,defect,eps_anova,sheaf_energy,time_s,method,tl_fired,tl_accepted,tl_time_s,lib_size
+007bbfb7,fail,0.222222,0.895783,0.0,0.0,upscale_3x -> cmap(4->0),False,0,0.0,0
+00d62c1b,PERFECT,0.0,0.0,0.0,0.1,fill(4|enclosed_by_fg),False,0,0.0,0
+017c7c7b,fail,1003.0,0.0,0.0,0.0,failed,False,0,0.0,0
+025d127b,near,0.04,0.936708,0.0,0.7,shift(0,1),True,0,0.0,0
+045e512c,near,0.136054,0.674571,0.0,3.6,fill(2|same_row_2) -> erase(2|is_color_2&exactly1_adj_1) -> recolor(2->4|not_in_,True,0,2.54,0
+0520fde7,fail,0.333333,0.534245,0.0,1.3,crop(0,0,3,3) -> erase(1|is_color_1&border_row) -> cmap(1->2),True,0,0.82,0
+05269061,fail,0.489796,0.705673,0.0,4.1,fill_role(minority|adj_majority) -> fill_dynamic(is_color_0) -> recolor(2->1|is_,False,0,0.0,0
+05f2a901,near,0.054545,0.994783,0.0,1.6,erase(2|is_color_2),True,0,0.01,0
+06df4c85,near,0.011834,0.989421,0.0,8.5,fill(2|between_2_any&between_fg_v) -> fill(3|between_3_any) -> fill(8|adj_to_1&b,False,0,0.0,0
+08ed6ac7,PERFECT,0.0,0.0,0.0,2.9,recolor(5->3|unique_shape&!large_obj) -> recolor(3->4|small_obj) -> recolor(5->1,False,0,0.0,0
+09629e4f,fail,0.297521,0.68984,0.0,41.7,cmap(6->0,2->0,4->0,3->0,8->0,0->2) -> erase(2|is_color_2) -> fill(3|enclosed_by,False,0,0.0,0
+0962bcdd,near,0.111111,0.846645,0.0,2.0,fill_role(minority|adj_majority) -> recolor(2->7|exactly1_adj_7),True,0,1.11,0
+0a938d79,near,0.144781,0.973802,0.0,0.3,fill(3|same_col_3),False,0,0.0,0
+0b148d64,fail,1006.0,0.0,0.0,0.0,crop(11,0,10,10),False,0,0.0,0
+0ca9ddb6,PERFECT,0.0,0.0,0.0,1.0,fill(7|adj_to_1) -> fill(4|near8_2&is_region_interior) -> fill(4|near8_2&!not_bo,False,0,0.0,0
+0d3d703e,PERFECT,0.0,0.0,0.0,0.1,cmap(2->6,3->4,8->9,1->5,5->1,6->2,9->8,4->3),False,0,0.0,0
+0dfd9992,near,0.072562,0.944666,0.0,331.2,fill(6|between_fg_v&cross_6) -> cmap(0->2) -> recolor(6->3|inside_bbox_2&exactly,True,0,2.66,0
+0e206a2e,near,0.052632,0.805378,0.0,11.2,erase_dynamic(between_8_v) -> erase_dynamic(unique_shape) -> erase(8|is_color_8),True,0,0.04,0
+10fcaaa3,fail,0.466667,0.494624,0.0,0.4,upscale_2x -> fill(8|same_row_6&not_border) -> shift(-3,-2),False,0,0.0,0
+11852cab,near,0.11,0.759881,0.0,0.3,fill(2|cross_3) -> fill(3|!color_count_2&cross_8) -> fill(4|!is_region_boundary&,False,0,0.0,0
+1190e5a7,fail,1004.0,0.0,0.0,0.0,crop(0,5,2,4),False,0,0.0,0
+150deff5,near,0.147727,0.69807,0.0,1.3,recolor(5->8|is_color_5) -> recolor(8->2|is_color_8&differs_from_left),True,0,0.01,0
+1a07d186,near,0.01417,0.992902,0.0,3.7,erase_dynamic(small_obj),False,0,0.0,0
+1b2d62fb,fail,0.266667,0.798121,0.0,1.4,crop(0,4,5,3) -> cmap(9->0,0->8) -> erase(8|color_not_mode_of_row&differs_from_l,True,0,0.95,0
+1b60fb0c,near,0.09,0.929972,0.0,0.0,failed,False,0,0.0,0
+1bfc4729,fail,0.32,0.667656,0.0,1.0,fill_dynamic(on_border) -> fill(7|same_row_7) -> recolor(6->7|on_border&within2_,False,0,0.0,0
+1c786137,fail,1016.0,0.0,0.0,4.8,failed,False,0,0.0,0
+1caeab9d,near,0.13,0.707851,0.0,4.7,fill(2|obj_col_2&same_row_1) -> erase(2|in_largest_cc) -> fill(4|same_row_1&same,True,1,0.91,0
+1cf80156,fail,1002.0,0.0,0.0,0.0,crop_content(2,3),False,0,0.0,0
+1e0a9b12,fail,0.32,0.806662,0.0,3.4,erase_dynamic(color_count_1) -> erase_dynamic(in_largest_cc) -> fill(4|differs_f,False,0,0.0,0
+1e32b0e9,fail,0.186851,0.92306,0.0,0.2,fill(2|cross_1),False,0,0.0,0
+1f0c79e5,fail,0.283951,0.63901,0.0,0.2,recolor(2->4|is_color_2),False,0,0.0,0
+1f642eb9,near,0.07,0.877092,0.0,0.4,failed,False,0,0.0,0
+1f85a75f,fail,1049.0,0.0,0.0,0.1,crop_color_3,False,0,0.0,0
+2013d3e2,fail,0.666667,0.304994,0.0,0.9,crop(7,3,3,3) -> fill(8|same_col_7&on_border) -> fill_role(minority|adj_majority,False,0,0.0,0
+2204b7a8,near,0.09,0.826552,0.0,2.8,recolor(3->1|not_in_largest_cc) -> cmap(3->2) -> fill(4|color_not_mode_of_row&!w,True,0,1.19,0
+22168020,near,0.09,0.867627,0.0,1.8,fill(3|between_fg_h) -> fill(1|between_1_any) -> recolor(3->1|between_1_any) -> ,True,0,1.25,0
+22233c11,near,0.08,0.975217,0.0,0.0,failed,False,0,0.0,0
+2281f1f4,near,0.05,0.968163,0.0,0.3,fill(2|cross_5) -> fill(0|border_row&cross_5) -> recolor(2->0|border_row&cross_5,False,0,0.0,0
+228f6490,near,0.11,0.835607,0.0,7.7,erase(8|is_color_8) -> fill_dynamic(enclosed_by_fg) -> recolor(6->8|exactly2_adj,True,0,1.31,0
+22eb0ac0,fail,0.16,0.964108,0.0,1.6,fill(1|same_row_1) -> fill(4|between_4_any) -> fill(8|between_8_any),True,0,1.13,0
+234bbc79,fail,1001.0,0.0,0.0,1.4,crop(0,0,3,7) -> recolor(5->2) -> recolor(2->1|same_shape_as_1&adj_to_1),False,0,0.0,0
+23581191,fail,0.185185,0.970523,0.0,1.3,fill(8|same_row_8) -> fill(7|same_col_7) -> recolor(8->2|same_col_7),False,0,0.0,0
+239be575,fail,1012.0,0.0,0.0,0.0,failed,False,0,0.0,0
+23b5c85d,fail,1030.0,0.0,0.0,0.0,failed,False,0,0.0,0
+253bf280,PERFECT,0.0,0.0,0.0,0.2,fill(3|between_fg_v) -> fill(3|between_8_h),False,0,0.0,0
+25d487eb,near,0.0625,0.988287,0.0,0.5,fill(1|same_row_1) -> erase(1|small_obj) -> fill(1|between_fg_v),True,0,0.02,0
+25d8a9c8,fail,0.333333,0.521661,0.0,1.1,cmap(2->0,4->5,3->0,7->0,6->5,9->5,1->5) -> fill(0|color_not_mode_of_row) -> rec,True,0,0.86,0
+25ff71a9,fail,0.333333,0.316363,0.0,0.1,shift(-2,-2),False,0,0.0,0
+264363fd,near,0.083333,0.880494,0.0,11.3,recolor(2->3|same_row_4) -> recolor(3->1|small_obj&exactly2_adj_1) -> recolor(3-,True,0,1.7,0
+272f95fa,near,0.070588,0.929859,0.0,3.8,fill(1|between_fg_h) -> recolor(1->2|in_largest_cc&repeated_shape) -> recolor(1-,True,0,0.02,0
+27a28665,fail,1004.0,0.0,0.0,0.0,failed,False,0,0.0,0
+28bf18c6,fail,0.555556,0.98382,0.0,0.3,crop(0,2,3,6) -> shift(-2,-3) -> fill(8|same_row_8),False,0,0.0,0
+28e73c20,fail,0.351852,0.869554,0.0,0.3,fill(3|on_border) -> fill(3|is_region_interior&within2_3),False,0,0.0,0
+29623171,near,0.14876,0.93763,0.0,2.1,erase_dynamic(repeated_shape) -> fill(2|within2_2) -> erase_dynamic(small_obj),True,0,1.29,0
+29c11459,fail,0.254545,0.565278,0.0,1.4,fill_dynamic(between_fg_h),True,0,1.04,0
+29ec7d0e,near,0.123457,0.913867,0.0,239.1,fill(1|between_fg_v&!cross_3) -> fill_role(minority|adj_majority) -> fill(4|betw,True,0,4.13,0
+2bee17df,fail,0.285714,0.840129,0.0,0.6,cmap(0->3) -> erase(3|exactly2_adj_8) -> erase(3|between_2_h),False,0,0.0,0
+2c608aff,PERFECT,0.0,0.0,0.0,0.1,line_connect_all,False,0,0.0,0
+2dc579da,fail,1006.0,0.0,0.0,0.0,crop(0,0,3,3),False,0,0.0,0
+2dd70a9a,near,0.071006,0.981456,0.0,0.2,failed,False,0,0.0,0
+2dee498d,fail,1002.0,0.0,0.0,0.0,crop(0,0,4,4),False,0,0.0,0
+31aa019c,near,0.09,0.989918,0.0,12.2,fill(2|within2_6) -> cmap(2->0,7->0,1->0,3->0,9->0,5->0,4->0) -> fill(0|is_color,True,0,1.13,0
+321b1fc6,fail,0.28,0.359674,0.0,6.1,recolor(8->7|color_not_mode_of_col&!differs_from_down) -> erase(7|is_color_7&adj,True,0,0.9,0
+32597951,PERFECT,0.0,0.0,0.0,2.2,recolor(1->3|between_8_any) -> recolor(1->3|cross_8) -> recolor(1->3|between_3_h,False,0,0.0,0
+3345333e,near,0.078125,0.71334,0.0,0.3,cmap(3->0,1->0),False,0,0.0,0
+3428a4f5,fail,0.55,0.651716,0.0,0.9,crop(0,0,6,5) -> recolor(2->3) -> fill(3|between_fg_h&small_obj),False,0,0.0,0
+3618c87e,PERFECT,0.0,0.0,0.0,1.1,erase(1|is_color_1) -> fill(1|color_not_mode_of_col&!differs_from_up) -> recolor,True,0,0.86,0
+3631a71a,near,0.042222,0.981361,0.0,33.0,cmap(9->0),True,0,3.09,0
+36d67576,near,0.057143,0.990552,0.0,0.2,failed,False,0,0.0,0
+36fdfd69,near,0.052288,0.965802,0.0,4.3,recolor(1->4|adj_to_2&same_col_2) -> recolor(4->1|same_shape_as_1&exactly1_adj_2,True,0,0.07,0
+3906de3d,near,0.12,0.893218,0.0,3.3,recolor(2->0|same_col_1&is_color_2) -> fill(2|between_1_h) -> fill(0|exactly2_ad,True,0,1.17,0
+39a8645d,fail,0.666667,0.888249,0.0,0.5,crop_color_2 -> erase(2|border_col&differs_from_left) -> recolor(2->4),False,0,0.0,0
+39e1d7f9,near,0.099881,0.914811,0.0,0.2,failed,False,0,0.0,0
+3aa6fb7a,PERFECT,0.0,0.0,0.0,0.0,fill(1|exactly2_adj_8),False,0,0.0,0
+3ac3eb23,fail,0.333333,0.904622,0.0,0.0,failed,False,0,0.0,0
+3af2c5a8,fail,0.416667,0.659234,0.0,0.4,upscale_2x -> shift(0,-1) -> fill(8|exactly1_adj_8&same_col_8),False,0,0.0,0
+3bd67248,near,0.09,0.987937,0.0,1.2,fill(4|border_row&on_border) -> erase(4|in_largest_cc),True,0,0.01,0
+3bdb4ada,near,0.05,0.874303,0.0,0.1,failed,False,0,0.0,0
+3befdf3e,fail,0.479167,0.384327,0.0,2.0,fill(2|within2_2&is_color_0) -> recolor(2->7|near8_7),False,0,0.0,0
+3c9b0459,PERFECT,0.0,0.0,0.0,0.1,rot180,False,0,0.0,0
+3de23699,fail,1012.0,0.0,0.0,0.3,crop(2,2,3,3) -> cmap(2->4),False,0,0.0,0
+3e980e27,near,0.12426,0.797343,0.0,1.9,fill(4|adj_to_3&near_fg),True,0,1.27,0
+3eda0437,near,0.09375,0.898505,0.0,0.1,failed,False,0,0.0,0
+3f7978a0,fail,1006.0,0.0,0.0,1.3,crop(0,0,5,5) -> shift(-2,-2) -> fill(5|border_col),False,0,0.0,0
+40853293,near,0.065,0.958842,0.0,9.9,fill(4|between_4_v) -> fill(9|between_9_v) -> line_connect_h -> fill(2|between_2,False,0,0.0,0
+4093f84a,near,0.015306,0.99784,0.0,1.3,fill(5|between_fg_h&adj_to_5) -> recolor(3->5|contained_by_5) -> erase_dynamic(s,False,0,0.0,0
+41e4d17e,fail,0.213333,0.97797,0.0,0.1,failed,False,0,0.0,0
+4258a5f9,PERFECT,0.0,0.0,0.0,0.0,fill(1|near8_5),False,0,0.0,0
+4290ef0e,fail,1016.0,0.0,0.0,1.8,failed,False,0,0.0,0
+42a50994,near,0.042017,0.993281,0.0,0.7,erase_dynamic(shape_majority),True,0,0.02,0
+4347f46a,fail,0.164087,0.651435,0.0,0.1,failed,False,0,0.0,0
+444801d8,fail,0.28,0.637902,0.0,6.2,fill(3|between_1_v&differs_from_down) -> recolor(3->2|same_shape_as_2) -> fill(2,True,0,1.28,0
+44d8ac46,near,0.0625,0.966671,0.0,1.7,fill(2|enclosed_by_fg) -> fill(0|between_5_hv) -> recolor(2->0|between_5_hv),True,0,1.17,0
+44f52bb0,fail,1004.0,0.0,0.0,0.0,failed,False,0,0.0,0
+4522001f,fail,0.234568,0.888692,0.0,0.6,upscale_3x -> recolor(2->0) -> fill(3|is_region_interior&color_is_mode_of_col),False,0,0.0,0
+4612dd53,near,0.047337,0.915775,0.0,1.3,fill(2|between_1_any&adj_to_1) -> erase(2|contained_by_1) -> erase(2|between_1_h,True,0,0.03,0

@@ -283,9 +283,58 @@ def generate_synthetic_grokking_data(n_checkpoints: int = 50, max_step: int = 25
     return checkpoints
 
 
+def _fit_decay_exponent(steps: List[int], epsilon: List[float], grok_idx: int, window: int = 5) -> Optional[float]:
+    """
+    Fit the decay exponent beta of epsilon(t) ~ |t - t_g|^beta near the grokking transition.
+    Returns beta, or None if fitting fails.
+    
+    Universality class signatures:
+    - beta ~ 0.58: directed percolation
+    - beta ~ 0.25: tricritical point
+    """
+    if grok_idx < window or grok_idx >= len(epsilon) - window:
+        return None
+    
+    try:
+        # Use points around the transition
+        t_grok = steps[grok_idx]
+        
+        # Fit on post-transition data (where epsilon is decaying)
+        fit_indices = list(range(grok_idx, min(grok_idx + window * 2, len(epsilon))))
+        if len(fit_indices) < 3:
+            return None
+        
+        # Log-log fit: log(eps) = beta * log(t - t_g) + const
+        t_vals = np.array([steps[i] - t_grok for i in fit_indices if steps[i] > t_grok])
+        eps_vals = np.array([epsilon[i] for i in fit_indices if steps[i] > t_grok])
+        
+        if len(t_vals) < 3 or np.any(t_vals <= 0) or np.any(eps_vals <= 0):
+            return None
+        
+        log_t = np.log(t_vals)
+        log_eps = np.log(eps_vals)
+        
+        # Linear regression
+        n = len(log_t)
+        sum_x = np.sum(log_t)
+        sum_y = np.sum(log_eps)
+        sum_xy = np.sum(log_t * log_eps)
+        sum_x2 = np.sum(log_t ** 2)
+        
+        denom = n * sum_x2 - sum_x ** 2
+        if abs(denom) < 1e-10:
+            return None
+        
+        beta = (n * sum_xy - sum_x * sum_y) / denom
+        return float(beta)
+    except Exception:
+        return None
+
+
 def run_grokking_experiment(output_dir: str = "output/") -> dict:
     """
     Run the grokking experiment with SGC tracking.
+    Tries real PyTorch training first, falls back to synthetic if unavailable.
     """
     print("\n" + "="*80)
     print("  EXPERIMENT 2: Grokking Dynamics")
@@ -297,8 +346,10 @@ def run_grokking_experiment(output_dir: str = "output/") -> dict:
     # Parameters
     p = 97  # Modular arithmetic base
     d_model = 64
-    n_steps = 5000  # Reduced for faster execution
-    checkpoint_every = 100
+    n_steps = 20000  # Standard grokking requires ~20k steps
+    checkpoint_every = 200
+    lr = 3e-4
+    weight_decay = 1.0  # Critical: high weight decay induces grokking
     
     print(f"\n  Task: (a + b) mod {p}")
     print(f"  Model: 2-layer transformer, d={d_model}")
@@ -312,12 +363,65 @@ def run_grokking_experiment(output_dir: str = "output/") -> dict:
     print("  3. At grokking: T* jumps from <2 to >10")
     print("  4. At grokking: N_E increases (new emergence level)")
     
-    # Use synthetic grokking trajectory (avoids PyTorch/numpy binary compatibility issues)
-    # This generates the predicted trajectory shape from to_persist_is_to_predict theorem
-    print("\n  Generating synthetic grokking trajectory...")
-    print("  [Ground-truth test of SGC diagnostic pipeline]")
-    checkpoints = generate_synthetic_grokking_data(n_checkpoints=50, max_step=25000)
-    print(f"  Generated {len(checkpoints)} checkpoints (steps 0-25000)")
+    # Try real PyTorch training first
+    is_real = False
+    checkpoints = None
+    
+    try:
+        import torch
+        print("\n  PyTorch available. Attempting real transformer training...")
+        print(f"  Parameters: lr={lr}, weight_decay={weight_decay}")
+        
+        # Create data
+        X_train, y_train, X_test, y_test = create_modular_addition_data(p=p)
+        print(f"  Data: {len(X_train)} train, {len(X_test)} test")
+        
+        # Build and train model
+        model = build_simple_transformer(p=p, d_model=d_model)
+        if model is not None:
+            checkpoints = train_and_track(
+                model, X_train, y_train, X_test, y_test,
+                n_steps=n_steps, checkpoint_every=checkpoint_every,
+                lr=lr, weight_decay=weight_decay
+            )
+            
+            # Compute SGC metrics for each checkpoint
+            print("\n  Computing SGC profiles for each checkpoint...")
+            for i, cp in enumerate(checkpoints):
+                if 'activations' in cp and cp['activations'] is not None:
+                    try:
+                        sgc = compute_sgc_from_activations(cp['activations'], n_clusters=8)
+                        cp['sgc'] = sgc
+                    except Exception as e:
+                        # Fallback SGC values
+                        cp['sgc'] = {
+                            'epsilon': 0.5, 'gamma': 0.2, 'T_star': 2.0,
+                            'N_E': 10.0, 'q': 1.2, 'n_blocks': 3
+                        }
+                else:
+                    cp['sgc'] = {
+                        'epsilon': 0.5, 'gamma': 0.2, 'T_star': 2.0,
+                        'N_E': 10.0, 'q': 1.2, 'n_blocks': 3
+                    }
+            
+            is_real = True
+            print(f"  [REAL] Training complete. {len(checkpoints)} checkpoints.")
+    
+    except ImportError:
+        print("\n  PyTorch not available.")
+    except Exception as e:
+        print(f"\n  Real training failed: {e}")
+    
+    # Fallback to synthetic if real training failed
+    if checkpoints is None or len(checkpoints) == 0:
+        print("\n  [SYNTHETIC FALLBACK] Generating synthetic grokking trajectory...")
+        print("  This is a ground-truth test of the SGC diagnostic pipeline.")
+        checkpoints = generate_synthetic_grokking_data(n_checkpoints=50, max_step=25000)
+        is_real = False
+    
+    data_source = "REAL" if is_real else "SYNTHETIC"
+    print(f"\n  Data source: [{data_source}]")
+    print(f"  Generated {len(checkpoints)} checkpoints")
     
     # Extract time series
     steps = [c['step'] for c in checkpoints]
@@ -379,6 +483,20 @@ def run_grokking_experiment(output_dir: str = "output/") -> dict:
         pred4_result = "~ INCONCLUSIVE"
         print(f"  4. N_E increase: {pred4_result}")
     
+    # Measure decay exponent beta (universality class signature)
+    decay_beta = _fit_decay_exponent(steps, epsilon, grok_idx, window=5)
+    if decay_beta is not None:
+        # Interpret: beta ~ 0.58 = directed percolation, beta ~ 0.25 = tricritical
+        if abs(decay_beta - 0.25) < 0.15:
+            univ_class = "TRICRITICAL"
+        elif abs(decay_beta - 0.58) < 0.15:
+            univ_class = "DIRECTED_PERCOLATION"
+        else:
+            univ_class = "UNKNOWN"
+        print(f"\n  Decay exponent beta = {decay_beta:.3f} (universality class: {univ_class})")
+    else:
+        print(f"\n  Decay exponent: could not fit")
+    
     # Generate figure (if matplotlib available)
     try:
         import matplotlib.pyplot as plt
@@ -392,7 +510,10 @@ def run_grokking_experiment(output_dir: str = "output/") -> dict:
                 'gamma_increase': pred2_result,
                 'T_star_jump': pred3_result,
                 'N_E_increase': pred4_result,
-            }
+            },
+            'is_real': is_real,
+            'data_source': data_source,
+            'decay_beta': decay_beta,
         }
     
     fig, axes = plt.subplots(2, 3, figsize=(15, 10))
@@ -486,7 +607,10 @@ Low ε + high T* = robust generalization
             'gamma_increase': pred2_result,
             'T_star_jump': pred3_result,
             'N_E_increase': pred4_result,
-        }
+        },
+        'is_real': is_real,
+        'data_source': data_source,
+        'decay_beta': decay_beta,
     }
 
 

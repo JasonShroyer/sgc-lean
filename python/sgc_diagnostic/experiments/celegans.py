@@ -18,28 +18,106 @@ import numpy as np
 from pathlib import Path
 from typing import Tuple, Dict, Optional, List
 import sys
+import re
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 
-def load_celegans_data() -> Tuple[np.ndarray, List[str], Optional[Dict[str, int]]]:
+# Ground-truth neuron classifications from Cook et al. 2020
+# Index -> (name, type): 0=Interneuron, 1=Motor, 2=Pacemaker, 3=Neurosecretory
+PHARYNX_NEURONS = [
+    ("I1L", 0), ("I1R", 0), ("I2L", 0), ("I2R", 0),  # Interneurons
+    ("I3", 0), ("I4", 0), ("I5", 0), ("I6", 0),
+    ("M1", 1), ("M2L", 1), ("M2R", 1),               # Motor neurons
+    ("M3L", 1), ("M3R", 1), ("M4", 1), ("M5", 1),
+    ("MCL", 2), ("MCR", 2),                          # Pacemaker (marginal cells)
+    ("MI", 1),                                       # Motor-interneuron
+    ("NSML", 3), ("NSMR", 3),                        # Neurosecretory
+]
+
+# For ARI prediction: group into 3 functional classes
+# 0=Interneuron, 1=Motor+Pacemaker, 2=Neurosecretory
+PHARYNX_3CLASS = {
+    "I1L": 0, "I1R": 0, "I2L": 0, "I2R": 0, "I3": 0, "I4": 0, "I5": 0, "I6": 0,
+    "M1": 1, "M2L": 1, "M2R": 1, "M3L": 1, "M3R": 1, "M4": 1, "M5": 1, "MCL": 1, "MCR": 1, "MI": 1,
+    "NSML": 2, "NSMR": 2,
+}
+
+
+def _parse_lean_connectome(lean_path: Path) -> Tuple[np.ndarray, List[str], Dict[str, int]]:
+    """
+    Parse the real C. elegans connectome from CelegansPharynxData.lean.
+    Extracts the 20x20 adjacency matrix defined in the Lean file.
+    """
+    print(f"  Parsing real connectome from: {lean_path}")
+    
+    with open(lean_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+    
+    # Initialize 20x20 matrix
+    n = 20
+    W = np.zeros((n, n))
+    
+    # Parse the adjacency matrix definition
+    # Lines look like: w 0 2 13.0 + w 0 4 2.5 + ...
+    # Pattern: w <row> <col> <weight>
+    pattern = r'w\s+(\d+)\s+(\d+)\s+([\d.]+)'
+    matches = re.findall(pattern, content)
+    
+    for row, col, weight in matches:
+        i, j = int(row), int(col)
+        if 0 <= i < n and 0 <= j < n:
+            W[i, j] = float(weight)
+    
+    n_edges = np.sum(W > 0)
+    total_weight = np.sum(W)
+    print(f"    Extracted {int(n_edges)} edges, total weight {total_weight:.1f}")
+    
+    # Neuron names and types from ground truth
+    labels = [name for name, _ in PHARYNX_NEURONS]
+    neuron_types = {name: PHARYNX_3CLASS[name] for name in labels}
+    
+    type_counts = {0: 0, 1: 0, 2: 0}
+    for t in neuron_types.values():
+        type_counts[t] += 1
+    print(f"    Types: {type_counts[0]} interneuron, {type_counts[1]} motor/pacemaker, {type_counts[2]} neurosecretory")
+    
+    return W, labels, neuron_types
+
+
+def load_celegans_data() -> Tuple[np.ndarray, List[str], Optional[Dict[str, int]], bool]:
     """
     Load C. elegans connectivity data from repository.
     
     Returns:
         W: Adjacency/connectivity matrix
         labels: Neuron names
-        neuron_types: Optional dict mapping neuron name to type (0=sensory, 1=inter, 2=motor)
+        neuron_types: Dict mapping neuron name to type
+        is_real: True if real data, False if synthetic
     """
-    # Try to load from CSV file
-    data_path = Path(__file__).parent.parent.parent.parent / "data" / "cook2020_pharynx_synapses.csv"
+    # Priority 1: Try to parse from CelegansPharynxData.lean (the real connectome)
+    lean_path = Path(__file__).parent.parent.parent.parent / "src" / "SGC" / "Experiments" / "CelegansPharynxData.lean"
     
-    if data_path.exists():
-        print(f"  Loading from: {data_path}")
-        return _load_from_csv(data_path)
-    else:
-        print(f"  Data file not found: {data_path}")
-        print("  Using synthetic C. elegans-like network")
-        return _create_synthetic_celegans()
+    if lean_path.exists():
+        try:
+            W, labels, neuron_types = _parse_lean_connectome(lean_path)
+            if np.sum(W) > 0:  # Valid matrix extracted
+                return W, labels, neuron_types, True  # REAL data
+        except Exception as e:
+            print(f"    Warning: Failed to parse Lean file: {e}")
+    
+    # Priority 2: Try CSV file
+    csv_path = Path(__file__).parent.parent.parent.parent / "data" / "cook2020_pharynx_synapses.csv"
+    
+    if csv_path.exists():
+        print(f"  Loading from: {csv_path}")
+        W, labels, neuron_types = _load_from_csv(csv_path)
+        if np.sum(W) > 0:
+            return W, labels, neuron_types, True  # REAL data
+    
+    # Priority 3: Synthetic fallback
+    print("  [SYNTHETIC FALLBACK] Using synthetic C. elegans-like network")
+    W, labels, neuron_types = _create_synthetic_celegans()
+    return W, labels, neuron_types, False  # SYNTHETIC data
 
 
 def _load_from_csv(path: Path) -> Tuple[np.ndarray, List[str], Dict[str, int]]:
@@ -247,8 +325,10 @@ def run_celegans_experiment(output_dir: str = "output/") -> dict:
     
     # Load data
     print("\n  Loading C. elegans connectivity data...")
-    W, labels, neuron_types = load_celegans_data()
+    W, labels, neuron_types, is_real = load_celegans_data()
     n = len(labels)
+    data_source = "REAL" if is_real else "SYNTHETIC"
+    print(f"  Data source: [{data_source}]")
     
     # Build generator from connectivity
     print("\n  Building generator from connectivity matrix...")
@@ -388,6 +468,8 @@ def run_celegans_experiment(output_dir: str = "output/") -> dict:
         },
         'ari': ari,
         'neuron_types': neuron_types,
+        'is_real': is_real,
+        'data_source': data_source,
     }
 
 

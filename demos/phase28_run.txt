@@ -1,0 +1,363 @@
+﻿  Loaded 14 rules from registry
+  Loaded 1000 physics observations
+Loaded 97 tasks
+
+======================================================================
+ARC-SGC Phase 21-26: The Active Scientist
+======================================================================
+
+COMPONENTS:
+  1. Fisher-Rao Metric: Structural distance on solution manifold
+  2. Wavelet Invariance: Hermite-Gaussian symmetry detection
+  3. Geodesic Submission: Best candidate by information distance
+  4. Physics Logger: Empirical constant discovery
+  5. Active Scientist: Multi-pass iterative refinement (Phase 26)
+
+==================================================
+Running Geodesic Solver (Pass 1)
+==================================================
+  [PERFECT] [S1] 00d62c1b: registry:Fill_NewColor
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.99, HIGH, Submit=Yes
+  [NEAR]     025d127b: shift(0,1)
+            F=0.061 (H=0.00 T=0.14 G=0.07 S=0.04)
+            C=0.53, NEAR_MISS, Submit=No
+  [NEAR]     045e512c: fill(2)
+            F=0.095 (H=0.02 T=0.27 G=0.03 S=0.06)
+            C=0.52, NEAR_MISS, Submit=No
+  [+] Rule strengthened: Physics_contact (freq=43, conf=0.80)
+  [PERFECT]  05f2a901: +1.0*V_contact
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.87, HIGH, Submit=Yes
+  [NEAR]     06df4c85: fill(2)
+            F=0.061 (H=0.01 T=0.16 G=0.03 S=0.04)
+            C=0.54, NEAR_MISS, Submit=No
+  [APPROX]   08ed6ac7: fill(1)
+            F=0.276 (H=0.12 T=0.72 G=0.20 S=0.07)
+            C=0.41, APPROXIMATE, Submit=No
+  [APPROX]   09629e4f: fill(0)
+            F=0.130 (H=0.11 T=0.05 G=0.23 S=0.13)
+            C=0.44, APPROXIMATE, Submit=No
+  [APPROX]   0962bcdd: fill(6)
+            F=0.100 (H=0.07 T=0.26 G=0.07 S=0.01)
+            C=0.49, APPROXIMATE, Submit=No
+  [APPROX]   0a938d79: fill(2)
+            F=0.208 (H=0.15 T=0.40 G=0.19 S=0.09)
+            C=0.44, APPROXIMATE, Submit=No
+  [+] Rule strengthened: Crop_To_7x9 (freq=43, conf=0.80)
+  [PERFECT]  0b148d64: cegar:crop_to((7, 9))
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.96, CERTAIN, Submit=Yes
+  [NEAR]     0ca9ddb6: fill(7)
+            F=0.090 (H=0.04 T=0.24 G=0.06 S=0.03)
+            C=0.54, NEAR_MISS, Submit=No
+  [+] Rule strengthened: ColorMap_Permutation_3 (freq=81, conf=0.85)
+  [PERFECT]  0d3d703e: cegar:color_map({1: 5, 2: 6, 3: 4})
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.80, MEDIUM, Submit=No
+  [NEAR]     0dfd9992: fill(3)
+            F=0.036 (H=0.01 T=0.08 G=0.05 S=0.01)
+            C=0.49, NEAR_MISS, Submit=No
+  [APPROX]   0e206a2e: fill(0)
+            F=0.152 (H=0.02 T=0.20 G=0.06 S=0.33)
+            C=0.49, APPROXIMATE, Submit=No
+  [NEAR]     11852cab: fill(2)
+            F=0.049 (H=0.01 T=0.17 G=0.02 S=0.00)
+            C=0.60, NEAR_MISS, Submit=No
+  Progress: 20/97, perfect=4, near_miss=6, submit=3
+  [+] Rule strengthened: ColorMap_Merge (freq=145, conf=0.89)
+  [PERFECT]  1190e5a7: cegar:color_map({7: 3})
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.96, CERTAIN, Submit=Yes
+  [APPROX]   150deff5: fill(8)
+            F=0.158 (H=0.06 T=0.43 G=0.11 S=0.04)
+            C=0.52, APPROXIMATE, Submit=No
+  [NEAR]     1a07d186: fill(0)
+            F=0.017 (H=0.00 T=0.00 G=0.05 S=0.02)
+            C=0.53, NEAR_MISS, Submit=No
+  [PERFECT] [S1] 1b60fb0c: registry:Fill_NewColor
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.99, HIGH, Submit=Yes
+  [APPROX]   1bfc4729: fill(6)
+            F=0.146 (H=0.30 T=0.12 G=0.09 S=0.07)
+            C=0.44, APPROXIMATE, Submit=No
+  [APPROX]   1caeab9d: shift(-1,0)
+            F=0.138 (H=0.00 T=0.00 G=0.17 S=0.38)
+            C=0.51, APPROXIMATE, Submit=No
+  [+] Rule strengthened: Crop_ToContent (freq=41, conf=0.79)
+  [PERFECT]  1cf80156: crop_to_content
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.96, CERTAIN, Submit=Yes
+  [+] Rule strengthened: Physics_top (freq=41, conf=0.79)
+  [PERFECT]  1e0a9b12: -1.0*V_top
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.79, MEDIUM, Submit=No
+  [APPROX]   1e32b0e9: fill(2)
+            F=0.107 (H=0.02 T=0.26 G=0.08 S=0.06)
+            C=0.58, APPROXIMATE, Submit=No
+  [APPROX]   1f0c79e5: fill(7)
+            F=0.110 (H=0.13 T=0.28 G=0.02 S=0.00)
+            C=0.53, APPROXIMATE, Submit=No
+  [NEAR]     1f642eb9: fill(6)
+            F=0.067 (H=0.01 T=0.23 G=0.03 S=0.00)
+            C=0.52, NEAR_MISS, Submit=No
+  [+] Rule strengthened: Extract_largest (freq=42, conf=0.86)
+  [PERFECT]  1f85a75f: extract(largest)
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.96, CERTAIN, Submit=Yes
+  [PERFECT] [S1] 2013d3e2: registry:Crop
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.98, HIGH, Submit=Yes
+  [APPROX]   2204b7a8: fill(0)
+            F=0.123 (H=0.00 T=0.35 G=0.12 S=0.02)
+            C=0.51, APPROXIMATE, Submit=No
+  [APPROX]   22168020: fill(3)
+            F=0.142 (H=0.06 T=0.40 G=0.07 S=0.04)
+            C=0.52, APPROXIMATE, Submit=No
+  [PERFECT] [S1] 22233c11: registry:Fill_NewColor
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.99, HIGH, Submit=Yes
+  [PERFECT] [S1] 2281f1f4: registry:Fill_NewColor
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.99, HIGH, Submit=Yes
+  [NEAR]     228f6490: fill_holes
+            F=0.100 (H=0.01 T=0.04 G=0.24 S=0.11)
+            C=0.47, NEAR_MISS, Submit=No
+  Progress: 40/97, perfect=12, near_miss=9, submit=10
+  [+] Rule strengthened: Identity (freq=40, conf=0.86)
+  [PERFECT]  22eb0ac0: fallback:identity
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.90, HIGH, Submit=Yes
+  [APPROX]   23581191: fill(7)
+            F=0.141 (H=0.10 T=0.38 G=0.08 S=0.01)
+            C=0.48, APPROXIMATE, Submit=No
+  [PERFECT] [S1] 239be575: registry:Crop
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.98, HIGH, Submit=Yes
+  [+] Rule strengthened: Extract_smallest (freq=40, conf=0.86)
+  [PERFECT]  23b5c85d: extract(smallest)
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.96, CERTAIN, Submit=Yes
+  [PERFECT] [S1] 253bf280: registry:Fill_NewColor
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.99, HIGH, Submit=Yes
+  [NEAR]     25d487eb: fill(2)
+            F=0.051 (H=0.02 T=0.15 G=0.02 S=0.02)
+            C=0.60, NEAR_MISS, Submit=No
+  [+] Rule strengthened: ColorMap_Permutation_3 (freq=83, conf=0.85)
+  [PERFECT]  25d8a9c8: cegar:color_map({2: 0, 3: 0, 4: 5})
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.79, MEDIUM, Submit=No
+  [PERFECT]  25ff71a9: shift(1,0)
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.56, MEDIUM, Submit=Yes
+  [NEAR]     264363fd: fill(3)
+            F=0.088 (H=0.03 T=0.28 G=0.03 S=0.01)
+            C=0.50, NEAR_MISS, Submit=No
+  [APPROX]   272f95fa: fill_holes(6)
+            F=0.243 (H=0.22 T=0.62 G=0.09 S=0.04)
+            C=0.42, APPROXIMATE, Submit=No
+  [+] Rule strengthened: ColorMap_Merge (freq=147, conf=0.89)
+  [PERFECT]  27a28665: cegar:color_map({5: 1})
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.96, CERTAIN, Submit=Yes
+  [PERFECT] [S1] 28e73c20: registry:Fill_NewColor
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.99, HIGH, Submit=Yes
+  [NEAR]     29623171: flip_v+fill(0)
+            F=0.029 (H=0.03 T=0.03 G=0.04 S=0.02)
+            C=0.54, NEAR_MISS, Submit=No
+  [NEAR]     29c11459: fill(5)
+            F=0.076 (H=0.09 T=0.00 G=0.14 S=0.08)
+            C=0.49, NEAR_MISS, Submit=No
+  [NEAR]     29ec7d0e: fill(2)
+            F=0.040 (H=0.02 T=0.07 G=0.06 S=0.01)
+            C=0.53, NEAR_MISS, Submit=No
+  [PERFECT] [S1] 2bee17df: registry:Fill_NewColor
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.99, HIGH, Submit=Yes
+  [NEAR]     2c608aff: identity
+            F=0.017 (H=0.01 T=0.00 G=0.05 S=0.01)
+            C=0.61, NEAR_MISS, Submit=No
+  Progress: 60/97, perfect=21, near_miss=15, submit=18
+  [PERFECT] [S1] 2dd70a9a: registry:Fill_NewColor
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.99, HIGH, Submit=Yes
+  [+] Rule strengthened: Crop_ToSmall (freq=35, conf=0.77)
+  [PERFECT]  2dee498d: cegar:crop_to((3, 3))
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.96, CERTAIN, Submit=Yes
+  [APPROX]   31aa019c: fill(0)
+            F=0.117 (H=0.04 T=0.33 G=0.07 S=0.02)
+            C=0.49, APPROXIMATE, Submit=No
+  [APPROX]   321b1fc6: identity
+            F=0.194 (H=0.08 T=0.50 G=0.11 S=0.08)
+            C=0.47, APPROXIMATE, Submit=No
+  [PERFECT] [S1] 32597951: registry:Fill_NewColor
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.99, HIGH, Submit=Yes
+  [NEAR]     3345333e: fill(2)
+            F=0.081 (H=0.01 T=0.22 G=0.03 S=0.05)
+            C=0.53, NEAR_MISS, Submit=No
+  [NEAR]     3618c87e: fill(1)
+            F=0.041 (H=0.01 T=0.11 G=0.04 S=0.00)
+            C=0.56, NEAR_MISS, Submit=No
+  [NEAR]     3631a71a: fill(1)
+            F=0.025 (H=0.01 T=0.03 G=0.03 S=0.02)
+            C=0.53, NEAR_MISS, Submit=No
+  [NEAR]     36d67576: fill(3)
+            F=0.045 (H=0.01 T=0.15 G=0.02 S=0.00)
+            C=0.56, NEAR_MISS, Submit=No
+  [PERFECT] [S1] 36fdfd69: registry:Fill_NewColor
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.99, HIGH, Submit=Yes
+  [PERFECT]  3906de3d: gravity(up)
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.58, MEDIUM, Submit=Yes
+  [PERFECT] [S1] 39a8645d: registry:Crop
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.98, HIGH, Submit=Yes
+  [NEAR]     39e1d7f9: fill(3)
+            F=0.051 (H=0.03 T=0.13 G=0.03 S=0.01)
+            C=0.60, NEAR_MISS, Submit=No
+  [PERFECT] [S1] 3aa6fb7a: registry:Fill_NewColor
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.99, HIGH, Submit=Yes
+  [APPROX]   3ac3eb23: fill(4)
+            F=0.147 (H=0.11 T=0.33 G=0.09 S=0.06)
+            C=0.50, APPROXIMATE, Submit=No
+  [APPROX]   3bd67248: fill(2)
+            F=0.101 (H=0.08 T=0.25 G=0.05 S=0.02)
+            C=0.50, APPROXIMATE, Submit=No
+  [PERFECT] [S1] 3bdb4ada: registry:Fill_NewColor
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.99, HIGH, Submit=Yes
+  [APPROX]   3befdf3e: identity
+            F=0.223 (H=0.07 T=0.22 G=0.33 S=0.27)
+            C=0.42, APPROXIMATE, Submit=No
+  Progress: 80/97, perfect=29, near_miss=20, submit=26
+  [PERFECT] [S1] 3c9b0459: registry:Rotation_180
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.95, HIGH, Submit=Yes
+  [+] Rule strengthened: ColorMap_Merge (freq=149, conf=0.89)
+  [PERFECT]  3de23699: cegar:color_map({2: 4})
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.96, CERTAIN, Submit=Yes
+  [NEAR]     3e980e27: fill(4)
+            F=0.057 (H=0.01 T=0.14 G=0.03 S=0.05)
+            C=0.56, NEAR_MISS, Submit=No
+  [PERFECT] [S1] 3eda0437: registry:Fill_NewColor
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.99, HIGH, Submit=Yes
+  [+] Rule strengthened: Crop_To_5x7 (freq=35, conf=0.77)
+  [PERFECT]  3f7978a0: cegar:crop_to((5, 7))
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.96, CERTAIN, Submit=Yes
+  [NEAR]     40853293: fill(8)
+            F=0.077 (H=0.03 T=0.15 G=0.06 S=0.07)
+            C=0.51, NEAR_MISS, Submit=No
+  [NEAR]     4093f84a: fill(0)
+            F=0.031 (H=0.00 T=0.00 G=0.10 S=0.02)
+            C=0.54, NEAR_MISS, Submit=No
+  [PERFECT] [S1] 41e4d17e: registry:Fill_NewColor
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.99, HIGH, Submit=Yes
+  [PERFECT] [S1] 4258a5f9: registry:Fill_NewColor
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.99, HIGH, Submit=Yes
+  [PERFECT] [S1] 42a50994: registry:Fill_NewColor
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.99, HIGH, Submit=Yes
+  [PERFECT] [S1] 4347f46a: registry:Fill_NewColor
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.99, HIGH, Submit=Yes
+  [NEAR]     444801d8: fill(2)
+            F=0.066 (H=0.06 T=0.12 G=0.07 S=0.02)
+            C=0.55, NEAR_MISS, Submit=No
+  [PERFECT] [S1] 44d8ac46: registry:Fill_NewColor
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.99, HIGH, Submit=Yes
+  [+] Rule strengthened: ColorMap_Merge (freq=151, conf=0.89)
+  [PERFECT]  44f52bb0: cegar:color_map({2: 1})
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.96, CERTAIN, Submit=Yes
+  [PERFECT] [S1] 4612dd53: registry:Fill_NewColor
+            F=0.000 (H=0.00 T=0.00 G=0.00 S=0.00)
+            C=0.99, HIGH, Submit=Yes
+
+======================================================================
+PHASE 21 SUMMARY
+======================================================================
+
+Results:
+  Total perfect: 40
+  Near misses (F<0.1): 24
+  Should submit: 37
+
+Certainty distribution:
+  APPROXIMATE: 19
+  CERTAIN: 10
+  HIGH: 25
+  LOW: 14
+  MEDIUM: 5
+  NEAR_MISS: 24
+
+Fisher-Rao Distance Analysis:
+  Perfect solve mean distance: 0.0000
+  Overall mean distance: 0.1214
+  Overall median distance: 0.0449
+
+Perfect Solve Component Breakdown:
+  Histogram: 0.0000
+  Topology:  0.0000
+  Gradient:  0.0000
+  Spectral:  0.0000
+
+==================================================
+PHASE 22+23: MGD + STRUCTURAL EXPANSION
+==================================================
+  Near-misses processed: 25
+  Phase 22 (Parameter Tuning): 1 successful
+  Phase 23 (Structural Expansion): 0 successful
+  Total conversions: 1
+  Success rate: 4.0%
+  Tasks refined: 2
+
+==================================================
+PHASE 24: OPERATOR INDUCTION
+==================================================
+  Inductions attempted: 36
+  Inductions successful: 29
+  Operators discovered: 25
+  Promoted to first-class: 6
+
+  PROMOTED GENERATORS (freq >= 3):
+    - modify_interior (topological): freq=24, conf=0.95
+    - shift(-1,0) (spatial): freq=5, conf=0.95
+    - shift(1,0) (spatial): freq=5, conf=0.95
+    - swap_color(2->3) (color): freq=3, conf=0.80
+    - shift(0,-1) (spatial): freq=3, conf=0.80
+    - shift(0,1) (spatial): freq=3, conf=0.80
+
+==================================================
+EMPIRICAL PHYSICS ANALYSIS
+==================================================
+  Total observations: 1097
+  Perfect count: 450
+  CRITICAL DISTANCE: 0.0084
+    (Phase transition between perfect and imperfect)
+  Near misses: 488
+
+=== COMPLETE PROGRESS SUMMARY ===
+  Phase 8.3:   6 perfect (baseline)
+  Phase 15:   19 perfect (CEGAR)
+  Phase 17:   20 perfect (Invariant Physics)
+  Phase 18:   32 perfect (Decomposition)
+  Phase 19:   36 perfect (Fractal Reasoning)
+  Phase 20:   38 perfect (Abstraction Engine)
+  Phase 21-24: 40 perfect (Geodesic + MGD + Expansion + Induction)
+       Param tuning: 1
+       Structural expansion: 0
+       Operator induction: 29
+       Near misses: 24
+       Should submit: 37

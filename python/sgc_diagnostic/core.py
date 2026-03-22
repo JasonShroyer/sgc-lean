@@ -43,6 +43,10 @@ class SGCProfile:
     # Schur complement (second-order correction)
     schur_correction_norm: float = 0.0  # ‖D·L_fine⁻¹·D‖_π — the self-energy magnitude
     
+    # Emergence curvature (discrete second derivative of defect curve at k*)
+    # b_curv > 0: convex (stable), b_curv < 0: concave (near tricritical)
+    emergence_curvature: Optional[float] = None
+    
     # Predictions (populated after profile is built)
     predictions: List[Prediction] = field(default_factory=list)
     
@@ -133,6 +137,7 @@ class SGCProfile:
             "schur_correction_norm": self.schur_correction_norm,
             "dirichlet_coarse": self.dirichlet_coarse,
             "dirichlet_leakage": self.dirichlet_leakage,
+            "emergence_curvature": self.emergence_curvature,
         }
 
 
@@ -235,6 +240,15 @@ class SGCDiagnostic:
         schur_correction_norm = defect_norm_pi(Sigma, self.pi)
         
         # Build profile
+        # 8. Compute emergence curvature (discrete second derivative at k*)
+        emergence_curvature = None
+        if len(defect_by_k) >= 3:
+            k_star = n_blocks
+            k_minus = k_star - 1
+            k_plus = k_star + 1
+            if k_minus in defect_by_k and k_plus in defect_by_k:
+                emergence_curvature = (defect_by_k[k_plus] - 2*defect_by_k[k_star] + defect_by_k[k_minus])
+        
         profile = SGCProfile(
             L=self.L,
             pi=self.pi,
@@ -252,6 +266,7 @@ class SGCDiagnostic:
             dirichlet_coarse=dirichlet_coarse,
             dirichlet_leakage=dirichlet_leakage,
             schur_correction_norm=schur_correction_norm,
+            emergence_curvature=emergence_curvature,
             system_name=self.system_name,
             labels=self.labels,
             q_diagnostics=q_diagnostics,

@@ -15,6 +15,7 @@ import SGC.Bridge.Consolidation
 import SGC.Bridge.GeometricClosure
 import SGC.Bridge.CanonicalWavelet
 import SGC.Axioms.GeometryGeneral
+import SGC.Symbiosis
 import Mathlib.LinearAlgebra.Matrix.Notation
 
 open Matrix SGC Real SGC.Spectral SGC.Approximate
@@ -149,6 +150,28 @@ Red flag: If `sorry` appears, the proof is incomplete.
 #print axioms SGC.Observables.persistence_cost_ratio_constant
 -- Thermodynamic Bounds Triangle
 #print axioms SGC.Observables.thermodynamic_bounds_triangle
+
+-- Symbiotic Architecture (NEW - Continual Learning via Autonomous Growth)
+-- Bridge isometry preserves norms
+#print axioms SGC.Symbiosis.isometric_bridge_preserves_norm
+-- Host defect invariance under symbiont learning
+#print axioms SGC.Symbiosis.host_defect_preserved
+-- Plasticity preservation theorem
+#print axioms SGC.Symbiosis.plasticity_preservation
+-- Mitosis is a last resort (requires max temperature)
+#print axioms SGC.Symbiosis.no_mitosis_below_max_temp
+-- Ghost bridge preserves defect
+#print axioms SGC.Symbiosis.ghost_bridge_preserves_defect
+-- Policy correctness: mitosis requires all conditions
+#print axioms SGC.Symbiosis.policy_mitosis_requires_all_conditions
+-- Descent means crystallized
+#print axioms SGC.Symbiosis.descent_means_crystallized
+-- Approximate bridge error bound
+#print axioms SGC.Symbiosis.approx_bridge_error_bound
+-- Structural free energy is non-negative
+#print axioms SGC.Symbiosis.structural_free_energy_nonneg
+-- Mitosis reduces structural free energy (axiom)
+#print axioms SGC.Symbiosis.mitosis_reduces_structural_free_energy
 
 end AxiomAudit
 

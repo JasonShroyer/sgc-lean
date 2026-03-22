@@ -94,14 +94,14 @@ def create_modular_dataset(p: int = 97, train_frac: float = 0.5):
     train_pairs = all_pairs[:n_train]
     test_pairs = all_pairs[n_train:]
     
-    def to_tensors(pairs):
-        a = torch.tensor([p[0] for p in pairs], dtype=torch.long)
-        b = torch.tensor([p[1] for p in pairs], dtype=torch.long)
-        c = torch.tensor([(p[0] + p[1]) % 97 for p in pairs], dtype=torch.long)
+    def to_tensors(pairs, modulus):
+        a = torch.tensor([pair[0] for pair in pairs], dtype=torch.long)
+        b = torch.tensor([pair[1] for pair in pairs], dtype=torch.long)
+        c = torch.tensor([(pair[0] + pair[1]) % modulus for pair in pairs], dtype=torch.long)
         return a, b, c
     
-    train_a, train_b, train_c = to_tensors(train_pairs)
-    test_a, test_b, test_c = to_tensors(test_pairs)
+    train_a, train_b, train_c = to_tensors(train_pairs, p)
+    test_a, test_b, test_c = to_tensors(test_pairs, p)
     
     return (train_a, train_b, train_c), (test_a, test_b, test_c)
 
@@ -621,6 +621,16 @@ class LifshitzMetrics:
     # Functorial metrics (NEW: arXiv:2602.01992 connection)
     functorial_defect: float = 0.0      # Displacement vector consistency
     dirichlet_energy: float = 0.0       # Smoothness on input graph
+    
+    # Thermodynamic metrics (NEW: THRML-002 bridge validation)
+    specific_heat: float = 0.0          # Cv = β² Var(loss) - phase transition signature
+    loss_variance: float = 0.0          # Raw variance of per-batch losses
+    effective_beta: float = 0.0         # Effective inverse temperature
+    
+    # Geometric susceptibility (SGC control-theoretic insight)
+    # χ_geom = Var(Functional Defect) - peaks at geometric phase transition
+    # This is the "missing metric" that captures grokking in driven-dissipative systems
+    geometric_susceptibility: float = 0.0
 
 
 def run_lifshitz_experiment(
@@ -669,9 +679,22 @@ def run_lifshitz_experiment(
     grokking_detected = False
     grokking_epoch = -1
     
-    print(f"{'Epoch':>6} | {'Train':>6} | {'Test':>6} | {'FuncD':>7} | "
-          f"{'FunctorD':>7} | {'q':>5} | {'DirE':>7} | Phase")
-    print("-" * 80)
+    # Effective inverse temperature: β ~ weight_decay / lr (thermodynamic interpretation)
+    effective_beta = weight_decay / lr
+    
+    # Track per-batch losses for Cv computation
+    batch_losses_window = []  # Rolling window of recent batch losses
+    window_size = 50  # Number of recent batches to track
+    
+    # Track functional defect for geometric susceptibility
+    # χ_geom = Var(ε) over sliding window - peaks at geometric phase transition
+    defect_window = []  # Rolling window of functional defect values
+    defect_window_size = 20  # Number of recent measurements (larger window)
+    
+    print(f"\nEffective beta = WD/LR = {effective_beta:.2f}")
+    print(f"\n{'Epoch':>6} | {'Train':>6} | {'Test':>6} | {'FuncD':>7} | "
+          f"{'chi_g':>8} | {'q':>5} | {'ClsSep':>8} | Phase")
+    print("-" * 90)
     
     for epoch in range(1, epochs + 1):
         # Training
@@ -679,6 +702,8 @@ def run_lifshitz_experiment(
         total_loss = 0
         correct = 0
         total = 0
+        
+        epoch_batch_losses = []  # Track individual batch losses this epoch
         
         for inp_a, inp_b, tgt in train_loader:
             inp_a, inp_b, tgt = inp_a.to(device), inp_b.to(device), tgt.to(device)
@@ -689,9 +714,16 @@ def run_lifshitz_experiment(
             loss.backward()
             optimizer.step()
             
-            total_loss += loss.item() * len(inp_a)
+            batch_loss = loss.item()
+            epoch_batch_losses.append(batch_loss)
+            total_loss += batch_loss * len(inp_a)
             correct += (out.argmax(dim=1) == tgt).sum().item()
             total += len(inp_a)
+        
+        # Update rolling window of batch losses for Cv computation
+        batch_losses_window.extend(epoch_batch_losses)
+        if len(batch_losses_window) > window_size:
+            batch_losses_window = batch_losses_window[-window_size:]
         
         train_acc = correct / total
         train_loss = total_loss / total
@@ -760,12 +792,33 @@ def run_lifshitz_experiment(
                 
                 # Gradient norm as simpler curvature proxy (Hessian too expensive)
                 grad_norm = 0.0
-                for p in model.parameters():
-                    if p.grad is not None:
-                        grad_norm += p.grad.norm().item() ** 2
+                for param in model.parameters():
+                    if param.grad is not None:
+                        grad_norm += param.grad.norm().item() ** 2
                 grad_norm = grad_norm ** 0.5
                 hessian_trace = grad_norm  # Use grad norm as proxy
                 density_zero = 0.0  # Skip expensive Hessian computation
+                
+                # Specific heat: Cv = β² Var(loss)
+                # This is the key THRML-002 bridge metric!
+                if len(batch_losses_window) > 1:
+                    loss_var = np.var(batch_losses_window)
+                    specific_heat = effective_beta ** 2 * loss_var
+                else:
+                    loss_var = 0.0
+                    specific_heat = 0.0
+                
+                # Geometric Susceptibility: χ_geom = Var(Functional Defect)
+                # This is the "missing metric" - captures grokking in driven-dissipative systems
+                # Hypothesis: χ_geom peaks at grokking epoch (system "flickers" between states)
+                defect_window.append(func_d)
+                if len(defect_window) > defect_window_size:
+                    defect_window = defect_window[-defect_window_size:]
+                
+                if len(defect_window) > 1:
+                    geom_susceptibility = np.var(defect_window)
+                else:
+                    geom_susceptibility = 0.0
                 
                 # Determine phase
                 if func_d > 0.5:
@@ -790,12 +843,16 @@ def run_lifshitz_experiment(
                     normalized_extropy=norm_extropy,
                     output_entropy=output_entropy,
                     functorial_defect=func_tor_d,
-                    dirichlet_energy=dir_energy
+                    dirichlet_energy=dir_energy,
+                    specific_heat=specific_heat,
+                    loss_variance=loss_var,
+                    effective_beta=effective_beta,
+                    geometric_susceptibility=geom_susceptibility
                 )
                 metrics_history.append(metrics)
                 
                 print(f"{epoch:6d} | {train_acc:6.1%} | {test_acc:6.1%} | {func_d:7.4f} | "
-                      f"{func_tor_d:7.4f} | {tsallis_q:5.2f} | {dir_energy:7.4f} | {phase}")
+                      f"{geom_susceptibility:8.6f} | {tsallis_q:5.2f} | {class_sep:8.2f} | {phase}")
     
     # Summary
     print(f"\n{'='*70}")
@@ -827,6 +884,25 @@ def run_lifshitz_experiment(
         print(f"  [{'Y' if functor_collapsed else 'N'}] Functorial Defect dropped 50%+ (Manifold flattened)")
         print(f"  [{'Y' if dir_dropped else 'N'}] Dirichlet Energy dropped 50%+ (Harmonic kernel reached)")
         print(f"  [{'Y' if q_dropped else 'N'}] Tsallis q decreased (Thermalization)")
+        
+        # THRML-002 Bridge Validation: Check if Cv peaks near grokking
+        print(f"\n*** THRML-002 BRIDGE VALIDATION ***")
+        cv_values = [m.specific_heat for m in metrics_history]
+        cv_peak_epoch = metrics_history[np.argmax(cv_values)].epoch
+        cv_peak_value = max(cv_values)
+        
+        print(f"  Cv peak epoch: {cv_peak_epoch}")
+        print(f"  Cv peak value: {cv_peak_value:.4f}")
+        print(f"  Grokking epoch: {grokking_epoch}")
+        
+        epoch_gap = abs(cv_peak_epoch - grokking_epoch)
+        cv_aligned = epoch_gap < 500  # Within 500 epochs
+        
+        print(f"  Epoch gap: {epoch_gap}")
+        print(f"  [{'Y' if cv_aligned else 'N'}] Cv peak aligned with grokking (gap < 500)")
+        
+        if cv_aligned:
+            print(f"\n  *** BRIDGE VALIDATED: Cv peaks at phase transition! ***")
     
     print(f"{'='*70}\n")
     
@@ -891,6 +967,119 @@ def compare_discrete_vs_analog():
     return discrete_metrics, analog_metrics
 
 
+def run_bridge_validation():
+    """
+    THRML-002 Bridge Validation: Quick experiment to check Cv peak alignment.
+    Uses configuration known to grok reliably.
+    """
+    print("\n" + "=" * 80)
+    print("THRML-002 BRIDGE VALIDATION: Neural Cv vs Grokking Epoch")
+    print("=" * 80 + "\n")
+    
+    # Standard grokking configuration with finer measurement for chi_g
+    metrics = run_lifshitz_experiment(
+        p=97,                # Standard modular arithmetic
+        embed_dim=128,
+        hidden_dim=128,
+        n_layers=2,
+        noise_std=0.0,
+        lr=1e-3,
+        weight_decay=0.5,    # Lower WD for faster grokking
+        epochs=2000,         # Shorter run - grokking happens by ~600
+        batch_size=512,
+        measure_interval=25, # Finer measurement for chi_g precision
+        seed=42
+    )
+    
+    # Extract all metrics
+    epochs = [m.epoch for m in metrics]
+    cvs = [m.specific_heat for m in metrics]
+    func_ds = [m.functional_defect for m in metrics]
+    chi_gs = [m.geometric_susceptibility for m in metrics]
+    class_seps = [m.class_separation for m in metrics]
+    test_accs = [m.test_acc for m in metrics]
+    
+    # Find peaks and grokking
+    cv_peak_idx = np.argmax(cvs)
+    cv_peak_epoch = epochs[cv_peak_idx]
+    
+    chi_g_peak_idx = np.argmax(chi_gs)
+    chi_g_peak_epoch = epochs[chi_g_peak_idx]
+    chi_g_peak_value = max(chi_gs)
+    
+    grok_idx = next((i for i, ta in enumerate(test_accs) if ta > 0.95), -1)
+    grok_epoch = epochs[grok_idx] if grok_idx >= 0 else -1
+    
+    # Detailed trajectory with both metrics
+    print("\n" + "=" * 80)
+    print("CONTROL-THEORETIC ANALYSIS: Energy vs Geometric Sensors")
+    print("=" * 80)
+    
+    print(f"\n{'Epoch':>6} | {'Cv(E)':>10} | {'chi_g(G)':>10} | {'FuncD':>8} | {'ClsSep':>8} | {'Test':>6}")
+    print("-" * 70)
+    for i, (e, cv, cg, fd, cs, ta) in enumerate(zip(epochs, cvs, chi_gs, func_ds, class_seps, test_accs)):
+        cv_mark = " <-Cv" if cv == max(cvs) else ""
+        cg_mark = " <-chi" if cg == max(chi_gs) else ""
+        grok_mark = " <-GROK" if e == grok_epoch else ""
+        print(f"{e:6d} | {cv:10.2f} | {cg:10.6f} | {fd:8.4f} | {cs:8.2f} | {ta:6.1%}{cv_mark}{cg_mark}{grok_mark}")
+    
+    # Bridge validation results
+    print(f"\n" + "=" * 80)
+    print("BRIDGE VALIDATION: Driven-Dissipative vs Equilibrium Regime")
+    print("=" * 80)
+    
+    print(f"\n1. ENERGY SENSOR (Cv = beta^2 * Var(Loss)) - Equilibrium regime")
+    print(f"   Cv peak epoch:     {cv_peak_epoch}")
+    print(f"   Grokking epoch:    {grok_epoch}")
+    print(f"   Epoch gap:         {abs(cv_peak_epoch - grok_epoch)}")
+    cv_aligned = grok_epoch > 0 and abs(cv_peak_epoch - grok_epoch) < 300
+    print(f"   [{'Y' if cv_aligned else 'N'}] Cv aligned with grokking")
+    
+    print(f"\n2. GEOMETRIC SENSOR (chi_g = Var(Functional Defect)) - Driven-dissipative regime")
+    print(f"   chi_g peak epoch:  {chi_g_peak_epoch}")
+    print(f"   chi_g peak value:  {chi_g_peak_value:.6f}")
+    print(f"   Grokking epoch:    {grok_epoch}")
+    print(f"   Epoch gap:         {abs(chi_g_peak_epoch - grok_epoch)}")
+    chi_aligned = grok_epoch > 0 and abs(chi_g_peak_epoch - grok_epoch) < 300
+    print(f"   [{'Y' if chi_aligned else 'N'}] chi_g aligned with grokking")
+    
+    print(f"\n3. FISHER INFORMATION (Class Separation) - Metric tensor divergence")
+    if grok_idx > 0:
+        pre_grok_sep = class_seps[max(0, grok_idx - 3)]
+        grok_sep = class_seps[grok_idx]
+        sep_ratio = grok_sep / pre_grok_sep if pre_grok_sep > 0 else 0
+        print(f"   Pre-grokking:      {pre_grok_sep:.2f}")
+        print(f"   At grokking:       {grok_sep:.2f}")
+        print(f"   Explosion ratio:   {sep_ratio:.1f}x")
+        fisher_diverged = sep_ratio > 10
+        print(f"   [{'Y' if fisher_diverged else 'N'}] Fisher Info diverged (>10x)")
+    
+    print(f"\n" + "=" * 80)
+    print("CONCLUSION: Hardware Architecture Implications")
+    print("=" * 80)
+    
+    if not cv_aligned and chi_aligned:
+        print("""
+*** SGC HYPOTHESIS VALIDATED ***
+
+SGD is NOT an equilibrium thermal process:
+- Energy sensor (Cv) peaks EARLY (memorization phase) 
+- Geometric sensor (chi_g) peaks at GROKKING (phase transition)
+
+ARCHITECTURE IMPLICATIONS:
+- Digital (SGD): Use GEOMETRIC sensors (Functional Defect, Fisher Info)
+- Thermodynamic HW: Can use ENERGY sensors (Heat, Current noise) - cheaper!
+
+The Extropic Z1 advantage: Hardware physics forces Energy = Information equivalence.
+""")
+    elif cv_aligned:
+        print("\nUnexpected: Cv aligned with grokking. System may be near-equilibrium.")
+    else:
+        print("\nNeither sensor aligned cleanly. May need longer window or different config.")
+    
+    return metrics
+
+
 if __name__ == "__main__":
-    # Run comparison
-    discrete_metrics, analog_metrics = compare_discrete_vs_analog()
+    # Run bridge validation
+    metrics = run_bridge_validation()

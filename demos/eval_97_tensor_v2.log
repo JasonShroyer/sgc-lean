@@ -1,0 +1,309 @@
+PyTorch version: 2.10.0+cu128
+CUDA available: True
+CUDA device: NVIDIA GeForce RTX 5070
+CUDA memory: 12.8 GB
+HAS_SGFE = True
+Loaded 97 tasks
+HAS_TENSOR_LOGIC = True
+Log: C:\Lean4 Projects\demos\eval_97_tensor_v2.log
+
+Cross-task config: sim<0.600 min_delta>0.0010 min_tasks=2 debug=True pass2_tl_only=False
+
+======================================================================
+PASS 1: SCOUT (Dream Phase) (97 tasks, require_cross_task=False)
+======================================================================
+[  1/97] 007bbfb7     fail                 (0.1s) upscale_3x -> cmap(4->0)
+[  2/97] 00d62c1b     PERFECT              (0.1s) fill(4|between_fg_v&enclosed_by_fg)
+[  3/97] 017c7c7b     fail                 (0.0s) failed
+[  4/97] 025d127b     near d=0.0400        (0.8s) shift(0,1) [TL:0 0.0s]
+[  5/97] 045e512c     near d=0.1361        (5.8s) fill(2|same_row_2) -> erase(2|exactly1_adj_1) -> r [TL:0 4.5s]
+[  6/97] 0520fde7     fail                 (2.7s) crop(0,0,3,3) -> erase(1|is_color_1&border_row) -> [TL:1 ops=fill(majority|!same_col_MAJORITY&!border 2.1s]
+[  7/97] 05269061     fail                 (4.3s) fill_role(minority|adj_majority) -> fill_role(mino
+[  8/97] 05f2a901     near d=0.0545        (1.7s) erase(2|is_color_2) [TL:0 0.0s]
+[  9/97] 06df4c85     near d=0.0118        (13.5s) fill(2|between_2_any) -> fill(3|between_3_any) -> 
+[ 10/97] 08ed6ac7     PERFECT              (5.9s) recolor(5->2) -> recolor(2->1|in_largest_cc) -> re [TL:0 2.3s]
+[ 11/97] 09629e4f     fail                 (36.3s) cmap(6->0,2->0,4->0,3->0,8->0,0->2) -> recolor(2->
+[ 12/97] 0962bcdd     near d=0.1111        (3.3s) fill_role(minority|adj_majority) -> recolor(2->7|e [TL:0 2.3s]
+[ 13/97] 0a938d79     near d=0.1448        (0.3s) fill(3|same_col_3)
+[ 14/97] 0b148d64     fail                 (0.0s) crop(11,0,10,10)
+[ 15/97] 0ca9ddb6     PERFECT              (1.2s) fill(7|exactly1_adj_1) -> fill(4|near8_2&is_region
+[ 16/97] 0d3d703e     PERFECT              (0.1s) cmap(2->6,3->4,8->9,1->5,5->1,6->2,9->8,4->3)
+[ 17/97] 0dfd9992     near d=0.0703        (363.7s) fill(1|cross_1) -> cmap(0->2) -> line_connect_all  [TL:1 ops=recolor(2->6|tensor_pred(+adj_to_2&-is_c 20.6s]
+[ 18/97] 0e206a2e     near d=0.0746        (11.6s) erase(1|is_color_1&exactly2_adj_8) -> erase(4|is_c [TL:0 0.1s]
+[ 19/97] 10fcaaa3     fail                 (0.5s) upscale_2x -> shift(-3,-2) -> fill(8|same_row_6)
+[ 20/97] 11852cab     near d=0.1100        (0.3s) fill(2|cross_3) -> fill(3|!color_count_2&cross_8) 
+[ 21/97] 1190e5a7     fail                 (0.0s) crop(0,5,2,4)
+[ 22/97] 150deff5     near d=0.1477        (1.3s) recolor(5->2|is_color_5&differs_from_left) -> reco [TL:0 0.0s]
+[ 23/97] 1a07d186     near d=0.0142        (3.7s) erase_dynamic(small_obj)
+[ 24/97] 1b2d62fb     fail                 (2.5s) crop(0,4,5,3) -> cmap(9->0,0->8) -> erase(8|color_ [TL:0 2.1s]
+[ 25/97] 1b60fb0c     near d=0.0900        (0.0s) failed
+  --- 25/97: 4P 12N 9F | TL: 10 triggered, 2 accepted (460s) ---
+[ 26/97] 1bfc4729     fail                 (0.9s) fill_dynamic(on_border) -> fill(7|same_row_7) -> r
+[ 27/97] 1c786137     fail                 (4.5s) failed
+[ 28/97] 1caeab9d     near d=0.1300        (3.4s) fill(2|same_row_1&same_col_2) -> fill(4|same_row_1 [TL:0 0.1s]
+[ 29/97] 1cf80156     fail                 (0.0s) crop_content(2,3)
+[ 30/97] 1e0a9b12     fail                 (3.4s) erase_dynamic(color_count_1) -> erase_dynamic(in_l
+[ 31/97] 1e32b0e9     fail                 (0.2s) fill(2|cross_1)
+[ 32/97] 1f0c79e5     fail                 (0.2s) recolor(2->4|is_color_2)
+[ 33/97] 1f642eb9     near d=0.0700        (0.2s) failed
+[ 34/97] 1f85a75f     fail                 (0.1s) crop_color_3
+[ 35/97] 2013d3e2     fail                 (0.9s) crop(7,3,3,3) -> fill(8|same_col_7&on_border) -> f
+[ 36/97] 2204b7a8     near d=0.0900        (3.6s) recolor(3->2|in_largest_cc&differs_from_left) -> c [TL:5 ops=?,?,?,?,? 2.7s]
+[ 37/97] 22168020     near d=0.1100        (2.7s) fill(3|between_fg_h) [TL:5 ops=?,?,?,?,? 2.2s]
+[ 38/97] 22233c11     near d=0.0800        (0.1s) failed
+[ 39/97] 2281f1f4     near d=0.0500        (0.4s) fill(2|cross_5) -> fill(0|border_row&cross_5) -> r
+[ 40/97] 228f6490     near d=0.1100        (7.9s) fill_dynamic(enclosed_by_fg) -> recolor(3->9|same_ [TL:4 ops=?,?,?,? 2.7s]
+[ 41/97] 22eb0ac0     fail                 (3.2s) fill(1|same_row_1) -> fill(4|between_4_any) -> fil [TL:0 2.5s]
+[ 42/97] 234bbc79     fail                 (1.4s) crop(0,0,3,7) -> recolor(5->1|is_color_5&adj_to_1)
+[ 43/97] 23581191     fail                 (1.3s) fill(7|same_row_7) -> fill(8|same_col_8) -> recolo
+[ 44/97] 239be575     fail                 (0.0s) failed
+[ 45/97] 23b5c85d     fail                 (0.0s) failed
+[ 46/97] 253bf280     PERFECT              (0.3s) fill(3|between_fg_v) -> fill(3|between_8_h)
+[ 47/97] 25d487eb     near d=0.0625        (0.6s) fill(1|same_row_1) -> erase(1|small_obj) -> fill(1 [TL:0 0.1s]
+[ 48/97] 25d8a9c8     fail                 (2.2s) cmap(2->0,4->5,3->0,7->0,6->5,9->5,1->5) -> fill(0 [TL:3 ops=?,?,? 2.0s]
+[ 49/97] 25ff71a9     fail                 (0.2s) shift(-2,-2)
+[ 50/97] 264363fd     near d=0.0833        (12.3s) recolor(2->3|same_row_4) -> recolor(3->2|repeated_ [TL:0 3.0s]
+  --- 50/97: 5P 21N 24F | TL: 18 triggered, 6 accepted (510s) ---
+[ 51/97] 272f95fa     near d=0.0706        (3.6s) fill(1|between_fg_h) -> recolor(1->2|in_largest_cc [TL:0 0.1s]
+[ 52/97] 27a28665     fail                 (0.0s) failed
+[ 53/97] 28bf18c6     fail                 (0.4s) crop(5,1,3,6) -> fill(2|within2_2)
+[ 54/97] 28e73c20     fail                 (0.3s) fill(3|on_border) -> fill(3|is_region_interior&wit
+[ 55/97] 29623171     near d=0.1488        (2.9s) erase_dynamic(repeated_shape) -> fill(2|within2_2) [TL:0 2.1s]
+[ 56/97] 29c11459     fail                 (2.4s) fill_dynamic(between_fg_h) [TL:0 2.1s]
+[ 57/97] 29ec7d0e     near d=0.1204        (234.7s) recolor(0->6) -> recolor(6->1|large_obj) -> recolo [TL:0 23.4s]
+[ 58/97] 2bee17df     fail                 (0.5s) cmap(0->3) -> erase(3|exactly2_adj_8) -> erase(3|b
+[ 59/97] 2c608aff     PERFECT              (0.1s) line_connect_all
+[ 60/97] 2dc579da     fail                 (0.0s) crop(0,0,3,3)
+[ 61/97] 2dd70a9a     near d=0.0710        (0.2s) failed
+[ 62/97] 2dee498d     fail                 (0.0s) crop(0,0,4,4)
+[ 63/97] 31aa019c     near d=0.0900        (14.2s) recolor(5->0) -> fill(2|near8_6) -> cmap(2->0,7->0 [TL:1 ops=erase(8|tensor_pred(+row_pos&-same_row_8 2.7s]
+[ 64/97] 321b1fc6     fail                 (7.4s) cmap(8->6,6->0,7->0,9->0,4->0) -> recolor(6->7|is_ [TL:3 ops=?,?,? 2.0s]
+[ 65/97] 32597951     PERFECT              (2.5s) recolor(1->3|adj_to_8&cross_8) -> recolor(1->3|bet
+[ 66/97] 3345333e     near d=0.0781        (0.2s) cmap(3->0,1->0)
+[ 67/97] 3428a4f5     fail                 (0.8s) crop(0,0,6,5) -> fill(3|between_fg_h&small_obj) ->
+[ 68/97] 3618c87e     PERFECT              (2.4s) erase(1|is_color_1) -> fill(1|color_not_mode_of_co [TL:2 ops=?,? 2.1s]
+[ 69/97] 3631a71a     near d=0.0422        (33.5s) cmap(9->0) [TL:0 6.8s]
+[ 70/97] 36d67576     near d=0.0571        (0.2s) failed
+[ 71/97] 36fdfd69     near d=0.0523        (4.9s) recolor(1->4|adj_to_2&same_col_2) -> recolor(4->1| [TL:0 0.2s]
+[ 72/97] 3906de3d     near d=0.1200        (4.3s) recolor(2->0|shape_majority&is_color_2) -> fill(2| [TL:0 2.2s]
+[ 73/97] 39a8645d     fail                 (0.5s) crop_color_2 -> recolor(2->4|is_color_2&differs_fr
+[ 74/97] 39e1d7f9     near d=0.0999        (0.1s) failed
+[ 75/97] 3aa6fb7a     PERFECT              (0.0s) fill(1|adj_to_8&exactly2_adj_8)
+  --- 75/97: 9P 32N 34F | TL: 28 triggered, 9 accepted (826s) ---
+[ 76/97] 3ac3eb23     fail                 (0.0s) failed
+[ 77/97] 3af2c5a8     fail                 (0.4s) upscale_2x -> shift(0,-1) -> fill(8|exactly1_adj_8
+[ 78/97] 3bd67248     near d=0.0900        (0.7s) fill(4|border_row) -> erase(4|in_largest_cc) [TL:0 0.0s]
+[ 79/97] 3bdb4ada     near d=0.0500        (0.1s) failed
+[ 80/97] 3befdf3e     fail                 (2.2s) fill(2|within2_2&is_color_0) -> recolor(2->7|near8
+[ 81/97] 3c9b0459     PERFECT              (0.1s) rot180
+[ 82/97] 3de23699     fail                 (0.3s) crop(2,2,3,3) -> cmap(2->4)
+[ 83/97] 3e980e27     near d=0.1243        (3.1s) fill(4|adj_to_3&near_fg) [TL:0 2.5s]
+[ 84/97] 3eda0437     near d=0.0938        (0.1s) failed
+[ 85/97] 3f7978a0     fail                 (1.5s) crop(0,0,5,5) -> shift(-1,-1) -> fill(5|border_col
+[ 86/97] 40853293     near d=0.0650        (7.9s) fill(4|between_4_v) -> fill(9|between_9_v) -> line
+[ 87/97] 4093f84a     near d=0.0153        (1.3s) fill(5|between_fg_h&adj_to_5) -> recolor(3->5|cont
+[ 88/97] 41e4d17e     fail                 (0.1s) failed
+[ 89/97] 4258a5f9     PERFECT              (0.0s) fill(1|near_fg)
+[ 90/97] 4290ef0e     fail                 (1.7s) failed
+[ 91/97] 42a50994     near d=0.0420        (0.8s) erase_dynamic(shape_majority) [TL:0 0.1s]
+[ 92/97] 4347f46a     fail                 (0.1s) failed
+[ 93/97] 444801d8     fail                 (7.4s) fill(3|between_1_v&differs_from_down) -> recolor(3 [TL:0 2.5s]
+[ 94/97] 44d8ac46     near d=0.0625        (2.6s) fill(2|enclosed_by_fg) -> fill(0|between_5_hv) ->  [TL:0 2.2s]
+[ 95/97] 44f52bb0     fail                 (0.0s) failed
+[ 96/97] 4522001f     fail                 (0.6s) upscale_3x -> recolor(2->0) -> fill(3|is_region_in
+[ 97/97] 4612dd53     near d=0.0473        (1.8s) fill(2|between_1_any&adj_to_1) -> erase(2|containe [TL:0 0.1s]
+
+======================================================================
+ANALYZING TRANSFORMATION SIGNATURE CLUSTERS
+======================================================================
+Near-miss tasks cached: 42
+Neighbor counts @ sim<0.600: min=0 median=5.0 mean=4.90 max=11
+Most isolated near-miss tasks:
+  2204b7a8: peers=0
+  25d8a9c8: peers=0
+  3618c87e: peers=0
+  36fdfd69: peers=0
+  444801d8: peers=0
+  08ed6ac7: peers=1
+  29c11459: peers=1
+  4612dd53: peers=1
+Distinct transformation signatures: 16
+
+Cluster distribution:
+  fill: 20 tasks
+  recolor_pure_recolor: 11 tasks
+  erase: 5 tasks
+  mixed: 4 tasks
+  recolor: 2 tasks
+
+Pass 2 order: 42 clustered, 55 unclustered
+
+======================================================================
+PASS 2: CONSOLIDATE (Coset Learning) (97 tasks, require_cross_task=True)
+======================================================================
+[  1/97] 045e512c     near d=0.1361        (3.5s) fill(2|same_row_2) -> erase(2|exactly1_adj_1) -> r [TL:0 2.4s]
+[  2/97] 0520fde7     fail                 (2.5s) crop(0,0,3,3) -> erase(1|is_color_1&border_row) -> [TL:1 ops=fill(majority|!same_col_MAJORITY&!border 2.0s]
+[  3/97] 05f2a901     near d=0.0545        (1.5s) erase(2|is_color_2) [TL:0 0.0s]
+[  4/97] 0962bcdd     near d=0.1111        (3.1s) fill_role(minority|adj_majority) -> recolor(2->7|e [TL:0 2.1s]
+[  5/97] 0a938d79     near d=0.1448        (0.3s) fill(3|same_col_3)
+[  6/97] 0e206a2e     near d=0.0746        (11.3s) erase(1|is_color_1&exactly2_adj_8) -> erase(4|is_c [TL:0 0.1s]
+[  7/97] 1a07d186     near d=0.0142        (3.6s) erase_dynamic(small_obj)
+[  8/97] 1caeab9d     near d=0.1300        (3.3s) fill(2|same_row_1&same_col_2) -> fill(4|same_row_1 [TL:0 0.1s]
+[  9/97] 22eb0ac0     fail                 (2.7s) fill(1|same_row_1) -> fill(4|between_4_any) -> fil [TL:0 2.2s]
+[ 10/97] 25d487eb     near d=0.0625        (0.5s) fill(1|same_row_1) -> erase(1|small_obj) -> fill(1 [TL:0 0.1s]
+[ 11/97] 29623171     near d=0.1488        (2.9s) erase_dynamic(repeated_shape) -> fill(2|within2_2) [TL:0 2.1s]
+[ 12/97] 31aa019c     near d=0.0900        (14.0s) recolor(5->0) -> fill(2|near8_6) -> cmap(2->0,7->0 [TL:1 ops=erase(8|tensor_pred(+row_pos&-same_row_8 2.6s]
+[ 13/97] 3345333e     near d=0.0781        (0.3s) cmap(3->0,1->0)
+[ 14/97] 3631a71a     near d=0.0422        (36.8s) cmap(9->0) [TL:0 6.8s]
+[ 15/97] 3bd67248     near d=0.0900        (1.2s) fill(4|on_border&border_row) -> erase(4|in_largest [TL:0 0.0s]
+[ 16/97] 3e980e27     near d=0.1243        (2.9s) fill(4|adj_to_3&near_fg) [TL:0 2.4s]
+[ 17/97] 40853293     near d=0.0650        (7.6s) fill(4|between_4_v) -> fill(9|between_9_v) -> line
+[ 18/97] 4093f84a     near d=0.0153        (1.3s) fill(5|between_fg_h&adj_to_5) -> recolor(3->5|cont
+[ 19/97] 42a50994     near d=0.0420        (0.8s) erase_dynamic(shape_majority) [TL:0 0.1s]
+[ 20/97] 44d8ac46     near d=0.0833        (2.8s) fill(2|between_fg_hv&!unique_shape) -> erase(2|exa [TL:0 2.3s]
+[ 21/97] 08ed6ac7     PERFECT              (3.1s) recolor(5->1|shape_majority&large_obj) -> recolor(
+[ 22/97] 0dfd9992     near d=0.0703        (334.5s) cmap(0->2) -> line_connect_all -> recolor(2->1|cro [TL:1 ops=recolor(2->6|tensor_pred(+adj_to_2&-is_c 20.3s]
+[ 23/97] 150deff5     near d=0.1477        (1.5s) recolor(5->2|is_color_5&differs_from_left) -> reco [TL:0 0.0s]
+[ 24/97] 2204b7a8     near d=0.0900        (3.8s) recolor(3->1|not_in_largest_cc) -> cmap(3->2) [TL:5 ops=?,?,?,?,? 2.9s]
+[ 25/97] 22168020     near d=0.1100        (2.6s) fill(3|between_fg_h) [TL:5 ops=?,?,?,?,? 2.1s]
+  --- 25/97: 1P 22N 2F | TL: 19 triggered, 5 accepted (448s) ---
+[ 26/97] 264363fd     near d=0.0833        (12.3s) recolor(2->3|same_row_4) -> recolor(3->2|repeated_ [TL:0 2.9s]
+[ 27/97] 272f95fa     near d=0.0706        (3.7s) fill(1|between_fg_h) -> recolor(1->2|in_largest_cc [TL:0 0.1s]
+[ 28/97] 29c11459     fail                 (2.5s) fill_dynamic(between_fg_h) [TL:0 2.1s]
+[ 29/97] 29ec7d0e     near d=0.1173        (228.4s) fill(2|is_color_0&cross_3) -> cmap(0->1) -> fill(4 [TL:0 20.5s]
+[ 30/97] 321b1fc6     fail                 (7.4s) cmap(8->6,6->0,7->0,9->0,4->0) -> recolor(6->7|is_ [TL:3 ops=?,?,? 2.0s]
+[ 31/97] 3618c87e     PERFECT              (3.3s) erase(1|is_color_1) -> fill(1|color_not_mode_of_co [TL:2 ops=?,? 2.8s]
+[ 32/97] 1b2d62fb     fail                 (2.7s) crop(0,4,5,3) -> cmap(9->0,0->8) -> erase(8|color_ [TL:0 2.2s]
+[ 33/97] 228f6490     near d=0.1000        (13.9s) erase_dynamic(color_count_4) -> recolor(9->0) -> f [TL:0 2.5s]
+[ 34/97] 25d8a9c8     fail                 (2.2s) cmap(2->0,4->5,3->0,7->0,6->5,9->5,1->5) -> fill(0 [TL:3 ops=?,?,? 2.0s]
+[ 35/97] 3906de3d     near d=0.1000        (3.7s) erase(2|is_color_2) -> fill(2|between_1_h) -> eras [TL:0 2.1s]
+[ 36/97] 4612dd53     near d=0.0473        (1.5s) fill(2|between_1_any&adj_to_1) -> erase(2|containe [TL:0 0.1s]
+[ 37/97] 025d127b     near d=0.0400        (0.7s) shift(0,1) [TL:0 0.0s]
+[ 38/97] 06df4c85     near d=0.0118        (11.9s) fill(2|between_2_any) -> fill(3|between_3_any) -> 
+[ 39/97] 11852cab     near d=0.1100        (0.3s) fill(2|cross_3) -> fill(3|!color_count_2&cross_8) 
+[ 40/97] 2281f1f4     near d=0.0500        (0.1s) fill(2|cross_5&!border_row)
+[ 41/97] 36fdfd69     near d=0.0523        (4.4s) recolor(1->4|adj_to_2&same_col_2) -> recolor(4->1| [TL:0 0.2s]
+[ 42/97] 444801d8     fail                 (7.9s) fill(3|between_1_v&differs_from_down) -> recolor(3 [TL:0 2.9s]
+[ 43/97] 007bbfb7     fail                 (0.0s) upscale_3x -> cmap(4->0)
+[ 44/97] 00d62c1b     PERFECT              (0.1s) fill(4|enclosed_by_3)
+[ 45/97] 017c7c7b     fail                 (0.0s) failed
+[ 46/97] 05269061     fail                 (3.8s) fill_role(minority|adj_majority) -> fill_role(mino
+[ 47/97] 09629e4f     fail                 (33.2s) cmap(6->0,2->0,4->0,3->0,8->0,0->2) -> recolor(2->
+[ 48/97] 0b148d64     fail                 (0.0s) crop(11,0,10,10)
+[ 49/97] 0ca9ddb6     PERFECT              (1.5s) fill(7|adj_to_1) -> fill(4|near8_2&is_region_inter
+[ 50/97] 0d3d703e     PERFECT              (0.1s) cmap(2->6,3->4,8->9,1->5,5->1,6->2,9->8,4->3)
+  --- 50/97: 5P 33N 12F | TL: 33 triggered, 8 accepted (794s) ---
+[ 51/97] 10fcaaa3     fail                 (0.4s) upscale_2x -> shift(-3,-2) -> fill(8|same_row_6)
+[ 52/97] 1190e5a7     fail                 (0.0s) crop(0,5,2,4)
+[ 53/97] 1b60fb0c     near d=0.0900        (0.0s) failed
+[ 54/97] 1bfc4729     fail                 (0.9s) fill_dynamic(on_border) -> fill(7|same_row_7) -> r
+[ 55/97] 1c786137     fail                 (4.5s) failed
+[ 56/97] 1cf80156     fail                 (0.0s) crop_content(2,3)
+[ 57/97] 1e0a9b12     fail                 (3.3s) erase_dynamic(color_count_1) -> erase_dynamic(in_l
+[ 58/97] 1e32b0e9     fail                 (0.2s) fill(2|cross_1)
+[ 59/97] 1f0c79e5     fail                 (0.2s) recolor(2->4|is_color_2)
+[ 60/97] 1f642eb9     near d=0.0700        (0.2s) failed
+[ 61/97] 1f85a75f     fail                 (0.1s) crop_color_3
+[ 62/97] 2013d3e2     fail                 (0.8s) crop(7,3,3,3) -> fill(8|same_col_7&on_border) -> f
+[ 63/97] 22233c11     near d=0.0800        (0.0s) failed
+[ 64/97] 234bbc79     fail                 (1.3s) crop(0,0,3,9) -> fill(3|within2_3&between_fg_h) ->
+[ 65/97] 23581191     fail                 (1.3s) fill(7|same_row_7) -> fill(8|same_col_8) -> recolo
+[ 66/97] 239be575     fail                 (0.0s) failed
+[ 67/97] 23b5c85d     fail                 (0.0s) failed
+[ 68/97] 253bf280     PERFECT              (0.2s) fill(3|between_fg_v) -> fill(3|between_8_h)
+[ 69/97] 25ff71a9     fail                 (0.1s) shift(-2,-2)
+[ 70/97] 27a28665     fail                 (0.0s) failed
+[ 71/97] 28bf18c6     fail                 (0.4s) crop(5,0,3,6) -> fill(2|within2_2&color_is_mode_of
+[ 72/97] 28e73c20     fail                 (0.3s) fill(3|on_border) -> fill(3|is_region_interior&wit
+[ 73/97] 2bee17df     fail                 (0.6s) cmap(0->3) -> erase(3|exactly2_adj_8) -> erase(3|b
+[ 74/97] 2c608aff     PERFECT              (0.1s) line_connect_all
+[ 75/97] 2dc579da     fail                 (0.0s) crop(0,0,3,3)
+  --- 75/97: 7P 36N 32F | TL: 33 triggered, 8 accepted (809s) ---
+[ 76/97] 2dd70a9a     near d=0.0710        (0.2s) failed
+[ 77/97] 2dee498d     fail                 (0.0s) crop(0,0,4,4)
+[ 78/97] 32597951     PERFECT              (2.5s) recolor(1->3|adj_to_8&cross_8) -> recolor(1->3|bet
+[ 79/97] 3428a4f5     fail                 (0.7s) crop(0,0,6,5) -> fill(3|between_fg_h&small_obj) ->
+[ 80/97] 36d67576     near d=0.0571        (0.2s) failed
+[ 81/97] 39a8645d     fail                 (0.5s) crop_color_2 -> recolor(2->4) -> erase(4|border_co
+[ 82/97] 39e1d7f9     near d=0.0999        (0.1s) failed
+[ 83/97] 3aa6fb7a     PERFECT              (0.0s) fill(1|inside_bbox_8)
+[ 84/97] 3ac3eb23     fail                 (0.0s) failed
+[ 85/97] 3af2c5a8     fail                 (0.3s) upscale_2x -> shift(0,-1) -> fill(8|exactly1_adj_8
+[ 86/97] 3bdb4ada     near d=0.0500        (0.1s) failed
+[ 87/97] 3befdf3e     fail                 (2.0s) fill(2|within2_2&is_color_0) -> recolor(2->7|near8
+[ 88/97] 3c9b0459     PERFECT              (0.1s) rot180
+[ 89/97] 3de23699     fail                 (0.3s) crop(2,2,3,3) -> cmap(2->4)
+[ 90/97] 3eda0437     near d=0.0938        (0.1s) failed
+[ 91/97] 3f7978a0     fail                 (1.3s) crop(0,0,5,5) -> shift(-1,-1) -> fill(5|border_col
+[ 92/97] 41e4d17e     fail                 (0.1s) failed
+[ 93/97] 4258a5f9     PERFECT              (0.0s) fill(1|within2_5&near8_5)
+[ 94/97] 4290ef0e     fail                 (1.7s) failed
+[ 95/97] 4347f46a     fail                 (0.1s) failed
+[ 96/97] 44f52bb0     fail                 (0.0s) failed
+[ 97/97] 4522001f     fail                 (0.6s) upscale_3x -> recolor(2->0) -> fill(3|is_region_in
+
+======================================================================
+TWO-PASS COSET CURRICULUM EVALUATION COMPLETE
+======================================================================
+
+--- Pass 1 (Scout) Results ---
+Perfect:   11
+Near-miss: 41
+Fail:      45
+TL Triggered: 34
+TL Accepted:  9
+Time: 859s
+
+--- Pass 2 (Consolidate) Results ---
+Perfect:   11
+Near-miss: 41
+Fail:      45
+TL Triggered: 33
+TL Accepted:  8
+Time: 820s
+
+--- SGFE v2.2 Cross-Task Metrics ---
+Near-miss tasks cached:            42
+Staging library size (Pass 1):     0
+Permanent library size (Pass 2):   0
+Cross-task validated predicates:   0
+
+--- Combined Tensor Logic Stats ---
+Total TL triggered: 67
+Total TL accepted:  17
+TL time: median=2.1s  mean=2.9s  max=23.4s
+
+Final Perfect solves (11):
+  08ed6ac7
+  3618c87e
+  00d62c1b
+  0ca9ddb6
+  0d3d703e
+  253bf280
+  2c608aff
+  32597951
+  3aa6fb7a
+  3c9b0459
+  4258a5f9
+
+Top near-misses (Pass 2):
+  06df4c85: d=0.0118
+  1a07d186: d=0.0142
+  4093f84a: d=0.0153
+  025d127b: d=0.0400
+  42a50994: d=0.0420
+  3631a71a: d=0.0422
+  4612dd53: d=0.0473
+  2281f1f4: d=0.0500
+  3bdb4ada: d=0.0500
+  36fdfd69: d=0.0523
+  05f2a901: d=0.0545
+  36d67576: d=0.0571
+  25d487eb: d=0.0625
+  40853293: d=0.0650
+  1f642eb9: d=0.0700
+
+CSV: C:\Lean4 Projects\demos\eval_97_tensor_v2_results.csv
+Log: C:\Lean4 Projects\demos\eval_97_tensor_v2.log
+
+Total time: 1679s (28.0min)

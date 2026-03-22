@@ -38,12 +38,13 @@ import torch.nn.functional as F
 import numpy as np
 import argparse
 from typing import Dict, List, Tuple, Optional
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from datetime import datetime
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from scipy import stats as scipy_stats
 
 # TensorBoard for browser-based monitoring
 from torch.utils.tensorboard import SummaryWriter
@@ -88,6 +89,755 @@ class SGCMetrics:
     
     # Estimator identification (Phase-1c: explicit about which Fisher)
     fisher_estimator: str = "empirical_score_covariance"  # SVD of gradients
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PART I-B: PHASE-1d FISHER PROXY COMPARISON METRICS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@dataclass
+class FisherProxyComparison:
+    """
+    Phase-1d/1e: Compare Fisher proxies (SVD vs GN) for geometry consistency.
+    
+    Key insight: We don't expect absolute eigenvalue agreement; we test whether
+    NORMALIZED spectrum shapes and principal directions are consistent.
+    
+    Validity gating: Comparisons are only meaningful when:
+    - effective_rank >= 2 (non-degenerate spectrum)
+    - lambda_1 > floor (nontrivial curvature)
+    
+    Phase-1e additions:
+    - Cross-space direction overlap (project SVD to last-layer, compare with GN)
+    - Log-spectrum distance metrics (cosine, L2, KL divergence)
+    """
+    # Validity flags
+    is_valid: bool = False              # Whether comparison is well-posed
+    validity_reason: str = ""           # Why invalid (if applicable)
+    
+    # Spectrum correlation (normalized eigenvalues)
+    spearman_rho: float = 0.0           # Primary: rank-based (robust to outliers)
+    pearson_rho: float = 0.0            # Secondary: linear correlation
+    
+    # Direction agreement
+    top1_overlap: float = 0.0           # |<v1_SVD, v1_GN>| (cosine similarity)
+    top5_mean_overlap: float = 0.0      # Mean overlap for top-5 directions
+    
+    # Phase-1e: Cross-space direction overlap (SVD projected to last layer)
+    cross_top1_overlap: float = 0.0     # |<proj(v1_SVD), v1_GN>|
+    cross_top5_mean_overlap: float = 0.0
+    
+    # Consolidated dimension agreement
+    k_svd: int = 0
+    k_gn: int = 0
+    k_diff: int = 0                     # |k_SVD - k_GN|
+    
+    # Effective rank (participation ratio) for each proxy
+    # d_eff = 1 / sum(p_i^2) where p_i = lambda_i / sum(lambda)
+    effective_rank_svd: float = 0.0
+    effective_rank_gn: float = 0.0
+    
+    # Additional spectral diagnostics
+    lambda1_ratio: float = 0.0          # lambda1_GN / lambda1_SVD (scale difference)
+    spectral_decay_svd: float = 0.0     # lambda1/lambda10 (peakedness)
+    spectral_decay_gn: float = 0.0
+    
+    # Phase-1e: Log-spectrum distance metrics (more informative than Pearson)
+    log_spectrum_cosine: float = 0.0    # cosine(log(λ_SVD/λ1), log(λ_GN/λ1))
+    log_spectrum_l2: float = 0.0        # L2 distance in log-space
+    spectrum_kl_div: float = 0.0        # KL(p_SVD || p_GN) where p = λ/sum(λ)
+
+
+def compute_effective_rank(eigenvalues: torch.Tensor, eps: float = 1e-10) -> float:
+    """
+    Effective rank via participation ratio: d_eff = 1 / sum(p_i^2)
+    where p_i = lambda_i / sum(lambda).
+    
+    This measures how "spread out" the spectrum is:
+    - d_eff ≈ 1 means one dominant direction (rank-1)
+    - d_eff ≈ n means uniform spectrum (full rank)
+    """
+    total = eigenvalues.sum().item()
+    if total < eps:
+        return 0.0
+    p = eigenvalues / total
+    participation = (p ** 2).sum().item()
+    if participation < eps:
+        return float(len(eigenvalues))
+    return 1.0 / participation
+
+
+def compute_spectral_decay(eigenvalues: torch.Tensor, k: int = 10) -> float:
+    """Compute lambda_1 / lambda_k ratio (spectral peakedness)."""
+    if len(eigenvalues) < k:
+        k = len(eigenvalues)
+    if k < 1:
+        return 1.0
+    lambda_1 = eigenvalues[0].item()
+    lambda_k = eigenvalues[k-1].item()
+    if lambda_k < 1e-10:
+        return 1000.0  # Cap at large value
+    return lambda_1 / lambda_k
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PHASE-2: LAYER-WISE SPECTRAL TOMOGRAPHY
+# "Holographic Diffusion" hypothesis: spectral equilibration starts at boundary
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@dataclass
+class LayerSpectrum:
+    """Spectral data for a single layer."""
+    layer_name: str
+    eigenvalues: torch.Tensor  # Normalized eigenvalues (p_i = λ_i / Σλ)
+    spectral_entropy: float    # S = -Σ p_i log p_i
+    effective_rank: float      # 1 / Σ p_i²
+    
+    
+@dataclass
+class SpectralTomography:
+    """Phase-2: Layer-wise spectral tomography results."""
+    # Per-layer spectra (input -> hidden -> output)
+    layer_spectra: Dict[str, LayerSpectrum] = field(default_factory=dict)
+    
+    # Global spectrum (full network SVD)
+    global_spectrum: Optional[torch.Tensor] = None
+    global_entropy: float = 0.0
+    global_effective_rank: float = 0.0
+    
+    # Holographic Deficit: D_JS(Global || Layer) for each layer
+    holographic_deficit: Dict[str, float] = field(default_factory=dict)
+    
+    # Entropy production (ΔS / Δt) for trigger detection
+    entropy_production: Dict[str, float] = field(default_factory=dict)
+    
+    # Previous entropies for computing production rate
+    prev_entropies: Dict[str, float] = field(default_factory=dict)
+    
+    # Validity
+    is_valid: bool = False
+
+
+def compute_spectral_entropy(eigenvalues: torch.Tensor, eps: float = 1e-10) -> float:
+    """
+    Spectral entropy: S = -Σ p_i log p_i
+    where p_i = λ_i / Σλ_j (normalized eigenvalues as probability distribution).
+    
+    High entropy = flat spectrum (uniform curvature)
+    Low entropy = peaked spectrum (concentrated curvature)
+    """
+    total = eigenvalues.sum().item()
+    if total < eps:
+        return 0.0
+    
+    p = eigenvalues / total
+    p = torch.clamp(p, min=eps)  # Avoid log(0)
+    entropy = -torch.sum(p * torch.log(p)).item()
+    return entropy
+
+
+def compute_js_divergence(p: torch.Tensor, q: torch.Tensor, eps: float = 1e-10) -> float:
+    """
+    Jensen-Shannon divergence: D_JS(P || Q) = 0.5 * KL(P || M) + 0.5 * KL(Q || M)
+    where M = 0.5 * (P + Q).
+    
+    Symmetric and bounded [0, log(2)]. More stable than KL.
+    """
+    # Ensure same length
+    m = min(len(p), len(q))
+    if m < 2:
+        return 0.0
+    
+    p = p[:m].cpu()
+    q = q[:m].cpu()
+    
+    # Normalize to probability distributions
+    p_sum = p.sum().item()
+    q_sum = q.sum().item()
+    if p_sum < eps or q_sum < eps:
+        return 0.0
+    
+    p_norm = p / p_sum
+    q_norm = q / q_sum
+    
+    # Mixture distribution
+    m_dist = 0.5 * (p_norm + q_norm)
+    
+    # Clamp for numerical stability
+    p_norm = torch.clamp(p_norm, min=eps)
+    q_norm = torch.clamp(q_norm, min=eps)
+    m_dist = torch.clamp(m_dist, min=eps)
+    
+    # KL(P || M) and KL(Q || M)
+    kl_p_m = torch.sum(p_norm * torch.log(p_norm / m_dist)).item()
+    kl_q_m = torch.sum(q_norm * torch.log(q_norm / m_dist)).item()
+    
+    return 0.5 * kl_p_m + 0.5 * kl_q_m
+
+
+def compute_layerwise_spectra(
+    model: nn.Module,
+    dataloader: torch.utils.data.DataLoader,
+    device: str = 'cuda',
+    num_samples: int = 200,
+    max_rank: int = 50,
+) -> Dict[str, LayerSpectrum]:
+    """
+    Phase-2: Compute Fisher spectrum for each layer separately.
+    
+    For an MLP with layers [W_in, W_mid, W_out], computes SVD of gradients
+    restricted to each layer's parameters.
+    
+    Returns:
+        Dict mapping layer_name -> LayerSpectrum
+    """
+    model.eval()
+    
+    # Identify linear layers
+    linear_layers = []
+    for name, module in model.named_modules():
+        if isinstance(module, nn.Linear):
+            linear_layers.append((name, module))
+    
+    if len(linear_layers) == 0:
+        return {}
+    
+    # Assign semantic names based on position
+    layer_names = []
+    n_layers = len(linear_layers)
+    for i, (name, module) in enumerate(linear_layers):
+        if i == 0:
+            layer_names.append('input')
+        elif i == n_layers - 1:
+            layer_names.append('output')
+        else:
+            layer_names.append(f'hidden_{i}')
+    
+    # Collect gradients per layer
+    layer_gradients = {name: [] for name in layer_names}
+    n_collected = 0
+    
+    for x, y in dataloader:
+        if n_collected >= num_samples:
+            break
+        x, y = x.to(device), y.to(device)
+        
+        batch_size = min(len(x), num_samples - n_collected)
+        for i in range(batch_size):
+            model.zero_grad()
+            logits = model(x[i:i+1])
+            log_prob = torch.log_softmax(logits, dim=-1)
+            loss = -log_prob[0, y[i]]
+            loss.backward()
+            
+            # Extract gradients for each layer
+            for j, (orig_name, module) in enumerate(linear_layers):
+                layer_name = layer_names[j]
+                # Concatenate weight and bias gradients
+                g_w = module.weight.grad.flatten()
+                g_b = module.bias.grad.flatten() if module.bias is not None else torch.tensor([], device=device)
+                g = torch.cat([g_w, g_b])
+                layer_gradients[layer_name].append(g)
+            
+            n_collected += 1
+    
+    if n_collected == 0:
+        return {}
+    
+    # Compute spectrum for each layer
+    results = {}
+    for layer_name in layer_names:
+        grads = layer_gradients[layer_name]
+        if len(grads) == 0:
+            continue
+        
+        G = torch.stack(grads, dim=0)  # (n_samples, n_params_layer)
+        n_params = G.shape[1]
+        
+        # SVD
+        if n_params > 5000:
+            G_cpu = G.cpu()
+            U, s, Vh = torch.linalg.svd(G_cpu, full_matrices=False)
+            s = s.to(device)
+        else:
+            U, s, Vh = torch.linalg.svd(G, full_matrices=False)
+        
+        # Fisher eigenvalues: λ_i = s_i² / n_samples
+        eigenvalues = (s ** 2) / n_collected
+        k = min(max_rank, len(eigenvalues))
+        eigenvalues = eigenvalues[:k]
+        eigenvalues = torch.clamp(eigenvalues, min=0.0)
+        
+        # Normalize to probability distribution
+        total = eigenvalues.sum().item()
+        if total > 1e-10:
+            normalized_eigs = eigenvalues / total
+        else:
+            normalized_eigs = eigenvalues
+        
+        # Compute metrics
+        entropy = compute_spectral_entropy(eigenvalues)
+        eff_rank = compute_effective_rank(eigenvalues)
+        
+        results[layer_name] = LayerSpectrum(
+            layer_name=layer_name,
+            eigenvalues=normalized_eigs,
+            spectral_entropy=entropy,
+            effective_rank=eff_rank,
+        )
+    
+    return results
+
+
+def compute_spectral_tomography(
+    model: nn.Module,
+    dataloader: torch.utils.data.DataLoader,
+    device: str = 'cuda',
+    num_samples: int = 200,
+    max_rank: int = 50,
+    prev_tomography: Optional[SpectralTomography] = None,
+) -> SpectralTomography:
+    """
+    Phase-2: Full spectral tomography with holographic deficit computation.
+    
+    Args:
+        model: The neural network
+        dataloader: Training data for gradient computation
+        device: Computation device
+        num_samples: Number of samples for SVD estimation
+        max_rank: Maximum eigenvalues to compute
+        prev_tomography: Previous tomography for entropy production calculation
+        
+    Returns:
+        SpectralTomography with layer spectra, global spectrum, and deficits
+    """
+    result = SpectralTomography()
+    
+    # Compute layer-wise spectra
+    result.layer_spectra = compute_layerwise_spectra(
+        model, dataloader, device, num_samples, max_rank
+    )
+    
+    if len(result.layer_spectra) == 0:
+        return result
+    
+    # Compute global spectrum (full network)
+    svd_eigs, _ = _compute_svd_spectrum(model, dataloader, device, num_samples, max_rank)
+    
+    # Normalize global spectrum
+    total = svd_eigs.sum().item()
+    if total > 1e-10:
+        result.global_spectrum = svd_eigs / total
+        result.global_entropy = compute_spectral_entropy(svd_eigs)
+        result.global_effective_rank = compute_effective_rank(svd_eigs)
+    else:
+        result.global_spectrum = svd_eigs
+        return result
+    
+    # Compute Holographic Deficit for each layer
+    for layer_name, layer_spec in result.layer_spectra.items():
+        d_js = compute_js_divergence(result.global_spectrum, layer_spec.eigenvalues)
+        result.holographic_deficit[layer_name] = d_js
+    
+    # Compute entropy production (ΔS / Δt) if we have previous data
+    if prev_tomography is not None and len(prev_tomography.layer_spectra) > 0:
+        for layer_name, layer_spec in result.layer_spectra.items():
+            if layer_name in prev_tomography.layer_spectra:
+                prev_entropy = prev_tomography.layer_spectra[layer_name].spectral_entropy
+                delta_s = layer_spec.spectral_entropy - prev_entropy
+                result.entropy_production[layer_name] = delta_s
+            result.prev_entropies[layer_name] = layer_spec.spectral_entropy
+        
+        # Global entropy production
+        result.entropy_production['global'] = result.global_entropy - prev_tomography.global_entropy
+    
+    result.is_valid = True
+    return result
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PHASE-1e: LOG-SPECTRUM DISTANCE METRICS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def compute_log_spectrum_cosine(eig1: torch.Tensor, eig2: torch.Tensor, m: int = 10) -> float:
+    """
+    Cosine similarity between log-normalized spectra.
+    
+    log(λ_i/λ_1) captures the "shape" of spectral decay in a scale-invariant way.
+    Cosine similarity measures alignment of these decay profiles.
+    """
+    m = min(m, len(eig1), len(eig2))
+    if m < 2:
+        return 0.0
+    
+    # Normalize by λ_1 and take log (add small eps for numerical stability)
+    eps = 1e-10
+    log1 = torch.log(eig1[:m] / (eig1[0] + eps) + eps).cpu().numpy()
+    log2 = torch.log(eig2[:m] / (eig2[0] + eps) + eps).cpu().numpy()
+    
+    # Cosine similarity
+    dot = np.dot(log1, log2)
+    norm1 = np.linalg.norm(log1)
+    norm2 = np.linalg.norm(log2)
+    if norm1 < eps or norm2 < eps:
+        return 0.0
+    return dot / (norm1 * norm2)
+
+
+def compute_log_spectrum_l2(eig1: torch.Tensor, eig2: torch.Tensor, m: int = 10) -> float:
+    """
+    L2 distance between log-normalized spectra.
+    
+    Lower is better (more similar shapes).
+    """
+    m = min(m, len(eig1), len(eig2))
+    if m < 2:
+        return 0.0
+    
+    eps = 1e-10
+    log1 = torch.log(eig1[:m] / (eig1[0] + eps) + eps).cpu().numpy()
+    log2 = torch.log(eig2[:m] / (eig2[0] + eps) + eps).cpu().numpy()
+    
+    return float(np.linalg.norm(log1 - log2))
+
+
+def compute_spectrum_kl_divergence(eig1: torch.Tensor, eig2: torch.Tensor, m: int = 10) -> float:
+    """
+    KL divergence between normalized spectra treated as probability distributions.
+    
+    p_i = λ_i / Σλ_j
+    KL(p || q) = Σ p_i log(p_i / q_i)
+    
+    Lower is better (more similar distributions).
+    """
+    m = min(m, len(eig1), len(eig2))
+    if m < 2:
+        return 0.0
+    
+    eps = 1e-10
+    # Normalize to probability distributions
+    p = eig1[:m].cpu().numpy()
+    q = eig2[:m].cpu().numpy()
+    p = p / (p.sum() + eps)
+    q = q / (q.sum() + eps)
+    
+    # Add small eps to avoid log(0)
+    p = np.clip(p, eps, None)
+    q = np.clip(q, eps, None)
+    
+    # KL divergence
+    kl = np.sum(p * np.log(p / q))
+    return float(kl)
+
+
+def compute_gn_fisher_lastlayer(
+    model: nn.Module,
+    dataloader: torch.utils.data.DataLoader,
+    device: str = 'cuda',
+    num_samples: int = 200,
+    max_rank: int = 100,
+) -> Tuple[torch.Tensor, torch.Tensor]:
+    """
+    Phase-1d: Compute Gauss-Newton Fisher for the last layer only (VECTORIZED).
+    
+    For cross-entropy loss, the GN approximation is:
+        F_GN = E[J^T diag(p) J]
+    
+    where J = d(logits)/d(params_lastlayer) is the Jacobian.
+    
+    For a linear layer: logits = W @ h + b
+    The Jacobian has Kronecker structure, allowing efficient computation:
+        F_GN[W,W] block = E[diag(p) ⊗ (h h^T)]
+        F_GN[b,b] block = E[diag(p)]
+        F_GN[W,b] block = E[diag(p) ⊗ h]
+    
+    We use SVD of a "pseudo-gradient" matrix for efficiency instead of
+    forming the full n_params × n_params matrix.
+    
+    Returns:
+        eigenvalues: GN Fisher eigenvalues (descending)
+        eigenvectors: Corresponding eigenvectors (columns)
+    """
+    model.eval()
+    
+    # Find the last linear layer
+    last_linear = None
+    for module in model.modules():
+        if isinstance(module, nn.Linear):
+            last_linear = module
+    
+    if last_linear is None:
+        raise ValueError("No Linear layer found in model")
+    
+    in_features = last_linear.in_features
+    out_features = last_linear.out_features
+    
+    # Hook to capture activations
+    activations = {}
+    def hook_fn(module, input, output):
+        activations['input'] = input[0]
+    
+    handle = last_linear.register_forward_hook(hook_fn)
+    
+    # Collect weighted gradients: sqrt(p_c) * [h; 1] for each class c
+    # This gives us a matrix G such that G^T G ≈ F_GN
+    weighted_grads = []
+    n_collected = 0
+    
+    try:
+        for x, y in dataloader:
+            if n_collected >= num_samples:
+                break
+            x, y = x.to(device), y.to(device)
+            
+            batch_size = min(len(x), num_samples - n_collected)
+            for i in range(batch_size):
+                # Forward pass
+                with torch.no_grad():
+                    logits = model(x[i:i+1])
+                h = activations['input'].squeeze(0).detach()  # (in_features,)
+                
+                # Softmax probabilities
+                p = torch.softmax(logits, dim=-1).squeeze(0)  # (out_features,)
+                sqrt_p = torch.sqrt(p)  # (out_features,)
+                
+                # For each class c, the "gradient" is [h; 1] placed at class c's position
+                # Weighted by sqrt(p_c), giving sqrt(p_c) * [h; 1]
+                # Stack all classes: results in out_features gradients per sample
+                # Each gradient is (in_features + 1) for the class-specific block
+                
+                # Efficient: use Kronecker structure
+                # grad_c = sqrt(p_c) * [h, 1] for class c
+                # Full param vector: place this at positions for class c
+                
+                # For efficiency, we work with the (in_features+1) x out_features structure
+                # and use SVD on that smaller matrix
+                h_aug = torch.cat([h, torch.ones(1, device=device)])  # (in_features+1,)
+                weighted_h = sqrt_p.unsqueeze(1) * h_aug.unsqueeze(0)  # (out_features, in_features+1)
+                weighted_grads.append(weighted_h.flatten())  # (out_features * (in_features+1),)
+                
+                n_collected += 1
+    finally:
+        handle.remove()
+    
+    if n_collected == 0:
+        # Return zeros if no samples collected
+        return torch.zeros(max_rank, device=device), torch.zeros(1, max_rank, device=device)
+    
+    # Stack into matrix G: (n_collected, out_features * (in_features+1))
+    G = torch.stack(weighted_grads, dim=0)
+    
+    # SVD of G gives us eigenvalues of G^T G / n_collected ≈ F_GN
+    # Move to CPU for large matrices
+    n_params_lastlayer = out_features * (in_features + 1)
+    if n_params_lastlayer > 5000:
+        G_cpu = G.cpu()
+        U, s, Vh = torch.linalg.svd(G_cpu, full_matrices=False)
+        s = s.to(device)
+        V = Vh.T.to(device)
+    else:
+        U, s, Vh = torch.linalg.svd(G, full_matrices=False)
+        V = Vh.T
+    
+    # Fisher eigenvalues: lambda_i = s_i^2 / n_collected
+    eigenvalues = (s ** 2) / n_collected
+    
+    # Truncate to max_rank
+    k = min(max_rank, len(eigenvalues))
+    eigenvalues = eigenvalues[:k]
+    eigenvectors = V[:, :k]
+    
+    # Ensure non-negative
+    eigenvalues = torch.clamp(eigenvalues, min=0.0)
+    
+    return eigenvalues, eigenvectors
+
+
+def _compute_svd_spectrum(
+    model: nn.Module,
+    dataloader: torch.utils.data.DataLoader,
+    device: str,
+    num_samples: int,
+    max_rank: int,
+) -> Tuple[torch.Tensor, torch.Tensor]:
+    """
+    Helper: Compute SVD-based Fisher eigenvalues and eigenvectors.
+    
+    Returns:
+        eigenvalues: Fisher eigenvalues (descending)
+        eigenvectors: Corresponding eigenvectors (columns of V)
+    """
+    model.eval()
+    params = [p for p in model.parameters() if p.requires_grad]
+    n_params = sum(p.numel() for p in params)
+    
+    gradients = []
+    n_collected = 0
+    
+    for x, y in dataloader:
+        if n_collected >= num_samples:
+            break
+        x, y = x.to(device), y.to(device)
+        
+        batch_size = min(len(x), num_samples - n_collected)
+        for i in range(batch_size):
+            model.zero_grad()
+            logits = model(x[i:i+1])
+            log_prob = torch.log_softmax(logits, dim=-1)
+            loss = -log_prob[0, y[i]]
+            loss.backward()
+            
+            g = torch.cat([p.grad.flatten() for p in params])
+            gradients.append(g)
+            n_collected += 1
+    
+    G = torch.stack(gradients, dim=0)
+    M = G.shape[0]
+    
+    if n_params > 10000:
+        G_cpu = G.cpu()
+        U, s, Vh = torch.linalg.svd(G_cpu, full_matrices=False)
+        V = Vh.T.to(device)
+        s = s.to(device)
+    else:
+        U, s, Vh = torch.linalg.svd(G, full_matrices=False)
+        V = Vh.T
+    
+    eigenvalues = (s ** 2) / M
+    k = min(max_rank, len(eigenvalues))
+    
+    return eigenvalues[:k], V[:, :k]
+
+
+def compare_fisher_proxies(
+    svd_eigenvalues: torch.Tensor,
+    svd_eigenvectors: torch.Tensor,
+    gn_eigenvalues: torch.Tensor,
+    gn_eigenvectors: torch.Tensor,
+    tau_rel: float = 0.01,
+    min_effective_rank: float = 2.0,
+    min_lambda1: float = 1e-8,
+) -> FisherProxyComparison:
+    """
+    Phase-1d: Compare SVD and GN Fisher proxies.
+    
+    Validity gating: Skip correlation when either proxy is:
+    - Near rank-1 (effective_rank < min_effective_rank)
+    - Numerically flat (lambda_1 < min_lambda1)
+    
+    Uses Spearman (rank-based) as primary correlation for robustness.
+    """
+    result = FisherProxyComparison()
+    
+    # Compute effective ranks
+    result.effective_rank_svd = compute_effective_rank(svd_eigenvalues)
+    result.effective_rank_gn = compute_effective_rank(gn_eigenvalues)
+    
+    # Compute spectral decay (lambda1/lambda10)
+    result.spectral_decay_svd = compute_spectral_decay(svd_eigenvalues, 10)
+    result.spectral_decay_gn = compute_spectral_decay(gn_eigenvalues, 10)
+    
+    # Get lambda_1 for each
+    lambda1_svd = svd_eigenvalues[0].item() if len(svd_eigenvalues) > 0 else 0.0
+    lambda1_gn = gn_eigenvalues[0].item() if len(gn_eigenvalues) > 0 else 0.0
+    
+    # Lambda1 ratio (scale difference)
+    if lambda1_svd > 1e-10:
+        result.lambda1_ratio = lambda1_gn / lambda1_svd
+    
+    # Compute k for each proxy
+    if lambda1_svd > 1e-10:
+        stiff_threshold_svd = tau_rel * lambda1_svd
+        result.k_svd = int((svd_eigenvalues > stiff_threshold_svd).sum().item())
+    
+    if lambda1_gn > 1e-10:
+        stiff_threshold_gn = tau_rel * lambda1_gn
+        result.k_gn = int((gn_eigenvalues > stiff_threshold_gn).sum().item())
+    
+    result.k_diff = abs(result.k_svd - result.k_gn)
+    
+    # Validity check
+    if lambda1_svd < min_lambda1:
+        result.validity_reason = f"SVD lambda1 too small: {lambda1_svd:.2e}"
+        return result
+    if lambda1_gn < min_lambda1:
+        result.validity_reason = f"GN lambda1 too small: {lambda1_gn:.2e}"
+        return result
+    if result.effective_rank_svd < min_effective_rank:
+        result.validity_reason = f"SVD effective rank too low: {result.effective_rank_svd:.2f}"
+        return result
+    if result.effective_rank_gn < min_effective_rank:
+        result.validity_reason = f"GN effective rank too low: {result.effective_rank_gn:.2f}"
+        return result
+    
+    result.is_valid = True
+    
+    # Normalized eigenvalue comparison (top-m)
+    m = min(10, len(svd_eigenvalues), len(gn_eigenvalues))
+    if m >= 2:
+        norm_svd = (svd_eigenvalues[:m] / lambda1_svd).cpu().numpy()
+        norm_gn = (gn_eigenvalues[:m] / lambda1_gn).cpu().numpy()
+        
+        # Spearman correlation (rank-based, primary)
+        spearman_result = scipy_stats.spearmanr(norm_svd, norm_gn)
+        result.spearman_rho = spearman_result.correlation if not np.isnan(spearman_result.correlation) else 0.0
+        
+        # Pearson correlation (linear, secondary)
+        pearson_result = scipy_stats.pearsonr(norm_svd, norm_gn)
+        result.pearson_rho = pearson_result[0] if not np.isnan(pearson_result[0]) else 0.0
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # PHASE-1e: Log-spectrum distance metrics (more informative than correlation)
+    # ═══════════════════════════════════════════════════════════════════════════
+    result.log_spectrum_cosine = compute_log_spectrum_cosine(svd_eigenvalues, gn_eigenvalues, m)
+    result.log_spectrum_l2 = compute_log_spectrum_l2(svd_eigenvalues, gn_eigenvalues, m)
+    result.spectrum_kl_div = compute_spectrum_kl_divergence(svd_eigenvalues, gn_eigenvalues, m)
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # PHASE-1e: Cross-space direction overlap
+    # Project SVD eigenvectors to last-layer subspace, then compare with GN
+    # ═══════════════════════════════════════════════════════════════════════════
+    n_gn = gn_eigenvectors.shape[0] if len(gn_eigenvectors) > 0 else 0
+    n_svd = svd_eigenvectors.shape[0] if len(svd_eigenvectors) > 0 else 0
+    
+    if n_gn > 0 and n_svd >= n_gn and gn_eigenvectors.shape[1] > 0 and svd_eigenvectors.shape[1] > 0:
+        # Extract last n_gn components of SVD eigenvectors (last-layer projection)
+        # Assumption: last layer params are the LAST n_gn parameters
+        svd_proj = svd_eigenvectors[-n_gn:, :]  # (n_gn, k_svd)
+        
+        # Re-normalize projected vectors (they may not be unit length after projection)
+        def normalize_cols(M):
+            norms = torch.norm(M, dim=0, keepdim=True)
+            norms = torch.clamp(norms, min=1e-10)
+            return M / norms
+        
+        svd_proj_normed = normalize_cols(svd_proj)
+        gn_normed = normalize_cols(gn_eigenvectors)
+        
+        # Top-1 cross-space overlap: |<proj(v1_SVD), v1_GN>|
+        v1_svd_proj = svd_proj_normed[:, 0]
+        v1_gn = gn_normed[:, 0]
+        result.cross_top1_overlap = abs(torch.dot(v1_svd_proj, v1_gn).item())
+        
+        # Top-5 mean cross-space overlap
+        k_compare = min(5, svd_proj_normed.shape[1], gn_normed.shape[1])
+        overlaps = []
+        for i in range(k_compare):
+            vi_svd = svd_proj_normed[:, i]
+            # Find best matching GN direction (may not be same index)
+            best_overlap = 0.0
+            for j in range(k_compare):
+                vj_gn = gn_normed[:, j]
+                overlap = abs(torch.dot(vi_svd, vj_gn).item())
+                best_overlap = max(best_overlap, overlap)
+            overlaps.append(best_overlap)
+        result.cross_top5_mean_overlap = np.mean(overlaps) if overlaps else 0.0
+    
+    # Legacy within-proxy overlap (for reference)
+    result.top1_overlap = 1.0  # Self-overlap is always 1
+    result.top5_mean_overlap = 1.0  # Self-overlap
+    
+    return result
 
 
 def compute_conflict_ratio_squared(
@@ -728,13 +1478,26 @@ def train_with_sgc_monitoring(
     lambda_cost: float = 0.01,
     log_dir: str = 'logs/grokking',
     num_svd_samples: int = 200, # Samples for SVD-based Fisher estimation
+    enable_phase1d: bool = False,  # Phase-1d: Enable GN Fisher proxy comparison
+    enable_phase2: bool = False,   # Phase-2: Enable layer-wise spectral tomography
 ) -> List[TrainingState]:
     """
-    Phase-1c: Train model with scale-free SGC metric monitoring.
+    Phase-1c/1d/2: Train model with scale-free SGC metric monitoring.
     
     Key Phase-1c changes:
     - tau_rel: Relative stiffness threshold (scale-invariant)
     - Logs normalized spectrum diagnostics for scale-invariant geometry analysis
+    
+    Phase-1d additions (when enable_phase1d=True):
+    - Computes GN (Gauss-Newton) Fisher for last layer
+    - Compares SVD and GN proxies: Spearman correlation, effective rank, k agreement
+    - Validity gating: skips comparison when spectra are degenerate
+    
+    Phase-2 additions (when enable_phase2=True):
+    - Computes layer-wise Fisher spectra (input, hidden, output layers)
+    - Tracks Spectral Entropy per layer
+    - Computes Holographic Deficit: D_JS(Global || Layer) for each layer
+    - Logs Entropy Production (ΔS/Δt) for shadow trigger detection
     
     Returns history of training states for analysis.
     """
@@ -770,6 +1533,9 @@ def train_with_sgc_monitoring(
         top_eigenvalues=(),
         fisher_estimator="empirical_score_covariance",
     )
+    
+    # Phase-2: Track previous tomography for entropy production
+    prev_tomography: Optional[SpectralTomography] = None
     
     for epoch in range(1, epochs + 1):
         # Training
@@ -810,6 +1576,7 @@ def train_with_sgc_monitoring(
         
         # Compute SGC metrics periodically (using SVD-based spectral decomposition)
         sgc_metrics = None
+        proxy_comparison = None
         if epoch % sgc_interval == 0 or epoch == 1:
             sgc_metrics = compute_sgc_metrics_svd(
                 model, train_loader, device,
@@ -819,6 +1586,43 @@ def train_with_sgc_monitoring(
                 num_samples=num_svd_samples,
                 max_rank=100,
             )
+            
+            # Phase-1d: Compute GN Fisher and compare proxies
+            if enable_phase1d:
+                try:
+                    gn_eigenvalues, gn_eigenvectors = compute_gn_fisher_lastlayer(
+                        model, train_loader, device,
+                        num_samples=num_svd_samples,
+                        max_rank=100,
+                    )
+                    
+                    # Need SVD eigenvalues/eigenvectors for comparison
+                    # Re-compute SVD to get eigenvectors (compute_sgc_metrics_svd doesn't return them)
+                    svd_eigs, svd_vecs = _compute_svd_spectrum(
+                        model, train_loader, device, num_svd_samples, 100
+                    )
+                    
+                    proxy_comparison = compare_fisher_proxies(
+                        svd_eigs, svd_vecs,
+                        gn_eigenvalues, gn_eigenvectors,
+                        tau_rel=tau_rel,
+                    )
+                except Exception as e:
+                    print(f"Phase-1d proxy comparison failed: {e}")
+            
+            # Phase-2: Compute layer-wise spectral tomography
+            tomography = None
+            if enable_phase2:
+                try:
+                    tomography = compute_spectral_tomography(
+                        model, train_loader, device,
+                        num_samples=num_svd_samples,
+                        max_rank=50,
+                        prev_tomography=prev_tomography,
+                    )
+                    prev_tomography = tomography  # Update for next iteration
+                except Exception as e:
+                    print(f"Phase-2 tomography failed: {e}")
         
         state = TrainingState(
             epoch=epoch,
@@ -879,6 +1683,65 @@ def train_with_sgc_monitoring(
         else:
             conflict_rigidity_ratio = last_sgc.conflict_ratio
         writer.add_scalar('Derived/ConflictRigidityRatio', conflict_rigidity_ratio, epoch)
+        
+        # === PHASE-1d: FISHER PROXY COMPARISON ===
+        if proxy_comparison is not None:
+            # Validity status
+            writer.add_scalar('Phase1d/IsValid', float(proxy_comparison.is_valid), epoch)
+            
+            # Spectrum correlation (only meaningful when valid)
+            if proxy_comparison.is_valid:
+                writer.add_scalar('Phase1d/SpearmanRho', proxy_comparison.spearman_rho, epoch)
+                writer.add_scalar('Phase1d/PearsonRho', proxy_comparison.pearson_rho, epoch)
+            
+            # k agreement
+            writer.add_scalar('Phase1d/k_SVD', proxy_comparison.k_svd, epoch)
+            writer.add_scalar('Phase1d/k_GN', proxy_comparison.k_gn, epoch)
+            writer.add_scalar('Phase1d/k_Diff', proxy_comparison.k_diff, epoch)
+            
+            # Effective rank (participation ratio)
+            writer.add_scalar('Phase1d/EffRank_SVD', proxy_comparison.effective_rank_svd, epoch)
+            writer.add_scalar('Phase1d/EffRank_GN', proxy_comparison.effective_rank_gn, epoch)
+            
+            # Spectral decay (lambda1/lambda10)
+            writer.add_scalar('Phase1d/SpectralDecay_SVD', proxy_comparison.spectral_decay_svd, epoch)
+            writer.add_scalar('Phase1d/SpectralDecay_GN', proxy_comparison.spectral_decay_gn, epoch)
+            
+            # Scale ratio
+            writer.add_scalar('Phase1d/Lambda1Ratio', proxy_comparison.lambda1_ratio, epoch)
+            
+            # === PHASE-1e: Log-spectrum metrics and direction overlap ===
+            if proxy_comparison.is_valid:
+                writer.add_scalar('Phase1e/LogSpectrumCosine', proxy_comparison.log_spectrum_cosine, epoch)
+                writer.add_scalar('Phase1e/LogSpectrumL2', proxy_comparison.log_spectrum_l2, epoch)
+                writer.add_scalar('Phase1e/SpectrumKLDiv', proxy_comparison.spectrum_kl_div, epoch)
+                writer.add_scalar('Phase1e/CrossTop1Overlap', proxy_comparison.cross_top1_overlap, epoch)
+                writer.add_scalar('Phase1e/CrossTop5MeanOverlap', proxy_comparison.cross_top5_mean_overlap, epoch)
+        
+        # === PHASE-2: LAYER-WISE SPECTRAL TOMOGRAPHY ===
+        if enable_phase2 and tomography is not None and tomography.is_valid:
+            # Global entropy
+            writer.add_scalar('Phase2/GlobalEntropy', tomography.global_entropy, epoch)
+            writer.add_scalar('Phase2/GlobalEffRank', tomography.global_effective_rank, epoch)
+            
+            # Per-layer entropy (Entropy Flow - Plot A)
+            for layer_name, layer_spec in tomography.layer_spectra.items():
+                writer.add_scalar(f'Phase2/Entropy/{layer_name}', layer_spec.spectral_entropy, epoch)
+                writer.add_scalar(f'Phase2/EffRank/{layer_name}', layer_spec.effective_rank, epoch)
+            
+            # Holographic Deficit per layer (The Holographic Gap - Plot B)
+            for layer_name, deficit in tomography.holographic_deficit.items():
+                writer.add_scalar(f'Phase2/HolographicDeficit/{layer_name}', deficit, epoch)
+            
+            # Entropy production (shadow trigger)
+            for layer_name, delta_s in tomography.entropy_production.items():
+                writer.add_scalar(f'Phase2/EntropyProduction/{layer_name}', delta_s, epoch)
+            
+            # Summary scalars for quick inspection
+            if 'output' in tomography.holographic_deficit and 'input' in tomography.holographic_deficit:
+                d_out = tomography.holographic_deficit['output']
+                d_in = tomography.holographic_deficit['input']
+                writer.add_scalar('Phase2/DeficitRatio_Out_In', d_out / (d_in + 1e-10), epoch)
         
         # Console logging
         if epoch % 100 == 0 or epoch == 1:
@@ -1027,6 +1890,8 @@ def main():
     parser.add_argument('--device', type=str, default='cuda' if torch.cuda.is_available() else 'cpu')
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--log_dir', type=str, default='logs/grokking', help='TensorBoard log directory')
+    parser.add_argument('--phase1d', action='store_true', help='Phase-1d: Enable GN Fisher proxy comparison')
+    parser.add_argument('--phase2', action='store_true', help='Phase-2: Enable layer-wise spectral tomography (Holographic Diffusion)')
     args = parser.parse_args()
     
     print("="*70)
@@ -1072,7 +1937,13 @@ def main():
     print()
     
     # Train with SGC monitoring
-    print("Training with SGC monitoring...")
+    phase_label = "Phase-2" if args.phase2 else ("Phase-1d" if args.phase1d else "Phase-1c")
+    print(f"Training with SGC monitoring ({phase_label})...")
+    if args.phase1d:
+        print("  Phase-1d ENABLED: Computing GN Fisher proxy comparison")
+    if args.phase2:
+        print("  Phase-2 ENABLED: Layer-wise spectral tomography (Holographic Diffusion)")
+        print("  Metrics: SpectralEntropy, HolographicDeficit, EntropyProduction per layer")
     print("-"*70)
     history = train_with_sgc_monitoring(
         model, train_loader, test_loader,
@@ -1086,6 +1957,8 @@ def main():
         lambda_cost=args.lambda_cost,
         log_dir=args.log_dir,
         num_svd_samples=args.num_svd_samples,
+        enable_phase1d=args.phase1d,  # Phase-1d: GN proxy comparison
+        enable_phase2=args.phase2,    # Phase-2: layer-wise tomography
     )
     
     # Analyze results

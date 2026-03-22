@@ -58,6 +58,12 @@ import SGC.InformationGeometry.TsallisStatistics
 -- Dynamics: Escort Conductance and Boundary Mechanisms
 import SGC.Dynamics.EscortConductance
 
+-- Symbiotic Architecture: Continual Learning via Autonomous Growth
+import SGC.Symbiosis
+
+-- Spin-Glass Correspondence: Frustration, Gauge Theory, and Polarity Learning
+import SGC.SpinGlass
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- SGC Extensions: The Constructive Physics Layer
 -- ═══════════════════════════════════════════════════════════════════════════

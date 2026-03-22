@@ -1,0 +1,457 @@
+Loaded 97 tasks
+Log file: C:\Lean4 Projects\demos\batched_run.log
+Watch live: Get-Content -Wait batched_run.log
+[LTM] Loaded 1172 pattern rules, 12 operator posteriors, predicate_prior(4146 tasks) from agent_memory_batch_test.json
+  [DREAM-LOAD] Loaded 15 programs + 24 near-misses, skipped 0
+Initial prior: 4146 tasks, 631 predicates
+Compiled library: 15 programs, 24 near-misses
+[BATCH] Clustered 97 tasks into 16 groups
+  Group 0: 3 tasks, sigs={'shape:same|transform:colormap|palette:tiny|bg:stable|cc:less'}
+  Group 1: 4 tasks, sigs={'shape:same|transform:mixed|palette:tiny|bg:stable|cc:less'}
+  Group 2: 4 tasks, sigs={'shape:same|transform:colormap|palette:small|bg:changed|cc:same'}
+  Group 3: 8 tasks, sigs={'shape:same|transform:mixed|palette:tiny|bg:stable|cc:same'}
+  Group 4: 3 tasks, sigs={'shape:same|transform:mixed|palette:tiny|bg:stable|cc:same'}
+  Group 5: 8 tasks, sigs={'shape:same|transform:mixed|palette:small|bg:stable|cc:same'}
+  Group 6: 8 tasks, sigs={'shape:same|transform:colormap|palette:small|bg:stable|cc:same'}
+  Group 7: 4 tasks, sigs={'shape:same|transform:mixed|palette:tiny|bg:stable|cc:more'}
+  Group 8: 5 tasks, sigs={'shape:shrunk|transform:colormap|palette:tiny|bg:changed|cc:less'}
+  Group 9: 5 tasks, sigs={'shape:same|transform:mixed|palette:small|bg:stable|cc:less'}
+  Group 10: 8 tasks, sigs={'shape:same|transform:colormap|palette:tiny|bg:stable|cc:same'}
+  Group 11: 8 tasks, sigs={'shape:same|transform:mixed|palette:small|bg:stable|cc:more', 'shape:scaled|transform:topology|palette:tiny|bg:stable|cc:same', 'shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less', 'shape:same|transform:colormap|palette:small|bg:stable|cc:same', 'shape:same|transform:colormap|palette:large|bg:changed|cc:less', 'shape:changed|transform:colormap|palette:tiny|bg:stable|cc:same'}
+  Group 12: 8 tasks, sigs={'shape:same|transform:colormap|palette:large|bg:changed|cc:same', 'shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same', 'shape:same|transform:colormap|palette:small|bg:stable|cc:less', 'shape:same|transform:colormap|palette:small|bg:stable|cc:more', 'shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more', 'shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same'}
+  Group 13: 8 tasks, sigs={'shape:same|transform:colormap|palette:tiny|bg:stable|cc:more', 'shape:shrunk|transform:topology|palette:small|bg:stable|cc:same', 'shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less', 'shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same'}
+  Group 14: 8 tasks, sigs={'shape:same|transform:colormap|palette:tiny|bg:changed|cc:same', 'shape:changed|transform:colormap|palette:small|bg:stable|cc:less', 'shape:shrunk|transform:colormap|palette:tiny|bg:changed|cc:same', 'shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:less', 'shape:same|transform:colormap|palette:large|bg:stable|cc:same', 'shape:same|transform:colormap|palette:large|bg:stable|cc:less', 'shape:shrunk|transform:topology|palette:tiny|bg:stable|cc:same', 'shape:same|transform:colormap|palette:large|bg:stable|cc:more'}
+  Group 15: 5 tasks, sigs={'shape:scaled|transform:topology|palette:tiny|bg:stable|cc:more', 'shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:same', 'shape:same|transform:geometric|palette:tiny|bg:stable|cc:same', 'shape:same|transform:colormap|palette:small|bg:changed|cc:less', 'shape:changed|transform:topology|palette:tiny|bg:stable|cc:less'}
+
+======================================================================
+PASS 1/2
+======================================================================
+  Solver temperature: 0.0
+
+  --- Group 0 (3 tasks) ---
+    00d62c1b     d=0.0000 (0.2s) residual:fill(4|enclosed_by_fg) ** PERFECT **
+    4093f84a     d=0.0153 (2.3s) residual:fill(5|between_fg_h&adj_to_5) - near(d=0.0153)
+    4612dd53     d=0.0473 (1.5s) residual:fill(2|between_1_any&adj_to_1)  near(d=0.0473)
+  [REFINE-GROUP] Re-solving 2 unsolved tasks...
+  Group 0: 1P/2N (+0 predicates)
+
+  --- Group 1 (4 tasks) ---
+    025d127b     d=0.0200 (1.3s) heuristic:shift:(0,1) near(d=0.0200)
+    22168020     d=0.0900 (1.0s) residual:fill(3|between_fg_h) -> fill(1| near(d=0.0900)
+    29623171     d=0.1488 (1.3s) residual:erase_dynamic(repeated_shape) -
+    42a50994     d=0.0420 (2.0s) residual:erase_dynamic(shape_majority) near(d=0.0420)
+  [REFINE-GROUP] Re-solving 4 unsolved tasks...
+  Group 1: 0P/3N (+1 predicates)
+
+  --- Group 2 (4 tasks) ---
+    05269061     d=0.3061 (4.2s) residual:fill_role(minority|adj_majority
+    0d3d703e     d=0.0000 (0.1s) residual:cmap(2->6,3->4,8->9,1->5,5->1,6 ** PERFECT **
+    25d8a9c8     d=0.3333 (0.5s) residual:cmap(2->0,4->5,3->0,7->0,6->5,9
+    2bee17df     d=0.2653 (1.0s) phase45
+  [REFINE-GROUP] Re-solving 3 unsolved tasks...
+  Group 2: 1P/0N (+0 predicates)
+
+  --- Group 3 (8 tasks) ---
+    05f2a901     d=0.0545 (1.8s) residual:erase(2|is_color_2) near(d=0.0545)
+    1bfc4729     d=0.3200 (1.3s) residual:fill_dynamic(on_border) -> fill
+    25d487eb     d=0.0625 (0.9s) residual:fill(1|same_row_1) -> erase(1|s near(d=0.0625)
+    25ff71a9     d=0.0000 (0.2s) operator_transfer ** PERFECT **
+    2c608aff     d=0.0000 (0.4s) residual:line_connect_all ** PERFECT **
+    3618c87e     d=0.0000 (0.5s) residual:erase(1|is_color_1) -> fill(1|c ** PERFECT **
+    3906de3d     d=0.1200 (2.3s) residual:erase(2|is_color_2) -> fill(2|b
+    3bdb4ada     d=0.0500 (0.8s) residual:failed near(d=0.0500)
+  [REFINE-GROUP] Re-solving 5 unsolved tasks...
+  Group 3: 3P/3N (+1 predicates)
+
+  --- Group 4 (3 tasks) ---
+    3befdf3e     d=0.3681 (2.6s) operator_transfer
+    3e980e27     d=0.1065 (0.9s) operator_transfer
+    444801d8     d=0.2200 (5.0s) operator_transfer
+  [REFINE-GROUP] Re-solving 3 unsolved tasks...
+  Group 4: 0P/0N (+1 predicates)
+
+  --- Group 5 (8 tasks) ---
+    06df4c85     d=0.0000 (1.5s) residual:fill(2|between_2_any&enclosed_b ** PERFECT **
+    1caeab9d     d=0.1000 (3.3s) residual:fill(2|same_row_1&same_col_2) -
+    1f642eb9     d=0.0700 (0.6s) residual:failed near(d=0.0700)
+    22eb0ac0     d=0.1600 (0.9s) residual:fill(1|same_row_1) -> fill(4|be
+    264363fd     d=0.0800 (12.7s) operator_transfer near(d=0.0800)
+    36d67576     d=0.0571 (0.6s) residual:failed near(d=0.0571)
+    39e1d7f9     d=0.0999 (2.4s) residual:failed near(d=0.0999)
+    4347f46a     d=0.0743 (2.1s) phase45 near(d=0.0743)
+  [REFINE-GROUP] Re-solving 7 unsolved tasks...
+  Group 5: 1P/5N (+4 predicates)
+
+  --- Group 6 (8 tasks) ---
+    08ed6ac7     d=0.0000 (0.2s) residual:recolor(5->1|large_obj&in_large ** PERFECT **
+    150deff5     d=0.1023 (1.7s) phase45
+    2204b7a8     d=0.0500 (2.1s) heuristic:single_color:3->4 near(d=0.0500)
+    23581191     d=0.1852 (1.7s) residual:fill(8|same_row_8) -> fill(7|sa
+    29c11459     d=0.2545 (0.6s) residual:fill_dynamic(between_fg_h)
+    29ec7d0e     d=0.1173 (210.1s) residual:fill(1|shape_minority&!cross_3)
+    321b1fc6     d=0.1600 (5.1s) heuristic:multi_color_map:{0: 0, 4: 0, 6
+    32597951     d=0.0000 (1.3s) residual:recolor(1->3|cross_8&is_color_1 ** PERFECT **
+  [REFINE-GROUP] Re-solving 6 unsolved tasks...
+  Group 6: 2P/1N (+4 predicates)
+
+  --- Group 7 (4 tasks) ---
+    0962bcdd     d=0.1111 (1.4s) residual:fill_role(minority|adj_majority
+    0a938d79     d=0.1448 (1.2s) residual:fill(3|same_col_3)
+    1e32b0e9     d=0.1869 (1.6s) residual:fill(2|cross_1)
+    3ac3eb23     d=0.3333 (0.3s) residual:failed
+  [REFINE-GROUP] Re-solving 4 unsolved tasks...
+  Group 7: 0P/0N (+0 predicates)
+
+  --- Group 8 (5 tasks) ---
+    0b148d64     d=0.7778 (0.3s) phase45
+    27a28665     d=1.0000 (0.1s) none
+    39a8645d     d=0.6667 (0.9s) residual:crop_color_2 -> recolor(2->4) -
+    3de23699     d=0.2500 (0.7s) phase45
+    44f52bb0     d=1.0000 (0.1s) none
+  [REFINE-GROUP] Re-solving 5 unsolved tasks...
+  Group 8: 0P/0N (+0 predicates)
+
+  --- Group 9 (5 tasks) ---
+    0e206a2e     d=0.0417 (12.0s) operator_transfer near(d=0.0417)
+    1e0a9b12     d=0.2800 (3.7s) heuristic:shift:(3,0)
+    228f6490     d=0.1000 (8.7s) operator_transfer
+    2dd70a9a     d=0.0710 (0.6s) residual:failed near(d=0.0710)
+    40853293     d=0.0950 (5.0s) residual:fill(3|between_3_any&!between_f near(d=0.0950)
+  [REFINE-GROUP] Re-solving 5 unsolved tasks...
+  Group 9: 0P/3N (+2 predicates)
+
+  --- Group 10 (8 tasks) ---
+    1b60fb0c     d=0.0900 (0.3s) residual:failed near(d=0.0900)
+    1f0c79e5     d=0.2840 (0.5s) residual:recolor(2->4|is_color_2)
+    253bf280     d=0.0000 (0.6s) residual:fill(3|between_fg_v) -> fill(3| ** PERFECT **
+    3345333e     d=0.0352 (1.4s) operator_transfer near(d=0.0352)
+    3aa6fb7a     d=0.0000 (0.2s) residual:fill(1|exactly2_adj_8) ** PERFECT **
+    41e4d17e     d=0.2133 (0.7s) residual:failed
+    4258a5f9     d=0.0000 (0.1s) residual:fill(1|near8_5) ** PERFECT **
+    44d8ac46     d=0.0625 (0.8s) residual:fill(2|enclosed_by_fg) -> fill( near(d=0.0625)
+  [REFINE-GROUP] Re-solving 5 unsolved tasks...
+  Group 10: 3P/3N (+0 predicates)
+
+  --- Group 11 (8 tasks) ---
+    007bbfb7     d=0.2222 (0.4s) residual:upscale_3x -> cmap(4->0)
+    017c7c7b     d=0.1852 (0.2s) phase45
+    045e512c     d=0.0952 (1.6s) phase45 near(d=0.0952)
+    11852cab     d=0.0300 (0.6s) operator_transfer near(d=0.0300)
+    0520fde7     d=0.2222 (0.5s) phase45
+    1c786137     d=0.7222 (7.2s) phase45
+    36fdfd69     d=0.0458 (6.5s) operator_transfer near(d=0.0458)
+    09629e4f     d=0.2975 (73.5s) residual:cmap(6->0,2->0,4->0,3->0,8->0,0
+  [REFINE-GROUP] Re-solving 8 unsolved tasks...
+  Group 11: 0P/3N (+1 predicates)
+
+  --- Group 12 (8 tasks) ---
+    0ca9ddb6     d=0.0000 (0.2s) residual:fill(4|near8_2&!adj_to_2) -> fi ** PERFECT **
+    3bd67248     d=0.0900 (1.2s) residual:fill(4|border_row) -> erase(4|i near(d=0.0900)
+    0dfd9992     d=0.0952 (539.7s) operator_transfer near(d=0.0952)
+    10fcaaa3     d=0.4000 (1.0s) phase45
+    1190e5a7     d=0.0000 (0.2s) phase45 ** PERFECT **
+    2dc579da     d=0.0278 (0.2s) none near(d=0.0278)
+    1a07d186     d=0.0142 (4.9s) residual:erase_dynamic(small_obj) near(d=0.0142)
+    1b2d62fb     d=0.2667 (0.5s) residual:crop(0,4,5,3) -> cmap(9->0,0->8
+  [REFINE-GROUP] Re-solving 6 unsolved tasks...
+  Group 12: 2P/4N (+0 predicates)
+
+  --- Group 13 (8 tasks) ---
+    1cf80156     d=0.0000 (0.2s) heuristic:crop_content:bbox ** PERFECT **
+    28bf18c6     d=0.5556 (0.5s) residual:crop(5,0,3,6) -> fill(2|within2
+    1f85a75f     d=0.0000 (0.9s) heuristic:extract_object:largest ** PERFECT **
+    3428a4f5     d=0.5667 (1.0s) phase45
+    2013d3e2     d=0.4444 (1.0s) residual:crop(3,7,3,3) -> fill(8|same_ro
+    4290ef0e     d=0.6694 (2.2s) phase45
+    22233c11     d=0.0800 (0.2s) residual:failed near(d=0.0800)
+    2281f1f4     d=0.0500 (0.4s) residual:fill(2|cross_5&!border_row) near(d=0.0500)
+  [REFINE-GROUP] Re-solving 6 unsolved tasks...
+  Group 13: 2P/2N (+0 predicates)
+
+  --- Group 14 (8 tasks) ---
+    234bbc79     d=0.5417 (1.6s) phase45
+    239be575     d=1.0000 (0.1s) none
+    23b5c85d     d=0.0000 (0.2s) heuristic:extract_object:smallest ** PERFECT **
+    272f95fa     d=0.0706 (4.5s) residual:fill(1|between_fg_h) -> recolor near(d=0.0706)
+    28e73c20     d=0.3519 (1.1s) residual:fill(3|on_border) -> fill(3|is_
+    2dee498d     d=0.0000 (0.2s) phase45 ** PERFECT **
+    31aa019c     d=0.0900 (13.5s) residual:fill(2|near8_6) -> cmap(2->0,7- near(d=0.0900)
+    3631a71a     d=0.0422 (37.2s) residual:cmap(9->0) near(d=0.0422)
+  [REFINE-GROUP] Re-solving 6 unsolved tasks...
+  Group 14: 2P/3N (+1 predicates)
+
+  --- Group 15 (5 tasks) ---
+    3af2c5a8     d=0.3333 (0.6s) phase45
+    3c9b0459     d=0.0000 (0.1s) residual:rot180 ** PERFECT **
+    3eda0437     d=0.0938 (0.5s) residual:failed near(d=0.0938)
+    3f7978a0     d=0.5750 (1.6s) phase45
+    4522001f     d=0.2346 (0.9s) residual:upscale_3x -> recolor(2->0) -> 
+  [REFINE-GROUP] Re-solving 4 unsolved tasks...
+  Group 15: 1P/1N (+0 predicates)
+
+  Pass 1 summary: 18P / 33N / 46F (18 new perfects, 2002s)
+
+  [DREAM] Consolidating between passes...
+[LTM] Saved 1172 patterns, 12 operators, predicate_prior(4392 tasks) to agent_memory_batch_test.json
+
+======================================================================
+PASS 2/2
+======================================================================
+  Solver temperature: 0.15
+
+  --- Group 0 (3 tasks) ---
+    4093f84a     d=0.0153 (2.0s) residual:fill(5|between_fg_h&adj_to_5) - near(d=0.0153)
+    4612dd53     d=0.0473 (1.7s) residual:fill(2|between_1_any&adj_to_1)  near(d=0.0473)
+  [REFINE-GROUP] Re-solving 2 unsolved tasks...
+  Group 0: 1P/2N (+1 predicates)
+
+  --- Group 3 (8 tasks) ---
+    05f2a901     d=0.0545 (1.9s) residual:erase(2|is_color_2) near(d=0.0545)
+    1bfc4729     d=0.3200 (1.5s) residual:fill_dynamic(on_border) -> fill
+    25d487eb     d=0.0625 (0.9s) residual:fill(1|same_row_1) -> erase(1|s near(d=0.0625)
+    3906de3d     d=0.1200 (2.5s) residual:erase(2|is_color_2) -> fill(2|b
+    3bdb4ada     d=0.0500 (1.0s) residual:failed near(d=0.0500)
+  [REFINE-GROUP] Re-solving 5 unsolved tasks...
+  Group 3: 3P/3N (+1 predicates)
+
+  --- Group 10 (8 tasks) ---
+    1b60fb0c     d=0.0900 (0.2s) residual:failed near(d=0.0900)
+    1f0c79e5     d=0.2840 (0.5s) residual:recolor(2->4|is_color_2)
+    3345333e     d=0.0352 (1.3s) operator_transfer near(d=0.0352)
+    41e4d17e     d=0.2133 (0.6s) residual:failed
+    44d8ac46     d=0.0625 (0.6s) residual:fill(2|enclosed_by_fg) -> fill( near(d=0.0625)
+  [REFINE-GROUP] Re-solving 5 unsolved tasks...
+  Group 10: 3P/3N (+5 predicates)
+
+  --- Group 14 (8 tasks) ---
+    234bbc79     d=0.5417 (1.5s) phase45
+    239be575     d=1.0000 (0.1s) none
+    272f95fa     d=0.0706 (4.1s) residual:fill(1|between_fg_h) -> recolor near(d=0.0706)
+    28e73c20     d=0.3519 (1.2s) residual:fill(3|on_border) -> fill(3|is_
+    31aa019c     d=0.0900 (14.1s) residual:fill(2|within2_6) -> cmap(2->0, near(d=0.0900)
+    3631a71a     d=0.0422 (34.5s) residual:cmap(9->0) near(d=0.0422)
+  [REFINE-GROUP] Re-solving 6 unsolved tasks...
+  Group 14: 2P/3N (+2 predicates)
+
+  --- Group 5 (8 tasks) ---
+    1caeab9d     d=0.1000 (3.9s) residual:fill(4|same_row_1&same_col_4) -
+    1f642eb9     d=0.0700 (0.5s) residual:failed near(d=0.0700)
+    22eb0ac0     d=0.1600 (0.8s) residual:fill(1|same_row_1) -> fill(4|be
+    264363fd     d=0.0800 (12.9s) operator_transfer near(d=0.0800)
+    36d67576     d=0.0571 (0.5s) residual:failed near(d=0.0571)
+    39e1d7f9     d=0.0999 (2.3s) residual:failed near(d=0.0999)
+    4347f46a     d=0.0743 (1.9s) phase45 near(d=0.0743)
+  [REFINE-GROUP] Re-solving 7 unsolved tasks...
+  Group 5: 1P/5N (+1 predicates)
+
+  --- Group 12 (8 tasks) ---
+    3bd67248     d=0.0900 (0.9s) residual:fill(4|border_row) -> erase(4|i near(d=0.0900)
+    0dfd9992     d=0.0952 (424.3s) operator_transfer near(d=0.0952)
+    10fcaaa3     d=0.4000 (0.8s) phase45
+    2dc579da     d=0.0278 (0.2s) none near(d=0.0278)
+    1a07d186     d=0.0142 (3.9s) residual:erase_dynamic(small_obj) near(d=0.0142)
+    1b2d62fb     d=0.2667 (0.5s) residual:crop(0,4,5,3) -> cmap(9->0,0->8
+  [REFINE-GROUP] Re-solving 6 unsolved tasks...
+  Group 12: 2P/4N (+2 predicates)
+
+  --- Group 4 (3 tasks) ---
+    3befdf3e     d=0.3681 (2.4s) operator_transfer
+    3e980e27     d=0.1065 (0.8s) operator_transfer
+    444801d8     d=0.2200 (4.7s) operator_transfer
+  [REFINE-GROUP] Re-solving 3 unsolved tasks...
+  Group 4: 0P/0N (+0 predicates)
+
+  --- Group 15 (5 tasks) ---
+    3af2c5a8     d=0.3333 (0.6s) phase45
+    3eda0437     d=0.0938 (0.3s) residual:failed near(d=0.0938)
+    3f7978a0     d=0.5750 (1.3s) phase45
+    4522001f     d=0.2346 (0.8s) residual:upscale_3x -> recolor(2->0) -> 
+  [REFINE-GROUP] Re-solving 4 unsolved tasks...
+  Group 15: 1P/1N (+0 predicates)
+
+  --- Group 13 (8 tasks) ---
+    28bf18c6     d=0.5556 (0.5s) residual:crop(5,1,3,6) -> fill(2|within2
+    3428a4f5     d=0.5667 (1.1s) phase45
+    2013d3e2     d=0.4444 (1.0s) residual:crop(3,7,3,3) -> fill(8|same_ro
+    4290ef0e     d=0.6694 (2.0s) phase45
+    22233c11     d=0.0800 (0.2s) residual:failed near(d=0.0800)
+    2281f1f4     d=0.0500 (0.3s) residual:fill(2|cross_5&!border_row) near(d=0.0500)
+  [REFINE-GROUP] Re-solving 6 unsolved tasks...
+  Group 13: 2P/2N (+1 predicates)
+
+  --- Group 9 (5 tasks) ---
+    0e206a2e     d=0.0417 (11.8s) operator_transfer near(d=0.0417)
+    1e0a9b12     d=0.2800 (3.5s) heuristic:shift:(3,0)
+    228f6490     d=0.1000 (8.0s) operator_transfer
+    2dd70a9a     d=0.0710 (0.5s) residual:failed near(d=0.0710)
+    40853293     d=0.0950 (4.4s) residual:fill(3|between_3_any&!between_f near(d=0.0950)
+  [REFINE-GROUP] Re-solving 5 unsolved tasks...
+  Group 9: 0P/3N (+1 predicates)
+
+  --- Group 6 (8 tasks) ---
+    150deff5     d=0.1023 (1.5s) phase45
+    2204b7a8     d=0.0500 (1.9s) heuristic:single_color:3->4 near(d=0.0500)
+    23581191     d=0.1852 (1.8s) residual:fill(8|same_col_8) -> fill(7|sa
+    29c11459     d=0.2545 (0.7s) residual:fill_dynamic(between_fg_h)
+    29ec7d0e     d=0.1265 (166.6s) residual:recolor(0->6) -> recolor(6->1|l
+    321b1fc6     d=0.1600 (4.8s) heuristic:multi_color_map:{0: 0, 4: 0, 6
+  [REFINE-GROUP] Re-solving 6 unsolved tasks...
+  Group 6: 2P/1N (+3 predicates)
+
+  --- Group 1 (4 tasks) ---
+    025d127b     d=0.0200 (1.0s) heuristic:shift:(0,1) near(d=0.0200)
+    22168020     d=0.0900 (0.8s) residual:fill(3|between_fg_h) -> fill(1| near(d=0.0900)
+    29623171     d=0.1488 (1.1s) residual:erase_dynamic(repeated_shape) -
+    42a50994     d=0.0420 (1.6s) residual:erase_dynamic(shape_majority) near(d=0.0420)
+  [REFINE-GROUP] Re-solving 4 unsolved tasks...
+  Group 1: 0P/3N (+1 predicates)
+
+  --- Group 2 (4 tasks) ---
+    05269061     d=0.3061 (3.9s) residual:fill_role(minority|adj_majority
+    25d8a9c8     d=0.3333 (0.4s) residual:cmap(2->0,4->5,3->0,7->0,6->5,9
+    2bee17df     d=0.2653 (0.8s) phase45
+  [REFINE-GROUP] Re-solving 3 unsolved tasks...
+  Group 2: 1P/0N (+0 predicates)
+
+  --- Group 11 (8 tasks) ---
+    007bbfb7     d=0.2222 (0.3s) residual:upscale_3x -> cmap(4->0)
+    017c7c7b     d=0.1852 (0.3s) phase45
+    045e512c     d=0.0952 (1.5s) phase45 near(d=0.0952)
+    11852cab     d=0.0300 (0.5s) operator_transfer near(d=0.0300)
+    0520fde7     d=0.2222 (0.6s) phase45
+    1c786137     d=0.7222 (6.0s) phase45
+    36fdfd69     d=0.0458 (5.5s) operator_transfer near(d=0.0458)
+    09629e4f     d=0.2975 (54.5s) residual:cmap(6->0,2->0,4->0,3->0,8->0,0
+  [REFINE-GROUP] Re-solving 8 unsolved tasks...
+  Group 11: 0P/3N (+0 predicates)
+
+  --- Group 8 (5 tasks) ---
+    0b148d64     d=0.7778 (0.3s) phase45
+    27a28665     d=1.0000 (0.1s) none
+    39a8645d     d=0.6667 (0.6s) residual:crop_color_2 -> recolor(2->4|is
+    3de23699     d=0.2500 (0.6s) phase45
+    44f52bb0     d=1.0000 (0.1s) none
+  [REFINE-GROUP] Re-solving 5 unsolved tasks...
+  Group 8: 0P/0N (+0 predicates)
+
+  --- Group 7 (4 tasks) ---
+    0962bcdd     d=0.1111 (1.2s) residual:fill_role(minority|adj_majority
+    0a938d79     d=0.1448 (1.1s) residual:fill(3|same_col_3)
+    1e32b0e9     d=0.1869 (1.4s) residual:fill(2|cross_1)
+    3ac3eb23     d=0.3333 (0.3s) residual:failed
+  [REFINE-GROUP] Re-solving 4 unsolved tasks...
+  Group 7: 0P/0N (+0 predicates)
+
+  Pass 2 summary: 18P / 33N / 46F (0 new perfects, 3685s)
+
+======================================================================
+BATCHED RESULTS (2 passes, 3685s)
+======================================================================
+Perfect: 18  (baseline: 20 sequential)
+Near-miss: 33
+Fails: 46
+
+Perfect solves:
+  00d62c1b: residual:fill(4|enclosed_by_fg)
+  06df4c85: residual:fill(2|between_2_any&enclosed_by_fg) -> fill(3|between_3_any) -> fill(9|between_9_h&same_shape_as_9) -> fill(8|between_8_any&same_shape_as_8)
+  08ed6ac7: residual:recolor(5->1|large_obj&in_largest_cc) -> recolor(5->2|in_largest_cc) -> recolor(5->3) -> recolor(3->4|not_in_largest_cc)
+  0ca9ddb6: residual:fill(4|near8_2&!adj_to_2) -> fill(7|exactly1_adj_1)
+  0d3d703e: residual:cmap(2->6,3->4,8->9,1->5,5->1,6->2,9->8,4->3)
+  1190e5a7: phase45
+  1cf80156: heuristic:crop_content:bbox
+  1f85a75f: heuristic:extract_object:largest
+  23b5c85d: heuristic:extract_object:smallest
+  253bf280: residual:fill(3|between_fg_v) -> fill(3|between_8_h)
+  25ff71a9: operator_transfer
+  2c608aff: residual:line_connect_all
+  2dee498d: phase45
+  32597951: residual:recolor(1->3|cross_8&is_color_1) -> recolor(1->3|between_8_any) -> recolor(1->3|between_3_h&exactly2_adj_3)
+  3618c87e: residual:erase(1|is_color_1) -> fill(1|color_not_mode_of_col&!differs_from_up) -> recolor(5->1|color_not_mode_of_col&!differs_from_up)
+  3aa6fb7a: residual:fill(1|exactly2_adj_8)
+  3c9b0459: residual:rot180
+  4258a5f9: residual:fill(1|near8_5)
+
+Top near-misses:
+  1a07d186: d=0.0142 residual:erase_dynamic(small_obj)
+  4093f84a: d=0.0153 residual:fill(5|between_fg_h&adj_to_5) -> recolor(
+  025d127b: d=0.0200 heuristic:shift:(0,1)
+  2dc579da: d=0.0278 none
+  11852cab: d=0.0300 operator_transfer
+  3345333e: d=0.0352 operator_transfer
+  0e206a2e: d=0.0417 operator_transfer
+  42a50994: d=0.0420 residual:erase_dynamic(shape_majority)
+  3631a71a: d=0.0422 residual:cmap(9->0)
+  36fdfd69: d=0.0458 operator_transfer
+  4612dd53: d=0.0473 residual:fill(2|between_1_any&adj_to_1) -> erase(2
+  3bdb4ada: d=0.0500 residual:failed
+  2204b7a8: d=0.0500 heuristic:single_color:3->4
+  2281f1f4: d=0.0500 residual:fill(2|cross_5&!border_row)
+  05f2a901: d=0.0545 residual:erase(2|is_color_2)
+
+Group Scheduler:
+  Group 0: 2P/4N (6 attempts, posterior=0.538)
+  Group 1: 0P/6N (8 attempts, posterior=0.300)
+  Group 2: 2P/0N (8 attempts, posterior=0.300)
+  Group 3: 6P/6N (16 attempts, posterior=0.500)
+  Group 4: 0P/0N (6 attempts, posterior=0.138)
+  Group 5: 2P/10N (16 attempts, posterior=0.361)
+  Group 6: 4P/2N (16 attempts, posterior=0.350)
+  Group 7: 0P/0N (8 attempts, posterior=0.100)
+  Group 8: 0P/0N (10 attempts, posterior=0.083)
+  Group 9: 0P/6N (10 attempts, posterior=0.258)
+  Group 10: 6P/6N (16 attempts, posterior=0.517)
+  Group 11: 0P/6N (16 attempts, posterior=0.161)
+  Group 12: 4P/8N (16 attempts, posterior=0.422)
+  Group 13: 4P/4N (16 attempts, posterior=0.350)
+  Group 14: 4P/6N (16 attempts, posterior=0.394)
+  Group 15: 2P/2N (10 attempts, posterior=0.300)
+
+Predicate Prior:
+PredicatePrior: 4514 tasks, 664 predicates tracked
+  small_obj: 0.978 (44/44 tasks)
+  cross_5&!differs_from_left: 0.972 (34/34 tasks)
+  is_color_2: 0.971 (32/32 tasks)
+  between_fg_v&color_not_mode_of_col: 0.971 (32/32 tasks)
+  enclosed_by_fg: 0.970 (31/31 tasks)
+  enclosed_by_fg&!exactly3_adj_5: 0.969 (30/30 tasks)
+  small_obj&!color_count_1: 0.967 (28/28 tasks)
+  between_fg_h&!shape_majority: 0.966 (27/27 tasks)
+  between_fg_v&!same_col_8: 0.963 (25/25 tasks)
+  between_fg_h&!ib_cluster_2: 0.960 (23/23 tasks)
+[LTM] Saved 1172 patterns, 12 operators, predicate_prior(4514 tasks) to agent_memory_batch_test.json
+
+Agent stats:
+  session:
+    tasks_attempted: 334
+    perfect_solves: 27
+    near_misses: 159
+    patterns_learned: 47110
+    patterns_promoted: 1270
+    operators_induced: 64
+    patterns_failed: 17600
+    patterns_recalled: 33400
+    heuristic_wins: 20
+    pattern_wins: 72
+    residual_wins: 12
+    dream_programs: 12
+    dream_recalls: 0
+  memory:
+    pattern_rules: 1172
+    global_color_maps: 30
+    operator_posteriors: 12
+    current_epoch: 12
+    total_tasks_seen: 3715
+    total_perfect_solves: 308
+    avg_posterior_mean: 0.9287304480313979
+    avg_posterior_variance: 0.004504929104355383
+    avg_operator_mean: 0.5
+    grokked_patterns: 1156
+  dream:
+    n_programs: 15
+    n_near_misses: 24
+    avg_posterior: 0.8682539682539684
+    n_contexts: 8
+
+Total time: 3685s
+Log saved to: C:\Lean4 Projects\demos\batched_run.log
+demos\batched_run.log

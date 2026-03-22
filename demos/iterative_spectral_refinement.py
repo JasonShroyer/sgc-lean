@@ -29,7 +29,7 @@ import argparse, hashlib, json, os, struct, sys, time
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 import numpy as np
 import torch
 import torch.nn as nn
@@ -78,6 +78,8 @@ class ISRConfig:
     validate_puzzles: bool = True
     require_unique: bool = True
     sanity_check_data: bool = False
+    # SGC Defect Regularization (vertical escape from coarse subspace)
+    defect_weight: float = 0.0  # Weight for defect loss (0 = off, try 0.1)
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # SUDOKU DATASET
@@ -323,6 +325,134 @@ class SudokuDataset(Dataset):
 # Reference: Chentsov's Theorem - Fisher metric is unique coarse-graining invariant
 # ═══════════════════════════════════════════════════════════════════════════════
 
+class CoarseProjector(nn.Module):
+    """SGC-Faithful Coarse Projector Π = lift ∘ Q.
+    
+    This implements a TRUE coarse-graining that is EXACTLY idempotent:
+    Π(Π(z)) = Π(z)
+    
+    For idempotence, we use ROW-BASED coarse-graining only:
+    - Q: (B, 81, D) → (B, 9, D)  [row means]
+    - lift: (B, 9, D) → (B, 81, D)  [broadcast row mean to all cells in row]
+    
+    This is a true partition-based projector: cells in the same row 
+    are an equivalence class, and lift produces block-constant functions.
+    
+    Note: We also provide a "combined" mode that uses all constraints
+    via Sinkhorn-like iteration for approximate idempotence.
+    """
+    
+    def __init__(self, hidden_dim: int = 64, mode: str = 'row'):
+        """
+        Args:
+            hidden_dim: Dimension of hidden states
+            mode: 'row', 'col', 'box', or 'combined' (Sinkhorn iteration)
+        """
+        super().__init__()
+        self.hidden_dim = hidden_dim
+        self.mode = mode
+        
+        # Precompute indices for efficient gathering
+        rows = torch.arange(81) // 9
+        cols = torch.arange(81) % 9
+        self.register_buffer('row_idx', rows)
+        self.register_buffer('col_idx', cols)
+        self.register_buffer('box_idx', 3 * (rows // 3) + (cols // 3))
+    
+    def Q(self, z: torch.Tensor) -> torch.Tensor:
+        """Coarse map: (B, 81, D) → (B, 9, D) for single-constraint mode."""
+        B, _, D = z.shape
+        z_grid = z.view(B, 9, 9, D)
+        
+        if self.mode == 'row':
+            return z_grid.mean(dim=2)  # (B, 9, D) - mean over columns
+        elif self.mode == 'col':
+            return z_grid.mean(dim=1)  # (B, 9, D) - mean over rows
+        elif self.mode == 'box':
+            z_boxes = z_grid.view(B, 3, 3, 3, 3, D)
+            return z_boxes.mean(dim=(2, 4)).view(B, 9, D)
+        else:  # combined
+            # Return all three marginals
+            row_marg = z_grid.mean(dim=2)
+            col_marg = z_grid.mean(dim=1)
+            z_boxes = z_grid.view(B, 3, 3, 3, 3, D)
+            box_marg = z_boxes.mean(dim=(2, 4)).view(B, 9, D)
+            return torch.cat([row_marg, col_marg, box_marg], dim=1)  # (B, 27, D)
+    
+    def lift(self, y: torch.Tensor) -> torch.Tensor:
+        """Lift map: (B, 9, D) → (B, 81, D) for single-constraint mode."""
+        B = y.shape[0]
+        D = y.shape[-1]
+        
+        if self.mode == 'row':
+            # Broadcast row mean to all cells in that row
+            return y.unsqueeze(2).expand(-1, -1, 9, -1).reshape(B, 81, D)
+        elif self.mode == 'col':
+            # Broadcast col mean to all cells in that column
+            return y.unsqueeze(1).expand(-1, 9, -1, -1).reshape(B, 81, D)
+        elif self.mode == 'box':
+            # Broadcast box mean to all cells in that box
+            # y: (B, 9, D) where boxes are indexed 0-8 in row-major order
+            # Box layout: boxes[i] covers cells where 3*(row//3) + (col//3) == i
+            y_grid = y.view(B, 3, 3, D)  # (B, box_row, box_col, D)
+            # Expand to (B, box_row, cells_per_box_row, box_col, cells_per_box_col, D)
+            y_expanded = y_grid.unsqueeze(2).unsqueeze(4).expand(-1, -1, 3, -1, 3, -1)
+            # Reshape to (B, 9, 9, D) then (B, 81, D)
+            return y_expanded.reshape(B, 9, 9, D).reshape(B, 81, D)
+        else:  # combined - use Sinkhorn-like iteration
+            return self._lift_combined(y)
+    
+    def _lift_combined(self, y: torch.Tensor, n_iter: int = 5) -> torch.Tensor:
+        """Lift for combined mode using alternating projections (Sinkhorn-like).
+        
+        Finds approximate intersection of row/col/box constraint manifolds.
+        """
+        B = y.shape[0]
+        D = y.shape[-1] // 3 if self.mode == 'combined' else y.shape[-1]
+        
+        row_marg = y[:, :9, :]
+        col_marg = y[:, 9:18, :]
+        box_marg = y[:, 18:, :]
+        
+        # Initialize with row broadcast
+        z = row_marg.unsqueeze(2).expand(-1, -1, 9, -1).reshape(B, 81, D)
+        
+        # Alternating projection iterations
+        for _ in range(n_iter):
+            z_grid = z.view(B, 9, 9, D)
+            
+            # Project to row constraint
+            row_mean = z_grid.mean(dim=2, keepdim=True)
+            z_grid = z_grid - row_mean + row_marg.unsqueeze(2)
+            
+            # Project to col constraint  
+            col_mean = z_grid.mean(dim=1, keepdim=True)
+            z_grid = z_grid - col_mean + col_marg.unsqueeze(1)
+            
+            # Project to box constraint
+            z_boxes = z_grid.view(B, 3, 3, 3, 3, D)
+            box_mean = z_boxes.mean(dim=(2, 4), keepdim=True)
+            box_target = box_marg.view(B, 3, 3, D).unsqueeze(3).unsqueeze(5)
+            z_boxes = z_boxes - box_mean + box_target
+            z_grid = z_boxes.view(B, 9, 9, D)
+            
+            z = z_grid.view(B, 81, D)
+        
+        return z
+    
+    def forward(self, z: torch.Tensor) -> torch.Tensor:
+        """Π(z) = lift(Q(z)): Project to coarse subspace."""
+        return self.lift(self.Q(z))
+    
+    def check_idempotence(self, z: torch.Tensor) -> float:
+        """Verify Π(Π(z)) ≈ Π(z). Returns relative error."""
+        with torch.no_grad():
+            pi_z = self.forward(z)
+            pi_pi_z = self.forward(pi_z)
+            error = (pi_pi_z - pi_z).norm() / (pi_z.norm() + 1e-8)
+            return error.item()
+
+
 class FisherAxialBlock(nn.Module):
     """Single block of Fisher-correct constraint propagation.
     
@@ -331,13 +461,18 @@ class FisherAxialBlock(nn.Module):
     
     Update rule: Z_{t+1} = Z_t + α(Δ_row + Δ_col + Δ_box)
     This is the Product of Experts formula in tangent space.
+    
+    SGC Structure:
+    - Π (Coarse Projector): The axial aggregation (row + col + box averages)
+    - F (Full Dynamics): The complete update including gating
+    - Vertical Defect: D = (I-Π)F(Π(z)) measures leakage from coarse subspace
     """
-    def __init__(self, hidden_dim: int = 64):
+    def __init__(self, hidden_dim: int = 64, stable: bool = True):
         super().__init__()
         self.hidden_dim = hidden_dim
+        self.stable = stable  # Enable stability measures for long-horizon inference
         
         # Row constraint branch: aggregate info across each row
-        # Input: (B, 9, 9, D) -> apply along dim=2 (columns within row)
         self.row_net = nn.Sequential(
             nn.Linear(hidden_dim * 9, hidden_dim),
             nn.GELU(),
@@ -345,7 +480,6 @@ class FisherAxialBlock(nn.Module):
         )
         
         # Column constraint branch: aggregate info across each column  
-        # Input: (B, 9, 9, D) -> apply along dim=1 (rows within column)
         self.col_net = nn.Sequential(
             nn.Linear(hidden_dim * 9, hidden_dim),
             nn.GELU(),
@@ -365,45 +499,100 @@ class FisherAxialBlock(nn.Module):
             nn.Sigmoid()
         )
         
-        # Step size (learnable)
+        # Step size (learnable, but clamped for stability)
         self.alpha = nn.Parameter(torch.tensor(0.1))
+        
+        # Stability: LayerNorm on update to prevent explosion
+        self.update_norm = nn.LayerNorm(hidden_dim) if stable else None
+        
+        # Maximum update magnitude (contractivity bound)
+        self.max_update = 2.0
     
-    def forward(self, z: torch.Tensor) -> torch.Tensor:
-        """z: (B, 81, D) -> (B, 81, D)"""
+    def compute_coarse_projection(self, z: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+        """Π(z): Compute the coarse (constraint-consistent) projection.
+        
+        Returns:
+            pi_z: The coarse prediction (constraint expectation)
+            row_update, col_update, box_update: Individual constraint contributions
+        """
         B, _, D = z.shape
-        z_grid = z.view(B, 9, 9, D)  # Reshape to grid
+        z_grid = z.view(B, 9, 9, D)
         
-        # Row updates: for each cell, gather all cells in same row
-        row_context = z_grid.reshape(B, 9, 9 * D)  # (B, 9, 9*D) - each row
-        row_update = self.row_net(row_context)  # (B, 9, D)
-        row_update = row_update.unsqueeze(2).expand(-1, -1, 9, -1)  # Broadcast to all cols
+        # Row constraint prediction
+        row_context = z_grid.reshape(B, 9, 9 * D)
+        row_update = self.row_net(row_context)
+        row_update = row_update.unsqueeze(2).expand(-1, -1, 9, -1)
         
-        # Column updates: for each cell, gather all cells in same column
-        col_context = z_grid.permute(0, 2, 1, 3).reshape(B, 9, 9 * D)  # (B, 9, 9*D) - each col
-        col_update = self.col_net(col_context)  # (B, 9, D)
-        col_update = col_update.unsqueeze(1).expand(-1, 9, -1, -1)  # Broadcast to all rows
+        # Column constraint prediction
+        col_context = z_grid.permute(0, 2, 1, 3).reshape(B, 9, 9 * D)
+        col_update = self.col_net(col_context)
+        col_update = col_update.unsqueeze(1).expand(-1, 9, -1, -1)
         
-        # Box updates: for each cell, gather all cells in same 3x3 box
-        # Reshape to (B, 3, 3, 3, 3, D) then gather boxes
+        # Box constraint prediction
         z_boxes = z_grid.view(B, 3, 3, 3, 3, D)
-        z_boxes = z_boxes.permute(0, 1, 3, 2, 4, 5).reshape(B, 9, 9 * D)  # (B, 9, 9*D) - each box
-        box_update = self.box_net(z_boxes)  # (B, 9, D)
-        # Broadcast back to cells within each box
+        z_boxes = z_boxes.permute(0, 1, 3, 2, 4, 5).reshape(B, 9, 9 * D)
+        box_update = self.box_net(z_boxes)
         box_update = box_update.view(B, 3, 3, D)
         box_update = box_update.unsqueeze(3).unsqueeze(5).expand(-1, -1, -1, 3, -1, 3).reshape(B, 9, 9, D)
         
-        # Fisher-correct combination: ADD the log-potentials (Product of Experts)
-        # This is the key insight from Chentsov's theorem
-        delta_sum = row_update + col_update + box_update
+        # Π(z) = z + coarse_delta (the "constraint-consistent" state)
+        coarse_delta = row_update + col_update + box_update
+        pi_z = z_grid + coarse_delta  # Coarse projection
         
-        # Gated update for stability
+        return pi_z.view(B, 81, D), row_update, col_update, box_update
+    
+    def forward(self, z: torch.Tensor, return_defect: bool = False) -> Union[torch.Tensor, Tuple[torch.Tensor, torch.Tensor]]:
+        """z: (B, 81, D) -> (B, 81, D)
+        
+        If return_defect=True, also returns the vertical defect D = z_new - Π(z).
+        This measures how much the update "leaks" out of the coarse subspace.
+        """
+        B, _, D = z.shape
+        z_grid = z.view(B, 9, 9, D)
+        
+        # Compute coarse projection Π(z)
+        pi_z, row_update, col_update, box_update = self.compute_coarse_projection(z)
+        pi_z_grid = pi_z.view(B, 9, 9, D)
+        
+        # Coarse delta (this IS the coarse prediction)
+        coarse_delta = row_update + col_update + box_update
+        
+        # Gated update for stability (this adds "fine" dynamics)
         gate_input = torch.cat([row_update, col_update, box_update], dim=-1).view(B, 81, -1)
         gate = self.gate(gate_input).view(B, 9, 9, D)
         
-        # Residual update in log space
-        z_new = z_grid + self.alpha * gate * delta_sum
+        # Compute raw update
+        raw_update = gate * coarse_delta
         
-        return z_new.view(B, 81, D)
+        # STABILITY MEASURES: Ensure F is contractive for long-horizon inference
+        if self.stable and self.update_norm is not None:
+            # 1. LayerNorm to control magnitude
+            raw_update_flat = raw_update.view(B, 81, D)
+            raw_update_flat = self.update_norm(raw_update_flat)
+            
+            # 2. Tanh to bound update (ensures contractivity)
+            raw_update_flat = torch.tanh(raw_update_flat) * self.max_update
+            raw_update = raw_update_flat.view(B, 9, 9, D)
+        
+        # Clamp alpha for stability
+        alpha_clamped = self.alpha.clamp(-0.5, 0.5)
+        
+        # Full dynamics F(z) = z + α * bounded_update
+        z_new = z_grid + alpha_clamped * raw_update
+        
+        # Final safety clamp to prevent NaN propagation
+        z_new = z_new.clamp(-50, 50)
+        z_new_flat = z_new.view(B, 81, D)
+        
+        if return_defect:
+            # Vertical Defect: D = F(z) - Π(z)
+            # This measures the "non-coarse" component of the update
+            # If gate=1 and alpha=1, defect=0 (perfectly coarse-consistent)
+            # The gating introduces "leakage" from the coarse subspace
+            vertical_defect = z_new_flat - pi_z
+            return z_new_flat, vertical_defect
+        
+        return z_new_flat
 
 
 class ISRSolver(nn.Module):
@@ -413,6 +602,10 @@ class ISRSolver(nn.Module):
     - State is logits (natural parameters)
     - Updates are additive (Product of Experts)
     - Cross-cell communication via row/col/box constraints
+    
+    SGC Structure:
+    - CoarseProjector Π = lift ∘ Q (idempotent, dimensionality-reducing)
+    - Commutator Defect D = (I-Π)F(Π(z)) measures lumpability violation
     """
     def __init__(self, hidden_dim: int = 64, num_blocks: int = 2):
         super().__init__()
@@ -430,6 +623,9 @@ class ISRSolver(nn.Module):
         # Initialize hidden state
         self.z_init = nn.Parameter(torch.randn(hidden_dim) * 0.01)
         
+        # SGC: True coarse-graining projector (not learned, just structure)
+        self.Pi = CoarseProjector(hidden_dim)
+        
         total = sum(p.numel() for p in self.parameters() if p.requires_grad)
         print(f"[ISRSolver] Fisher-Axial, Parameters: {total:,}")
     
@@ -437,21 +633,46 @@ class ISRSolver(nn.Module):
         """Encode puzzle clues into hidden representations."""
         return self.clue_embed(puzzle)  # (B, 81, D)
     
-    def forward_step(self, z_t: torch.Tensor, x_enc: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
-        """Single refinement step with Fisher-correct updates."""
+    def forward_step(self, z_t: torch.Tensor, x_enc: torch.Tensor, return_defect: bool = False):
+        """Single refinement step with Fisher-correct updates.
+        
+        If return_defect=True, also returns accumulated vertical defect.
+        """
         # Combine current state with puzzle encoding
         z_combined = z_t + x_enc  # Additive (log-linear)
         
-        # Apply Fisher-Axial blocks
+        # Apply Fisher-Axial blocks, accumulating defect if requested
+        total_defect = None
         for block in self.blocks:
-            z_combined = block(z_combined)
+            if return_defect:
+                z_combined, defect = block(z_combined, return_defect=True)
+                if total_defect is None:
+                    total_defect = defect
+                else:
+                    total_defect = total_defect + defect
+            else:
+                z_combined = block(z_combined)
         
         # Project to logits
         y_t = self.to_logits(z_combined)
         
+        if return_defect:
+            return y_t, z_combined, total_defect
         return y_t, z_combined
     
-    def forward(self, puzzle: torch.Tensor, T: int = 30, return_trajectory: bool = False):
+    def forward(self, puzzle: torch.Tensor, T: int = 30, return_trajectory: bool = False, 
+                return_defect: bool = False, damping_alpha: float = 1.0, return_velocity: bool = False):
+        """Forward pass with optional trajectory, defect tracking, and KM damping.
+        
+        Args:
+            puzzle: (B, 81) tensor of clues (0 = empty)
+            T: Number of refinement steps
+            return_trajectory: If True, return full y/z trajectories
+            return_defect: If True, track vertical defect per step (SGC metric)
+            damping_alpha: KM damping parameter (1.0 = no damping, <1 = damped)
+                          z_{t+1} = (1-alpha)*z_t + alpha*F(z_t)
+            return_velocity: If True, track velocity ||z_{t+1} - z_t|| per step
+        """
         batch_size, device = puzzle.shape[0], puzzle.device
         x_enc = self.encode_puzzle(puzzle)
         
@@ -460,9 +681,30 @@ class ISRSolver(nn.Module):
         y_t = self.to_logits(z_t + x_enc)
         
         y_traj, z_traj = [y_t], [z_t] if return_trajectory else (None, None)
+        defect_traj = [] if return_defect else None
+        velocity_traj = [] if return_velocity else None
         
         for _ in range(T):
-            y_t, z_t = self.forward_step(z_t, x_enc)
+            z_prev = z_t
+            
+            if return_defect:
+                y_t, z_next_raw, step_defect = self.forward_step(z_t, x_enc, return_defect=True)
+                defect_traj.append(step_defect)
+            else:
+                y_t, z_next_raw = self.forward_step(z_t, x_enc)
+            
+            # KM Damping: z_{t+1} = (1-alpha)*z_t + alpha*F(z_t)
+            if damping_alpha < 1.0:
+                z_t = (1 - damping_alpha) * z_prev + damping_alpha * z_next_raw
+                y_t = self.to_logits(z_t + x_enc)  # Recompute logits for damped state
+            else:
+                z_t = z_next_raw
+            
+            # Track velocity ||z_{t+1} - z_t||
+            if return_velocity:
+                velocity = (z_t - z_prev).norm(dim=-1).mean()  # Scalar
+                velocity_traj.append(velocity)
+            
             if return_trajectory:
                 y_traj.append(y_t)
                 z_traj.append(z_t)
@@ -471,6 +713,10 @@ class ISRSolver(nn.Module):
         if return_trajectory:
             result['y_traj'] = torch.stack(y_traj, dim=0)
             result['z_traj'] = torch.stack(z_traj, dim=0)
+        if return_defect:
+            result['defect_traj'] = torch.stack(defect_traj, dim=0)  # (T, B, 81, D)
+        if return_velocity:
+            result['velocity_traj'] = torch.stack(velocity_traj, dim=0)  # (T,)
         return result
     
     def compute_loss(self, y_final: torch.Tensor, solution: torch.Tensor, puzzle: torch.Tensor) -> torch.Tensor:
@@ -480,13 +726,239 @@ class ISRSolver(nn.Module):
         ce = F.cross_entropy(y_final.view(-1, 9), target, reduction='none')
         return (ce * mask).sum() / (mask.sum() + 1e-8)
     
+    @staticmethod
+    def compute_defect_loss(defect_traj: torch.Tensor) -> Tuple[torch.Tensor, Dict]:
+        """Compute SGC vertical defect loss from defect trajectory.
+        
+        The vertical defect D = (I - Π)F(Π(z)) measures how much the dynamics
+        "leak" out of the coarse (constraint-consistent) subspace.
+        
+        SGC Theory: Minimizing this forces micro-dynamics to align with macro-constraints,
+        which should improve global coherence (solved accuracy).
+        
+        Args:
+            defect_traj: (T, B, 81, D) tensor of vertical defects per step
+            
+        Returns:
+            defect_loss: Scalar loss (mean L2 norm of defects)
+            metrics: Dict with per-step and total defect statistics
+        """
+        # defect_traj: (T, B, 81, D)
+        T, B, cells, D = defect_traj.shape
+        
+        # L2 norm of defect per cell per step: (T, B, 81)
+        defect_norm = defect_traj.norm(dim=-1)
+        
+        # Mean defect per step: (T,)
+        defect_per_step = defect_norm.mean(dim=(1, 2))
+        
+        # Total defect loss (mean over all steps, cells, batches)
+        defect_loss = defect_norm.mean()
+        
+        # Final step defect (most important for convergence)
+        final_defect = defect_per_step[-1].item()
+        
+        # Defect trajectory statistics
+        metrics = {
+            'defect_loss': defect_loss.item(),
+            'defect_final': final_defect,
+            'defect_mean': defect_per_step.mean().item(),
+            'defect_max': defect_per_step.max().item(),
+        }
+        
+        return defect_loss, metrics
+    
+    def compute_commutator_defect(self, z: torch.Tensor, x_enc: torch.Tensor) -> Tuple[torch.Tensor, Dict]:
+        """SGC-Correct Commutator Defect: D = (I - Π)F(Π(z))
+        
+        This is the EXACT SGC definition of lumpability defect:
+        1. z_π = Π(z)     : Project current state to coarse manifold
+        2. z' = F(z_π)    : Evolve the coarse-initialized state one step
+        3. z'_π = Π(z')   : Project the result back to coarse manifold
+        4. D = d(z', z'_π): Measure how much evolution leaked out of coarse subspace
+        
+        If D ≈ 0, the dynamics are "lumpable" - coarse description is self-consistent.
+        
+        Returns:
+            defect: KL divergence measuring leakage (scalar)
+            metrics: Dict with detailed defect info
+        """
+        # Step 1: Project to coarse manifold
+        z_pi = self.Pi(z)  # (B, 81, D)
+        
+        # Step 2: Evolve the coarse-initialized state (one forward step)
+        z_combined = z_pi + x_enc
+        for block in self.blocks:
+            z_combined = block(z_combined)
+        z_prime = z_combined  # F(Π(z))
+        
+        # Step 3: Project the evolved state back
+        z_prime_pi = self.Pi(z_prime)  # Π(F(Π(z)))
+        
+        # Step 4: Compute defect as KL divergence on logits
+        # Convert hidden states to probability distributions
+        y_prime = F.softmax(self.to_logits(z_prime), dim=-1)  # (B, 81, 9)
+        y_prime_pi = F.softmax(self.to_logits(z_prime_pi), dim=-1)  # (B, 81, 9)
+        
+        # KL(y' || y'_π) - how much does evolution leak from coarse subspace?
+        kl_per_cell = (y_prime * (y_prime.log() - y_prime_pi.log().clamp(min=-100))).sum(dim=-1)  # (B, 81)
+        defect = kl_per_cell.mean()  # Scalar
+        
+        # Also compute L2 defect in hidden space for comparison
+        l2_defect = (z_prime - z_prime_pi).norm(dim=-1).mean()
+        
+        metrics = {
+            'commutator_kl': defect.item(),
+            'commutator_l2': l2_defect.item(),
+            'idempotence_error': self.Pi.check_idempotence(z),
+        }
+        
+        return defect, metrics
+    
+    def forward_with_commutator_defect(self, puzzle: torch.Tensor, T: int = 30) -> Dict:
+        """Forward pass tracking SGC-correct commutator defect per step.
+        
+        At each step, we measure: D_t = (I - Π)F(Π(z_t))
+        This is the lumpability violation at step t.
+        """
+        batch_size = puzzle.shape[0]
+        x_enc = self.encode_puzzle(puzzle)
+        
+        z_t = self.z_init.unsqueeze(0).unsqueeze(0).expand(batch_size, 81, -1).clone()
+        
+        defect_traj = []
+        y_traj = []
+        
+        for t in range(T):
+            # Compute commutator defect at this step
+            defect, _ = self.compute_commutator_defect(z_t, x_enc)
+            defect_traj.append(defect)
+            
+            # Regular forward step
+            y_t, z_t = self.forward_step(z_t, x_enc)
+            y_traj.append(y_t)
+        
+        return {
+            'y_final': y_traj[-1],
+            'z_final': z_t,
+            'defect_traj': torch.stack(defect_traj),  # (T,)
+            'y_traj': torch.stack(y_traj),
+        }
+    
+    def forward_defect_halting(self, puzzle: torch.Tensor, max_steps: int = 100, 
+                                eps: float = 1e-3) -> Dict:
+        """SGC Defect-Halting Inference: Stop when commutator defect < epsilon.
+        
+        This is the key SGC test: "closure → truth"
+        If the dynamics have reached a lumpable fixed point, the puzzle should be solved.
+        
+        Algorithm:
+            z = z_init
+            for t in 1..max_steps:
+                D = (I - Π)F(Π(z))  # Commutator defect
+                if D < eps: break   # Closed!
+                z = F(z)            # Continue evolving
+        
+        Returns dict with:
+            - y_final: Final logits
+            - steps_taken: Number of steps until closure (or max)
+            - final_defect: Defect at termination
+            - converged: Whether defect < eps was achieved
+        """
+        batch_size = puzzle.shape[0]
+        x_enc = self.encode_puzzle(puzzle)
+        
+        z_t = self.z_init.unsqueeze(0).unsqueeze(0).expand(batch_size, 81, -1).clone()
+        
+        # Track per-sample convergence
+        converged = torch.zeros(batch_size, dtype=torch.bool, device=puzzle.device)
+        steps_taken = torch.full((batch_size,), max_steps, dtype=torch.long, device=puzzle.device)
+        final_defect = torch.zeros(batch_size, device=puzzle.device)
+        
+        y_final = None
+        
+        for t in range(max_steps):
+            # Compute commutator defect
+            defect_scalar, _ = self.compute_commutator_defect(z_t, x_enc)
+            
+            # Check convergence (batch-level for now)
+            if defect_scalar.item() < eps:
+                y_final, _ = self.forward_step(z_t, x_enc)
+                steps_taken[:] = t + 1
+                final_defect[:] = defect_scalar.item()
+                converged[:] = True
+                break
+            
+            # Forward step
+            y_t, z_t = self.forward_step(z_t, x_enc)
+            y_final = y_t
+            final_defect[:] = defect_scalar.item()
+        
+        return {
+            'y_final': y_final,
+            'z_final': z_t,
+            'steps_taken': steps_taken.float().mean().item(),
+            'final_defect': final_defect.mean().item(),
+            'converged': converged.all().item(),
+        }
+    
     def compute_accuracy(self, y_final: torch.Tensor, solution: torch.Tensor, puzzle: torch.Tensor) -> Dict:
         pred = y_final.argmax(dim=-1) + 1  # Convert 0-8 to 1-9
         pred = torch.where(puzzle > 0, puzzle, pred)  # Keep given clues
         mask = (puzzle == 0)
         cell_acc = ((pred == solution) & mask).float().sum() / (mask.float().sum() + 1e-8)
         solved_acc = (pred == solution).all(dim=-1).float().mean()
-        return {'cell_acc': cell_acc.item(), 'solved_acc': solved_acc.item()}
+        
+        # Constraint violations: count duplicate digits in rows/cols/boxes
+        violations = self.count_constraint_violations(pred)
+        
+        return {
+            'cell_acc': cell_acc.item(), 
+            'solved_acc': solved_acc.item(),
+            'violations': violations
+        }
+    
+    @staticmethod
+    def count_constraint_violations(pred: torch.Tensor) -> Dict:
+        """Count Sudoku constraint violations in predicted grid (vectorized).
+        
+        Returns dict with:
+        - row_violations: avg duplicates per row
+        - col_violations: avg duplicates per column  
+        - box_violations: avg duplicates per 3x3 box
+        - total_violations: sum of all violations per puzzle
+        """
+        B = pred.shape[0]
+        pred_grid = pred.view(B, 9, 9)  # [B, 9, 9]
+        
+        def count_duplicates_vectorized(groups: torch.Tensor) -> torch.Tensor:
+            """Count duplicates in groups. groups: [B, 9, 9] (9 groups of 9 cells)"""
+            # One-hot encode: [B, 9, 9] -> [B, 9, 9, 9] for digits 1-9
+            one_hot = F.one_hot(groups.long() - 1, num_classes=9)  # [B, 9, 9, 9]
+            # Sum occurrences per group per digit: [B, 9, 9]
+            counts = one_hot.sum(dim=2)  # [B, 9, 9] - counts per group per digit
+            # Violations = max(0, count - 1) summed over all digits and groups
+            violations = (counts - 1).clamp(min=0).sum(dim=(1, 2))  # [B]
+            return violations
+        
+        # Row violations
+        row_viols = count_duplicates_vectorized(pred_grid)
+        
+        # Column violations  
+        col_viols = count_duplicates_vectorized(pred_grid.permute(0, 2, 1))
+        
+        # Box violations - reshape to [B, 9, 9] where dim1 is box index
+        boxes = pred_grid.view(B, 3, 3, 3, 3).permute(0, 1, 3, 2, 4).reshape(B, 9, 9)
+        box_viols = count_duplicates_vectorized(boxes)
+        
+        total = row_viols + col_viols + box_viols
+        
+        return {
+            'row_violations': row_viols.float().mean().item(),
+            'col_violations': col_viols.float().mean().item(),
+            'box_violations': box_viols.float().mean().item(),
+            'total_violations': total.float().mean().item()
+        }
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # SGC ANALYZER - Implements Π̂ (empirical conditional expectation)
@@ -883,8 +1355,22 @@ def train_epoch(model, loader, opt, analyzer, viz, epoch, step, cfg, device):
     pbar = tqdm(loader, desc=f"Epoch {epoch}")
     for puzzles, solutions in pbar:
         puzzles, solutions = puzzles.to(device), solutions.to(device)
-        result = model(puzzles, T=cfg.T_steps, return_trajectory=True)
-        loss = model.compute_loss(result['y_final'], solutions, puzzles)
+        
+        # Forward pass with defect tracking if defect_weight > 0
+        use_defect = cfg.defect_weight > 0
+        result = model(puzzles, T=cfg.T_steps, return_trajectory=True, return_defect=use_defect)
+        
+        # Task loss (cross-entropy on empty cells)
+        task_loss = model.compute_loss(result['y_final'], solutions, puzzles)
+        
+        # SGC Defect loss (vertical escape from coarse subspace)
+        if use_defect:
+            defect_loss, defect_metrics = model.compute_defect_loss(result['defect_traj'])
+            loss = task_loss + cfg.defect_weight * defect_loss
+        else:
+            loss = task_loss
+            defect_metrics = None
+        
         opt.zero_grad(); loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
         opt.step()
@@ -921,12 +1407,25 @@ def train_epoch(model, loader, opt, analyzer, viz, epoch, step, cfg, device):
                 rank = analyzer.compute_effective_rank(z_traj[-1])
                 y_entropy = analyzer.compute_y_entropy(y_traj[-1])
             
-            pbar.set_postfix(Loss=f'{loss.item():.4f}', Acc=f'{acc["cell_acc"]*100:.1f}%', 
-                            KL=f'{leak_kl:.4f}', Vel=f'{fisher_velocity:.4f}')
-            viz.log_scalars(step, {
-                'Loss/train': loss.item(), 
+            viols = acc['violations']
+            
+            # Build postfix with optional defect info
+            postfix = {'Loss': f'{loss.item():.4f}', 'Cell': f'{acc["cell_acc"]*100:.1f}%', 
+                      'Solved': f'{acc["solved_acc"]*100:.1f}%', 'Viols': f'{viols["total_violations"]:.1f}'}
+            if defect_metrics:
+                postfix['Defect'] = f'{defect_metrics["defect_final"]:.3f}'
+            pbar.set_postfix(**postfix)
+            
+            # Build log dict
+            log_dict = {
+                'Loss/train': loss.item(),
+                'Loss/task': task_loss.item(),
                 'Acc/solved': acc['solved_acc'],
                 'Acc/cell': acc['cell_acc'],
+                'Violations/row': viols['row_violations'],
+                'Violations/col': viols['col_violations'],
+                'Violations/box': viols['box_violations'],
+                'Violations/total': viols['total_violations'],
                 'SGC/Leakage_Euc': leak_euc, 
                 'SGC/Leakage_KL': leak_kl,
                 'SGC/Fisher_Velocity': fisher_velocity,
@@ -936,7 +1435,16 @@ def train_epoch(model, loader, opt, analyzer, viz, epoch, step, cfg, device):
                 'SGC/Singleton_Ratio': singleton_ratio,
                 'SGC/Num_Groups': num_groups,
                 'SGC/Y_Entropy': y_entropy,
-            })
+            }
+            
+            # Add defect metrics if available
+            if defect_metrics:
+                log_dict['Loss/defect'] = defect_metrics['defect_loss']
+                log_dict['SGC/Defect_Final'] = defect_metrics['defect_final']
+                log_dict['SGC/Defect_Mean'] = defect_metrics['defect_mean']
+                log_dict['SGC/Defect_Max'] = defect_metrics['defect_max']
+            
+            viz.log_scalars(step, log_dict)
             viz.history['loss'].append(loss.item())
             viz.history['solved_acc'].append(acc['solved_acc'])
         step += 1
@@ -1081,6 +1589,8 @@ def main():
     parser.add_argument('--no_validate', action='store_true', help='Skip puzzle validation')
     parser.add_argument('--no_unique', action='store_true', help='Skip uniqueness checking during generation')
     parser.add_argument('--sanity_check_data', action='store_true', help='Run data sanity checks and exit')
+    # SGC Defect Regularization
+    parser.add_argument('--defect_weight', type=float, default=0.0, help='Weight for SGC vertical defect loss (0=off, try 0.1)')
     args = parser.parse_args()
     
     cfg = ISRConfig(
@@ -1094,7 +1604,8 @@ def main():
         min_clues_end=args.min_clues_end, max_clues_end=args.max_clues_end,
         curriculum_epochs=args.curriculum_epochs,
         validate_puzzles=not args.no_validate, require_unique=not args.no_unique,
-        sanity_check_data=args.sanity_check_data
+        sanity_check_data=args.sanity_check_data,
+        defect_weight=args.defect_weight
     )
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

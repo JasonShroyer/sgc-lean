@@ -1,0 +1,3184 @@
+{
+  "pattern_rules": [
+    {
+      "pattern": [
+        -1,
+        3,
+        1,
+        -1,
+        3,
+        1,
+        -1,
+        -1,
+        -1
+      ],
+      "output_color": 4,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        2,
+        3,
+        8,
+        2,
+        3,
+        8,
+        -1,
+        -1,
+        -1
+      ],
+      "output_color": 4,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        9,
+        4,
+        2,
+        9,
+        4,
+        2,
+        9,
+        4,
+        2
+      ],
+      "output_color": 3,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        -1,
+        -1,
+        -1,
+        3,
+        1,
+        2,
+        3,
+        1,
+        2
+      ],
+      "output_color": 5,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        5,
+        8,
+        6,
+        5,
+        8,
+        6,
+        5,
+        8,
+        6
+      ],
+      "output_color": 9,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        -1,
+        -1,
+        -1,
+        9,
+        4,
+        2,
+        9,
+        4,
+        2
+      ],
+      "output_color": 3,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        3,
+        8,
+        -1,
+        3,
+        8,
+        -1,
+        3,
+        8,
+        -1
+      ],
+      "output_color": 9,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        -1,
+        -1,
+        -1,
+        2,
+        3,
+        8,
+        2,
+        3,
+        8
+      ],
+      "output_color": 4,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        4,
+        2,
+        -1,
+        4,
+        2,
+        -1,
+        -1,
+        -1,
+        -1
+      ],
+      "output_color": 6,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        8,
+        6,
+        -1,
+        8,
+        6,
+        -1,
+        8,
+        6,
+        -1
+      ],
+      "output_color": 2,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        -1,
+        -1,
+        -1,
+        4,
+        2,
+        -1,
+        4,
+        2,
+        -1
+      ],
+      "output_color": 6,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        -1,
+        -1,
+        -1,
+        5,
+        8,
+        6,
+        5,
+        8,
+        6
+      ],
+      "output_color": 9,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        -1,
+        9,
+        4,
+        -1,
+        9,
+        4,
+        -1,
+        9,
+        4
+      ],
+      "output_color": 8,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        3,
+        1,
+        2,
+        3,
+        1,
+        2,
+        -1,
+        -1,
+        -1
+      ],
+      "output_color": 5,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        5,
+        8,
+        6,
+        5,
+        8,
+        6,
+        -1,
+        -1,
+        -1
+      ],
+      "output_color": 9,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        -1,
+        -1,
+        -1,
+        -1,
+        9,
+        4,
+        -1,
+        9,
+        4
+      ],
+      "output_color": 8,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        1,
+        2,
+        -1,
+        1,
+        2,
+        -1,
+        -1,
+        -1,
+        -1
+      ],
+      "output_color": 6,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        8,
+        6,
+        -1,
+        8,
+        6,
+        -1,
+        -1,
+        -1,
+        -1
+      ],
+      "output_color": 2,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        -1,
+        3,
+        1,
+        -1,
+        3,
+        1,
+        -1,
+        3,
+        1
+      ],
+      "output_color": 4,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        3,
+        8,
+        -1,
+        3,
+        8,
+        -1,
+        -1,
+        -1,
+        -1
+      ],
+      "output_color": 9,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        -1,
+        -1,
+        -1,
+        1,
+        2,
+        -1,
+        1,
+        2,
+        -1
+      ],
+      "output_color": 6,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        -1,
+        -1,
+        -1,
+        8,
+        6,
+        -1,
+        8,
+        6,
+        -1
+      ],
+      "output_color": 2,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        -1,
+        -1,
+        -1,
+        -1,
+        5,
+        8,
+        -1,
+        5,
+        8
+      ],
+      "output_color": 1,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        -1,
+        2,
+        3,
+        -1,
+        2,
+        3,
+        -1,
+        -1,
+        -1
+      ],
+      "output_color": 6,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        9,
+        4,
+        2,
+        9,
+        4,
+        2,
+        -1,
+        -1,
+        -1
+      ],
+      "output_color": 3,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        -1,
+        9,
+        4,
+        -1,
+        9,
+        4,
+        -1,
+        -1,
+        -1
+      ],
+      "output_color": 8,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        -1,
+        -1,
+        -1,
+        3,
+        8,
+        -1,
+        3,
+        8,
+        -1
+      ],
+      "output_color": 9,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        2,
+        3,
+        8,
+        2,
+        3,
+        8,
+        2,
+        3,
+        8
+      ],
+      "output_color": 4,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        -1,
+        5,
+        8,
+        -1,
+        5,
+        8,
+        -1,
+        5,
+        8
+      ],
+      "output_color": 1,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        -1,
+        2,
+        3,
+        -1,
+        2,
+        3,
+        -1,
+        2,
+        3
+      ],
+      "output_color": 6,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        -1,
+        5,
+        8,
+        -1,
+        5,
+        8,
+        -1,
+        -1,
+        -1
+      ],
+      "output_color": 1,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        3,
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        1,
+        2
+      ],
+      "output_color": 5,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        -1,
+        -1,
+        -1,
+        -1,
+        3,
+        1,
+        -1,
+        3,
+        1
+      ],
+      "output_color": 4,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        4,
+        2,
+        -1,
+        4,
+        2,
+        -1,
+        4,
+        2,
+        -1
+      ],
+      "output_color": 6,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        1,
+        2,
+        -1,
+        1,
+        2,
+        -1,
+        1,
+        2,
+        -1
+      ],
+      "output_color": 6,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "pattern": [
+        -1,
+        -1,
+        -1,
+        -1,
+        2,
+        3,
+        -1,
+        2,
+        3
+      ],
+      "output_color": 6,
+      "confidence": 0.98,
+      "success_count": 1,
+      "failure_count": 0,
+      "last_used_epoch": 0,
+      "source_tasks": [
+        "0d3d703e"
+      ],
+      "context_hash": null,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ]
+      }
+    }
+  ],
+  "global_color_maps": [
+    {
+      "from": 3,
+      "to": 4,
+      "confidence": 0.9
+    },
+    {
+      "from": 1,
+      "to": 5,
+      "confidence": 0.9
+    },
+    {
+      "from": 2,
+      "to": 6,
+      "confidence": 0.9
+    },
+    {
+      "from": 8,
+      "to": 9,
+      "confidence": 0.9
+    },
+    {
+      "from": 5,
+      "to": 1,
+      "confidence": 0.9
+    },
+    {
+      "from": 6,
+      "to": 2,
+      "confidence": 0.9
+    },
+    {
+      "from": 9,
+      "to": 8,
+      "confidence": 0.9
+    },
+    {
+      "from": 4,
+      "to": 3,
+      "confidence": 0.9
+    },
+    {
+      "from": 3,
+      "to": 3,
+      "confidence": 0.9
+    },
+    {
+      "from": 7,
+      "to": 3,
+      "confidence": 0.9
+    },
+    {
+      "from": 1,
+      "to": 1,
+      "confidence": 0.9
+    }
+  ],
+  "operator_posteriors": [
+    {
+      "op_family": "rotate",
+      "global_successes": 0,
+      "global_failures": 0,
+      "context_posteriors": {}
+    },
+    {
+      "op_family": "flip",
+      "global_successes": 0,
+      "global_failures": 0,
+      "context_posteriors": {}
+    },
+    {
+      "op_family": "translate",
+      "global_successes": 0,
+      "global_failures": 0,
+      "context_posteriors": {
+        "shape:scaled|transform:topology|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "op_family": "color_map",
+      "global_successes": 0,
+      "global_failures": 0,
+      "context_posteriors": {
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:changed|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:colormap|palette:small|bg:changed|cc:same": [
+          1,
+          1
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:same": [
+          0,
+          3
+        ],
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:large|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:scaled|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          1,
+          0
+        ],
+        "shape:same|transform:colormap|palette:small|bg:stable|cc:less": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:shrunk|transform:colormap|palette:small|bg:changed|cc:less": [
+          0,
+          1
+        ],
+        "shape:same|transform:colormap|palette:tiny|bg:stable|cc:more": [
+          0,
+          2
+        ]
+      }
+    },
+    {
+      "op_family": "crop",
+      "global_successes": 0,
+      "global_failures": 0,
+      "context_posteriors": {
+        "shape:scaled|transform:topology|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "op_family": "expand",
+      "global_successes": 0,
+      "global_failures": 0,
+      "context_posteriors": {
+        "shape:scaled|transform:topology|palette:tiny|bg:stable|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:tiny|bg:changed|cc:same": [
+          0,
+          1
+        ],
+        "shape:shrunk|transform:topology|palette:small|bg:stable|cc:same": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "op_family": "identity",
+      "global_successes": 0,
+      "global_failures": 0,
+      "context_posteriors": {
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:more": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          3
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          3
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          3
+        ]
+      }
+    },
+    {
+      "op_family": "transpose",
+      "global_successes": 0,
+      "global_failures": 0,
+      "context_posteriors": {}
+    },
+    {
+      "op_family": "boundary_fill",
+      "global_successes": 0,
+      "global_failures": 0,
+      "context_posteriors": {}
+    },
+    {
+      "op_family": "guarded_local",
+      "global_successes": 0,
+      "global_failures": 0,
+      "context_posteriors": {
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:less": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:more": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:same": [
+          0,
+          2
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:same": [
+          0,
+          3
+        ],
+        "shape:same|transform:mixed|palette:tiny|bg:stable|cc:more": [
+          0,
+          3
+        ],
+        "shape:same|transform:mixed|palette:small|bg:stable|cc:less": [
+          0,
+          3
+        ]
+      }
+    }
+  ],
+  "current_epoch": 1,
+  "total_tasks_seen": 40,
+  "total_perfect_solves": 2
+}

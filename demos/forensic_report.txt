@@ -1,0 +1,1758 @@
+﻿Initializing Phase 27.5: The Forensic Pathologist...
+  Loaded 14 rules from registry
+  Loaded 1000 physics observations
+Loading tasks from: data/arc/training
+Loaded 97 tasks.
+
+======================================================================
+PHASE 27.5: FORENSIC PATHOLOGIST
+Analyzing Near-Miss Failures to Identify Missing Operators
+======================================================================
+
+Phase 1: Scanning for Near-Misses (F < 0.1, not perfect)...
+  [+] Rule strengthened: Physics_contact (freq=39, conf=0.79)
+  [+] Rule strengthened: Crop_To_7x9 (freq=39, conf=0.79)
+  [+] Rule strengthened: ColorMap_Permutation_3 (freq=73, conf=0.84)
+  Scanned 20/97 tasks, found 6 near-misses
+  [+] Rule strengthened: ColorMap_Merge (freq=135, conf=0.89)
+  [+] Rule strengthened: Crop_ToContent (freq=37, conf=0.78)
+  [+] Rule strengthened: Physics_top (freq=37, conf=0.78)
+  [+] Rule strengthened: Extract_largest (freq=38, conf=0.85)
+  Scanned 40/97 tasks, found 9 near-misses
+  [+] Rule strengthened: Identity (freq=36, conf=0.85)
+  [+] Rule strengthened: Extract_smallest (freq=36, conf=0.85)
+  [+] Rule strengthened: ColorMap_Permutation_3 (freq=75, conf=0.85)
+  [+] Rule strengthened: ColorMap_Merge (freq=137, conf=0.89)
+  Scanned 60/97 tasks, found 15 near-misses
+  [+] Rule strengthened: Crop_ToSmall (freq=33, conf=0.77)
+  Scanned 80/97 tasks, found 20 near-misses
+  [+] Rule strengthened: ColorMap_Merge (freq=139, conf=0.89)
+  [+] Rule strengthened: Crop_To_5x7 (freq=33, conf=0.77)
+  [+] Rule strengthened: ColorMap_Merge (freq=141, conf=0.89)
+
+Phase 2: Found 24 Near-Misses. Deep-Diving Top 5...
+
+======================================================================
+CASE #1: Task 1a07d186
+Best Method: fill(0)
+Fisher Distance: 0.0168
+======================================================================
+
+--- Training Example 0 ---
+
+--- INPUT (Ex 0) ---
+   0123456789012345678
+ 0 ...3........4......
+ 1 ...3........4......
+ 2 ...3........4......
+ 3 .4.3..3.....4......
+ 4 ...3........4......
+ 5 ...3........4......
+ 6 ...3........4......
+ 7 ...3.....4..4......
+ 8 ...3........4......
+ 9 ...3........4......
+10 ...3...2....4......
+11 ...3........4...3..
+12 ...3........4......
+13 ...3........4......
+14 ...3........4......
+15 ...3........4......
+16 ...3........4......
+17 ...3........4......
+
+--- TARGET OUTPUT (Ex 0) ---
+   0123456789012345678
+ 0 ...3........4......
+ 1 ...3........4......
+ 2 ...3........4......
+ 3 ...33......44......
+ 4 ...3........4......
+ 5 ...3........4......
+ 6 ...3........4......
+ 7 ...3.......44......
+ 8 ...3........4......
+ 9 ...3........4......
+10 ...3........4......
+11 ...33.......4......
+12 ...3........4......
+13 ...3........4......
+14 ...3........4......
+15 ...3........4......
+16 ...3........4......
+17 ...3........4......
+
+--- PREDICTION via 'fill(0)' ---
+   0123456789012345678
+ 0 ...3........4......
+ 1 ...3........4......
+ 2 ...3........4......
+ 3 ...3........4......
+ 4 ...3........4......
+ 5 ...3........4......
+ 6 ...3........4......
+ 7 ...3........4......
+ 8 ...3........4......
+ 9 ...3........4......
+10 ...3........4......
+11 ...3........4......
+12 ...3........4......
+13 ...3........4......
+14 ...3........4......
+15 ...3........4......
+16 ...3........4......
+17 ...3........4......
+
+--- DIFF (X=error) (X = wrong, . = correct) ---
+   0123456789012345678
+ 0 ...................
+ 1 ...................
+ 2 ...................
+ 3 ....X......X.......
+ 4 ...................
+ 5 ...................
+ 6 ...................
+ 7 ...........X.......
+ 8 ...................
+ 9 ...................
+10 ...................
+11 ....X..............
+12 ...................
+13 ...................
+14 ...................
+15 ...................
+16 ...................
+17 ...................
+
+DIFF ANALYSIS:
+  Errors: 4 pixels (1.2%)
+  Error Region: rows 3-11, cols 4-11
+  Predicted values in errors: [0]
+  Target values needed: [3, 4]
+  HYPOTHESIS: SPARSE_MODIFICATION
+
+TRANSFORM ANALYSIS (Input -> Target):
+  Shape: (18, 19) -> (18, 19)
+  Colors In: [0, 2, 3, 4]
+  Colors Out: [0, 3, 4]
+  Transform Type: SPARSE_EDIT
+  Changes in Interior: True
+
+OBJECT MODEL (What ObjectExtractor sees in INPUT):
+  [connected_color] Obj 0: Color=2, Pos=(10, 7), Size=1x1, SOLID
+  [connected_color] Obj 1: Color=3, Pos=(0, 3), Size=18x1, SOLID
+  [connected_color] Obj 2: Color=3, Pos=(3, 6), Size=1x1, SOLID
+  [connected_color] Obj 3: Color=3, Pos=(11, 16), Size=1x1, SOLID
+  [connected_color] Obj 4: Color=4, Pos=(0, 12), Size=18x1, SOLID
+  [connected_color] Obj 5: Color=4, Pos=(3, 1), Size=1x1, SOLID
+  [connected_color] Obj 6: Color=4, Pos=(7, 9), Size=1x1, SOLID
+  [foreground] Obj 0: Color=3, Pos=(0, 3), Size=18x1, SOLID
+  [foreground] Obj 1: Color=4, Pos=(0, 12), Size=18x1, SOLID
+  [foreground] Obj 2: Color=4, Pos=(3, 1), Size=1x1, SOLID
+  [foreground] Obj 3: Color=3, Pos=(3, 6), Size=1x1, SOLID
+  [foreground] Obj 4: Color=4, Pos=(7, 9), Size=1x1, SOLID
+  [foreground] Obj 5: Color=2, Pos=(10, 7), Size=1x1, SOLID
+  [foreground] Obj 6: Color=3, Pos=(11, 16), Size=1x1, SOLID
+
+ENCLOSURE ANALYSIS (DiscoveredPhysics view):
+  Enclosures Found: 0
+  Enclosure Pixels: 0
+  Enclosing Colors: []
+
+--- Training Example 1 ---
+
+--- INPUT (Ex 1) ---
+   01234567890123
+ 0 ...2..........
+ 1 .........4....
+ 2 ..............
+ 3 22222222222222
+ 4 ..............
+ 5 ..........1...
+ 6 ..............
+ 7 ......2.......
+ 8 ..............
+ 9 ..............
+10 11111111111111
+11 ..............
+12 ..............
+13 ..1.......2...
+14 ..............
+
+--- TARGET OUTPUT (Ex 1) ---
+   01234567890123
+ 0 ..............
+ 1 ..............
+ 2 ...2..........
+ 3 22222222222222
+ 4 ......2...2...
+ 5 ..............
+ 6 ..............
+ 7 ..............
+ 8 ..............
+ 9 ..........1...
+10 11111111111111
+11 ..1...........
+12 ..............
+13 ..............
+14 ..............
+
+--- PREDICTION via 'fill(0)' ---
+   01234567890123
+ 0 ..............
+ 1 ..............
+ 2 ..............
+ 3 22222222222222
+ 4 ..............
+ 5 ..............
+ 6 ..............
+ 7 ..............
+ 8 ..............
+ 9 ..............
+10 11111111111111
+11 ..............
+12 ..............
+13 ..............
+14 ..............
+
+--- DIFF (X=error) (X = wrong, . = correct) ---
+   01234567890123
+ 0 ..............
+ 1 ..............
+ 2 ...X..........
+ 3 ..............
+ 4 ......X...X...
+ 5 ..............
+ 6 ..............
+ 7 ..............
+ 8 ..............
+ 9 ..........X...
+10 ..............
+11 ..X...........
+12 ..............
+13 ..............
+14 ..............
+
+DIFF ANALYSIS:
+  Errors: 5 pixels (2.4%)
+  Error Region: rows 2-11, cols 2-10
+  Predicted values in errors: [0]
+  Target values needed: [1, 2]
+  HYPOTHESIS: SPARSE_MODIFICATION
+
+TRANSFORM ANALYSIS (Input -> Target):
+  Shape: (15, 14) -> (15, 14)
+  Colors In: [0, 1, 2, 4]
+  Colors Out: [0, 1, 2]
+  Transform Type: SPARSE_EDIT
+  Changes in Interior: False
+
+OBJECT MODEL (What ObjectExtractor sees in INPUT):
+  [connected_color] Obj 0: Color=1, Pos=(5, 10), Size=1x1, SOLID
+  [connected_color] Obj 1: Color=1, Pos=(10, 0), Size=1x14, SOLID
+  [connected_color] Obj 2: Color=1, Pos=(13, 2), Size=1x1, SOLID
+  [connected_color] Obj 3: Color=2, Pos=(0, 3), Size=1x1, SOLID
+  [connected_color] Obj 4: Color=2, Pos=(3, 0), Size=1x14, SOLID
+  [connected_color] Obj 5: Color=2, Pos=(7, 6), Size=1x1, SOLID
+  [connected_color] Obj 6: Color=2, Pos=(13, 10), Size=1x1, SOLID
+  [connected_color] Obj 7: Color=4, Pos=(1, 9), Size=1x1, SOLID
+  [foreground] Obj 0: Color=2, Pos=(0, 3), Size=1x1, SOLID
+  [foreground] Obj 1: Color=4, Pos=(1, 9), Size=1x1, SOLID
+  [foreground] Obj 2: Color=2, Pos=(3, 0), Size=1x14, SOLID
+  [foreground] Obj 3: Color=1, Pos=(5, 10), Size=1x1, SOLID
+  [foreground] Obj 4: Color=2, Pos=(7, 6), Size=1x1, SOLID
+  [foreground] Obj 5: Color=1, Pos=(10, 0), Size=1x14, SOLID
+  [foreground] Obj 6: Color=1, Pos=(13, 2), Size=1x1, SOLID
+  [foreground] Obj 7: Color=2, Pos=(13, 10), Size=1x1, SOLID
+
+ENCLOSURE ANALYSIS (DiscoveredPhysics view):
+  Enclosures Found: 0
+  Enclosure Pixels: 0
+  Enclosing Colors: []
+
+========================================
+FORENSIC SUMMARY FOR 1a07d186
+========================================
+Hypotheses from examples: ['SPARSE_MODIFICATION', 'SPARSE_MODIFICATION']
+CONSISTENT HYPOTHESIS: SPARSE_MODIFICATION
+
+======================================================================
+CASE #2: Task 2c608aff
+Best Method: identity
+Fisher Distance: 0.0174
+======================================================================
+
+--- Training Example 0 ---
+
+--- INPUT (Ex 0) ---
+   012345678901
+ 0 888888888888
+ 1 883338888888
+ 2 883338888888
+ 3 883338888488
+ 4 883338888888
+ 5 888888888888
+ 6 888888888888
+ 7 888888848888
+ 8 888888888888
+
+--- TARGET OUTPUT (Ex 0) ---
+   012345678901
+ 0 888888888888
+ 1 883338888888
+ 2 883338888888
+ 3 883334444488
+ 4 883338888888
+ 5 888888888888
+ 6 888888888888
+ 7 888888848888
+ 8 888888888888
+
+--- PREDICTION via 'identity' ---
+   012345678901
+ 0 888888888888
+ 1 883338888888
+ 2 883338888888
+ 3 883338888488
+ 4 883338888888
+ 5 888888888888
+ 6 888888888888
+ 7 888888848888
+ 8 888888888888
+
+--- DIFF (X=error) (X = wrong, . = correct) ---
+   012345678901
+ 0 ............
+ 1 ............
+ 2 ............
+ 3 .....XXXX...
+ 4 ............
+ 5 ............
+ 6 ............
+ 7 ............
+ 8 ............
+
+DIFF ANALYSIS:
+  Errors: 4 pixels (3.7%)
+  Error Region: rows 3-3, cols 5-8
+  Predicted values in errors: [8]
+  Target values needed: [4]
+  HYPOTHESIS: FILL_RECT_WITH_4
+
+TRANSFORM ANALYSIS (Input -> Target):
+  Shape: (9, 12) -> (9, 12)
+  Colors In: [3, 4, 8]
+  Colors Out: [3, 4, 8]
+  Transform Type: SPARSE_EDIT
+  Changes in Interior: True
+
+OBJECT MODEL (What ObjectExtractor sees in INPUT):
+  [connected_color] Obj 0: Color=3, Pos=(1, 2), Size=4x3, SOLID
+  [connected_color] Obj 1: Color=4, Pos=(3, 9), Size=1x1, SOLID
+  [connected_color] Obj 2: Color=4, Pos=(7, 7), Size=1x1, SOLID
+  [foreground] Obj 0: Color=3, Pos=(1, 2), Size=4x3, SOLID
+  [foreground] Obj 1: Color=4, Pos=(3, 9), Size=1x1, SOLID
+  [foreground] Obj 2: Color=4, Pos=(7, 7), Size=1x1, SOLID
+
+ENCLOSURE ANALYSIS (DiscoveredPhysics view):
+  Enclosures Found: 0
+  Enclosure Pixels: 0
+  Enclosing Colors: []
+
+--- Training Example 1 ---
+
+--- INPUT (Ex 1) ---
+   012345678901
+ 0 222222222222
+ 1 222222222222
+ 2 222111222222
+ 3 222111222222
+ 4 222111222222
+ 5 222222222222
+ 6 222222222222
+ 7 222222222222
+ 8 222822222222
+ 9 222222222222
+
+--- TARGET OUTPUT (Ex 1) ---
+   012345678901
+ 0 222222222222
+ 1 222222222222
+ 2 222111222222
+ 3 222111222222
+ 4 222111222222
+ 5 222822222222
+ 6 222822222222
+ 7 222822222222
+ 8 222822222222
+ 9 222222222222
+
+--- PREDICTION via 'identity' ---
+   012345678901
+ 0 222222222222
+ 1 222222222222
+ 2 222111222222
+ 3 222111222222
+ 4 222111222222
+ 5 222222222222
+ 6 222222222222
+ 7 222222222222
+ 8 222822222222
+ 9 222222222222
+
+--- DIFF (X=error) (X = wrong, . = correct) ---
+   012345678901
+ 0 ............
+ 1 ............
+ 2 ............
+ 3 ............
+ 4 ............
+ 5 ...X........
+ 6 ...X........
+ 7 ...X........
+ 8 ............
+ 9 ............
+
+DIFF ANALYSIS:
+  Errors: 3 pixels (2.5%)
+  Error Region: rows 5-7, cols 3-3
+  Predicted values in errors: [2]
+  Target values needed: [8]
+  HYPOTHESIS: FILL_RECT_WITH_8
+
+TRANSFORM ANALYSIS (Input -> Target):
+  Shape: (10, 12) -> (10, 12)
+  Colors In: [1, 2, 8]
+  Colors Out: [1, 2, 8]
+  Transform Type: SPARSE_EDIT
+  Changes in Interior: True
+
+OBJECT MODEL (What ObjectExtractor sees in INPUT):
+  [connected_color] Obj 0: Color=1, Pos=(2, 3), Size=3x3, SOLID
+  [connected_color] Obj 1: Color=8, Pos=(8, 3), Size=1x1, SOLID
+  [foreground] Obj 0: Color=1, Pos=(2, 3), Size=3x3, SOLID
+  [foreground] Obj 1: Color=8, Pos=(8, 3), Size=1x1, SOLID
+
+ENCLOSURE ANALYSIS (DiscoveredPhysics view):
+  Enclosures Found: 0
+  Enclosure Pixels: 0
+  Enclosing Colors: []
+
+========================================
+FORENSIC SUMMARY FOR 2c608aff
+========================================
+Hypotheses from examples: ['FILL_RECT_WITH_4', 'FILL_RECT_WITH_8']
+INCONSISTENT - task may have example-specific logic
+
+======================================================================
+CASE #3: Task 3631a71a
+Best Method: fill(1)
+Fisher Distance: 0.0255
+======================================================================
+
+--- Training Example 0 ---
+
+--- INPUT (Ex 0) ---
+   012345678901234567890123456789
+ 0 ........6655.1....1.5566......
+ 1 .....5..665.1..77..1.566..5...
+ 2 ..77...7554..........4557...77
+ 3 ..77..7.5..4.7.22.7.4..5.7..77
+ 4 .........1..7.4..4.7..1.......
+ 5 .5......1..7.7....7.7.99999999
+ 6 ...7..3.....4.8..8.4..99999999
+ 7 ..7......7.2........2.99999999
+ 8 9999999...4..........499999999
+ 9 99999997.8..9999999...99999999
+10 9999999.4..59999999.5.99999999
+11 5..4.7.2..5.9999999..59999994.
+12 .1..7.4.....99999991..999999..
+13 1..7.7......9999999.......7.7.
+14 ....4.8....79999999.7....8.4..
+15 .7.2......7.11.11.11.7......2.
+16 .7.2......7.11.11.11.7......2.
+17 ....4.8....7.11..11.7....8.4..
+18 1..7.7........1111........7.7.
+19 .1..7.4.....1..11..1.....4.7..
+... (30 rows total)
+
+--- TARGET OUTPUT (Ex 0) ---
+   012345678901234567890123456789
+ 0 ........6655.1....1.5566......
+ 1 .....5..665.1..77..1.566..5...
+ 2 ..77...7554..........4557...77
+ 3 ..77..7.5..4.7.22.7.4..5.7..77
+ 4 .........1..7.4..4.7..1.......
+ 5 .5......1..7.7....7.7..1......
+ 6 ...7..3.....4.8..8.4.....3..7.
+ 7 ..7......7.2........2.7......7
+ 8 6655.1....4..........4....1.55
+ 9 665.1..7.8............8.7..1.5
+10 554.....4..5...77...5..4.....4
+11 5..4.7.2..5...7..7...5..2.7.4.
+12 .1..7.4.....1..11..1.....4.7..
+13 1..7.7........1111........7.7.
+14 ....4.8....7.11..11.7....8.4..
+15 .7.2......7.11.11.11.7......2.
+16 .7.2......7.11.11.11.7......2.
+17 ....4.8....7.11..11.7....8.4..
+18 1..7.7........1111........7.7.
+19 .1..7.4.....1..11..1.....4.7..
+... (30 rows total)
+
+--- PREDICTION via 'fill(1)' ---
+   012345678901234567890123456789
+ 0 ........6655.1....1.5566......
+ 1 .....5..665.1..77..1.566..5...
+ 2 ..77...7554..........4557...77
+ 3 ..77..7.5..4.7.22.7.4..5.7..77
+ 4 .........1..7.4..4.7..1.......
+ 5 .5......1..7.7....7.7.11111111
+ 6 ...7..3.....4.8..8.4..11111111
+ 7 ..7......7.2........2.11111111
+ 8 1111111...4..........411111111
+ 9 11111117.8..1111111...11111111
+10 1111111.4..51111111.5.11111111
+11 5..4.7.2..5.1111111..51111114.
+12 .1..7.4.....11111111..111111..
+13 1..7.7......1111111.......7.7.
+14 ....4.8....71111111.7....8.4..
+15 .7.2......7.11.11.11.7......2.
+16 .7.2......7.11.11.11.7......2.
+17 ....4.8....7.11..11.7....8.4..
+18 1..7.7........1111........7.7.
+19 .1..7.4.....1..11..1.....4.7..
+... (30 rows total)
+
+--- DIFF (X=error) (X = wrong, . = correct) ---
+   012345678901234567890123456789
+ 0 ..............................
+ 1 ..............................
+ 2 ..............................
+ 3 ..............................
+ 4 ..............................
+ 5 ......................X.XXXXXX
+ 6 ......................XXXXXXXX
+ 7 ......................XXXXXXXX
+ 8 XXXXX.X...............XXXX.XXX
+ 9 XXXX.XX.....XXXXXXX...XXXXX.XX
+10 XXXXXXX.....XXXXXXX...XXXXXXXX
+11 ............XXXXXXX...XXXXXX..
+12 .............XX..XX...XXXXXX..
+13 ............XX....X...........
+14 ............X..XX.............
+15 ..............................
+16 ..............................
+17 ..............................
+18 ..............................
+19 ..............................
+
+DIFF ANALYSIS:
+  Errors: 107 pixels (11.9%)
+  Error Region: rows 5-14, cols 0-29
+  Predicted values in errors: [1]
+  Target values needed: [0, 2, 3, 4, 5, 6, 7, 8]
+  HYPOTHESIS: SPARSE_MODIFICATION
+
+TRANSFORM ANALYSIS (Input -> Target):
+  Shape: (30, 30) -> (30, 30)
+  Colors In: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  Colors Out: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+  Transform Type: PARTIAL_EDIT
+  Changes in Interior: False
+
+OBJECT MODEL (What ObjectExtractor sees in INPUT):
+  [connected_color] Obj 0: Color=1, Pos=(0, 13), Size=1x1, SOLID
+  [connected_color] Obj 1: Color=1, Pos=(0, 18), Size=1x1, SOLID
+  [connected_color] Obj 2: Color=1, Pos=(1, 12), Size=1x1, SOLID
+  [connected_color] Obj 3: Color=1, Pos=(1, 19), Size=1x1, SOLID
+  [connected_color] Obj 4: Color=1, Pos=(4, 9), Size=1x1, SOLID
+  [connected_color] Obj 5: Color=1, Pos=(4, 22), Size=1x1, SOLID
+  [connected_color] Obj 6: Color=1, Pos=(5, 8), Size=1x1, SOLID
+  [connected_color] Obj 7: Color=1, Pos=(12, 1), Size=1x1, SOLID
+  [connected_color] Obj 8: Color=1, Pos=(12, 19), Size=1x1, SOLID
+  [connected_color] Obj 9: Color=1, Pos=(13, 0), Size=1x1, SOLID
+  [connected_color] Obj 10: Color=1, Pos=(15, 12), Size=5x8, SOLID
+  [connected_color] Obj 11: Color=1, Pos=(15, 15), Size=2x2, SOLID
+  [connected_color] Obj 12: Color=1, Pos=(18, 0), Size=1x1, SOLID
+  [connected_color] Obj 13: Color=1, Pos=(19, 1), Size=1x1, SOLID
+  [connected_color] Obj 14: Color=1, Pos=(19, 12), Size=1x1, SOLID
+  [connected_color] Obj 15: Color=1, Pos=(19, 19), Size=1x1, SOLID
+  [connected_color] Obj 16: Color=1, Pos=(22, 4), Size=1x1, SOLID
+  [connected_color] Obj 17: Color=1, Pos=(22, 27), Size=1x1, SOLID
+  [connected_color] Obj 18: Color=1, Pos=(23, 5), Size=1x1, SOLID
+  [connected_color] Obj 19: Color=1, Pos=(23, 26), Size=1x1, SOLID
+  [connected_color] Obj 20: Color=1, Pos=(26, 8), Size=1x1, SOLID
+  [connected_color] Obj 21: Color=1, Pos=(26, 23), Size=1x1, SOLID
+  [connected_color] Obj 22: Color=1, Pos=(27, 9), Size=1x1, SOLID
+  [connected_color] Obj 23: Color=1, Pos=(27, 22), Size=1x1, SOLID
+  [connected_color] Obj 24: Color=2, Pos=(3, 15), Size=1x2, SOLID
+  [connected_color] Obj 25: Color=2, Pos=(7, 11), Size=1x1, SOLID
+  [connected_color] Obj 26: Color=2, Pos=(7, 20), Size=1x1, SOLID
+  [connected_color] Obj 27: Color=2, Pos=(11, 7), Size=1x1, SOLID
+  [connected_color] Obj 28: Color=2, Pos=(15, 3), Size=2x1, SOLID
+  [connected_color] Obj 29: Color=2, Pos=(15, 28), Size=2x1, SOLID
+  [connected_color] Obj 30: Color=2, Pos=(20, 7), Size=1x1, SOLID
+  [connected_color] Obj 31: Color=2, Pos=(20, 24), Size=1x1, SOLID
+  [connected_color] Obj 32: Color=2, Pos=(24, 11), Size=1x1, SOLID
+  [connected_color] Obj 33: Color=2, Pos=(24, 20), Size=1x1, SOLID
+  [connected_color] Obj 34: Color=2, Pos=(28, 15), Size=1x2, SOLID
+  [connected_color] Obj 35: Color=3, Pos=(6, 6), Size=1x1, SOLID
+  [connected_color] Obj 36: Color=3, Pos=(25, 6), Size=1x1, SOLID
+  [connected_color] Obj 37: Color=3, Pos=(25, 25), Size=1x1, SOLID
+  [connected_color] Obj 38: Color=4, Pos=(2, 10), Size=1x1, SOLID
+  [connected_color] Obj 39: Color=4, Pos=(2, 21), Size=1x1, SOLID
+  [connected_color] Obj 40: Color=4, Pos=(3, 11), Size=1x1, SOLID
+  [connected_color] Obj 41: Color=4, Pos=(3, 20), Size=1x1, SOLID
+  [connected_color] Obj 42: Color=4, Pos=(4, 14), Size=1x1, SOLID
+  [connected_color] Obj 43: Color=4, Pos=(4, 17), Size=1x1, SOLID
+  [connected_color] Obj 44: Color=4, Pos=(6, 12), Size=1x1, SOLID
+  [connected_color] Obj 45: Color=4, Pos=(6, 19), Size=1x1, SOLID
+  [connected_color] Obj 46: Color=4, Pos=(8, 10), Size=1x1, SOLID
+  [connected_color] Obj 47: Color=4, Pos=(8, 21), Size=1x1, SOLID
+  [connected_color] Obj 48: Color=4, Pos=(10, 8), Size=1x1, SOLID
+  [connected_color] Obj 49: Color=4, Pos=(11, 3), Size=1x1, SOLID
+  [connected_color] Obj 50: Color=4, Pos=(11, 28), Size=1x1, SOLID
+  [connected_color] Obj 51: Color=4, Pos=(12, 6), Size=1x1, SOLID
+  [connected_color] Obj 52: Color=4, Pos=(14, 4), Size=1x1, SOLID
+  [connected_color] Obj 53: Color=4, Pos=(14, 27), Size=1x1, SOLID
+  [connected_color] Obj 54: Color=4, Pos=(17, 4), Size=1x1, SOLID
+  [connected_color] Obj 55: Color=4, Pos=(17, 27), Size=1x1, SOLID
+  [connected_color] Obj 56: Color=4, Pos=(19, 6), Size=1x1, SOLID
+  [connected_color] Obj 57: Color=4, Pos=(19, 25), Size=1x1, SOLID
+  [connected_color] Obj 58: Color=4, Pos=(20, 3), Size=1x1, SOLID
+  [connected_color] Obj 59: Color=4, Pos=(20, 28), Size=1x1, SOLID
+  [connected_color] Obj 60: Color=4, Pos=(21, 2), Size=1x1, SOLID
+  [connected_color] Obj 61: Color=4, Pos=(21, 8), Size=1x1, SOLID
+  [connected_color] Obj 62: Color=4, Pos=(21, 23), Size=1x1, SOLID
+  [connected_color] Obj 63: Color=4, Pos=(21, 29), Size=1x1, SOLID
+  [connected_color] Obj 64: Color=4, Pos=(23, 10), Size=1x1, SOLID
+  [connected_color] Obj 65: Color=4, Pos=(23, 21), Size=1x1, SOLID
+  [connected_color] Obj 66: Color=4, Pos=(25, 12), Size=1x1, SOLID
+  [connected_color] Obj 67: Color=4, Pos=(25, 19), Size=1x1, SOLID
+  [connected_color] Obj 68: Color=4, Pos=(27, 14), Size=1x1, SOLID
+  [connected_color] Obj 69: Color=4, Pos=(27, 17), Size=1x1, SOLID
+  [connected_color] Obj 70: Color=4, Pos=(28, 11), Size=1x1, SOLID
+  [connected_color] Obj 71: Color=4, Pos=(28, 20), Size=1x1, SOLID
+  [connected_color] Obj 72: Color=4, Pos=(29, 10), Size=1x1, SOLID
+  [connected_color] Obj 73: Color=4, Pos=(29, 21), Size=1x1, SOLID
+  [connected_color] Obj 74: Color=5, Pos=(0, 10), Size=2x2, SOLID
+  [connected_color] Obj 75: Color=5, Pos=(0, 20), Size=2x2, SOLID
+  [connected_color] Obj 76: Color=5, Pos=(1, 5), Size=1x1, SOLID
+  [connected_color] Obj 77: Color=5, Pos=(1, 26), Size=1x1, SOLID
+  [connected_color] Obj 78: Color=5, Pos=(2, 8), Size=2x2, SOLID
+  [connected_color] Obj 79: Color=5, Pos=(2, 22), Size=2x2, SOLID
+  [connected_color] Obj 80: Color=5, Pos=(5, 1), Size=1x1, SOLID
+  [connected_color] Obj 81: Color=5, Pos=(10, 11), Size=1x1, SOLID
+  [connected_color] Obj 82: Color=5, Pos=(10, 20), Size=1x1, SOLID
+  [connected_color] Obj 83: Color=5, Pos=(11, 0), Size=1x1, SOLID
+  [connected_color] Obj 84: Color=5, Pos=(11, 10), Size=1x1, SOLID
+  [connected_color] Obj 85: Color=5, Pos=(11, 21), Size=1x1, SOLID
+  [connected_color] Obj 86: Color=5, Pos=(20, 0), Size=2x2, SOLID
+  [connected_color] Obj 87: Color=5, Pos=(20, 10), Size=1x1, SOLID
+  [connected_color] Obj 88: Color=5, Pos=(20, 21), Size=1x1, SOLID
+  [connected_color] Obj 89: Color=5, Pos=(21, 11), Size=1x1, SOLID
+  [connected_color] Obj 90: Color=5, Pos=(21, 20), Size=1x1, SOLID
+  [connected_color] Obj 91: Color=5, Pos=(22, 2), Size=2x2, SOLID
+  [connected_color] Obj 92: Color=5, Pos=(22, 28), Size=2x2, SOLID
+  [connected_color] Obj 93: Color=5, Pos=(26, 1), Size=1x1, SOLID
+  [connected_color] Obj 94: Color=5, Pos=(28, 8), Size=2x2, SOLID
+  [connected_color] Obj 95: Color=5, Pos=(28, 22), Size=2x2, SOLID
+  [connected_color] Obj 96: Color=6, Pos=(0, 8), Size=2x2, SOLID
+  [connected_color] Obj 97: Color=6, Pos=(0, 22), Size=2x2, SOLID
+  [connected_color] Obj 98: Color=6, Pos=(22, 0), Size=2x2, SOLID
+  [connected_color] Obj 99: Color=7, Pos=(1, 15), Size=1x2, SOLID
+  [connected_color] Obj 100: Color=7, Pos=(2, 2), Size=2x2, SOLID
+  [connected_color] Obj 101: Color=7, Pos=(2, 7), Size=1x1, SOLID
+  [connected_color] Obj 102: Color=7, Pos=(2, 24), Size=1x1, SOLID
+  [connected_color] Obj 103: Color=7, Pos=(2, 28), Size=2x2, SOLID
+  [connected_color] Obj 104: Color=7, Pos=(3, 6), Size=1x1, SOLID
+  [connected_color] Obj 105: Color=7, Pos=(3, 13), Size=1x1, SOLID
+  [connected_color] Obj 106: Color=7, Pos=(3, 18), Size=1x1, SOLID
+  [connected_color] Obj 107: Color=7, Pos=(3, 25), Size=1x1, SOLID
+  [connected_color] Obj 108: Color=7, Pos=(4, 12), Size=1x1, SOLID
+  [connected_color] Obj 109: Color=7, Pos=(4, 19), Size=1x1, SOLID
+  [connected_color] Obj 110: Color=7, Pos=(5, 11), Size=1x1, SOLID
+  [connected_color] Obj 111: Color=7, Pos=(5, 13), Size=1x1, SOLID
+  [connected_color] Obj 112: Color=7, Pos=(5, 18), Size=1x1, SOLID
+  [connected_color] Obj 113: Color=7, Pos=(5, 20), Size=1x1, SOLID
+  [connected_color] Obj 114: Color=7, Pos=(6, 3), Size=1x1, SOLID
+  [connected_color] Obj 115: Color=7, Pos=(7, 2), Size=1x1, SOLID
+  [connected_color] Obj 116: Color=7, Pos=(7, 9), Size=1x1, SOLID
+  [connected_color] Obj 117: Color=7, Pos=(9, 7), Size=1x1, SOLID
+  [connected_color] Obj 118: Color=7, Pos=(11, 5), Size=1x1, SOLID
+  [connected_color] Obj 119: Color=7, Pos=(12, 4), Size=1x1, SOLID
+  [connected_color] Obj 120: Color=7, Pos=(13, 3), Size=1x1, SOLID
+  [connected_color] Obj 121: Color=7, Pos=(13, 5), Size=1x1, SOLID
+  [connected_color] Obj 122: Color=7, Pos=(13, 26), Size=1x1, SOLID
+  [connected_color] Obj 123: Color=7, Pos=(13, 28), Size=1x1, SOLID
+  [connected_color] Obj 124: Color=7, Pos=(14, 11), Size=1x1, SOLID
+  [connected_color] Obj 125: Color=7, Pos=(14, 20), Size=1x1, SOLID
+  [connected_color] Obj 126: Color=7, Pos=(15, 1), Size=2x1, SOLID
+  [connected_color] Obj 127: Color=7, Pos=(15, 10), Size=2x1, SOLID
+  [connected_color] Obj 128: Color=7, Pos=(15, 21), Size=2x1, SOLID
+  [connected_color] Obj 129: Color=7, Pos=(17, 11), Size=1x1, SOLID
+  [connected_color] Obj 130: Color=7, Pos=(17, 20), Size=1x1, SOLID
+  [connected_color] Obj 131: Color=7, Pos=(18, 3), Size=1x1, SOLID
+  [connected_color] Obj 132: Color=7, Pos=(18, 5), Size=1x1, SOLID
+  [connected_color] Obj 133: Color=7, Pos=(18, 26), Size=1x1, SOLID
+  [connected_color] Obj 134: Color=7, Pos=(18, 28), Size=1x1, SOLID
+  [connected_color] Obj 135: Color=7, Pos=(19, 4), Size=1x1, SOLID
+  [connected_color] Obj 136: Color=7, Pos=(19, 27), Size=1x1, SOLID
+  [connected_color] Obj 137: Color=7, Pos=(20, 5), Size=1x1, SOLID
+  [connected_color] Obj 138: Color=7, Pos=(20, 14), Size=1x1, SOLID
+  [connected_color] Obj 139: Color=7, Pos=(20, 17), Size=1x1, SOLID
+  [connected_color] Obj 140: Color=7, Pos=(20, 26), Size=1x1, SOLID
+  [connected_color] Obj 141: Color=7, Pos=(21, 15), Size=1x2, SOLID
+  [connected_color] Obj 142: Color=7, Pos=(22, 7), Size=1x1, SOLID
+  [connected_color] Obj 143: Color=7, Pos=(22, 24), Size=1x1, SOLID
+  [connected_color] Obj 144: Color=7, Pos=(24, 2), Size=1x1, SOLID
+  [connected_color] Obj 145: Color=7, Pos=(24, 9), Size=1x1, SOLID
+  [connected_color] Obj 146: Color=7, Pos=(24, 22), Size=1x1, SOLID
+  [connected_color] Obj 147: Color=7, Pos=(24, 29), Size=1x1, SOLID
+  [connected_color] Obj 148: Color=7, Pos=(25, 3), Size=1x1, SOLID
+  [connected_color] Obj 149: Color=7, Pos=(25, 28), Size=1x1, SOLID
+  [connected_color] Obj 150: Color=7, Pos=(26, 11), Size=1x1, SOLID
+  [connected_color] Obj 151: Color=7, Pos=(26, 13), Size=1x1, SOLID
+  [connected_color] Obj 152: Color=7, Pos=(26, 18), Size=1x1, SOLID
+  [connected_color] Obj 153: Color=7, Pos=(26, 20), Size=1x1, SOLID
+  [connected_color] Obj 154: Color=7, Pos=(27, 12), Size=1x1, SOLID
+  [connected_color] Obj 155: Color=7, Pos=(27, 19), Size=1x1, SOLID
+  [connected_color] Obj 156: Color=7, Pos=(28, 2), Size=2x2, SOLID
+  [connected_color] Obj 157: Color=7, Pos=(28, 6), Size=1x1, SOLID
+  [connected_color] Obj 158: Color=7, Pos=(28, 13), Size=1x1, SOLID
+  [connected_color] Obj 159: Color=7, Pos=(28, 18), Size=1x1, SOLID
+  [connected_color] Obj 160: Color=7, Pos=(28, 25), Size=1x1, SOLID
+  [connected_color] Obj 161: Color=7, Pos=(28, 28), Size=2x2, SOLID
+  [connected_color] Obj 162: Color=7, Pos=(29, 7), Size=1x1, SOLID
+  [connected_color] Obj 163: Color=7, Pos=(29, 24), Size=1x1, SOLID
+  [connected_color] Obj 164: Color=8, Pos=(6, 14), Size=1x1, SOLID
+  [connected_color] Obj 165: Color=8, Pos=(6, 17), Size=1x1, SOLID
+  [connected_color] Obj 166: Color=8, Pos=(9, 9), Size=1x1, SOLID
+  [connected_color] Obj 167: Color=8, Pos=(14, 6), Size=1x1, SOLID
+  [connected_color] Obj 168: Color=8, Pos=(14, 25), Size=1x1, SOLID
+  [connected_color] Obj 169: Color=8, Pos=(17, 6), Size=1x1, SOLID
+  [connected_color] Obj 170: Color=8, Pos=(17, 25), Size=1x1, SOLID
+  [connected_color] Obj 171: Color=8, Pos=(22, 9), Size=1x1, SOLID
+  [connected_color] Obj 172: Color=8, Pos=(22, 22), Size=1x1, SOLID
+  [connected_color] Obj 173: Color=8, Pos=(25, 14), Size=1x1, SOLID
+  [connected_color] Obj 174: Color=8, Pos=(25, 17), Size=1x1, SOLID
+  [connected_color] Obj 175: Color=9, Pos=(5, 22), Size=8x8, SOLID
+  [connected_color] Obj 176: Color=9, Pos=(8, 0), Size=3x7, SOLID
+  [connected_color] Obj 177: Color=9, Pos=(9, 12), Size=6x7, SOLID
+  [foreground] Obj 0: Color=5, Pos=(0, 7), Size=4x5, SOLID
+  [foreground] Obj 1: Color=1, Pos=(0, 13), Size=1x1, SOLID
+  [foreground] Obj 2: Color=1, Pos=(0, 18), Size=1x1, SOLID
+  [foreground] Obj 3: Color=5, Pos=(0, 20), Size=4x5, SOLID
+  [foreground] Obj 4: Color=5, Pos=(1, 5), Size=1x1, SOLID
+  [foreground] Obj 5: Color=1, Pos=(1, 12), Size=1x1, SOLID
+  [foreground] Obj 6: Color=7, Pos=(1, 15), Size=1x2, SOLID
+  [foreground] Obj 7: Color=1, Pos=(1, 19), Size=1x1, SOLID
+  [foreground] Obj 8: Color=5, Pos=(1, 26), Size=1x1, SOLID
+  [foreground] Obj 9: Color=7, Pos=(2, 2), Size=2x2, SOLID
+  [foreground] Obj 10: Color=7, Pos=(2, 28), Size=2x2, SOLID
+  [foreground] Obj 11: Color=7, Pos=(3, 6), Size=1x1, SOLID
+  [foreground] Obj 12: Color=4, Pos=(3, 11), Size=1x1, SOLID
+  [foreground] Obj 13: Color=7, Pos=(3, 13), Size=1x1, SOLID
+  [foreground] Obj 14: Color=2, Pos=(3, 15), Size=1x2, SOLID
+  [foreground] Obj 15: Color=7, Pos=(3, 18), Size=1x1, SOLID
+  [foreground] Obj 16: Color=4, Pos=(3, 20), Size=1x1, SOLID
+  [foreground] Obj 17: Color=7, Pos=(3, 25), Size=1x1, SOLID
+  [foreground] Obj 18: Color=1, Pos=(4, 9), Size=1x1, SOLID
+  [foreground] Obj 19: Color=7, Pos=(4, 12), Size=1x1, SOLID
+  [foreground] Obj 20: Color=4, Pos=(4, 14), Size=1x1, SOLID
+  [foreground] Obj 21: Color=4, Pos=(4, 17), Size=1x1, SOLID
+  [foreground] Obj 22: Color=7, Pos=(4, 19), Size=1x1, SOLID
+  [foreground] Obj 23: Color=9, Pos=(4, 21), Size=10x9, SOLID
+  [foreground] Obj 24: Color=5, Pos=(5, 1), Size=1x1, SOLID
+  [foreground] Obj 25: Color=1, Pos=(5, 8), Size=1x1, SOLID
+  [foreground] Obj 26: Color=7, Pos=(5, 11), Size=1x1, SOLID
+  [foreground] Obj 27: Color=7, Pos=(5, 13), Size=1x1, SOLID
+  [foreground] Obj 28: Color=7, Pos=(5, 18), Size=1x1, SOLID
+  [foreground] Obj 29: Color=7, Pos=(5, 20), Size=1x1, SOLID
+  [foreground] Obj 30: Color=7, Pos=(6, 3), Size=1x1, SOLID
+  [foreground] Obj 31: Color=3, Pos=(6, 6), Size=1x1, SOLID
+  [foreground] Obj 32: Color=4, Pos=(6, 12), Size=1x1, SOLID
+  [foreground] Obj 33: Color=8, Pos=(6, 14), Size=1x1, SOLID
+  [foreground] Obj 34: Color=8, Pos=(6, 17), Size=1x1, SOLID
+  [foreground] Obj 35: Color=4, Pos=(6, 19), Size=1x1, SOLID
+  [foreground] Obj 36: Color=9, Pos=(7, 0), Size=5x8, SOLID
+  [foreground] Obj 37: Color=7, Pos=(7, 9), Size=1x1, SOLID
+  [foreground] Obj 38: Color=2, Pos=(7, 11), Size=1x1, SOLID
+  [foreground] Obj 39: Color=2, Pos=(7, 20), Size=1x1, SOLID
+  [foreground] Obj 40: Color=4, Pos=(8, 10), Size=1x1, SOLID
+  [foreground] Obj 41: Color=8, Pos=(9, 9), Size=1x1, SOLID
+  [foreground] Obj 42: Color=9, Pos=(9, 11), Size=11x9, HOLLOW
+  [foreground] Obj 43: Color=4, Pos=(10, 8), Size=1x1, SOLID
+  [foreground] Obj 44: Color=5, Pos=(10, 20), Size=1x1, SOLID
+  [foreground] Obj 45: Color=2, Pos=(11, 7), Size=1x1, SOLID
+  [foreground] Obj 46: Color=5, Pos=(11, 10), Size=1x1, SOLID
+  [foreground] Obj 47: Color=1, Pos=(12, 1), Size=1x1, SOLID
+  [foreground] Obj 48: Color=7, Pos=(12, 4), Size=1x1, SOLID
+  [foreground] Obj 49: Color=4, Pos=(12, 6), Size=1x1, SOLID
+  [foreground] Obj 50: Color=1, Pos=(13, 0), Size=1x1, SOLID
+  [foreground] Obj 51: Color=7, Pos=(13, 3), Size=1x1, SOLID
+  [foreground] Obj 52: Color=7, Pos=(13, 5), Size=1x1, SOLID
+  [foreground] Obj 53: Color=7, Pos=(13, 28), Size=1x1, SOLID
+  [foreground] Obj 54: Color=4, Pos=(14, 4), Size=1x1, SOLID
+  [foreground] Obj 55: Color=8, Pos=(14, 6), Size=1x1, SOLID
+  [foreground] Obj 56: Color=7, Pos=(14, 20), Size=1x1, SOLID
+  [foreground] Obj 57: Color=8, Pos=(14, 25), Size=1x1, SOLID
+  [foreground] Obj 58: Color=4, Pos=(14, 27), Size=1x1, SOLID
+  [foreground] Obj 59: Color=7, Pos=(15, 1), Size=2x1, SOLID
+  [foreground] Obj 60: Color=2, Pos=(15, 3), Size=2x1, SOLID
+  [foreground] Obj 61: Color=7, Pos=(15, 10), Size=2x1, SOLID
+  [foreground] Obj 62: Color=7, Pos=(15, 21), Size=2x1, SOLID
+  [foreground] Obj 63: Color=2, Pos=(15, 28), Size=2x1, SOLID
+  [foreground] Obj 64: Color=4, Pos=(17, 4), Size=1x1, SOLID
+  [foreground] Obj 65: Color=8, Pos=(17, 6), Size=1x1, SOLID
+  [foreground] Obj 66: Color=7, Pos=(17, 11), Size=1x1, SOLID
+  [foreground] Obj 67: Color=7, Pos=(17, 20), Size=1x1, SOLID
+  [foreground] Obj 68: Color=8, Pos=(17, 25), Size=1x1, SOLID
+  [foreground] Obj 69: Color=4, Pos=(17, 27), Size=1x1, SOLID
+  [foreground] Obj 70: Color=1, Pos=(18, 0), Size=1x1, SOLID
+  [foreground] Obj 71: Color=7, Pos=(18, 3), Size=1x1, SOLID
+  [foreground] Obj 72: Color=7, Pos=(18, 5), Size=1x1, SOLID
+  [foreground] Obj 73: Color=7, Pos=(18, 26), Size=1x1, SOLID
+  [foreground] Obj 74: Color=7, Pos=(18, 28), Size=1x1, SOLID
+  [foreground] Obj 75: Color=1, Pos=(19, 1), Size=1x1, SOLID
+  [foreground] Obj 76: Color=7, Pos=(19, 4), Size=1x1, SOLID
+  [foreground] Obj 77: Color=4, Pos=(19, 6), Size=1x1, SOLID
+  [foreground] Obj 78: Color=1, Pos=(19, 12), Size=1x1, SOLID
+  [foreground] Obj 79: Color=1, Pos=(19, 19), Size=1x1, SOLID
+  [foreground] Obj 80: Color=4, Pos=(19, 25), Size=1x1, SOLID
+  [foreground] Obj 81: Color=7, Pos=(19, 27), Size=1x1, SOLID
+  [foreground] Obj 82: Color=5, Pos=(20, 0), Size=5x4, SOLID
+  [foreground] Obj 83: Color=4, Pos=(20, 3), Size=1x1, SOLID
+  [foreground] Obj 84: Color=7, Pos=(20, 5), Size=1x1, SOLID
+  [foreground] Obj 85: Color=2, Pos=(20, 7), Size=1x1, SOLID
+  [foreground] Obj 86: Color=5, Pos=(20, 10), Size=1x1, SOLID
+  [foreground] Obj 87: Color=7, Pos=(20, 14), Size=1x1, SOLID
+  [foreground] Obj 88: Color=7, Pos=(20, 17), Size=1x1, SOLID
+  [foreground] Obj 89: Color=5, Pos=(20, 21), Size=1x1, SOLID
+  [foreground] Obj 90: Color=2, Pos=(20, 24), Size=1x1, SOLID
+  [foreground] Obj 91: Color=7, Pos=(20, 26), Size=1x1, SOLID
+  [foreground] Obj 92: Color=4, Pos=(20, 28), Size=1x1, SOLID
+  [foreground] Obj 93: Color=4, Pos=(21, 8), Size=1x1, SOLID
+  [foreground] Obj 94: Color=5, Pos=(21, 11), Size=1x1, SOLID
+  [foreground] Obj 95: Color=7, Pos=(21, 15), Size=1x2, SOLID
+  [foreground] Obj 96: Color=5, Pos=(21, 20), Size=1x1, SOLID
+  [foreground] Obj 97: Color=4, Pos=(21, 23), Size=1x1, SOLID
+  [foreground] Obj 98: Color=5, Pos=(21, 28), Size=4x2, SOLID
+  [foreground] Obj 99: Color=1, Pos=(22, 4), Size=1x1, SOLID
+  [foreground] Obj 100: Color=7, Pos=(22, 7), Size=1x1, SOLID
+  [foreground] Obj 101: Color=8, Pos=(22, 9), Size=1x1, SOLID
+  [foreground] Obj 102: Color=8, Pos=(22, 22), Size=1x1, SOLID
+  [foreground] Obj 103: Color=7, Pos=(22, 24), Size=1x1, SOLID
+  [foreground] Obj 104: Color=1, Pos=(22, 27), Size=1x1, SOLID
+  [foreground] Obj 105: Color=1, Pos=(23, 5), Size=1x1, SOLID
+  [foreground] Obj 106: Color=4, Pos=(23, 10), Size=1x1, SOLID
+  [foreground] Obj 107: Color=4, Pos=(23, 21), Size=1x1, SOLID
+  [foreground] Obj 108: Color=1, Pos=(23, 26), Size=1x1, SOLID
+  [foreground] Obj 109: Color=7, Pos=(24, 9), Size=1x1, SOLID
+  [foreground] Obj 110: Color=2, Pos=(24, 11), Size=1x1, SOLID
+  [foreground] Obj 111: Color=2, Pos=(24, 20), Size=1x1, SOLID
+  [foreground] Obj 112: Color=7, Pos=(24, 22), Size=1x1, SOLID
+  [foreground] Obj 113: Color=7, Pos=(25, 3), Size=1x1, SOLID
+  [foreground] Obj 114: Color=3, Pos=(25, 6), Size=1x1, SOLID
+  [foreground] Obj 115: Color=4, Pos=(25, 12), Size=1x1, SOLID
+  [foreground] Obj 116: Color=8, Pos=(25, 14), Size=1x1, SOLID
+  [foreground] Obj 117: Color=8, Pos=(25, 17), Size=1x1, SOLID
+  [foreground] Obj 118: Color=4, Pos=(25, 19), Size=1x1, SOLID
+  [foreground] Obj 119: Color=3, Pos=(25, 25), Size=1x1, SOLID
+  [foreground] Obj 120: Color=7, Pos=(25, 28), Size=1x1, SOLID
+  [foreground] Obj 121: Color=5, Pos=(26, 1), Size=1x1, SOLID
+  [foreground] Obj 122: Color=1, Pos=(26, 8), Size=1x1, SOLID
+  [foreground] Obj 123: Color=7, Pos=(26, 11), Size=1x1, SOLID
+  [foreground] Obj 124: Color=7, Pos=(26, 13), Size=1x1, SOLID
+  [foreground] Obj 125: Color=7, Pos=(26, 18), Size=1x1, SOLID
+  [foreground] Obj 126: Color=7, Pos=(26, 20), Size=1x1, SOLID
+  [foreground] Obj 127: Color=1, Pos=(26, 23), Size=1x1, SOLID
+  [foreground] Obj 128: Color=1, Pos=(27, 9), Size=1x1, SOLID
+  [foreground] Obj 129: Color=7, Pos=(27, 12), Size=1x1, SOLID
+  [foreground] Obj 130: Color=4, Pos=(27, 14), Size=1x1, SOLID
+  [foreground] Obj 131: Color=4, Pos=(27, 17), Size=1x1, SOLID
+  [foreground] Obj 132: Color=7, Pos=(27, 19), Size=1x1, SOLID
+  [foreground] Obj 133: Color=1, Pos=(27, 22), Size=1x1, SOLID
+  [foreground] Obj 134: Color=7, Pos=(28, 2), Size=2x2, SOLID
+  [foreground] Obj 135: Color=7, Pos=(28, 6), Size=1x1, SOLID
+  [foreground] Obj 136: Color=5, Pos=(28, 7), Size=2x4, SOLID
+  [foreground] Obj 137: Color=4, Pos=(28, 11), Size=1x1, SOLID
+  [foreground] Obj 138: Color=7, Pos=(28, 13), Size=1x1, SOLID
+  [foreground] Obj 139: Color=2, Pos=(28, 15), Size=1x2, SOLID
+  [foreground] Obj 140: Color=7, Pos=(28, 18), Size=1x1, SOLID
+  [foreground] Obj 141: Color=4, Pos=(28, 20), Size=1x1, SOLID
+  [foreground] Obj 142: Color=5, Pos=(28, 21), Size=2x4, SOLID
+  [foreground] Obj 143: Color=7, Pos=(28, 25), Size=1x1, SOLID
+  [foreground] Obj 144: Color=7, Pos=(28, 28), Size=2x2, SOLID
+
+ENCLOSURE ANALYSIS (DiscoveredPhysics view):
+  Enclosures Found: 26
+  Enclosure Pixels: 237
+  Enclosing Colors: [1, 2, 4, 5, 7, 8, 9]
+
+--- Training Example 1 ---
+
+--- INPUT (Ex 1) ---
+   012345678901234567890123456789
+ 0 3........8331.8..8.1338.......
+ 1 .......38.3..1....1..99999....
+ 2 ..77..4.33448.6666.8499999..77
+ 3 ..7..3..3.4...6666...999993..7
+ 4 ......111.8.3.8..8.3.99999....
+ 5 ...3..11.1...3....3...1.11..3.
+ 6 ..4.11.28.668.1111.866.82.11.4
+ 7 .3..1122..66..1..1..66..2211..
+ 8 .8331.8...1..57..75..1...8.133
+ 9 8.3..1...8..5..77..5..8...1..3
+10 33448.661.227..77..722.166.844
+11 3.4...66..2..77..77..2..66...4
+12 1.8.3.8..57..5....5..75..8.3.8
+13 .1...3..5..755....557..5..3...
+14 8.668.117..7........7..711.866
+15 ..66..1..77....88....77..1..66
+16 ..66..1..99....88....77..1..66
+17 8.668.117997........7..711.866
+18 .1...3..5..755....557995..3...
+19 1.8.3.8..57..5....5..99..8.3.8
+... (30 rows total)
+
+--- TARGET OUTPUT (Ex 1) ---
+   012345678901234567890123456789
+ 0 3........8331.8..8.1338.......
+ 1 .......38.3..1....1..3.83.....
+ 2 ..77..4.33448.6666.84433.4..77
+ 3 ..7..3..3.4...6666...4.3..3..7
+ 4 ......111.8.3.8..8.3.8.111....
+ 5 ...3..11.1...3....3...1.11..3.
+ 6 ..4.11.28.668.1111.866.82.11.4
+ 7 .3..1122..66..1..1..66..2211..
+ 8 .8331.8...1..57..75..1...8.133
+ 9 8.3..1...8..5..77..5..8...1..3
+10 33448.661.227..77..722.166.844
+11 3.4...66..2..77..77..2..66...4
+12 1.8.3.8..57..5....5..75..8.3.8
+13 .1...3..5..755....557..5..3...
+14 8.668.117..7........7..711.866
+15 ..66..1..77....88....77..1..66
+16 ..66..1..77....88....77..1..66
+17 8.668.117..7........7..711.866
+18 .1...3..5..755....557..5..3...
+19 1.8.3.8..57..5....5..75..8.3.8
+... (30 rows total)
+
+--- PREDICTION via 'fill(1)' ---
+   012345678901234567890123456789
+ 0 3........8331.8..8.1338.......
+ 1 .......38.3..1....1..11111....
+ 2 ..77..4.33448.6666.8411111..77
+ 3 ..7..3..3.4...6666...111113..7
+ 4 ......111.8.3.8..8.3.11111....
+ 5 ...3..11.1...3....3...1.11..3.
+ 6 ..4.11.28.668.1111.866.82.11.4
+ 7 .3..1122..66..1..1..66..2211..
+ 8 .8331.8...1..57..75..1...8.133
+ 9 8.3..1...8..5..77..5..8...1..3
+10 33448.661.227..77..722.166.844
+11 3.4...66..2..77..77..2..66...4
+12 1.8.3.8..57..5....5..75..8.3.8
+13 .1...3..5..755....557..5..3...
+14 8.668.117..7........7..711.866
+15 ..66..1..77....88....77..1..66
+16 ..66..1..11....88....77..1..66
+17 8.668.117117........7..711.866
+18 .1...3..5..755....557115..3...
+19 1.8.3.8..57..5....5..11..8.3.8
+... (30 rows total)
+
+--- DIFF (X=error) (X = wrong, . = correct) ---
+   012345678901234567890123456789
+ 0 ..............................
+ 1 .....................XXXXX....
+ 2 .....................XXXXX....
+ 3 .....................XXXXX....
+ 4 .....................XX.......
+ 5 ..............................
+ 6 ..............................
+ 7 ..............................
+ 8 ..............................
+ 9 ..............................
+10 ..............................
+11 ..............................
+12 ..............................
+13 ..............................
+14 ..............................
+15 ..............................
+16 .........XX...................
+17 .........XX...................
+18 .....................XX.......
+19 .....................XX.......
+
+DIFF ANALYSIS:
+  Errors: 50 pixels (5.6%)
+  Error Region: rows 1-29, cols 9-25
+  Predicted values in errors: [1]
+  Target values needed: [0, 2, 3, 4, 5, 6, 7, 8]
+  HYPOTHESIS: SPARSE_MODIFICATION
+
+TRANSFORM ANALYSIS (Input -> Target):
+  Shape: (30, 30) -> (30, 30)
+  Colors In: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  Colors Out: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+  Transform Type: SPARSE_EDIT
+  Changes in Interior: False
+
+OBJECT MODEL (What ObjectExtractor sees in INPUT):
+  [connected_color] Obj 0: Color=1, Pos=(0, 12), Size=1x1, SOLID
+  [connected_color] Obj 1: Color=1, Pos=(0, 19), Size=1x1, SOLID
+  [connected_color] Obj 2: Color=1, Pos=(1, 13), Size=1x1, SOLID
+  [connected_color] Obj 3: Color=1, Pos=(1, 18), Size=1x1, SOLID
+  [connected_color] Obj 4: Color=1, Pos=(4, 6), Size=2x3, SOLID
+  [connected_color] Obj 5: Color=1, Pos=(5, 9), Size=1x1, SOLID
+  [connected_color] Obj 6: Color=1, Pos=(5, 22), Size=1x1, SOLID
+  [connected_color] Obj 7: Color=1, Pos=(5, 24), Size=1x2, SOLID
+  [connected_color] Obj 8: Color=1, Pos=(6, 4), Size=3x2, SOLID
+  [connected_color] Obj 9: Color=1, Pos=(6, 14), Size=2x4, SOLID
+  [connected_color] Obj 10: Color=1, Pos=(6, 26), Size=3x2, SOLID
+  [connected_color] Obj 11: Color=1, Pos=(8, 10), Size=1x1, SOLID
+  [connected_color] Obj 12: Color=1, Pos=(8, 21), Size=1x1, SOLID
+  [connected_color] Obj 13: Color=1, Pos=(9, 5), Size=1x1, SOLID
+  [connected_color] Obj 14: Color=1, Pos=(9, 26), Size=1x1, SOLID
+  [connected_color] Obj 15: Color=1, Pos=(10, 8), Size=1x1, SOLID
+  [connected_color] Obj 16: Color=1, Pos=(10, 23), Size=1x1, SOLID
+  [connected_color] Obj 17: Color=1, Pos=(12, 0), Size=1x1, SOLID
+  [connected_color] Obj 18: Color=1, Pos=(13, 1), Size=1x1, SOLID
+  [connected_color] Obj 19: Color=1, Pos=(14, 6), Size=4x2, SOLID
+  [connected_color] Obj 20: Color=1, Pos=(14, 24), Size=4x2, SOLID
+  [connected_color] Obj 21: Color=1, Pos=(18, 1), Size=1x1, SOLID
+  [connected_color] Obj 22: Color=1, Pos=(19, 0), Size=1x1, SOLID
+  [connected_color] Obj 23: Color=1, Pos=(21, 8), Size=1x1, SOLID
+  [connected_color] Obj 24: Color=1, Pos=(21, 23), Size=1x1, SOLID
+  [connected_color] Obj 25: Color=1, Pos=(22, 5), Size=1x1, SOLID
+  [connected_color] Obj 26: Color=1, Pos=(22, 26), Size=1x1, SOLID
+  [connected_color] Obj 27: Color=1, Pos=(23, 4), Size=3x2, SOLID
+  [connected_color] Obj 28: Color=1, Pos=(23, 10), Size=1x1, SOLID
+  [connected_color] Obj 29: Color=1, Pos=(23, 21), Size=1x1, SOLID
+  [connected_color] Obj 30: Color=1, Pos=(23, 26), Size=3x2, SOLID
+  [connected_color] Obj 31: Color=1, Pos=(24, 14), Size=2x4, SOLID
+  [connected_color] Obj 32: Color=1, Pos=(26, 6), Size=2x3, SOLID
+  [connected_color] Obj 33: Color=1, Pos=(26, 9), Size=1x1, SOLID
+  [connected_color] Obj 34: Color=1, Pos=(27, 23), Size=1x3, SOLID
+  [connected_color] Obj 35: Color=2, Pos=(6, 6), Size=2x2, SOLID
+  [connected_color] Obj 36: Color=2, Pos=(6, 24), Size=2x2, SOLID
+  [connected_color] Obj 37: Color=2, Pos=(10, 10), Size=2x2, SOLID
+  [connected_color] Obj 38: Color=2, Pos=(10, 20), Size=2x2, SOLID
+  [connected_color] Obj 39: Color=2, Pos=(20, 10), Size=2x2, SOLID
+  [connected_color] Obj 40: Color=2, Pos=(21, 20), Size=1x2, SOLID
+  [connected_color] Obj 41: Color=2, Pos=(24, 6), Size=2x2, SOLID
+  [connected_color] Obj 42: Color=2, Pos=(24, 24), Size=1x2, SOLID
+  [connected_color] Obj 43: Color=3, Pos=(0, 0), Size=1x1, SOLID
+  [connected_color] Obj 44: Color=3, Pos=(0, 10), Size=2x2, SOLID
+  [connected_color] Obj 45: Color=3, Pos=(0, 20), Size=1x2, SOLID
+  [connected_color] Obj 46: Color=3, Pos=(1, 7), Size=1x1, SOLID
+  [connected_color] Obj 47: Color=3, Pos=(2, 8), Size=2x2, SOLID
+  [connected_color] Obj 48: Color=3, Pos=(3, 5), Size=1x1, SOLID
+  [connected_color] Obj 49: Color=3, Pos=(3, 26), Size=1x1, SOLID
+  [connected_color] Obj 50: Color=3, Pos=(4, 12), Size=1x1, SOLID
+  [connected_color] Obj 51: Color=3, Pos=(4, 19), Size=1x1, SOLID
+  [connected_color] Obj 52: Color=3, Pos=(5, 3), Size=1x1, SOLID
+  [connected_color] Obj 53: Color=3, Pos=(5, 13), Size=1x1, SOLID
+  [connected_color] Obj 54: Color=3, Pos=(5, 18), Size=1x1, SOLID
+  [connected_color] Obj 55: Color=3, Pos=(5, 28), Size=1x1, SOLID
+  [connected_color] Obj 56: Color=3, Pos=(7, 1), Size=1x1, SOLID
+  [connected_color] Obj 57: Color=3, Pos=(8, 2), Size=2x2, SOLID
+  [connected_color] Obj 58: Color=3, Pos=(8, 28), Size=2x2, SOLID
+  [connected_color] Obj 59: Color=3, Pos=(10, 0), Size=2x2, SOLID
+  [connected_color] Obj 60: Color=3, Pos=(12, 4), Size=1x1, SOLID
+  [connected_color] Obj 61: Color=3, Pos=(12, 27), Size=1x1, SOLID
+  [connected_color] Obj 62: Color=3, Pos=(13, 5), Size=1x1, SOLID
+  [connected_color] Obj 63: Color=3, Pos=(13, 26), Size=1x1, SOLID
+  [connected_color] Obj 64: Color=3, Pos=(18, 5), Size=1x1, SOLID
+  [connected_color] Obj 65: Color=3, Pos=(18, 26), Size=1x1, SOLID
+  [connected_color] Obj 66: Color=3, Pos=(19, 4), Size=1x1, SOLID
+  [connected_color] Obj 67: Color=3, Pos=(19, 27), Size=1x1, SOLID
+  [connected_color] Obj 68: Color=3, Pos=(20, 0), Size=2x2, SOLID
+  [connected_color] Obj 69: Color=3, Pos=(22, 2), Size=2x2, SOLID
+  [connected_color] Obj 70: Color=3, Pos=(22, 28), Size=2x2, SOLID
+  [connected_color] Obj 71: Color=3, Pos=(24, 1), Size=1x1, SOLID
+  [connected_color] Obj 72: Color=3, Pos=(26, 3), Size=1x1, SOLID
+  [connected_color] Obj 73: Color=3, Pos=(26, 13), Size=1x1, SOLID
+  [connected_color] Obj 74: Color=3, Pos=(26, 18), Size=1x1, SOLID
+  [connected_color] Obj 75: Color=3, Pos=(26, 28), Size=1x1, SOLID
+  [connected_color] Obj 76: Color=3, Pos=(27, 12), Size=1x1, SOLID
+  [connected_color] Obj 77: Color=3, Pos=(27, 19), Size=1x1, SOLID
+  [connected_color] Obj 78: Color=3, Pos=(28, 5), Size=1x1, SOLID
+  [connected_color] Obj 79: Color=3, Pos=(28, 8), Size=2x2, SOLID
+  [connected_color] Obj 80: Color=3, Pos=(28, 26), Size=1x1, SOLID
+  [connected_color] Obj 81: Color=4, Pos=(2, 6), Size=1x1, SOLID
+  [connected_color] Obj 82: Color=4, Pos=(2, 10), Size=2x2, SOLID
+  [connected_color] Obj 83: Color=4, Pos=(2, 20), Size=1x1, SOLID
+  [connected_color] Obj 84: Color=4, Pos=(6, 2), Size=1x1, SOLID
+  [connected_color] Obj 85: Color=4, Pos=(6, 29), Size=1x1, SOLID
+  [connected_color] Obj 86: Color=4, Pos=(10, 2), Size=2x2, SOLID
+  [connected_color] Obj 87: Color=4, Pos=(10, 28), Size=2x2, SOLID
+  [connected_color] Obj 88: Color=4, Pos=(20, 2), Size=2x2, SOLID
+  [connected_color] Obj 89: Color=4, Pos=(20, 28), Size=2x2, SOLID
+  [connected_color] Obj 90: Color=4, Pos=(25, 2), Size=1x1, SOLID
+  [connected_color] Obj 91: Color=4, Pos=(25, 29), Size=1x1, SOLID
+  [connected_color] Obj 92: Color=4, Pos=(28, 10), Size=2x2, SOLID
+  [connected_color] Obj 93: Color=4, Pos=(29, 6), Size=1x1, SOLID
+  [connected_color] Obj 94: Color=4, Pos=(29, 25), Size=1x1, SOLID
+  [connected_color] Obj 95: Color=5, Pos=(8, 13), Size=1x1, SOLID
+  [connected_color] Obj 96: Color=5, Pos=(8, 18), Size=1x1, SOLID
+  [connected_color] Obj 97: Color=5, Pos=(9, 12), Size=1x1, SOLID
+  [connected_color] Obj 98: Color=5, Pos=(9, 19), Size=1x1, SOLID
+  [connected_color] Obj 99: Color=5, Pos=(12, 9), Size=1x1, SOLID
+  [connected_color] Obj 100: Color=5, Pos=(12, 12), Size=2x2, SOLID
+  [connected_color] Obj 101: Color=5, Pos=(12, 18), Size=2x2, SOLID
+  [connected_color] Obj 102: Color=5, Pos=(12, 22), Size=1x1, SOLID
+  [connected_color] Obj 103: Color=5, Pos=(13, 8), Size=1x1, SOLID
+  [connected_color] Obj 104: Color=5, Pos=(13, 23), Size=1x1, SOLID
+  [connected_color] Obj 105: Color=5, Pos=(18, 8), Size=1x1, SOLID
+  [connected_color] Obj 106: Color=5, Pos=(18, 12), Size=2x2, SOLID
+  [connected_color] Obj 107: Color=5, Pos=(18, 18), Size=2x2, SOLID
+  [connected_color] Obj 108: Color=5, Pos=(18, 23), Size=1x1, SOLID
+  [connected_color] Obj 109: Color=5, Pos=(19, 9), Size=1x1, SOLID
+  [connected_color] Obj 110: Color=5, Pos=(22, 12), Size=1x1, SOLID
+  [connected_color] Obj 111: Color=5, Pos=(22, 19), Size=1x1, SOLID
+  [connected_color] Obj 112: Color=5, Pos=(23, 13), Size=1x1, SOLID
+  [connected_color] Obj 113: Color=5, Pos=(23, 18), Size=1x1, SOLID
+  [connected_color] Obj 114: Color=6, Pos=(2, 14), Size=2x4, SOLID
+  [connected_color] Obj 115: Color=6, Pos=(6, 10), Size=2x2, SOLID
+  [connected_color] Obj 116: Color=6, Pos=(6, 20), Size=2x2, SOLID
+  [connected_color] Obj 117: Color=6, Pos=(10, 6), Size=2x2, SOLID
+  [connected_color] Obj 118: Color=6, Pos=(10, 24), Size=2x2, SOLID
+  [connected_color] Obj 119: Color=6, Pos=(14, 2), Size=4x2, SOLID
+  [connected_color] Obj 120: Color=6, Pos=(14, 28), Size=4x2, SOLID
+  [connected_color] Obj 121: Color=6, Pos=(20, 6), Size=2x2, SOLID
+  [connected_color] Obj 122: Color=6, Pos=(20, 24), Size=2x2, SOLID
+  [connected_color] Obj 123: Color=6, Pos=(24, 10), Size=2x2, SOLID
+  [connected_color] Obj 124: Color=6, Pos=(24, 20), Size=1x2, SOLID
+  [connected_color] Obj 125: Color=6, Pos=(28, 14), Size=2x3, SOLID
+  [connected_color] Obj 126: Color=7, Pos=(2, 2), Size=2x2, SOLID
+  [connected_color] Obj 127: Color=7, Pos=(2, 28), Size=2x2, SOLID
+  [connected_color] Obj 128: Color=7, Pos=(8, 14), Size=1x1, SOLID
+  [connected_color] Obj 129: Color=7, Pos=(8, 17), Size=1x1, SOLID
+  [connected_color] Obj 130: Color=7, Pos=(9, 15), Size=2x2, SOLID
+  [connected_color] Obj 131: Color=7, Pos=(10, 12), Size=1x1, SOLID
+  [connected_color] Obj 132: Color=7, Pos=(10, 19), Size=1x1, SOLID
+  [connected_color] Obj 133: Color=7, Pos=(11, 13), Size=1x2, SOLID
+  [connected_color] Obj 134: Color=7, Pos=(11, 17), Size=1x2, SOLID
+  [connected_color] Obj 135: Color=7, Pos=(12, 10), Size=1x1, SOLID
+  [connected_color] Obj 136: Color=7, Pos=(12, 21), Size=1x1, SOLID
+  [connected_color] Obj 137: Color=7, Pos=(13, 11), Size=2x1, SOLID
+  [connected_color] Obj 138: Color=7, Pos=(13, 20), Size=2x1, SOLID
+  [connected_color] Obj 139: Color=7, Pos=(14, 8), Size=1x1, SOLID
+  [connected_color] Obj 140: Color=7, Pos=(14, 23), Size=1x1, SOLID
+  [connected_color] Obj 141: Color=7, Pos=(15, 9), Size=1x2, SOLID
+  [connected_color] Obj 142: Color=7, Pos=(15, 21), Size=2x2, SOLID
+  [connected_color] Obj 143: Color=7, Pos=(17, 8), Size=1x1, SOLID
+  [connected_color] Obj 144: Color=7, Pos=(17, 11), Size=2x1, SOLID
+  [connected_color] Obj 145: Color=7, Pos=(17, 20), Size=2x1, SOLID
+  [connected_color] Obj 146: Color=7, Pos=(17, 23), Size=1x1, SOLID
+  [connected_color] Obj 147: Color=7, Pos=(19, 10), Size=1x1, SOLID
+  [connected_color] Obj 148: Color=7, Pos=(20, 13), Size=1x2, SOLID
+  [connected_color] Obj 149: Color=7, Pos=(20, 17), Size=1x2, SOLID
+  [connected_color] Obj 150: Color=7, Pos=(21, 12), Size=1x1, SOLID
+  [connected_color] Obj 151: Color=7, Pos=(21, 15), Size=2x2, SOLID
+  [connected_color] Obj 152: Color=7, Pos=(21, 19), Size=1x1, SOLID
+  [connected_color] Obj 153: Color=7, Pos=(23, 14), Size=1x1, SOLID
+  [connected_color] Obj 154: Color=7, Pos=(23, 17), Size=1x1, SOLID
+  [connected_color] Obj 155: Color=7, Pos=(28, 2), Size=2x2, SOLID
+  [connected_color] Obj 156: Color=7, Pos=(28, 28), Size=2x2, SOLID
+  [connected_color] Obj 157: Color=8, Pos=(0, 9), Size=1x1, SOLID
+  [connected_color] Obj 158: Color=8, Pos=(0, 14), Size=1x1, SOLID
+  [connected_color] Obj 159: Color=8, Pos=(0, 17), Size=1x1, SOLID
+  [connected_color] Obj 160: Color=8, Pos=(0, 22), Size=1x1, SOLID
+  [connected_color] Obj 161: Color=8, Pos=(1, 8), Size=1x1, SOLID
+  [connected_color] Obj 162: Color=8, Pos=(2, 12), Size=1x1, SOLID
+  [connected_color] Obj 163: Color=8, Pos=(2, 19), Size=1x1, SOLID
+  [connected_color] Obj 164: Color=8, Pos=(4, 10), Size=1x1, SOLID
+  [connected_color] Obj 165: Color=8, Pos=(4, 14), Size=1x1, SOLID
+  [connected_color] Obj 166: Color=8, Pos=(4, 17), Size=1x1, SOLID
+  [connected_color] Obj 167: Color=8, Pos=(6, 8), Size=1x1, SOLID
+  [connected_color] Obj 168: Color=8, Pos=(6, 12), Size=1x1, SOLID
+  [connected_color] Obj 169: Color=8, Pos=(6, 19), Size=1x1, SOLID
+  [connected_color] Obj 170: Color=8, Pos=(6, 23), Size=1x1, SOLID
+  [connected_color] Obj 171: Color=8, Pos=(8, 1), Size=1x1, SOLID
+  [connected_color] Obj 172: Color=8, Pos=(8, 6), Size=1x1, SOLID
+  [connected_color] Obj 173: Color=8, Pos=(8, 25), Size=1x1, SOLID
+  [connected_color] Obj 174: Color=8, Pos=(9, 0), Size=1x1, SOLID
+  [connected_color] Obj 175: Color=8, Pos=(9, 9), Size=1x1, SOLID
+  [connected_color] Obj 176: Color=8, Pos=(9, 22), Size=1x1, SOLID
+  [connected_color] Obj 177: Color=8, Pos=(10, 4), Size=1x1, SOLID
+  [connected_color] Obj 178: Color=8, Pos=(10, 27), Size=1x1, SOLID
+  [connected_color] Obj 179: Color=8, Pos=(12, 2), Size=1x1, SOLID
+  [connected_color] Obj 180: Color=8, Pos=(12, 6), Size=1x1, SOLID
+  [connected_color] Obj 181: Color=8, Pos=(12, 25), Size=1x1, SOLID
+  [connected_color] Obj 182: Color=8, Pos=(12, 29), Size=1x1, SOLID
+  [connected_color] Obj 183: Color=8, Pos=(14, 0), Size=1x1, SOLID
+  [connected_color] Obj 184: Color=8, Pos=(14, 4), Size=1x1, SOLID
+  [connected_color] Obj 185: Color=8, Pos=(14, 27), Size=1x1, SOLID
+  [connected_color] Obj 186: Color=8, Pos=(15, 15), Size=2x2, SOLID
+  [connected_color] Obj 187: Color=8, Pos=(17, 0), Size=1x1, SOLID
+  [connected_color] Obj 188: Color=8, Pos=(17, 4), Size=1x1, SOLID
+  [connected_color] Obj 189: Color=8, Pos=(17, 27), Size=1x1, SOLID
+  [connected_color] Obj 190: Color=8, Pos=(19, 2), Size=1x1, SOLID
+  [connected_color] Obj 191: Color=8, Pos=(19, 6), Size=1x1, SOLID
+  [connected_color] Obj 192: Color=8, Pos=(19, 25), Size=1x1, SOLID
+  [connected_color] Obj 193: Color=8, Pos=(19, 29), Size=1x1, SOLID
+  [connected_color] Obj 194: Color=8, Pos=(21, 4), Size=1x1, SOLID
+  [connected_color] Obj 195: Color=8, Pos=(21, 27), Size=1x1, SOLID
+  [connected_color] Obj 196: Color=8, Pos=(22, 0), Size=1x1, SOLID
+  [connected_color] Obj 197: Color=8, Pos=(22, 9), Size=1x1, SOLID
+  [connected_color] Obj 198: Color=8, Pos=(22, 22), Size=1x1, SOLID
+  [connected_color] Obj 199: Color=8, Pos=(23, 1), Size=1x1, SOLID
+  [connected_color] Obj 200: Color=8, Pos=(23, 6), Size=1x1, SOLID
+  [connected_color] Obj 201: Color=8, Pos=(23, 25), Size=1x1, SOLID
+  [connected_color] Obj 202: Color=8, Pos=(25, 8), Size=1x1, SOLID
+  [connected_color] Obj 203: Color=8, Pos=(25, 12), Size=1x1, SOLID
+  [connected_color] Obj 204: Color=8, Pos=(25, 19), Size=1x1, SOLID
+  [connected_color] Obj 205: Color=8, Pos=(27, 10), Size=1x1, SOLID
+  [connected_color] Obj 206: Color=8, Pos=(27, 14), Size=1x1, SOLID
+  [connected_color] Obj 207: Color=8, Pos=(27, 17), Size=1x1, SOLID
+  [connected_color] Obj 208: Color=8, Pos=(27, 21), Size=1x1, SOLID
+  [connected_color] Obj 209: Color=8, Pos=(29, 12), Size=1x1, SOLID
+  [connected_color] Obj 210: Color=9, Pos=(1, 21), Size=4x5, SOLID
+  [connected_color] Obj 211: Color=9, Pos=(16, 9), Size=2x2, SOLID
+  [connected_color] Obj 212: Color=9, Pos=(18, 21), Size=3x2, SOLID
+  [connected_color] Obj 213: Color=9, Pos=(25, 20), Size=2x6, SOLID
+  [connected_color] Obj 214: Color=9, Pos=(28, 17), Size=2x7, SOLID
+  [foreground] Obj 0: Color=3, Pos=(0, 0), Size=1x1, SOLID
+  [foreground] Obj 1: Color=3, Pos=(0, 0), Size=13x13, HOLLOW
+  [foreground] Obj 2: Color=8, Pos=(0, 14), Size=1x1, SOLID
+  [foreground] Obj 3: Color=8, Pos=(0, 17), Size=1x1, SOLID
+  [foreground] Obj 4: Color=9, Pos=(0, 19), Size=13x11, HOLLOW
+  [foreground] Obj 5: Color=1, Pos=(1, 13), Size=1x1, SOLID
+  [foreground] Obj 6: Color=1, Pos=(1, 18), Size=1x1, SOLID
+  [foreground] Obj 7: Color=7, Pos=(2, 2), Size=2x2, SOLID
+  [foreground] Obj 8: Color=4, Pos=(2, 6), Size=1x1, SOLID
+  [foreground] Obj 9: Color=6, Pos=(2, 14), Size=3x4, SOLID
+  [foreground] Obj 10: Color=7, Pos=(2, 28), Size=2x2, SOLID
+  [foreground] Obj 11: Color=3, Pos=(3, 5), Size=1x1, SOLID
+  [foreground] Obj 12: Color=3, Pos=(4, 12), Size=1x1, SOLID
+  [foreground] Obj 13: Color=3, Pos=(4, 19), Size=1x1, SOLID
+  [foreground] Obj 14: Color=3, Pos=(5, 3), Size=1x1, SOLID
+  [foreground] Obj 15: Color=1, Pos=(5, 9), Size=1x1, SOLID
+  [foreground] Obj 16: Color=3, Pos=(5, 13), Size=1x1, SOLID
+  [foreground] Obj 17: Color=3, Pos=(5, 18), Size=1x1, SOLID
+  [foreground] Obj 18: Color=3, Pos=(5, 28), Size=1x1, SOLID
+  [foreground] Obj 19: Color=4, Pos=(6, 2), Size=1x1, SOLID
+  [foreground] Obj 20: Color=6, Pos=(6, 10), Size=3x3, SOLID
+  [foreground] Obj 21: Color=1, Pos=(6, 13), Size=3x6, SOLID
+  [foreground] Obj 22: Color=6, Pos=(6, 19), Size=3x3, SOLID
+  [foreground] Obj 23: Color=4, Pos=(6, 29), Size=1x1, SOLID
+  [foreground] Obj 24: Color=1, Pos=(9, 5), Size=1x1, SOLID
+  [foreground] Obj 25: Color=8, Pos=(9, 9), Size=1x1, SOLID
+  [foreground] Obj 26: Color=2, Pos=(9, 9), Size=4x4, SOLID
+  [foreground] Obj 27: Color=7, Pos=(9, 15), Size=2x2, SOLID
+  [foreground] Obj 28: Color=2, Pos=(9, 19), Size=4x4, SOLID
+  [foreground] Obj 29: Color=8, Pos=(9, 22), Size=1x1, SOLID
+  [foreground] Obj 30: Color=1, Pos=(9, 26), Size=1x1, SOLID
+  [foreground] Obj 31: Color=6, Pos=(10, 6), Size=3x3, SOLID
+  [foreground] Obj 32: Color=6, Pos=(10, 23), Size=3x3, SOLID
+  [foreground] Obj 33: Color=7, Pos=(11, 11), Size=4x4, SOLID
+  [foreground] Obj 34: Color=7, Pos=(11, 17), Size=4x4, SOLID
+  [foreground] Obj 35: Color=3, Pos=(12, 4), Size=1x1, SOLID
+  [foreground] Obj 36: Color=3, Pos=(12, 27), Size=1x1, SOLID
+  [foreground] Obj 37: Color=1, Pos=(13, 1), Size=1x1, SOLID
+  [foreground] Obj 38: Color=3, Pos=(13, 5), Size=1x1, SOLID
+  [foreground] Obj 39: Color=7, Pos=(13, 6), Size=8x9, HOLLOW
+  [foreground] Obj 40: Color=7, Pos=(13, 17), Size=10x9, HOLLOW
+  [foreground] Obj 41: Color=3, Pos=(13, 26), Size=1x1, SOLID
+  [foreground] Obj 42: Color=8, Pos=(14, 0), Size=1x1, SOLID
+  [foreground] Obj 43: Color=6, Pos=(14, 2), Size=4x3, SOLID
+  [foreground] Obj 44: Color=6, Pos=(14, 27), Size=4x3, SOLID
+  [foreground] Obj 45: Color=8, Pos=(15, 15), Size=2x2, SOLID
+  [foreground] Obj 46: Color=7, Pos=(15, 21), Size=2x2, SOLID
+  [foreground] Obj 47: Color=8, Pos=(17, 0), Size=1x1, SOLID
+  [foreground] Obj 48: Color=1, Pos=(18, 1), Size=1x1, SOLID
+  [foreground] Obj 49: Color=3, Pos=(18, 5), Size=1x1, SOLID
+  [foreground] Obj 50: Color=3, Pos=(18, 26), Size=1x1, SOLID
+  [foreground] Obj 51: Color=1, Pos=(19, 0), Size=11x13, HOLLOW
+  [foreground] Obj 52: Color=3, Pos=(19, 4), Size=1x1, SOLID
+  [foreground] Obj 53: Color=6, Pos=(19, 6), Size=3x3, SOLID
+  [foreground] Obj 54: Color=2, Pos=(19, 9), Size=4x4, SOLID
+  [foreground] Obj 55: Color=6, Pos=(19, 23), Size=3x3, SOLID
+  [foreground] Obj 56: Color=3, Pos=(19, 27), Size=1x1, SOLID
+  [foreground] Obj 57: Color=9, Pos=(19, 14), Size=11x16, HOLLOW
+  [foreground] Obj 58: Color=7, Pos=(21, 15), Size=2x2, SOLID
+  [foreground] Obj 59: Color=1, Pos=(22, 5), Size=1x1, SOLID
+  [foreground] Obj 60: Color=8, Pos=(22, 9), Size=1x1, SOLID
+  [foreground] Obj 61: Color=8, Pos=(22, 22), Size=1x1, SOLID
+  [foreground] Obj 62: Color=1, Pos=(22, 26), Size=1x1, SOLID
+  [foreground] Obj 63: Color=6, Pos=(23, 10), Size=3x3, SOLID
+  [foreground] Obj 64: Color=1, Pos=(23, 13), Size=3x6, SOLID
+  [foreground] Obj 65: Color=4, Pos=(25, 2), Size=1x1, SOLID
+  [foreground] Obj 66: Color=4, Pos=(25, 29), Size=1x1, SOLID
+  [foreground] Obj 67: Color=3, Pos=(26, 3), Size=1x1, SOLID
+  [foreground] Obj 68: Color=1, Pos=(26, 9), Size=1x1, SOLID
+  [foreground] Obj 69: Color=3, Pos=(26, 13), Size=1x1, SOLID
+  [foreground] Obj 70: Color=3, Pos=(26, 18), Size=1x1, SOLID
+  [foreground] Obj 71: Color=3, Pos=(26, 28), Size=1x1, SOLID
+  [foreground] Obj 72: Color=3, Pos=(27, 12), Size=1x1, SOLID
+  [foreground] Obj 73: Color=7, Pos=(28, 2), Size=2x2, SOLID
+  [foreground] Obj 74: Color=3, Pos=(28, 5), Size=1x1, SOLID
+  [foreground] Obj 75: Color=3, Pos=(28, 26), Size=1x1, SOLID
+  [foreground] Obj 76: Color=7, Pos=(28, 28), Size=2x2, SOLID
+  [foreground] Obj 77: Color=4, Pos=(29, 6), Size=1x1, SOLID
+  [foreground] Obj 78: Color=4, Pos=(29, 25), Size=1x1, SOLID
+
+ENCLOSURE ANALYSIS (DiscoveredPhysics view):
+  Enclosures Found: 68
+  Enclosure Pixels: 308
+  Enclosing Colors: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+========================================
+FORENSIC SUMMARY FOR 3631a71a
+========================================
+Hypotheses from examples: ['SPARSE_MODIFICATION', 'SPARSE_MODIFICATION']
+CONSISTENT HYPOTHESIS: SPARSE_MODIFICATION
+
+======================================================================
+CASE #4: Task 29623171
+Best Method: flip_v+fill(0)
+Fisher Distance: 0.0290
+======================================================================
+
+--- Training Example 0 ---
+
+--- INPUT (Ex 0) ---
+   01234567890
+ 0 ...5...5...
+ 1 1..5...5.1.
+ 2 ...5..15...
+ 3 55555555555
+ 4 ...5..15...
+ 5 ...5...5.1.
+ 6 ...5...5...
+ 7 55555555555
+ 8 ...5...51..
+ 9 .1.5...5..1
+10 ...5...5...
+
+--- TARGET OUTPUT (Ex 0) ---
+   01234567890
+ 0 ...5...5...
+ 1 ...5...5...
+ 2 ...5...5...
+ 3 55555555555
+ 4 ...5...5...
+ 5 ...5...5...
+ 6 ...5...5...
+ 7 55555555555
+ 8 ...5...5111
+ 9 ...5...5111
+10 ...5...5111
+
+--- PREDICTION via 'flip_v+fill(0)' ---
+   01234567890
+ 0 ...5...5...
+ 1 ...5...5...
+ 2 ...5...5...
+ 3 55555555555
+ 4 ...5...5...
+ 5 ...5...5...
+ 6 ...5...5...
+ 7 55555555555
+ 8 ...5...5...
+ 9 ...5...5.1.
+10 ...5...5...
+
+--- DIFF (X=error) (X = wrong, . = correct) ---
+   01234567890
+ 0 ...........
+ 1 ...........
+ 2 ...........
+ 3 ...........
+ 4 ...........
+ 5 ...........
+ 6 ...........
+ 7 ...........
+ 8 ........XXX
+ 9 ........X.X
+10 ........XXX
+
+DIFF ANALYSIS:
+  Errors: 8 pixels (6.6%)
+  Error Region: rows 8-10, cols 8-10
+  Predicted values in errors: [0]
+  Target values needed: [1]
+  HYPOTHESIS: PARTIAL_FILL_OR_MASK
+
+TRANSFORM ANALYSIS (Input -> Target):
+  Shape: (11, 11) -> (11, 11)
+  Colors In: [0, 1, 5]
+  Colors Out: [0, 1, 5]
+  Transform Type: PARTIAL_EDIT
+  Changes in Interior: False
+
+OBJECT MODEL (What ObjectExtractor sees in INPUT):
+  [connected_color] Obj 0: Color=1, Pos=(1, 0), Size=1x1, SOLID
+  [connected_color] Obj 1: Color=1, Pos=(1, 9), Size=1x1, SOLID
+  [connected_color] Obj 2: Color=1, Pos=(2, 6), Size=1x1, SOLID
+  [connected_color] Obj 3: Color=1, Pos=(4, 6), Size=1x1, SOLID
+  [connected_color] Obj 4: Color=1, Pos=(5, 9), Size=1x1, SOLID
+  [connected_color] Obj 5: Color=1, Pos=(8, 8), Size=1x1, SOLID
+  [connected_color] Obj 6: Color=1, Pos=(9, 1), Size=1x1, SOLID
+  [connected_color] Obj 7: Color=1, Pos=(9, 10), Size=1x1, SOLID
+  [connected_color] Obj 8: Color=5, Pos=(0, 0), Size=11x11, HOLLOW
+  [foreground] Obj 0: Color=5, Pos=(0, 0), Size=11x11, HOLLOW
+  [foreground] Obj 1: Color=1, Pos=(1, 0), Size=1x1, SOLID
+  [foreground] Obj 2: Color=1, Pos=(1, 9), Size=1x1, SOLID
+  [foreground] Obj 3: Color=1, Pos=(5, 9), Size=1x1, SOLID
+  [foreground] Obj 4: Color=1, Pos=(9, 1), Size=1x1, SOLID
+  [foreground] Obj 5: Color=1, Pos=(9, 10), Size=1x1, SOLID
+
+ENCLOSURE ANALYSIS (DiscoveredPhysics view):
+  Enclosures Found: 1
+  Enclosure Pixels: 8
+  Enclosing Colors: [1, 5]
+
+--- Training Example 1 ---
+
+--- INPUT (Ex 1) ---
+   01234567890
+ 0 ...5.2.52..
+ 1 2..5...5..2
+ 2 ...5...5...
+ 3 55555555555
+ 4 2..5...5...
+ 5 2..5..25...
+ 6 ...5...5.2.
+ 7 55555555555
+ 8 ...5...5...
+ 9 2..5..25..2
+10 ...5...5...
+
+--- TARGET OUTPUT (Ex 1) ---
+   01234567890
+ 0 ...5...5222
+ 1 ...5...5222
+ 2 ...5...5222
+ 3 55555555555
+ 4 2225...5...
+ 5 2225...5...
+ 6 2225...5...
+ 7 55555555555
+ 8 ...5...5...
+ 9 ...5...5...
+10 ...5...5...
+
+--- PREDICTION via 'flip_v+fill(0)' ---
+   01234567890
+ 0 ...5...5...
+ 1 ...5...5..2
+ 2 ...5...5...
+ 3 55555555555
+ 4 ...5...5...
+ 5 2..5...5...
+ 6 2..5...5...
+ 7 55555555555
+ 8 ...5...5...
+ 9 ...5...5...
+10 ...5...5...
+
+--- DIFF (X=error) (X = wrong, . = correct) ---
+   01234567890
+ 0 ........XXX
+ 1 ........XX.
+ 2 ........XXX
+ 3 ...........
+ 4 XXX........
+ 5 .XX........
+ 6 .XX........
+ 7 ...........
+ 8 ...........
+ 9 ...........
+10 ...........
+
+DIFF ANALYSIS:
+  Errors: 15 pixels (12.4%)
+  Error Region: rows 0-6, cols 0-10
+  Predicted values in errors: [0]
+  Target values needed: [2]
+  HYPOTHESIS: SPARSE_MODIFICATION
+
+TRANSFORM ANALYSIS (Input -> Target):
+  Shape: (11, 11) -> (11, 11)
+  Colors In: [0, 2, 5]
+  Colors Out: [0, 2, 5]
+  Transform Type: PARTIAL_EDIT
+  Changes in Interior: False
+
+OBJECT MODEL (What ObjectExtractor sees in INPUT):
+  [connected_color] Obj 0: Color=2, Pos=(0, 5), Size=1x1, SOLID
+  [connected_color] Obj 1: Color=2, Pos=(0, 8), Size=1x1, SOLID
+  [connected_color] Obj 2: Color=2, Pos=(1, 0), Size=1x1, SOLID
+  [connected_color] Obj 3: Color=2, Pos=(1, 10), Size=1x1, SOLID
+  [connected_color] Obj 4: Color=2, Pos=(4, 0), Size=2x1, SOLID
+  [connected_color] Obj 5: Color=2, Pos=(5, 6), Size=1x1, SOLID
+  [connected_color] Obj 6: Color=2, Pos=(6, 9), Size=1x1, SOLID
+  [connected_color] Obj 7: Color=2, Pos=(9, 0), Size=1x1, SOLID
+  [connected_color] Obj 8: Color=2, Pos=(9, 6), Size=1x1, SOLID
+  [connected_color] Obj 9: Color=2, Pos=(9, 10), Size=1x1, SOLID
+  [connected_color] Obj 10: Color=5, Pos=(0, 0), Size=11x11, HOLLOW
+  [foreground] Obj 0: Color=5, Pos=(0, 0), Size=11x11, HOLLOW
+  [foreground] Obj 1: Color=2, Pos=(0, 5), Size=1x1, SOLID
+  [foreground] Obj 2: Color=2, Pos=(1, 0), Size=1x1, SOLID
+  [foreground] Obj 3: Color=2, Pos=(1, 10), Size=1x1, SOLID
+  [foreground] Obj 4: Color=2, Pos=(9, 0), Size=1x1, SOLID
+  [foreground] Obj 5: Color=2, Pos=(9, 10), Size=1x1, SOLID
+
+ENCLOSURE ANALYSIS (DiscoveredPhysics view):
+  Enclosures Found: 1
+  Enclosure Pixels: 8
+  Enclosing Colors: [2, 5]
+
+========================================
+FORENSIC SUMMARY FOR 29623171
+========================================
+Hypotheses from examples: ['PARTIAL_FILL_OR_MASK', 'SPARSE_MODIFICATION']
+INCONSISTENT - task may have example-specific logic
+
+======================================================================
+CASE #5: Task 4093f84a
+Best Method: fill(0)
+Fisher Distance: 0.0307
+======================================================================
+
+--- Training Example 0 ---
+
+--- INPUT (Ex 0) ---
+   01234567890123
+ 0 ........2.....
+ 1 ..............
+ 2 ..2...........
+ 3 ..........2...
+ 4 ..............
+ 5 55555555555555
+ 6 55555555555555
+ 7 55555555555555
+ 8 55555555555555
+ 9 .........2....
+10 .2............
+11 ....2.........
+12 ...........2..
+13 ..............
+
+--- TARGET OUTPUT (Ex 0) ---
+   01234567890123
+ 0 ..............
+ 1 ..............
+ 2 ..............
+ 3 ..............
+ 4 ..5.....5.5...
+ 5 55555555555555
+ 6 55555555555555
+ 7 55555555555555
+ 8 55555555555555
+ 9 .5..5....5.5..
+10 ..............
+11 ..............
+12 ..............
+13 ..............
+
+--- PREDICTION via 'fill(0)' ---
+   01234567890123
+ 0 ..............
+ 1 ..............
+ 2 ..............
+ 3 ..............
+ 4 ..............
+ 5 55555555555555
+ 6 55555555555555
+ 7 55555555555555
+ 8 55555555555555
+ 9 ..............
+10 ..............
+11 ..............
+12 ..............
+13 ..............
+
+--- DIFF (X=error) (X = wrong, . = correct) ---
+   01234567890123
+ 0 ..............
+ 1 ..............
+ 2 ..............
+ 3 ..............
+ 4 ..X.....X.X...
+ 5 ..............
+ 6 ..............
+ 7 ..............
+ 8 ..............
+ 9 .X..X....X.X..
+10 ..............
+11 ..............
+12 ..............
+13 ..............
+
+DIFF ANALYSIS:
+  Errors: 7 pixels (3.6%)
+  Error Region: rows 4-9, cols 1-11
+  Predicted values in errors: [0]
+  Target values needed: [5]
+  HYPOTHESIS: SPARSE_MODIFICATION
+
+TRANSFORM ANALYSIS (Input -> Target):
+  Shape: (14, 14) -> (14, 14)
+  Colors In: [0, 2, 5]
+  Colors Out: [0, 5]
+  Transform Type: SPARSE_EDIT
+  Changes in Interior: False
+
+OBJECT MODEL (What ObjectExtractor sees in INPUT):
+  [connected_color] Obj 0: Color=2, Pos=(0, 8), Size=1x1, SOLID
+  [connected_color] Obj 1: Color=2, Pos=(2, 2), Size=1x1, SOLID
+  [connected_color] Obj 2: Color=2, Pos=(3, 10), Size=1x1, SOLID
+  [connected_color] Obj 3: Color=2, Pos=(9, 9), Size=1x1, SOLID
+  [connected_color] Obj 4: Color=2, Pos=(10, 1), Size=1x1, SOLID
+  [connected_color] Obj 5: Color=2, Pos=(11, 4), Size=1x1, SOLID
+  [connected_color] Obj 6: Color=2, Pos=(12, 11), Size=1x1, SOLID
+  [connected_color] Obj 7: Color=5, Pos=(5, 0), Size=4x14, SOLID
+  [foreground] Obj 0: Color=2, Pos=(0, 8), Size=1x1, SOLID
+  [foreground] Obj 1: Color=2, Pos=(2, 2), Size=1x1, SOLID
+  [foreground] Obj 2: Color=2, Pos=(3, 10), Size=1x1, SOLID
+  [foreground] Obj 3: Color=5, Pos=(5, 0), Size=5x14, SOLID
+  [foreground] Obj 4: Color=2, Pos=(10, 1), Size=1x1, SOLID
+  [foreground] Obj 5: Color=2, Pos=(11, 4), Size=1x1, SOLID
+  [foreground] Obj 6: Color=2, Pos=(12, 11), Size=1x1, SOLID
+
+ENCLOSURE ANALYSIS (DiscoveredPhysics view):
+  Enclosures Found: 0
+  Enclosure Pixels: 0
+  Enclosing Colors: []
+
+--- Training Example 1 ---
+
+--- INPUT (Ex 1) ---
+   01234567890123
+ 0 ....55555...3.
+ 1 ....555553....
+ 2 ...355555..3..
+ 3 ....55555.....
+ 4 3...55555.....
+ 5 ....55555.....
+ 6 ....55555.3.3.
+ 7 .3..55555.....
+ 8 ....55555.....
+ 9 ..3.55555...3.
+10 ....55555.....
+11 ....55555.....
+12 ....55555.3...
+13 ....55555.....
+
+--- TARGET OUTPUT (Ex 1) ---
+   01234567890123
+ 0 ....555555....
+ 1 ....555555....
+ 2 ...5555555....
+ 3 ....55555.....
+ 4 ...555555.....
+ 5 ....55555.....
+ 6 ....5555555...
+ 7 ...555555.....
+ 8 ....55555.....
+ 9 ...5555555....
+10 ....55555.....
+11 ....55555.....
+12 ....555555....
+13 ....55555.....
+
+--- PREDICTION via 'fill(0)' ---
+   01234567890123
+ 0 ....55555.....
+ 1 ....55555.....
+ 2 ....55555.....
+ 3 ....55555.....
+ 4 ....55555.....
+ 5 ....55555.....
+ 6 ....55555.....
+ 7 ....55555.....
+ 8 ....55555.....
+ 9 ....55555.....
+10 ....55555.....
+11 ....55555.....
+12 ....55555.....
+13 ....55555.....
+
+--- DIFF (X=error) (X = wrong, . = correct) ---
+   01234567890123
+ 0 .........X....
+ 1 .........X....
+ 2 ...X.....X....
+ 3 ..............
+ 4 ...X..........
+ 5 ..............
+ 6 .........XX...
+ 7 ...X..........
+ 8 ..............
+ 9 ...X.....X....
+10 ..............
+11 ..............
+12 .........X....
+13 ..............
+
+DIFF ANALYSIS:
+  Errors: 11 pixels (5.6%)
+  Error Region: rows 0-12, cols 3-10
+  Predicted values in errors: [0]
+  Target values needed: [5]
+  HYPOTHESIS: SPARSE_MODIFICATION
+
+TRANSFORM ANALYSIS (Input -> Target):
+  Shape: (14, 14) -> (14, 14)
+  Colors In: [0, 3, 5]
+  Colors Out: [0, 5]
+  Transform Type: SPARSE_EDIT
+  Changes in Interior: False
+
+OBJECT MODEL (What ObjectExtractor sees in INPUT):
+  [connected_color] Obj 0: Color=3, Pos=(0, 12), Size=1x1, SOLID
+  [connected_color] Obj 1: Color=3, Pos=(1, 9), Size=1x1, SOLID
+  [connected_color] Obj 2: Color=3, Pos=(2, 3), Size=1x1, SOLID
+  [connected_color] Obj 3: Color=3, Pos=(2, 11), Size=1x1, SOLID
+  [connected_color] Obj 4: Color=3, Pos=(4, 0), Size=1x1, SOLID
+  [connected_color] Obj 5: Color=3, Pos=(6, 10), Size=1x1, SOLID
+  [connected_color] Obj 6: Color=3, Pos=(6, 12), Size=1x1, SOLID
+  [connected_color] Obj 7: Color=3, Pos=(7, 1), Size=1x1, SOLID
+  [connected_color] Obj 8: Color=3, Pos=(9, 2), Size=1x1, SOLID
+  [connected_color] Obj 9: Color=3, Pos=(9, 12), Size=1x1, SOLID
+  [connected_color] Obj 10: Color=3, Pos=(12, 10), Size=1x1, SOLID
+  [connected_color] Obj 11: Color=5, Pos=(0, 4), Size=14x5, SOLID
+  [foreground] Obj 0: Color=5, Pos=(0, 3), Size=14x7, SOLID
+  [foreground] Obj 1: Color=3, Pos=(0, 12), Size=1x1, SOLID
+  [foreground] Obj 2: Color=3, Pos=(2, 11), Size=1x1, SOLID
+  [foreground] Obj 3: Color=3, Pos=(4, 0), Size=1x1, SOLID
+  [foreground] Obj 4: Color=3, Pos=(6, 10), Size=1x1, SOLID
+  [foreground] Obj 5: Color=3, Pos=(6, 12), Size=1x1, SOLID
+  [foreground] Obj 6: Color=3, Pos=(7, 1), Size=1x1, SOLID
+  [foreground] Obj 7: Color=3, Pos=(9, 2), Size=1x1, SOLID
+  [foreground] Obj 8: Color=3, Pos=(9, 12), Size=1x1, SOLID
+  [foreground] Obj 9: Color=3, Pos=(12, 10), Size=1x1, SOLID
+
+ENCLOSURE ANALYSIS (DiscoveredPhysics view):
+  Enclosures Found: 0
+  Enclosure Pixels: 0
+  Enclosing Colors: []
+
+========================================
+FORENSIC SUMMARY FOR 4093f84a
+========================================
+Hypotheses from examples: ['SPARSE_MODIFICATION', 'SPARSE_MODIFICATION']
+CONSISTENT HYPOTHESIS: SPARSE_MODIFICATION
+
+======================================================================
+FORENSIC SUMMARY: MISSING OPERATORS
+======================================================================
+
+Hypothesis Distribution:
+  SPARSE_MODIFICATION: 3 tasks
+  EXAMPLE_CONDITIONAL: 2 tasks
+
+RECOMMENDED PHASE 28 OPERATORS:
+  - modify_specific_pixels()
+
+======================================================================
+FORENSIC ANALYSIS COMPLETE
+======================================================================

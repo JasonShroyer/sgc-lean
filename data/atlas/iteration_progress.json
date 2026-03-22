@@ -1,0 +1,67 @@
+{
+  "iterations": [
+    {
+      "iteration": 1,
+      "timestamp": "2026-02-27T21:10:59.144758",
+      "perfect": 0,
+      "near_miss": 0,
+      "fail": 5,
+      "total_tasks": 5,
+      "total_time": 0.12597322463989258,
+      "atlas_size": 0,
+      "num_charts": 0,
+      "gauge_transfers": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2026-02-27T21:11:45.792916",
+      "perfect": 1,
+      "near_miss": 0,
+      "fail": 4,
+      "total_tasks": 5,
+      "total_time": 7.602559804916382,
+      "atlas_size": 0,
+      "num_charts": 0,
+      "gauge_transfers": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2026-02-27T21:39:47.627723",
+      "perfect": 11,
+      "near_miss": 0,
+      "fail": 86,
+      "total_tasks": 97,
+      "total_time": 1212.5764825344086,
+      "atlas_size": 0,
+      "num_charts": 0,
+      "gauge_transfers": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2026-02-27T22:02:52.523389",
+      "perfect": 4,
+      "near_miss": 0,
+      "fail": 26,
+      "total_tasks": 30,
+      "total_time": 632.2585797309875,
+      "atlas_size": 0,
+      "num_charts": 0,
+      "gauge_transfers": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2026-02-27T22:17:51.925472",
+      "perfect": 4,
+      "near_miss": 0,
+      "fail": 21,
+      "total_tasks": 25,
+      "total_time": 615.192022562027,
+      "atlas_size": 0,
+      "num_charts": 0,
+      "gauge_transfers": 0
+    }
+  ],
+  "total_perfect": 4,
+  "best_perfect": 11,
+  "best_iteration": 3
+}

@@ -1,0 +1,733 @@
+======================================================================
+SHEAF ATLAS ITERATIVE EVALUATION - ITERATION 5
+======================================================================
+Atlas file: C:\Lean4 Projects\data\atlas\sheaf_atlas.json
+Started: 2026-02-27 22:07:36
+
+[RESIDUAL] Using SheafAtlas (gauge-covariant library)
+[ATLAS] Loaded from C:\Lean4 Projects\data\atlas\sheaf_atlas.json: 0 predicates, 0 transitions
+
+Loading tasks from C:\Lean4 Projects\data\arc\training...
+Limited to 25 tasks
+Evaluating 25 tasks
+
+
+[1/25] Task 007bbfb7
+      d=0 upscale_3x: defect 1.0000 -> 0.1728 (IG=0.8272)
+      d=0 upscale_3x: defect 1.0000 -> 0.2222 (IG=0.7778)
+    [SYNTH] Best partial: upscale_3x -> cmap(4->0) (avg_defect=0.2000)
+  -> FAIL (defect=1.0000, time=0.0s)
+
+[2/25] Task 00d62c1b
+    [IB] Discovered 4 predicates via Information Bottleneck
+    [SIE-OP] fill(4|enclosed_by_3) (NMI=1.0000)
+    [SIE] PERFECT: fill(4|enclosed_by_3)
+  -> PERFECT (defect=1.0000, time=0.1s)
+
+[3/25] Task 017c7c7b
+  -> FAIL (defect=1.0000, time=0.0s)
+
+[4/25] Task 025d127b
+    [IB] Discovered 5 predicates via Information Bottleneck
+    [SIE-TOPK] color_is_mode_of_col -> color_not_mode_of_col&differs_from_left (NMI 0.5244 -> 0.7585)
+    [SIE-OP] fill(0|color_not_mode_of_col&differs_from_left) (NMI=0.7585)
+    [SIE-TOPK] between_fg_v -> between_fg_v&differs_from_left (NMI 0.3556 -> 0.5976)
+    [SIE-OP] fill(2|between_fg_v&differs_from_left) (NMI=0.5976)
+    [SIE-TOPK] differs_from_left -> differs_from_left&differs_from_down (NMI 0.3836 -> 0.4589)
+    [SIE-OP] fill(6|differs_from_left&differs_from_down) (NMI=0.4589)
+    [SIE-TOPK] differs_from_left -> differs_from_left&differs_from_down (NMI 0.3836 -> 0.4589)
+    [SIE-OP] fill(8|differs_from_left&differs_from_down) (NMI=0.4589)
+    [SIE] Near-miss -> warm-start: fill(0|color_not_mode_of_col&differs_from_left)
+      d=0 shift(0,1): defect 0.1270 -> 0.0635 (IG=0.0635)
+      d=0 erase(6|is_color_6&differs_from_left): defect 0.1270 -> 0.0952 (IG=0.0317)
+      d=0 erase(6|shape_majority): defect 0.1270 -> 0.0952 (IG=0.0317)
+      d=0 shift(0,1): defect 0.1667 -> 0.0556 (IG=0.1111)
+      d=0 fill(8|differs_from_left&cross_8): defect 0.1667 -> 0.0833 (IG=0.0833)
+      d=0 fill(8|exactly2_adj_8&differs_from_left): defect 0.1667 -> 0.0972 (IG=0.0694)
+      d=0 erase(8|differs_from_left&differs_from_right): defect 0.1667 -> 0.0972 (IG=0.0694)
+      d=0 erase(8|differs_from_left&is_color_8): defect 0.1667 -> 0.1111 (IG=0.0556)
+    [SYNTH] Best partial: shift(0,1) (avg_defect=0.0595)
+    [LEM] Trying morphological predicates...
+    [LEM] Morphological predicates found: 0
+    [TENSOR] heterogeneous shapes: {(8, 9), (14, 9)}
+  -> FAIL (defect=1.0000, time=0.8s)
+
+[5/25] Task 045e512c
+    [IB] Discovered 5 predicates via Information Bottleneck
+      d=0 fill(2|same_row_2): defect 0.0658 -> 0.0612 (IG=0.0045)
+    [SYNTH] Best partial: fill(2|same_row_2) -> erase(2|exactly1_adj_1) -> recolor(2->4|not_in_largest_cc) (avg_defect=0.0771)
+    [LEM] Trying morphological predicates...
+    [MORPH] Found 0 morphological predicates
+    [MORPH-OBJ] Attempting object-level morphology...
+    [MORPH-OBJ] MAJORITY channel sheaf_energy=0.2188
+    [MORPH-OBJ] Op apply error: could not broadcast input array from shape (21,21) into shape (3,1)
+    [MORPH-OBJ] Rejected MAJORITY op: severe_regress=True, any_improve=False
+    [MORPH-OBJ] MINORITY channel sheaf_energy=0.2963
+    [MORPH-OBJ] Op apply error: could not broadcast input array from shape (21,21) into shape (3,3)
+    [MORPH-OBJ] Rejected MINORITY op: severe_regress=True, any_improve=False
+    [LEM] Morphological predicates found: 0
+    k=0 step   0: loss=1.2880 F1=0.031 T=1.000 [DREAM]
+    k=0 step 100: loss=0.8714 F1=0.485 T=0.318 [DREAM]
+    k=0: F1=0.415 (P=0.272 R=0.873) 327px worst_ex=0.19 adj_to_8
+    k=1 step   0: loss=1.2767 F1=0.260 T=1.000 [DREAM]
+    k=1 step 100: loss=0.8682 F1=0.486 T=0.318 [DREAM]
+    k=1: F1=0.342 (P=0.207 R=0.990) 489px worst_ex=0.20 adj_to_8
+    k=2 step   0: loss=1.2796 F1=0.165 T=1.000 [DREAM]
+    k=2 step 100: loss=0.8700 F1=0.489 T=0.318 [DREAM]
+    k=2: F1=0.442 (P=0.297 R=0.863) 296px worst_ex=0.22 adj_to_8
+    k=3 step   0: loss=1.2909 F1=0.073 T=1.000 [DREAM]
+    k=3 step 100: loss=0.8678 F1=0.483 T=0.318 [DREAM]
+    k=3: F1=0.486 (P=0.343 R=0.833) 248px worst_ex=0.24 same_col_8
+    [TENSOR] discovered=4 predicates (n_active=3, clusters=1)
+    [TENSOR] predicate F1=0.486 MI_avg=0.1325 MI_min=0.0303 top=[('same_col_8', 0.3774926960468292), ('same_row_4', -0.3525983989238739)]
+    [TENSOR] predicate F1=0.442 MI_avg=0.1298 MI_min=0.0267 top=[('adj_to_8', -0.5215332508087158), ('same_col_8', 0.3921658396720886)]
+    [TENSOR] predicate F1=0.342 MI_avg=0.1259 MI_min=0.0524 top=[('adj_to_8', -0.4573017358779907), ('same_col_8', 0.4237462282180786)]
+    [TENSOR] predicate F1=0.415 MI_avg=0.1173 MI_min=0.0178 top=[('adj_to_8', -0.4341709017753601), ('same_col_8', 0.41430431604385376)]
+    [SGFE] Crystallized tensor_pred(+same_col_8&-same_row_4&-adj_to_8) -> same_col_ANCHOR_1&!same_row_4
+    [SGFE] Crystallized predicate key miss: same_col_ANCHOR_1&!same_row_4 -> same_col_8&!same_row_4 missing=['same_row_4']
+    [SGFE] sheaf_energy=0.9030 for tensor_pred(+same_col_8&-same_row_4&-adj_to_8)
+      [SGFE v2] REJECT fill(2|tensor_pred(+same_col_8&-same_row_4&-adj_to_8)): no net improvement (total_delta=-0.2834)
+    [SGFE v2.6] SHEAF GATE REJECT erase(2|tensor_pred(+same_col_8&-same_row_4&-adj_to_8)): sheaf_energy=0.903 > 0.6 (not a global section)
+      [SGFE v2] REJECT erase(4|tensor_pred(+same_col_8&-same_row_4&-adj_to_8)): no net improvement (total_delta=-0.0091)
+    [SGFE] Crystallized tensor_pred(-adj_to_8&+same_col_8&+is_color_2) -> !adj_to_ANCHOR_1&same_col_ANCHOR_1
+    [SGFE] sheaf_energy=0.9129 for tensor_pred(-adj_to_8&+same_col_8&+is_color_2)
+      [SGFE v2] REJECT fill(majority|!adj_to_ANCHOR_1&same_col_ANCHOR_1): no net improvement (total_delta=-0.3469)
+      [SGFE v2] REJECT erase(majority|!adj_to_ANCHOR_1&same_col_ANCHOR_1): no net improvement (total_delta=-0.0068)
+      [SGFE v2] REJECT erase(4|!adj_to_ANCHOR_1&same_col_ANCHOR_1): no net improvement (total_delta=0.0000)
+    [SGFE] Crystallized tensor_pred(-adj_to_8&+same_col_8&+col_pos) -> !adj_to_ANCHOR_1&same_col_ANCHOR_1
+    [SGFE] sheaf_energy=0.6882 for tensor_pred(-adj_to_8&+same_col_8&+col_pos)
+      [SGFE v2] REJECT fill(majority|!adj_to_ANCHOR_1&same_col_ANCHOR_1): no net improvement (total_delta=-0.3469)
+      [SGFE v2] REJECT erase(majority|!adj_to_ANCHOR_1&same_col_ANCHOR_1): no net improvement (total_delta=-0.0068)
+      [SGFE v2] REJECT erase(4|!adj_to_ANCHOR_1&same_col_ANCHOR_1): no net improvement (total_delta=0.0000)
+    [SGFE] Crystallized tensor_pred(-adj_to_8&+same_col_8&+is_color_2) -> !adj_to_ANCHOR_1&same_col_ANCHOR_1
+    [SGFE] sheaf_energy=0.8976 for tensor_pred(-adj_to_8&+same_col_8&+is_color_2)
+      [SGFE v2] REJECT fill(majority|!adj_to_ANCHOR_1&same_col_ANCHOR_1): no net improvement (total_delta=-0.3469)
+      [SGFE v2] REJECT erase(majority|!adj_to_ANCHOR_1&same_col_ANCHOR_1): no net improvement (total_delta=-0.0068)
+      [SGFE v2] REJECT erase(4|!adj_to_ANCHOR_1&same_col_ANCHOR_1): no net improvement (total_delta=0.0000)
+  -> FAIL (defect=1.0000, time=7.1s)
+
+[6/25] Task 0520fde7
+      d=0 crop(0,0,3,3): defect 1.0000 -> 0.3333 (IG=0.6667)
+      d=0 crop(0,2,3,3): defect 1.0000 -> 0.4444 (IG=0.5556)
+      d=0 crop(0,4,3,3): defect 1.0000 -> 0.4444 (IG=0.5556)
+    [PERFECT] crop(0,0,3,3) -> recolor(1->0) -> fill(2|not_border) at depth 3
+    [PERFECT] crop(0,0,3,3) -> erase(1|is_color_1&border_row) -> cmap(1->2) at depth 3
+    [PERFECT] crop(0,4,3,3) -> recolor(1->0) -> fill(2|not_border) at depth 3
+    [PERFECT] crop(0,4,3,3) -> erase(1|is_color_1&on_border) -> cmap(1->2) at depth 3
+    [PERFECT] crop(0,0,3,3) -> recolor(1->2|not_border) -> cmap(1->0) at depth 3
+    [PERFECT] crop(0,2,3,3) -> erase(5|is_color_5&border_row) -> cmap(5->2,1->0) at depth 3
+      d=0 crop(0,0,3,3): defect 1.0000 -> 0.5556 (IG=0.4444)
+      d=0 crop(0,2,3,3): defect 1.0000 -> 0.5556 (IG=0.4444)
+      d=0 crop(0,4,3,3): defect 1.0000 -> 0.5556 (IG=0.4444)
+    [PERFECT] crop(0,0,3,3) -> recolor(1->2) -> erase(2|border_col&color_is_mode_of_row) at depth 3
+    [PERFECT] crop(0,0,3,3) -> erase(1|border_col&color_is_mode_of_row) -> cmap(1->2) at depth 3
+    [SYNTH] Best partial: crop(0,0,3,3) -> erase(1|is_color_1&border_row) -> cmap(1->2) (avg_defect=0.1481)
+    [LEM] Trying morphological predicates...
+  Candidate e(+,X)@BG: F1=0.536, sheaf_energy=0.028
+  Candidate d([],X)@MAJORITY: F1=0.432, sheaf_energy=0.028
+  Candidate D([],X)@MAJORITY: F1=0.432, sheaf_energy=0.028
+  Candidate D([],X)@BG: F1=0.432, sheaf_energy=0.028
+  Candidate d(\,X)@MAJORITY: F1=0.536, sheaf_energy=0.028
+  Candidate p(\,X)@MAJORITY: F1=0.536, sheaf_energy=0.028
+  Candidate D(\,X)@MAJORITY: F1=0.536, sheaf_energy=0.028
+  Candidate D(\,X)@BG: F1=0.536, sheaf_energy=0.028
+  Candidate T(\,X)@BG: F1=0.533, sheaf_energy=0.012
+  Candidate B(\,X)@MAJORITY: F1=0.533, sheaf_energy=0.012
+  Candidate e(|,X)@BG: F1=0.450, sheaf_energy=0.028
+  Candidate g(|,X)@BG: F1=0.450, sheaf_energy=0.028
+  Candidate d(L,X)@MAJORITY: F1=0.472, sheaf_energy=0.077
+  Candidate d(L,X)@BG: F1=0.422, sheaf_energy=0.003
+  Candidate D(L,X)@MAJORITY: F1=0.500, sheaf_energy=0.049
+  Candidate D(L,X)@BG: F1=0.500, sheaf_energy=0.049
+  Candidate g(T,X)@BG: F1=0.486, sheaf_energy=0.028
+    [MORPH] Found 17 morphological predicates
+    [MORPH-OBJ] Attempting object-level morphology...
+    [LEM] Morphological predicates found: 0
+    k=0 step   0: loss=1.0824 F1=0.000 T=1.000 [DREAM]
+    k=0 step 100: loss=0.3640 F1=1.000 T=0.318 [DREAM]
+    k=0: F1=1.000 (P=1.000 R=1.000) 4px worst_ex=1.00 same_col_2
+    k=1 step   0: loss=1.0878 F1=0.000 T=1.000 [DREAM]
+    k=1 step 100: loss=0.3649 F1=1.000 T=0.318 [DREAM]
+    k=1: F1=1.000 (P=1.000 R=1.000) 4px worst_ex=1.00 same_col_2
+    k=2 step   0: loss=1.0921 F1=0.381 T=1.000 [DREAM]
+    k=2 step 100: loss=0.3645 F1=1.000 T=0.318 [DREAM]
+    k=2: F1=1.000 (P=1.000 R=1.000) 4px worst_ex=1.00 same_col_2
+    k=3 step   0: loss=1.0859 F1=0.421 T=1.000 [DREAM]
+    k=3 step 100: loss=0.3653 F1=1.000 T=0.318 [DREAM]
+    k=3: F1=1.000 (P=1.000 R=1.000) 4px worst_ex=1.00 same_col_2
+    [TENSOR] discovered=4 predicates (n_active=2, clusters=1)
+    [TENSOR] predicate F1=1.000 MI_avg=0.7642 MI_min=0.7642 top=[('same_col_2', -2.4352643489837646), ('border_col', -1.6805607080459595)]
+    [TENSOR] predicate F1=1.000 MI_avg=0.7642 MI_min=0.7642 top=[('same_col_2', -2.4326822757720947), ('border_col', -1.6873116493225098)]
+    [TENSOR] predicate F1=1.000 MI_avg=0.7642 MI_min=0.7642 top=[('same_col_2', -1.8416078090667725), ('border_row', 1.702362060546875)]
+    [TENSOR] predicate F1=1.000 MI_avg=0.7642 MI_min=0.7642 top=[('same_col_2', -2.447359561920166), ('border_row', 1.6952733993530273)]
+    [SGFE] Crystallized tensor_pred(-same_col_2&-border_col&+border_row) -> !same_col_MAJORITY&!border_col
+    [SGFE] sheaf_energy=1.0000 for tensor_pred(-same_col_2&-border_col&+border_row)
+    [SGFE v2.6] SHEAF GATE REJECT fill(majority|!same_col_MAJORITY&!border_col): sheaf_energy=1.000 > 0.6 (not a global section)
+      [SGFE v2] REJECT erase(majority|!same_col_MAJORITY&!border_col): no net improvement (total_delta=0.0000)
+    [SGFE] Crystallized tensor_pred(-same_col_2&-border_col&+border_row) -> !same_col_MAJORITY&!border_col
+    [SGFE] sheaf_energy=1.0000 for tensor_pred(-same_col_2&-border_col&+border_row)
+    [SGFE v2.6] SHEAF GATE REJECT fill(majority|!same_col_MAJORITY&!border_col): sheaf_energy=1.000 > 0.6 (not a global section)
+      [SGFE v2] REJECT erase(majority|!same_col_MAJORITY&!border_col): no net improvement (total_delta=0.0000)
+    [SGFE] Crystallized tensor_pred(-same_col_2&+border_row&-same_row_2) -> !same_col_MAJORITY&border_row
+    [SGFE] sheaf_energy=1.0000 for tensor_pred(-same_col_2&+border_row&-same_row_2)
+      [SGFE v2] REJECT fill(majority|!same_col_MAJORITY&border_row): no net improvement (total_delta=-0.4444)
+      [SGFE v2] REJECT erase(majority|!same_col_MAJORITY&border_row): no net improvement (total_delta=0.0000)
+    [SGFE] Crystallized tensor_pred(-same_col_2&+border_row&-border_col) -> !same_col_MAJORITY&border_row
+    [SGFE] sheaf_energy=1.0000 for tensor_pred(-same_col_2&+border_row&-border_col)
+      [SGFE v2] REJECT fill(majority|!same_col_MAJORITY&border_row): no net improvement (total_delta=-0.4444)
+      [SGFE v2] REJECT erase(majority|!same_col_MAJORITY&border_row): no net improvement (total_delta=0.0000)
+  -> FAIL (defect=1.0000, time=2.6s)
+
+[7/25] Task 05269061
+    [IB] Discovered 6 predicates via Information Bottleneck
+      d=0 fill_dynamic(is_color_0): defect 0.8776 -> 0.5510 (IG=0.3265)
+      d=0 recolor(0->8): defect 0.8776 -> 0.5918 (IG=0.2857)
+      d=0 recolor(0->3): defect 0.8776 -> 0.6122 (IG=0.2653)
+      d=0 fill_role(minority|adj_majority): defect 0.8776 -> 0.7959 (IG=0.0816)
+      d=0 fill_role(minority|cross_majority): defect 0.8776 -> 0.8367 (IG=0.0408)
+      d=0 fill_dynamic(is_color_0): defect 0.7551 -> 0.4898 (IG=0.2653)
+      d=0 cmap(0->2): defect 0.7551 -> 0.4898 (IG=0.2653)
+      d=0 recolor(0->1): defect 0.7551 -> 0.5306 (IG=0.2245)
+      d=0 fill(2|is_color_0&within2_1): defect 0.7551 -> 0.6122 (IG=0.1429)
+      d=0 fill_role(minority|adj_majority): defect 0.7551 -> 0.6327 (IG=0.1224)
+      d=0 fill_role(minority|cross_majority): defect 0.7551 -> 0.6531 (IG=0.1020)
+      d=0 fill(2|is_region_interior&near_fg): defect 0.7551 -> 0.6531 (IG=0.1020)
+    [SYNTH] Best partial: fill_role(minority|adj_majority) -> fill_role(minority|adj_majority) -> fill_dynamic(is_color_0) (avg_defect=0.3333)
+  -> FAIL (defect=1.0000, time=3.8s)
+
+[8/25] Task 05f2a901
+    [IB] Discovered 4 predicates via Information Bottleneck
+    [SIE-OP] recolor(2->0|is_color_2) (NMI=1.0000)
+    [SIE] Near-miss -> warm-start: recolor(2->0|is_color_2)
+      [WARM] Seeded beam: defect 0.0952 -> 0.0476
+      d=0 erase(2|is_color_2): defect 0.0952 -> 0.0476 (IG=0.0476)
+      [WARM] Seeded beam: defect 0.2000 -> 0.1000
+      d=0 shift(0,3): defect 0.2000 -> 0.0889 (IG=0.1111)
+      d=0 erase(2|is_color_2): defect 0.2000 -> 0.1000 (IG=0.1000)
+      d=0 shift(-1,3): defect 0.2000 -> 0.1556 (IG=0.0444)
+      d=0 shift(1,3): defect 0.2000 -> 0.1556 (IG=0.0444)
+      d=0 shift(0,4): defect 0.2000 -> 0.1667 (IG=0.0333)
+      d=0 shift(0,2): defect 0.2000 -> 0.1778 (IG=0.0222)
+      d=0 shift(1,4): defect 0.2000 -> 0.1778 (IG=0.0222)
+    [SYNTH] Best partial: erase(2|is_color_2) (avg_defect=0.0795)
+    [LEM] Trying morphological predicates...
+    [LEM] Morphological predicates found: 0
+    [TENSOR] heterogeneous shapes: {(9, 10), (14, 9), (11, 10)}
+  -> FAIL (defect=1.0000, time=1.7s)
+
+[9/25] Task 06df4c85
+    [IB] Discovered 7 predicates via Information Bottleneck
+    [SIE-TOPK] between_2_any -> between_2_any&between_fg_hv (NMI 0.7502 -> 1.0000)
+    [SIE-OP] fill(2|between_2_any&between_fg_hv) (NMI=1.0000)
+    [SIE-DEEP] between_fg_hv -> between_fg_hv&!within2_2 (NMI 0.3294 -> 0.5988)
+    [SIE-OP] fill(3|between_fg_hv&!within2_2) (NMI=0.5988)
+    [SIE] Near-miss -> warm-start: fill(2|between_2_any&between_fg_hv)
+      [WARM] Seeded beam: defect 0.0500 -> 0.0100
+      d=0 fill(2|between_2_any): defect 0.0500 -> 0.0100 (IG=0.0400)
+      d=0 fill(2|between_2_h): defect 0.0500 -> 0.0200 (IG=0.0300)
+      d=0 fill(3|between_3_any): defect 0.0500 -> 0.0400 (IG=0.0100)
+      d=0 fill(3|between_3_any): defect 0.0100 -> 0.0000 (IG=0.0100)
+    [PERFECT] fill(2|between_2_any&between_fg_hv) -> fill(3|between_3_any) at depth 1
+      [WARM] Seeded beam: defect 0.0681 -> 0.0454
+      d=0 fill(2|between_2_any): defect 0.0681 -> 0.0454 (IG=0.0227)
+      d=0 fill(9|between_9_h): defect 0.0681 -> 0.0454 (IG=0.0227)
+      d=0 fill(8|between_8_any): defect 0.0681 -> 0.0454 (IG=0.0227)
+      d=0 fill(8|between_8_h): defect 0.0681 -> 0.0529 (IG=0.0151)
+      d=0 fill(9|between_9_h): defect 0.0454 -> 0.0227 (IG=0.0227)
+      d=0 fill(8|between_8_any): defect 0.0454 -> 0.0227 (IG=0.0227)
+      d=0 fill(8|between_8_h): defect 0.0454 -> 0.0302 (IG=0.0151)
+    [PERFECT] fill(2|between_2_any&between_fg_hv) -> fill(9|between_9_h) -> fill(8|between_8_any) at depth 2
+    [PERFECT] fill(2|between_2_any&between_fg_hv) -> fill(8|between_8_any) -> fill(9|between_9_h) at depth 2
+    [SYNTH] Best partial: fill(2|between_2_any&between_fg_hv) -> fill(3|between_3_any) (avg_defect=0.0151)
+  -> FAIL (defect=1.0000, time=9.5s)
+
+[10/25] Task 08ed6ac7
+    [IB] Discovered 5 predicates via Information Bottleneck
+    [SIE-TOPK] large_obj -> large_obj&in_largest_cc (NMI 0.6227 -> 1.0000)
+    [SIE-OP] recolor(5->1|large_obj&in_largest_cc) (NMI=1.0000)
+    [SIE-DEEP] large_obj -> large_obj&!in_largest_cc (NMI 0.5464 -> 1.0000)
+    [SIE-OP] recolor(5->2|large_obj&!in_largest_cc) (NMI=1.0000)
+    [SIE-OP] recolor(5->3|color_is_mode_of_row) (NMI=0.3649)
+    [SIE-DEEP] small_obj -> small_obj&!color_is_mode_of_row (NMI 0.7229 -> 0.7964)
+    [SIE-OP] recolor(5->4|small_obj&!color_is_mode_of_row) (NMI=0.7964)
+    [SIE] Near-miss -> warm-start: recolor(5->1|large_obj&in_largest_cc)
+      [WARM] Seeded beam: defect 0.3210 -> 0.2099
+      d=0 recolor(5->1|large_obj): defect 0.3210 -> 0.2099 (IG=0.1111)
+      d=0 cmap(5->1): defect 0.3210 -> 0.2099 (IG=0.1111)
+      d=0 recolor(5->2): defect 0.3210 -> 0.2222 (IG=0.0988)
+      d=0 recolor(5->2|large_obj): defect 0.3210 -> 0.2222 (IG=0.0988)
+      d=0 recolor(5->3): defect 0.3210 -> 0.2469 (IG=0.0741)
+      d=0 recolor(5->4|small_obj): defect 0.3210 -> 0.2840 (IG=0.0370)
+      d=0 recolor(5->4): defect 0.3210 -> 0.2840 (IG=0.0370)
+      d=0 recolor(5->2): defect 0.2099 -> 0.1111 (IG=0.0988)
+      d=0 recolor(5->2|is_color_5&large_obj): defect 0.2099 -> 0.1111 (IG=0.0988)
+      d=0 recolor(5->3): defect 0.2099 -> 0.1358 (IG=0.0741)
+      d=0 recolor(5->4|small_obj): defect 0.2099 -> 0.1728 (IG=0.0370)
+      d=0 recolor(5->4): defect 0.2099 -> 0.1728 (IG=0.0370)
+    [PERFECT] recolor(5->1|large_obj&in_largest_cc) -> recolor(5->2|is_color_5&large_obj) -> recolor(5->3) -> recolor(3->4|small_obj) at depth 3
+    [PERFECT] recolor(5->1|large_obj&in_largest_cc) -> recolor(5->3) -> recolor(3->2|is_color_3&large_obj) -> recolor(3->4|small_obj) at depth 3
+    [PERFECT] recolor(5->1|large_obj&in_largest_cc) -> recolor(5->2|is_color_5&large_obj) -> recolor(5->4|small_obj) -> cmap(5->3) at depth 3
+    [PERFECT] recolor(5->1|large_obj&in_largest_cc) -> recolor(5->4|small_obj) -> recolor(5->2|is_color_5&large_obj) -> cmap(5->3) at depth 3
+      [WARM] Seeded beam: defect 0.2346 -> 0.1358
+      d=0 recolor(5->1|large_obj): defect 0.2346 -> 0.1358 (IG=0.0988)
+      d=0 cmap(5->1): defect 0.2346 -> 0.1358 (IG=0.0988)
+      d=0 recolor(5->1|in_largest_cc): defect 0.2346 -> 0.1358 (IG=0.0988)
+      d=0 recolor(5->2): defect 0.2346 -> 0.1728 (IG=0.0617)
+      d=0 recolor(5->2|not_in_largest_cc&large_obj): defect 0.2346 -> 0.1728 (IG=0.0617)
+      d=0 recolor(5->2|not_in_largest_cc): defect 0.2346 -> 0.1728 (IG=0.0617)
+      d=0 recolor(5->3): defect 0.2346 -> 0.1852 (IG=0.0494)
+      d=0 recolor(5->3|small_obj): defect 0.2346 -> 0.1852 (IG=0.0494)
+      d=0 recolor(5->2): defect 0.1358 -> 0.0741 (IG=0.0617)
+      d=0 recolor(5->2|in_largest_cc): defect 0.1358 -> 0.0741 (IG=0.0617)
+      d=0 recolor(5->3): defect 0.1358 -> 0.0864 (IG=0.0494)
+      d=0 recolor(5->3|small_obj): defect 0.1358 -> 0.0864 (IG=0.0494)
+      d=0 recolor(5->4|small_obj): defect 0.1358 -> 0.1111 (IG=0.0247)
+      d=0 recolor(5->4): defect 0.1358 -> 0.1111 (IG=0.0247)
+    [PERFECT] recolor(5->1|large_obj&in_largest_cc) -> recolor(5->2) -> recolor(2->3|small_obj) -> recolor(3->4|not_in_largest_cc) at depth 3
+    [PERFECT] recolor(5->1|large_obj&in_largest_cc) -> recolor(5->2|in_largest_cc) -> recolor(5->3) -> recolor(3->4|not_in_largest_cc) at depth 3
+    [PERFECT] recolor(5->1|large_obj&in_largest_cc) -> recolor(5->2|in_largest_cc) -> recolor(5->3|in_largest_cc) -> recolor(5->4|small_obj) at depth 3
+    [PERFECT] recolor(5->1|large_obj&in_largest_cc) -> recolor(5->3) -> recolor(3->2|in_largest_cc) -> recolor(3->4|not_in_largest_cc) at depth 3
+    [PERFECT] recolor(5->1|large_obj&in_largest_cc) -> recolor(5->3|small_obj) -> recolor(5->2) -> recolor(3->4|not_in_largest_cc) at depth 3
+    [PERFECT] recolor(5->1|large_obj&in_largest_cc) -> recolor(5->4|small_obj) -> cmap(5->2,4->3) -> recolor(3->4|not_in_largest_cc) at depth 3
+    [PERFECT] recolor(5->1|large_obj&in_largest_cc) -> recolor(5->2) -> recolor(2->4|small_obj) -> recolor(4->3|in_largest_cc) at depth 3
+    [PERFECT] recolor(5->1|large_obj&in_largest_cc) -> recolor(5->2|in_largest_cc) -> recolor(5->4|small_obj) -> recolor(4->3|in_largest_cc) at depth 3
+    [SYNTH] Verified program: recolor(5->1|large_obj&in_largest_cc) -> recolor(5->2|in_largest_cc) -> recolor(5->3) -> recolor(3->4|not_in_largest_cc)
+  -> PERFECT (defect=1.0000, time=3.1s)
+
+[11/25] Task 09629e4f
+    [IB] Discovered 8 predicates via Information Bottleneck
+    [SIE-DEEP] same_shape_as_0 -> same_shape_as_0&!between_5_hv (NMI 0.5081 -> 0.5784)
+    [SIE-OP] fill(0|same_shape_as_0&!between_5_hv) (NMI=0.5784)
+      d=0 cmap(6->0,2->0,4->0,3->0,8->0,0->2): defect 0.4711 -> 0.4215 (IG=0.0496)
+      d=0 recolor(8->0): defect 0.4711 -> 0.4298 (IG=0.0413)
+      d=0 recolor(6->0): defect 0.4711 -> 0.4380 (IG=0.0331)
+      d=0 recolor(2->0): defect 0.4711 -> 0.4380 (IG=0.0331)
+      d=0 recolor(4->0): defect 0.4711 -> 0.4380 (IG=0.0331)
+      d=0 recolor(3->0): defect 0.4711 -> 0.4380 (IG=0.0331)
+      d=0 fill(4|enclosed_by_5): defect 0.4711 -> 0.4380 (IG=0.0331)
+      d=0 erase(8|is_color_8&inside_bbox_0): defect 0.4711 -> 0.4545 (IG=0.0165)
+      d=0 cmap(6->0,2->0,4->0,3->0,8->0,0->2): defect 0.4711 -> 0.4298 (IG=0.0413)
+      d=0 recolor(8->0): defect 0.4711 -> 0.4298 (IG=0.0413)
+      d=0 fill(3|enclosed_by_5&enclosed_by_fg): defect 0.4711 -> 0.4298 (IG=0.0413)
+      d=0 recolor(2->0): defect 0.4711 -> 0.4380 (IG=0.0331)
+      d=0 recolor(3->0): defect 0.4711 -> 0.4380 (IG=0.0331)
+      d=0 recolor(4->0): defect 0.4711 -> 0.4380 (IG=0.0331)
+      d=0 recolor(6->0): defect 0.4711 -> 0.4380 (IG=0.0331)
+    [SYNTH] Best partial: cmap(6->0,2->0,4->0,3->0,8->0,0->2) -> erase(2|is_color_2) -> fill(4|enclosed_by_fg) (avg_defect=0.2789)
+  -> FAIL (defect=1.0000, time=65.1s)
+
+[12/25] Task 0962bcdd
+    [IB] Discovered 4 predicates via Information Bottleneck
+    [SIE-DEEP] near_fg -> near_fg&is_region_boundary (NMI 0.3404 -> 0.7999)
+    [SIE-OP] fill(7|near_fg&is_region_boundary) (NMI=0.7999)
+    [SIE-DEEP] near_fg -> near_fg&is_region_boundary (NMI 0.3404 -> 0.7999)
+    [SIE-OP] fill(8|near_fg&is_region_boundary) (NMI=0.7999)
+    [SIE] Near-miss -> warm-start: fill(7|near_fg&is_region_boundary)
+      [WARM] Seeded beam: defect 0.1667 -> 0.1250
+      d=0 fill_role(minority|adj_majority): defect 0.1667 -> 0.1111 (IG=0.0556)
+      d=0 fill(2|exactly2_adj_7): defect 0.1667 -> 0.1111 (IG=0.0556)
+      d=0 fill(7|exactly1_adj_7): defect 0.1667 -> 0.1111 (IG=0.0556)
+      d=0 fill_role(minority|adj_majority): defect 0.1667 -> 0.1111 (IG=0.0556)
+      d=0 fill(6|exactly2_adj_8): defect 0.1667 -> 0.1111 (IG=0.0556)
+      d=0 fill(8|exactly1_adj_8): defect 0.1667 -> 0.1111 (IG=0.0556)
+    [SYNTH] Best partial: fill_role(minority|adj_majority) -> recolor(2->7|exactly1_adj_7) (avg_defect=0.0833)
+    [LEM] Trying morphological predicates...
+    [MORPH] Found 0 morphological predicates
+    [MORPH-OBJ] Attempting object-level morphology...
+    [MORPH-OBJ] MAJORITY channel sheaf_energy=0.0000
+    [MORPH-OBJ] Op apply error: could not broadcast input array from shape (12,12) into shape (1,1)
+    [MORPH-OBJ] Rejected MAJORITY op: severe_regress=True, any_improve=False
+    [MORPH-OBJ] MINORITY channel sheaf_energy=0.0000
+    [MORPH-OBJ] Op apply error: could not broadcast input array from shape (12,12) into shape (2,1)
+    [MORPH-OBJ] Rejected MINORITY op: severe_regress=True, any_improve=False
+    [LEM] Morphological predicates found: 0
+    k=0 step   0: loss=1.2751 F1=0.170 T=1.000 [DREAM]
+    k=0 step 100: loss=0.3167 F1=1.000 T=0.318 [DREAM]
+    k=0: F1=1.000 (P=1.000 R=1.000) 24px worst_ex=1.00 same_row_8
+    k=1 step   0: loss=1.2905 F1=0.000 T=1.000 [DREAM]
+    k=1 step 100: loss=0.3195 F1=1.000 T=0.318 [DREAM]
+    k=1: F1=1.000 (P=1.000 R=1.000) 24px worst_ex=1.00 same_row_8
+    k=2 step   0: loss=1.2748 F1=0.185 T=1.000 [DREAM]
+    k=2 step 100: loss=0.3185 F1=1.000 T=0.318 [DREAM]
+    k=2: F1=1.000 (P=1.000 R=1.000) 24px worst_ex=1.00 same_row_8
+    k=3 step   0: loss=1.2883 F1=0.134 T=1.000 [DREAM]
+    k=3 step 100: loss=0.3210 F1=1.000 T=0.318 [DREAM]
+    k=3: F1=1.000 (P=1.000 R=1.000) 24px worst_ex=1.00 same_row_8
+    [TENSOR] discovered=4 predicates (n_active=2, clusters=1)
+    [TENSOR] predicate F1=1.000 MI_avg=0.4064 MI_min=0.3095 top=[('same_row_8', -1.7370654344558716), ('same_col_8', -1.636685848236084)]
+    [TENSOR] predicate F1=1.000 MI_avg=0.4064 MI_min=0.3095 top=[('same_row_8', -1.6862194538116455), ('same_col_8', -1.6069236993789673)]
+    [TENSOR] predicate F1=1.000 MI_avg=0.4064 MI_min=0.3095 top=[('same_row_8', -1.7154425382614136), ('same_col_8', -1.631460189819336)]
+    [TENSOR] predicate F1=1.000 MI_avg=0.4064 MI_min=0.3095 top=[('same_row_8', -1.6940034627914429), ('same_col_8', -1.6680197715759277)]
+    [SGFE] Crystallized tensor_pred(-same_row_8&-same_col_8&-adj_to_7) -> !same_row_8&!same_col_8
+    [SGFE] Crystallized predicate key miss: !same_row_8&!same_col_8 -> !same_row_8&!same_col_8 missing=['same_row_8', 'same_col_8']
+    [SGFE] sheaf_energy=2.0000 for tensor_pred(-same_row_8&-same_col_8&-adj_to_7)
+      [SGFE v2] REJECT fill(2|tensor_pred(-same_row_8&-same_col_8&-adj_to_7)): sheaf energy too high (2.0000 > 1.0)
+      [SGFE v2] REJECT recolor(6->8|tensor_pred(-same_row_8&-same_col_8&-adj_to_7)): sheaf energy too high (2.0000 > 1.0)
+    [SGFE] Crystallized tensor_pred(-same_row_8&-same_col_8&-adj_to_7) -> !same_row_8&!same_col_8
+    [SGFE] Crystallized predicate key miss: !same_row_8&!same_col_8 -> !same_row_8&!same_col_8 missing=['same_row_8', 'same_col_8']
+    [SGFE] sheaf_energy=2.0000 for tensor_pred(-same_row_8&-same_col_8&-adj_to_7)
+      [SGFE v2] REJECT fill(2|tensor_pred(-same_row_8&-same_col_8&-adj_to_7)): sheaf energy too high (2.0000 > 1.0)
+      [SGFE v2] REJECT recolor(6->8|tensor_pred(-same_row_8&-same_col_8&-adj_to_7)): sheaf energy too high (2.0000 > 1.0)
+    [SGFE] Crystallized tensor_pred(-same_row_8&-same_col_8&-adj_to_7) -> !same_row_8&!same_col_8
+    [SGFE] Crystallized predicate key miss: !same_row_8&!same_col_8 -> !same_row_8&!same_col_8 missing=['same_row_8', 'same_col_8']
+    [SGFE] sheaf_energy=2.0000 for tensor_pred(-same_row_8&-same_col_8&-adj_to_7)
+      [SGFE v2] REJECT fill(2|tensor_pred(-same_row_8&-same_col_8&-adj_to_7)): sheaf energy too high (2.0000 > 1.0)
+      [SGFE v2] REJECT recolor(6->8|tensor_pred(-same_row_8&-same_col_8&-adj_to_7)): sheaf energy too high (2.0000 > 1.0)
+    [SGFE] Crystallized tensor_pred(-same_row_8&-same_col_8&-adj_to_7) -> !same_row_8&!same_col_8
+    [SGFE] Crystallized predicate key miss: !same_row_8&!same_col_8 -> !same_row_8&!same_col_8 missing=['same_row_8', 'same_col_8']
+    [SGFE] sheaf_energy=2.0000 for tensor_pred(-same_row_8&-same_col_8&-adj_to_7)
+      [SGFE v2] REJECT fill(2|tensor_pred(-same_row_8&-same_col_8&-adj_to_7)): sheaf energy too high (2.0000 > 1.0)
+      [SGFE v2] REJECT recolor(6->8|tensor_pred(-same_row_8&-same_col_8&-adj_to_7)): sheaf energy too high (2.0000 > 1.0)
+  -> FAIL (defect=1.0000, time=3.2s)
+
+[13/25] Task 0a938d79
+    [IB] Discovered 4 predicates via Information Bottleneck
+      d=0 fill(3|same_col_3): defect 0.2484 -> 0.2112 (IG=0.0373)
+      d=0 fill(1|same_col_1): defect 0.2484 -> 0.2112 (IG=0.0373)
+    [SYNTH] Best partial: fill(3|same_col_3) (avg_defect=0.3126)
+  -> FAIL (defect=1.0000, time=0.3s)
+
+[14/25] Task 0b148d64
+      d=0 crop(11,0,10,10): defect 1.0000 -> 0.0000 (IG=1.0000)
+    [PERFECT] crop(11,0,10,10) at depth 1
+      d=0 crop(11,5,10,10): defect 1.0000 -> 0.5600 (IG=0.4400)
+      d=0 crop(5,0,10,10): defect 1.0000 -> 0.7100 (IG=0.2900)
+      d=0 crop(5,5,10,10): defect 1.0000 -> 0.7100 (IG=0.2900)
+      d=0 crop(0,5,10,10): defect 1.0000 -> 0.7800 (IG=0.2200)
+      d=0 crop(5,11,10,10): defect 1.0000 -> 0.8300 (IG=0.1700)
+      d=0 crop(11,11,10,10): defect 1.0000 -> 0.8600 (IG=0.1400)
+      d=0 crop(0,0,10,10): defect 1.0000 -> 0.8800 (IG=0.1200)
+      d=0 crop(11,10,7,9): defect 1.0000 -> 0.0000 (IG=1.0000)
+    [PERFECT] crop(11,10,7,9) at depth 1
+      d=0 crop(11,5,7,9): defect 1.0000 -> 0.5714 (IG=0.4286)
+      d=0 crop(5,10,7,9): defect 1.0000 -> 0.5873 (IG=0.4127)
+      d=0 crop(5,5,7,9): defect 1.0000 -> 0.6032 (IG=0.3968)
+      d=0 crop(5,0,7,9): defect 1.0000 -> 0.6508 (IG=0.3492)
+      d=0 crop(0,5,7,9): defect 1.0000 -> 0.6825 (IG=0.3175)
+      d=0 crop(11,0,7,9): defect 1.0000 -> 0.7302 (IG=0.2698)
+      d=0 crop(0,0,7,9): defect 1.0000 -> 0.7619 (IG=0.2381)
+    [SYNTH] Best partial: crop(11,0,10,10) (avg_defect=0.4101)
+  -> FAIL (defect=1.0000, time=0.0s)
+
+[15/25] Task 0ca9ddb6
+    [IB] Discovered 6 predicates via Information Bottleneck
+    [SIE-DEEP] near8_2 -> near8_2&!exactly1_adj_2 (NMI 0.6240 -> 1.0000)
+    [SIE-OP] fill(4|near8_2&!exactly1_adj_2) (NMI=1.0000)
+    [SIE-OP] fill(7|adj_to_1) (NMI=1.0000)
+    [SIE] PERFECT: fill(4|near8_2&!exactly1_adj_2) -> fill(7|adj_to_1)
+  -> PERFECT (defect=1.0000, time=0.1s)
+
+[16/25] Task 0d3d703e
+    [IB] Discovered 12 predicates via Information Bottleneck
+    [SIE-TOPK] color_is_mode_of_row -> color_is_mode_of_row&!differs_from_left (NMI 0.3465 -> 0.5972)
+    [SIE-OP] recolor(5->1|color_is_mode_of_row&!differs_from_left) (NMI=0.5972)
+    [SIE-DEEP] differs_from_right -> differs_from_right&!near_fg (NMI 0.3465 -> 1.0000)
+    [SIE-OP] recolor(6->2|differs_from_right&!near_fg) (NMI=1.0000)
+    [SIE-DEEP] border_col -> border_col&!near_fg (NMI 0.3465 -> 1.0000)
+    [SIE-OP] recolor(4->3|border_col&!near_fg) (NMI=1.0000)
+    [SIE-DEEP] border_col -> border_col&!color_is_mode_of_row (NMI 0.3465 -> 1.0000)
+    [SIE-OP] recolor(1->5|border_col&!color_is_mode_of_row) (NMI=1.0000)
+    [SIE-DEEP] differs_from_left -> differs_from_left&!near_fg (NMI 0.3465 -> 1.0000)
+    [SIE-OP] recolor(9->8|differs_from_left&!near_fg) (NMI=1.0000)
+      d=0 cmap(2->6,3->4,8->9,1->5,5->1,6->2,9->8,4->3): defect 1.0000 -> 0.0000 (IG=1.0000)
+    [PERFECT] cmap(2->6,3->4,8->9,1->5,5->1,6->2,9->8,4->3) at depth 1
+      d=0 recolor(2->6|is_color_2): defect 1.0000 -> 0.6667 (IG=0.3333)
+      d=0 recolor(3->4): defect 1.0000 -> 0.6667 (IG=0.3333)
+      d=0 recolor(1->5): defect 1.0000 -> 0.6667 (IG=0.3333)
+    [SYNTH] Verified program: cmap(2->6,3->4,8->9,1->5,5->1,6->2,9->8,4->3)
+  -> PERFECT (defect=1.0000, time=0.1s)
+
+[17/25] Task 0dfd9992
+    [IB] Discovered 3 predicates via Information Bottleneck
+    [SIE-TOPK] cross_1 -> cross_1&between_fg_v (NMI 0.4976 -> 0.7734)
+    [SIE-OP] fill(1|cross_1&between_fg_v) (NMI=0.7734)
+    [SIE-DEEP] between_fg_v -> between_fg_v&cross_2 (NMI 0.4828 -> 0.5976)
+    [SIE-OP] fill(2|between_fg_v&cross_2) (NMI=0.5976)
+    [SIE-TOPK] between_fg_v -> between_fg_v&cross_3 (NMI 0.4698 -> 0.7382)
+    [SIE-OP] fill(3|between_fg_v&cross_3) (NMI=0.7382)
+    [SIE-DEEP] between_fg_v -> between_fg_v&!cross_6 (NMI 0.3443 -> 0.6447)
+    [SIE-OP] fill(4|between_fg_v&!cross_6) (NMI=0.6447)
+    [SIE-DEEP] between_fg_v -> between_fg_v&cross_5 (NMI 0.4162 -> 0.5770)
+    [SIE-OP] fill(5|between_fg_v&cross_5) (NMI=0.5770)
+    [SIE-DEEP] between_fg_v -> between_fg_v&cross_6 (NMI 0.4529 -> 0.6578)
+    [SIE-OP] fill(6|between_fg_v&cross_6) (NMI=0.6578)
+    [SIE-DEEP] between_fg_v -> between_fg_v&!cross_3 (NMI 0.3563 -> 0.8748)
+    [SIE-OP] fill(7|between_fg_v&!cross_3) (NMI=0.8748)
+    [SIE] Near-miss -> warm-start: fill(7|between_fg_v&!cross_3)
+      d=0 recolor(0->3): defect 0.1043 -> 0.0726 (IG=0.0317)
+      d=0 cmap(0->2): defect 0.1043 -> 0.0748 (IG=0.0295)
+      d=0 fill(3|near_fg): defect 0.1043 -> 0.0748 (IG=0.0295)
+      d=0 recolor(0->6): defect 0.1043 -> 0.0839 (IG=0.0204)
+      d=0 recolor(0->5): defect 0.1043 -> 0.0907 (IG=0.0136)
+      d=0 fill_holes: defect 0.1043 -> 0.0907 (IG=0.0136)
+      d=0 recolor(0->1): defect 0.1043 -> 0.0975 (IG=0.0068)
+      [WARM] Seeded beam: defect 0.1361 -> 0.1088
+      d=0 recolor(0->7): defect 0.1361 -> 0.1088 (IG=0.0272)
+      d=0 cmap(0->2): defect 0.1361 -> 0.1111 (IG=0.0249)
+      d=0 recolor(0->6): defect 0.1361 -> 0.1156 (IG=0.0204)
+      d=0 recolor(0->5): defect 0.1361 -> 0.1156 (IG=0.0204)
+      d=0 recolor(0->3): defect 0.1361 -> 0.1156 (IG=0.0204)
+      d=0 recolor(0->4): defect 0.1361 -> 0.1156 (IG=0.0204)
+      d=0 fill_holes: defect 0.1361 -> 0.1202 (IG=0.0159)
+      d=0 fill(1|cross_1): defect 0.1361 -> 0.1338 (IG=0.0023)
+      d=0 recolor(0->3): defect 0.1088 -> 0.0884 (IG=0.0204)
+      d=0 recolor(0->4): defect 0.1088 -> 0.0884 (IG=0.0204)
+      d=0 fill(3|near_fg): defect 0.1088 -> 0.0884 (IG=0.0204)
+      d=0 fill(4|near_fg): defect 0.1088 -> 0.0884 (IG=0.0204)
+      d=0 cmap(0->2): defect 0.1088 -> 0.0975 (IG=0.0113)
+      d=0 recolor(0->5): defect 0.1088 -> 0.0975 (IG=0.0113)
+      d=0 fill(2|unique_shape): defect 0.1088 -> 0.0998 (IG=0.0091)
+      d=0 fill_role(minority|cross_majority): defect 0.1088 -> 0.1066 (IG=0.0023)
+    [SYNTH] Best partial: fill(7|between_fg_v&!cross_3) -> recolor(0->3) -> recolor(3->1|cross_1) (avg_defect=0.0952)
+    [LEM] Trying morphological predicates...
+    [MORPH] Found 0 morphological predicates
+    [MORPH-OBJ] Attempting object-level morphology...
+    [MORPH-OBJ] MINORITY channel sheaf_energy=0.0000
+    [LEM] Morphological predicates found: 0
+    k=0 step   0: loss=1.2547 F1=0.147 T=1.000 [DREAM]
+    k=0 step 100: loss=0.3696 F1=0.817 T=0.318 [DREAM]
+    k=0: F1=0.305 (P=0.180 R=1.000) 699px worst_ex=0.23 is_color_7
+    k=1 step   0: loss=1.2674 F1=0.000 T=1.000 [DREAM]
+    k=1 step 100: loss=0.3720 F1=0.817 T=0.318 [DREAM]
+    k=1: F1=0.895 (P=0.850 R=0.944) 140px worst_ex=0.78 is_color_7
+    k=2 step   0: loss=1.2652 F1=0.034 T=1.000 [DREAM]
+    k=2 step 100: loss=0.3753 F1=0.816 T=0.318 [DREAM]
+    k=2: F1=0.825 (P=0.706 R=0.992) 177px worst_ex=0.71 is_color_7
+    k=3 step   0: loss=1.2774 F1=0.000 T=1.000 [DREAM]
+    k=3 step 100: loss=0.3736 F1=0.817 T=0.318 [DREAM]
+    k=3: F1=0.880 (P=0.791 R=0.992) 158px worst_ex=0.80 is_color_7
+    [TENSOR] discovered=4 predicates (n_active=3, clusters=1)
+    [TENSOR] predicate F1=0.880 MI_avg=0.3671 MI_min=0.2829 top=[('is_color_7', 1.1430537700653076), ('is_color_3', 0.8642902374267578)]
+    [TENSOR] predicate F1=0.895 MI_avg=0.3628 MI_min=0.2397 top=[('is_color_7', 1.2875866889953613), ('is_color_3', 0.8970218896865845)]
+    [TENSOR] predicate F1=0.825 MI_avg=0.3375 MI_min=0.2598 top=[('is_color_7', 1.1381056308746338), ('is_color_3', 0.8694887161254883)]
+    [TENSOR] predicate F1=0.305 MI_avg=0.1037 MI_min=0.0630 top=[('is_color_7', 1.150503396987915), ('is_color_3', 0.9548053741455078)]
+    [SGFE] Crystallized tensor_pred(+is_color_7&+is_color_3&+adj_to_3) -> is_color_ANCHOR_5&is_color_MAJORITY
+    [SGFE] sheaf_energy=1.1707 for tensor_pred(+is_color_7&+is_color_3&+adj_to_3)
+      [SGFE v2] REJECT recolor(majority->anchor_3|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(majority->anchor_4|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(majority->anchor_1|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(majority->anchor_2|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(anchor_5->minority|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(anchor_5->anchor_3|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(anchor_5->anchor_4|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(anchor_5->anchor_1|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(anchor_5->anchor_2|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+    [SGFE] Crystallized tensor_pred(+is_color_7&+is_color_3&+adj_to_3) -> is_color_ANCHOR_5&is_color_MAJORITY
+    [SGFE] sheaf_energy=1.0440 for tensor_pred(+is_color_7&+is_color_3&+adj_to_3)
+      [SGFE v2] REJECT recolor(majority->anchor_3|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(majority->anchor_4|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(majority->anchor_1|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(majority->anchor_2|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(anchor_5->minority|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(anchor_5->anchor_3|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(anchor_5->anchor_4|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(anchor_5->anchor_1|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(anchor_5->anchor_2|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+    [SGFE] Crystallized tensor_pred(+is_color_7&+is_color_3&+adj_to_3) -> is_color_ANCHOR_5&is_color_MAJORITY
+    [SGFE] sheaf_energy=1.1611 for tensor_pred(+is_color_7&+is_color_3&+adj_to_3)
+      [SGFE v2] REJECT recolor(majority->anchor_3|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(majority->anchor_4|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(majority->anchor_1|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(majority->anchor_2|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(anchor_5->minority|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(anchor_5->anchor_3|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(anchor_5->anchor_4|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(anchor_5->anchor_1|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(anchor_5->anchor_2|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+    [SGFE] Crystallized tensor_pred(+is_color_7&+is_color_3&+adj_to_3) -> is_color_ANCHOR_5&is_color_MAJORITY
+    [SGFE] sheaf_energy=0.8939 for tensor_pred(+is_color_7&+is_color_3&+adj_to_3)
+      [SGFE v2] REJECT recolor(majority->anchor_3|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(majority->anchor_4|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(majority->anchor_1|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(majority->anchor_2|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(anchor_5->minority|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(anchor_5->anchor_3|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(anchor_5->anchor_4|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(anchor_5->anchor_1|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+      [SGFE v2] REJECT recolor(anchor_5->anchor_2|is_color_ANCHOR_5&is_color_MAJORITY): no net improvement (total_delta=0.0000)
+  -> FAIL (defect=1.0000, time=499.1s)
+
+[18/25] Task 0e206a2e
+    [IB] Discovered 6 predicates via Information Bottleneck
+    [SIE-OP] fill(0|color_is_mode_of_col) (NMI=0.8088)
+    [SIE] Near-miss -> warm-start: fill(0|color_is_mode_of_col)
+      d=0 erase(8|is_color_8): defect 0.1032 -> 0.0635 (IG=0.0397)
+      d=0 erase_dynamic(unique_shape): defect 0.1032 -> 0.0794 (IG=0.0238)
+      d=0 fill(8|adj_to_4): defect 0.1032 -> 0.0952 (IG=0.0079)
+      d=0 erase(4|is_color_4&between_8_any): defect 0.1032 -> 0.0952 (IG=0.0079)
+      d=0 erase_dynamic(between_8_v): defect 0.1032 -> 0.0992 (IG=0.0040)
+      d=0 shift(1,-5): defect 0.1032 -> 0.0992 (IG=0.0040)
+      d=0 erase(3|is_color_3&exactly2_adj_8): defect 0.1032 -> 0.0992 (IG=0.0040)
+      d=0 erase(1|is_color_1&exactly2_adj_8): defect 0.1032 -> 0.0992 (IG=0.0040)
+      d=0 erase(3|is_color_3): defect 0.0810 -> 0.0476 (IG=0.0333)
+      d=0 erase_dynamic(unique_shape): defect 0.0810 -> 0.0571 (IG=0.0238)
+      d=0 fill(3|between_fg_h): defect 0.0810 -> 0.0619 (IG=0.0190)
+      d=0 erase(1|between_3_h): defect 0.0810 -> 0.0762 (IG=0.0048)
+    [SYNTH] Best partial: erase_dynamic(unique_shape) -> erase(4|between_8_any) -> erase(8|is_color_8) (avg_defect=0.0524)
+    [LEM] Trying morphological predicates...
+    [LEM] Morphological predicates found: 0
+    [TENSOR] heterogeneous shapes: {(14, 18), (16, 14), (14, 15)}
+  -> FAIL (defect=1.0000, time=10.4s)
+
+[19/25] Task 10fcaaa3
+      d=0 upscale_2x: defect 1.0000 -> 0.4688 (IG=0.5312)
+      d=0 upscale_2x: defect 1.0000 -> 0.6667 (IG=0.3333)
+    [SYNTH] Best partial: upscale_2x -> shift(-3,-2) -> fill(8|same_row_6) (avg_defect=0.4227)
+  -> FAIL (defect=1.0000, time=0.4s)
+
+[20/25] Task 11852cab
+    [IB] Discovered 3 predicates via Information Bottleneck
+      d=0 fill_role(minority|cross_majority): defect 0.0300 -> 0.0000 (IG=0.0300)
+    [PERFECT] fill_role(minority|cross_majority) at depth 1
+      d=0 fill(2|cross_3): defect 0.0300 -> 0.0000 (IG=0.0300)
+    [PERFECT] fill(2|cross_3) at depth 1
+    [SYNTH] Best partial: fill(2|cross_3) (avg_defect=0.0200)
+  -> FAIL (defect=1.0000, time=0.3s)
+
+[21/25] Task 1190e5a7
+      d=0 crop(0,5,2,4): defect 1.0000 -> 0.0000 (IG=1.0000)
+    [PERFECT] crop(0,5,2,4) at depth 1
+      d=0 crop(0,0,2,4): defect 1.0000 -> 0.2500 (IG=0.7500)
+      d=0 crop(0,11,2,4): defect 1.0000 -> 0.2500 (IG=0.7500)
+      d=0 crop(0,0,3,2): defect 1.0000 -> 0.0000 (IG=1.0000)
+    [PERFECT] crop(0,0,3,2) at depth 1
+      d=0 crop(8,0,3,2): defect 1.0000 -> 0.3333 (IG=0.6667)
+      d=0 crop(0,4,3,2): defect 1.0000 -> 0.5000 (IG=0.5000)
+      d=0 crop(8,4,3,2): defect 1.0000 -> 0.6667 (IG=0.3333)
+    [SYNTH] Best partial: crop(0,5,2,4) (avg_defect=0.3778)
+  -> FAIL (defect=1.0000, time=0.0s)
+
+[22/25] Task 150deff5
+    [IB] Discovered 5 predicates via Information Bottleneck
+    [SIE-OP] recolor(5->2|is_color_0) (NMI=0.5168)
+    [SIE-OP] recolor(5->8|is_color_0) (NMI=0.6007)
+    [SIE] Near-miss -> warm-start: recolor(5->8|is_color_0)
+      d=0 recolor(5->8|is_color_5): defect 0.2121 -> 0.0909 (IG=0.1212)
+      d=0 recolor(5->2): defect 0.2121 -> 0.1212 (IG=0.0909)
+      d=0 recolor(5->8|is_color_5): defect 0.2625 -> 0.1125 (IG=0.1500)
+      d=0 recolor(5->2): defect 0.2625 -> 0.1500 (IG=0.1125)
+      d=0 recolor(5->2|is_color_5&differs_from_left): defect 0.2625 -> 0.2000 (IG=0.0625)
+      d=0 recolor(5->2|is_color_5&differs_from_right): defect 0.2625 -> 0.2000 (IG=0.0625)
+    [SYNTH] Best partial: recolor(5->8|is_color_5) -> recolor(8->2|is_color_8&differs_from_left) (avg_defect=0.0658)
+    [LEM] Trying morphological predicates...
+    [LEM] Morphological predicates found: 0
+    [TENSOR] heterogeneous shapes: {(9, 11), (8, 9), (8, 10)}
+  -> FAIL (defect=1.0000, time=1.3s)
+
+[23/25] Task 1a07d186
+    [IB] Discovered 4 predicates via Information Bottleneck
+    [SIE-OP] fill(0|shape_majority) (NMI=1.0000)
+    [SIE] Near-miss -> warm-start: fill(0|shape_majority)
+      d=0 erase_dynamic(small_obj): defect 0.0263 -> 0.0117 (IG=0.0146)
+      d=0 erase(4|same_shape_as_2): defect 0.0263 -> 0.0205 (IG=0.0058)
+      d=0 erase(3|same_shape_as_2): defect 0.0263 -> 0.0205 (IG=0.0058)
+      d=0 erase_dynamic(color_count_1): defect 0.0263 -> 0.0234 (IG=0.0029)
+      d=0 erase_dynamic(small_obj): defect 0.0524 -> 0.0238 (IG=0.0286)
+      d=0 erase(2|same_shape_as_4): defect 0.0524 -> 0.0381 (IG=0.0143)
+      d=0 erase(1|same_shape_as_4): defect 0.0524 -> 0.0429 (IG=0.0095)
+      d=0 erase_dynamic(color_count_1): defect 0.0524 -> 0.0476 (IG=0.0048)
+    [SYNTH] Best partial: erase_dynamic(small_obj) (avg_defect=0.0160)
+  -> FAIL (defect=1.0000, time=3.5s)
+
+[24/25] Task 1b2d62fb
+      d=0 crop(0,0,5,3): defect 1.0000 -> 0.6000 (IG=0.4000)
+      d=0 crop(0,4,5,3): defect 1.0000 -> 0.8667 (IG=0.1333)
+      d=0 crop(0,2,5,3): defect 1.0000 -> 0.9333 (IG=0.0667)
+    [PERFECT] crop(0,4,5,3) -> cmap(9->0,0->8) -> erase(8|color_not_mode_of_row&differs_from_left) at depth 3
+      d=0 crop(0,0,5,3): defect 1.0000 -> 0.5333 (IG=0.4667)
+      d=0 crop(0,2,5,3): defect 1.0000 -> 0.8667 (IG=0.1333)
+    [SYNTH] Best partial: crop(0,4,5,3) -> cmap(9->0,0->8) -> erase(8|color_not_mode_of_row&differs_from_left) (avg_defect=0.1067)
+    [LEM] Trying morphological predicates...
+  Candidate T(+,X)@MAJORITY: F1=0.533, sheaf_energy=0.007
+  Candidate B(+,X)@BG: F1=0.533, sheaf_energy=0.007
+  Candidate g(\,X)@MAJORITY: F1=0.467, sheaf_energy=0.003
+  Candidate p(\,X)@MAJORITY: F1=0.415, sheaf_energy=0.003
+  Candidate d(/,X)@MAJORITY: F1=0.408, sheaf_energy=0.007
+  Candidate p(/,X)@MAJORITY: F1=0.423, sheaf_energy=0.009
+  Candidate T(/,X)@MAJORITY: F1=0.467, sheaf_energy=0.003
+  Candidate B(/,X)@BG: F1=0.467, sheaf_energy=0.003
+  Candidate d(.,X)@MAJORITY: F1=0.483, sheaf_energy=0.001
+  Candidate e(.,X)@MAJORITY: F1=0.483, sheaf_energy=0.001
+  Candidate g(.,X)@MAJORITY: F1=0.483, sheaf_energy=0.001
+  Candidate p(.,X)@MAJORITY: F1=0.483, sheaf_energy=0.001
+    [MORPH] Found 12 morphological predicates
+    [MORPH-OBJ] Attempting object-level morphology...
+    [LEM] Morphological predicates found: 0
+    k=0 step   0: loss=1.1406 F1=0.000 T=1.000 [DREAM]
+    k=0 step 100: loss=0.5465 F1=0.842 T=0.318 [DREAM]
+    k=0: F1=0.842 (P=0.727 R=1.000) 11px worst_ex=0.50 obj_size_rank_1
+    k=1 step   0: loss=1.1600 F1=0.000 T=1.000 [DREAM]
+    k=1 step 100: loss=0.5464 F1=0.842 T=0.318 [DREAM]
+    k=1: F1=0.842 (P=0.727 R=1.000) 11px worst_ex=0.50 obj_size_rank_1
+    k=2 step   0: loss=1.1360 F1=0.333 T=1.000 [DREAM]
+    k=2 step 100: loss=0.5472 F1=0.842 T=0.318 [DREAM]
+    k=2: F1=0.842 (P=0.727 R=1.000) 11px worst_ex=0.50 obj_size_rank_1
+    k=3 step   0: loss=1.1329 F1=0.318 T=1.000 [DREAM]
+    k=3 step 100: loss=0.5463 F1=0.842 T=0.318 [DREAM]
+    k=3: F1=0.800 (P=0.667 R=1.000) 12px worst_ex=0.50 obj_size_rank_1
+    [TENSOR] discovered=4 predicates (n_active=3, clusters=1)
+    [TENSOR] predicate F1=0.842 MI_avg=0.2795 MI_min=0.0040 top=[('obj_size_rank_1', -2.0692298412323), ('obj_size_rank_2', 1.877578854560852)]
+    [TENSOR] predicate F1=0.842 MI_avg=0.2795 MI_min=0.0040 top=[('obj_size_rank_1', -2.022989273071289), ('obj_size_rank_2', 1.8335686922073364)]
+    [TENSOR] predicate F1=0.842 MI_avg=0.2795 MI_min=0.0040 top=[('obj_size_rank_1', -2.0310328006744385), ('obj_size_rank_2', 1.8273695707321167)]
+    [TENSOR] predicate F1=0.800 MI_avg=0.2731 MI_min=0.0040 top=[('obj_size_rank_1', -2.1009843349456787), ('obj_size_rank_2', 1.7974755764007568)]
+    [SGFE] Crystallized tensor_pred(-obj_size_rank_1&+obj_size_rank_2&+obj_size_rank_3) -> !border_col
+    [SGFE] sheaf_energy=1.4030 for tensor_pred(-obj_size_rank_1&+obj_size_rank_2&+obj_size_rank_3)
+      [SGFE v2] REJECT fill(majority|!border_col): no net improvement (total_delta=-0.9333)
+      [SGFE v2] REJECT erase(majority|!border_col): no net improvement (total_delta=-0.2000)
+    [SGFE] Crystallized tensor_pred(-obj_size_rank_1&+obj_size_rank_2&-border_col) -> !border_col
+    [SGFE] sheaf_energy=1.4030 for tensor_pred(-obj_size_rank_1&+obj_size_rank_2&-border_col)
+      [SGFE v2] REJECT fill(majority|!border_col): no net improvement (total_delta=-0.9333)
+      [SGFE v2] REJECT erase(majority|!border_col): no net improvement (total_delta=-0.2000)
+    [SGFE] Crystallized tensor_pred(-obj_size_rank_1&+obj_size_rank_2&+obj_size_rank_3) -> !border_col
+    [SGFE] sheaf_energy=1.4030 for tensor_pred(-obj_size_rank_1&+obj_size_rank_2&+obj_size_rank_3)
+      [SGFE v2] REJECT fill(majority|!border_col): no net improvement (total_delta=-0.9333)
+      [SGFE v2] REJECT erase(majority|!border_col): no net improvement (total_delta=-0.2000)
+    [SGFE] Crystallized tensor_pred(-obj_size_rank_1&+obj_size_rank_2&+obj_size_rank_3) -> !border_col
+    [SGFE] sheaf_energy=1.4769 for tensor_pred(-obj_size_rank_1&+obj_size_rank_2&+obj_size_rank_3)
+      [SGFE v2] REJECT fill(majority|!border_col): no net improvement (total_delta=-0.9333)
+      [SGFE v2] REJECT erase(majority|!border_col): no net improvement (total_delta=-0.2000)
+  -> FAIL (defect=1.0000, time=2.5s)
+
+[25/25] Task 1b60fb0c
+    [IB] Discovered 1 predicates via Information Bottleneck
+  -> FAIL (defect=1.0000, time=0.0s)
+[ATLAS] Saved to C:\Lean4 Projects\data\atlas\sheaf_atlas.json (0 predicates, 0 transitions)
+
+============================================================
+SHEAF ATLAS SUMMARY
+============================================================
+Total predicates in atlas: 0
+Number of charts: 0
+Total lookups: 0
+Successful transfers: 0
+  - Identity (g=e): 0
+  - Gauge (g!=e): 0
+Transfer rate: 0.0%
+
+Charts:
+
+Recent transitions:
+============================================================
+
+
+======================================================================
+ITERATION 5 COMPLETE
+======================================================================
+Perfect: 4 / 25 (16.0%)
+Near-miss: 0
+Fail: 21
+Total time: 615.2s (24.6s/task)
+
+----------------------------------------------------------------------
+ITERATION HISTORY
+----------------------------------------------------------------------
+Iter | Perfect |  Atlas | Charts |  Gauge
+----------------------------------------------------------------------
+   1 |       0 |      0 |      0 |      0
+   2 |       1 |      0 |      0 |      0
+   3 |      11 |      0 |      0 |      0
+   4 |       4 |      0 |      0 |      0
+   5 |       4 |      0 |      0 |      0
+----------------------------------------------------------------------
+Best: 11 perfect (iteration 3)
+======================================================================

@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "statistics": {
+    "total_lookups": 0,
+    "successful_transfers": 0,
+    "identity_transfers": 0,
+    "gauge_transfers": 0
+  },
+  "charts": {},
+  "transitions": []
+}

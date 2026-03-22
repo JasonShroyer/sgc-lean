@@ -1,0 +1,10 @@
+{
+  "p": 97,
+  "embed_dim": 128,
+  "hidden_dim": 256,
+  "lr": 0.001,
+  "weight_decay": 1.0,
+  "epochs": 200,
+  "noise_std": 0.0,
+  "seed": 42
+}
