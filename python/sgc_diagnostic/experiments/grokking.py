@@ -293,8 +293,8 @@ def run_grokking_experiment(output_dir: str = "output/") -> dict:
     # PREDICTIONS (stated before measurement)
     print("\n  PREDICTIONS (stated before measurement):")
     print("-" * 60)
-    print("  1. At grokking: ε drops ≥50% within 500 steps")
-    print("  2. At grokking: γ increases (structure sharpens)")
+    print("  1. At grokking: eps drops >=50% within 500 steps")
+    print("  2. At grokking: gamma increases (structure sharpens)")
     print("  3. At grokking: T* jumps from <2 to >10")
     print("  4. At grokking: N_E increases (new emergence level)")
     
@@ -352,29 +352,29 @@ def run_grokking_experiment(output_dir: str = "output/") -> dict:
         eps_before = epsilon[grok_idx - 1]
         eps_after = min(epsilon[grok_idx:grok_idx+5])
         eps_drop = (eps_before - eps_after) / eps_before
-        pred1_result = "✓ CONFIRMED" if eps_drop >= 0.5 else "✗ REFUTED"
-        print(f"  1. ε drop: {eps_drop:.1%} [{pred1_result}]")
+        pred1_result = "[OK] CONFIRMED" if eps_drop >= 0.5 else "[X] REFUTED"
+        print(f"  1. eps drop: {eps_drop:.1%} [{pred1_result}]")
     else:
-        pred1_result = "~ INCONCLUSIVE"
-        print(f"  1. ε drop: {pred1_result}")
+        pred1_result = "[~] INCONCLUSIVE"
+        print(f"  1. eps drop: {pred1_result}")
     
     # Prediction 2: γ increases
     if grok_idx > 0 and grok_idx < len(gamma) - 5:
         gamma_before = gamma[grok_idx - 1]
         gamma_after = max(gamma[grok_idx:grok_idx+5])
         gamma_increase = gamma_after > gamma_before
-        pred2_result = "✓ CONFIRMED" if gamma_increase else "✗ REFUTED"
-        print(f"  2. γ increase: {gamma_before:.4f} → {gamma_after:.4f} [{pred2_result}]")
+        pred2_result = "[OK] CONFIRMED" if gamma_increase else "[X] REFUTED"
+        print(f"  2. gamma increase: {gamma_before:.4f} -> {gamma_after:.4f} [{pred2_result}]")
     else:
-        pred2_result = "~ INCONCLUSIVE"
-        print(f"  2. γ increase: {pred2_result}")
+        pred2_result = "[~] INCONCLUSIVE"
+        print(f"  2. gamma increase: {pred2_result}")
     
     # Prediction 3: T* jumps
     if grok_idx > 0 and grok_idx < len(T_star) - 5:
         T_before = T_star[grok_idx - 1]
         T_after = max(T_star[grok_idx:grok_idx+5])
-        pred3_result = "✓ CONFIRMED" if T_before < 2 and T_after > 10 else "✗ REFUTED"
-        print(f"  3. T* jump: {T_before:.2f} → {T_after:.2f} [{pred3_result}]")
+        pred3_result = "[OK] CONFIRMED" if T_before < 2 and T_after > 10 else "[X] REFUTED"
+        print(f"  3. T* jump: {T_before:.2f} -> {T_after:.2f} [{pred3_result}]")
     else:
         pred3_result = "~ INCONCLUSIVE"
         print(f"  3. T* jump: {pred3_result}")
@@ -383,8 +383,8 @@ def run_grokking_experiment(output_dir: str = "output/") -> dict:
     if grok_idx > 0 and grok_idx < len(N_E) - 5:
         NE_before = N_E[grok_idx - 1]
         NE_after = max(N_E[grok_idx:grok_idx+5])
-        pred4_result = "✓ CONFIRMED" if NE_after > NE_before else "✗ REFUTED"
-        print(f"  4. N_E increase: {NE_before:.2f} → {NE_after:.2f} [{pred4_result}]")
+        pred4_result = "[OK] CONFIRMED" if NE_after > NE_before else "[X] REFUTED"
+        print(f"  4. N_E increase: {NE_before:.2f} -> {NE_after:.2f} [{pred4_result}]")
     else:
         pred4_result = "~ INCONCLUSIVE"
         print(f"  4. N_E increase: {pred4_result}")

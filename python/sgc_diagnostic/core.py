@@ -82,21 +82,21 @@ class SGCProfile:
         if self.T_star > 100:
             return "ROBUST (T* > 100)"
         elif self.T_star > 10:
-            return "MODERATE (10 < T* ≤ 100)"
+            return "MODERATE (10 < T* <= 100)"
         elif self.T_star > 1:
-            return "FRAGILE (1 < T* ≤ 10)"
+            return "FRAGILE (1 < T* <= 10)"
         else:
-            return "CRITICAL (T* ≤ 1)"
+            return "CRITICAL (T* <= 1)"
     
     @property
     def regime(self) -> str:
         """The three regimes from the emergence ceiling theorem."""
         if self.gamma < 0.01:
-            return "CRITICAL (γ→0, N_E→∞, phase transition)"
+            return "CRITICAL (gamma->0, N_E->inf, phase transition)"
         elif self.gamma > 10:
-            return "THERMAL (γ>>1, no coarse structure)"
+            return "THERMAL (gamma>>1, no coarse structure)"
         else:
-            return "EMERGENT (intermediate γ)"
+            return "EMERGENT (intermediate gamma)"
     
     def add_prediction(self, statement: str, theorem_key: str, 
                        predicted_value: float, tolerance: float) -> Prediction:

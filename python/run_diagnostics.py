@@ -105,28 +105,60 @@ Each experiment produces:
                 import traceback
                 traceback.print_exc()
     
-    # Summary
-    print("\n" + "=" * 80)
-    print("  EXPERIMENT SUMMARY")
-    print("=" * 80)
+    # Part E: Final Summary Table
+    print("\n" + "=" * 100)
+    print("  FINAL SUMMARY TABLE")
+    print("=" * 100)
+    
+    # Header
+    print(f"\n{'EXPERIMENT':<22} {'eps':>10} {'gamma':>10} {'T*':>10} {'q':>8} {'N_E':>10} {'d':>4} {'PREDICTIONS':<12}")
+    print("-" * 100)
+    
+    # Collect all profiles for summary
+    all_profiles = []
     
     for name, result in results.items():
-        print(f"\n  {name.upper()}:")
         if isinstance(result, dict):
-            if 'predictions' in result:
-                preds = result['predictions']
-                confirmed = sum(1 for v in preds.values() if '✓' in str(v) or v == 'CONFIRMED')
-                total = len(preds)
-                print(f"    Predictions: {confirmed}/{total} confirmed")
-            if 'profile' in result:
-                profile = result['profile']
-                print(f"    ε={profile.epsilon:.4f}, γ={profile.gamma:.4f}, T*={profile.T_star:.2f}")
+            # Handle synthetic chain which returns dict of profiles
+            for subname, profile in result.items():
+                if hasattr(profile, 'epsilon'):
+                    all_profiles.append((f"{name}_{subname}", profile))
         elif hasattr(result, 'epsilon'):
-            print(f"    ε={result.epsilon:.4f}, γ={result.gamma:.4f}, T*={result.T_star:.2f}")
+            all_profiles.append((name, result))
     
-    print("\n" + "=" * 80)
+    for exp_name, profile in all_profiles:
+        # Count confirmed predictions
+        confirmed = sum(1 for p in profile.predictions if p.verdict == "CONFIRMED")
+        total = len(profile.predictions)
+        
+        # Format values
+        eps_str = f"{profile.epsilon:.6f}" if profile.epsilon < 1 else f"{profile.epsilon:.2e}"
+        gamma_str = f"{profile.gamma:.6f}" if profile.gamma < 10 else f"{profile.gamma:.2e}"
+        T_str = f"{profile.T_star:.2f}" if profile.T_star < 1e6 else "inf"
+        q_str = f"{profile.q:.4f}"
+        NE_str = f"{profile.N_E:.2f}" if profile.N_E < 1e6 else "inf"
+        d_str = f"{profile.autopoietic_depth}"
+        pred_str = f"{confirmed}/{total}"
+        
+        # Truncate experiment name if needed
+        exp_display = exp_name[:20] if len(exp_name) > 20 else exp_name
+        
+        print(f"  {exp_display:<20} {eps_str:>10} {gamma_str:>10} {T_str:>10} {q_str:>8} {NE_str:>10} {d_str:>4} {pred_str:>12}")
+    
+    print("-" * 100)
+    
+    # Total predictions summary
+    total_confirmed = sum(
+        sum(1 for p in profile.predictions if p.verdict == "CONFIRMED")
+        for _, profile in all_profiles
+    )
+    total_predictions = sum(len(profile.predictions) for _, profile in all_profiles)
+    
+    print(f"\n  Total predictions: {total_confirmed}/{total_predictions} confirmed")
+    
+    print("\n" + "=" * 100)
     print("  Output files saved to:", output_path.absolute())
-    print("=" * 80)
+    print("=" * 100)
     
     return results
 

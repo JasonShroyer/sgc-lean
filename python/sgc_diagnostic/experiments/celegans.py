@@ -225,7 +225,7 @@ def run_celegans_experiment(output_dir: str = "output/") -> dict:
     
     # Validate
     validation = validate_generator(L, pi)
-    print(f"  Validation: {'✓ PASS' if validation['is_valid'] else '✗ FAIL'}")
+    print(f"  Validation: {'[OK] PASS' if validation['is_valid'] else '[X] FAIL'}")
     
     # PREDICTIONS (stated before measurement)
     print("\n  PREDICTIONS (stated before measurement):")
@@ -235,9 +235,9 @@ def run_celegans_experiment(output_dir: str = "output/") -> dict:
     pred3_q_range = (1.2, 1.8)  # q near 3/2 attractor
     pred4_NE_min = 1.0  # Emergence capacity
     
-    print(f"  1. Autopoietic depth d ≥ 2 (hierarchical structure)")
+    print(f"  1. Autopoietic depth d >= 2 (hierarchical structure)")
     print(f"  2. P* (k=3) matches neuron types (ARI > {pred2_ari_min})")
-    print(f"  3. Tsallis q ∈ {pred3_q_range} (near biological attractor)")
+    print(f"  3. Tsallis q in {pred3_q_range} (near biological attractor)")
     print(f"  4. Emergence capacity N_E > {pred4_NE_min}")
     
     # Compute SGC profile
@@ -252,7 +252,7 @@ def run_celegans_experiment(output_dir: str = "output/") -> dict:
     print("-" * 60)
     
     # Prediction 1: Autopoietic depth
-    pred1_result = "✓ CONFIRMED" if profile.autopoietic_depth >= 2 else "✗ REFUTED"
+    pred1_result = "[OK] CONFIRMED" if profile.autopoietic_depth >= 2 else "[X] REFUTED"
     print(f"  1. d = {profile.autopoietic_depth} [{pred1_result}]")
     
     # Prediction 2: Partition correlation with neuron types
@@ -260,7 +260,7 @@ def run_celegans_experiment(output_dir: str = "output/") -> dict:
         ari, corr_info = compute_partition_type_correlation(
             profile.P_star, neuron_types, labels
         )
-        pred2_result = "✓ CONFIRMED" if ari > pred2_ari_min else "✗ REFUTED"
+        pred2_result = "[OK] CONFIRMED" if ari > pred2_ari_min else "[X] REFUTED"
         print(f"  2. ARI = {ari:.3f} [{pred2_result}]")
         print(f"      Details: {corr_info}")
     else:
@@ -270,16 +270,16 @@ def run_celegans_experiment(output_dir: str = "output/") -> dict:
     
     # Prediction 3: Tsallis q
     q_in_range = pred3_q_range[0] <= profile.q <= pred3_q_range[1]
-    pred3_result = "✓ CONFIRMED" if q_in_range else "✗ REFUTED"
+    pred3_result = "[OK] CONFIRMED" if q_in_range else "[X] REFUTED"
     print(f"  3. q = {profile.q:.3f} [{pred3_result}]")
     
     # Prediction 4: Emergence capacity
-    pred4_result = "✓ CONFIRMED" if profile.N_E > pred4_NE_min else "✗ REFUTED"
+    pred4_result = "[OK] CONFIRMED" if profile.N_E > pred4_NE_min else "[X] REFUTED"
     print(f"  4. N_E = {profile.N_E:.3f} [{pred4_result}]")
     
     # Add predictions to profile
     profile.add_prediction(
-        statement=f"Autopoietic depth d ≥ 2",
+        statement=f"Autopoietic depth d >= 2",
         theorem_key="rg_tower_terminates",
         predicted_value=2,
         tolerance=1
@@ -294,10 +294,10 @@ def run_celegans_experiment(output_dir: str = "output/") -> dict:
         tolerance=0.2
     )
     profile.predictions[-1].actual_value = ari
-    profile.predictions[-1].verdict = pred2_result.split()[1] if '✓' in pred2_result or '✗' in pred2_result else "INCONCLUSIVE"
+    profile.predictions[-1].verdict = "CONFIRMED" if "[OK]" in pred2_result else "REFUTED" if "[X]" in pred2_result else "INCONCLUSIVE"
     
     profile.add_prediction(
-        statement=f"q ∈ {pred3_q_range}",
+        statement=f"q in {pred3_q_range}",
         theorem_key="q_estimation",
         predicted_value=1.5,
         tolerance=0.3
