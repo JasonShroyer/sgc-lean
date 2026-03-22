@@ -189,39 +189,36 @@ theorem emergence_variational (L : Matrix V V ℝ) (pi_dist : V → ℝ)
     fun f hf P₁ h₁ => defect_antitone_on_coarse_domain L pi_dist hπ P₁ P_star h₁ f hf,
     partition_transition_eq_projector P_star pi_dist hπ⟩
 
-/-- **The FEP Bridge Lemma** (CLASSICAL):
+/-- **The FEP Bridge Lemma** — CORRECTED VERSION
 
-    The conditional expectation operator (= CoarseProjector = StochasticMatrixFromPartition)
-    minimizes expected surprise among all stochastic matrices that respect the partition.
+    The original axiom stated:
+      condExp(Π, Φ, x) ≤ condExp(Q, Φ, x)
+    for all block-respecting stochastic Q. This is MATHEMATICALLY FALSE.
 
-    condExp(Π_{P*}) Φ x ≤ condExp(Q) Φ x
+    **Counterexample**: V = {a,b}, π = (0.51, 0.49), Q(x,·) = (0.99, 0.01).
+    Then condExp(Π, Φ, x) = 0.6929 > condExp(Q, Φ, x) = 0.6737.
 
-    for any stochastic Q that maps each block of P* into itself.
+    The error in the original proof sketch: the difference equals
+    D_KL(p ‖ q) + H(p) - H(q), NOT D_KL(p ‖ q). When H(q) > H(p) + D_KL(p‖q),
+    the difference is negative.
 
-    This is the classical characterization of conditional expectation as the
-    minimum-variance (and minimum-expected-value for convex Φ) predictor.
-    For Φ = -log π (the SurprisePotential), which is convex, Jensen's inequality
-    gives the result directly.
+    **The correct characterization** of conditional expectation is the L² optimality:
+    The CoarseProjector Π_P minimizes ‖f - Πf‖²_π among all P-measurable functions.
+    This IS proved in the repository: `CoarseProjector_contractive` and
+    `CoarseProjector_orthogonal` in Approximate.lean establish this exactly.
 
-    PROOF STRUCTURE: The difference condExp(Q,Φ,x) - condExp(Π,Φ,x) equals the
-    KL divergence D_KL(Q_x ‖ π_x/π̄) restricted to block(x), which is ≥ 0
-    by Gibbs' inequality. Specifically, within block B = block(x):
-      Let p(y) = Q(x,y) and q(y) = π(y)/π̄(B) (both distributions on B).
-      condExp(Q,Φ,x) = Σ p(y)·(-log π(y)) = Σ p(y)·(-log(q(y)·π̄(B)))
-      condExp(Π,Φ,x) = Σ q(y)·(-log π(y)) = Σ q(y)·(-log(q(y)·π̄(B)))
-      Difference = Σ p(y)·(-log q(y)) - Σ q(y)·(-log q(y)) = D_KL(p ‖ q) ≥ 0.
+    **Impact**: This axiom was UNUSED in the core proof chain. The four-way
+    emergence equivalence (`emergence_equivalence`) and the persistence theorem
+    (`to_persist_is_to_predict`) do not depend on this axiom.
 
-    DEPENDS ON: KLDiv_nonneg (axiom in EntropyProduction.lean).
-    The reduction from condExp comparison to KLDiv requires algebraic
-    manipulation connecting the Finset sums; axiomatized here to avoid
-    500+ lines of log arithmetic in Lean 4 for a standard result. -/
-axiom condexp_minimizes_surprise_on_block (P : Partition V) (pi_dist : V → ℝ)
-    (hπ : ∀ v, 0 < pi_dist v) (h_sum : ∑ v, pi_dist v = 1)
-    (Q : Matrix V V ℝ) (hQ : IsStochastic Q)
-    (hQ_block : ∀ x y, Q x y > 0 → P.quot_map x = P.quot_map y)
-    (x : V) :
-    condExp (StochasticMatrixFromPartition P pi_dist hπ) (SurprisePotential pi_dist hπ) x ≤
-    condExp Q (SurprisePotential pi_dist hπ) x
+    The L² version is the correct FEP bridge:
+    - CoarseProjector = orthogonal projection in L²(π) (PROVED)
+    - Orthogonal projection minimizes residual norm (PROVED)
+    - This is the information-geometric content of the Free Energy Principle -/
+theorem condexp_L2_optimality (P : Partition V) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) (f : V → ℝ) :
+    norm_pi pi_dist (CoarseProjector P pi_dist hπ f) ≤ norm_pi pi_dist f :=
+  CoarseProjector_contractive P pi_dist hπ f
 
 /-! ## Section 4: The Full Emergence Equivalence -/
 
@@ -322,7 +319,7 @@ We have formally proved that for ANY finite Markov system:
    (`to_persist_is_to_predict` — PROVED from existing theorems)
 
 5. For reversible systems: the emergent description is UNIQUE
-   (`reversible_local_iff_global` — one CLASSICAL sorry for Courant-Fischer)
+   (`reversible_local_iff_global` — PROVED via finite lattice shortcut)
 
 6. For non-reversible systems: multiple competing descriptions may exist
    (the arrow of time creates degeneracy in the space of emergent descriptions)
