@@ -512,59 +512,6 @@ For reversible L, the defect landscape has no spurious local minima because:
 - The operator norm = max eigenvalue magnitude for self-adjoint operators
 - Courant-Fischer: eigenvalues have unique min-max characterization -/
 
-/-- **Reversible partition uniqueness**: For reversible generators,
-    local optimality (in the sense of sgc_spec_local) implies global optimality.
-
-    PROOF: For reversible L, the defect landscape is "convex" in the refinement
-    order due to self-adjointness. The key ingredients:
-    1. Reversibility → self-adjoint L (PROVED: reversible_implies_selfadjoint)
-    2. Self-adjoint → defect operator has real spectrum
-    3. Courant-Fischer → operator norm = max eigenvalue, no spurious minima
-    4. Compactness of weighted sphere ensures extrema exist (NormedBridge)
-
-    The axiom encapsulates the transfer from block-constant defect comparison
-    (sgc_spec_local) to global defect_cost comparison (sgc_spec_global). -/
-axiom reversible_local_implies_global
-    (L : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (hrev : IsReversible L pi_dist)
-    (P_local : Partition V)
-    -- Local optimality: no refinement improves defect on block-constant functions
-    (h_local : ∀ P₁ : Partition V, P₁ ≤ P_local →
-      ∀ f : V → ℝ, IsBlockConstant P_local f →
-        norm_pi pi_dist (DefectOperator L P₁ pi_dist hπ f) ≤
-        norm_pi pi_dist (DefectOperator L P_local pi_dist hπ f))
-    -- Bounded by trivial
-    (h_bound : defect_cost L pi_dist hπ P_local ≤
-      defect_cost L pi_dist hπ (trivialPartition V)) :
-    ∀ P : Partition V, defect_cost L pi_dist hπ P_local ≤ defect_cost L pi_dist hπ P
-
-/-- **The Reversible Uniqueness Theorem**:
-
-    For reversible generators (detailed balance), the global optimum `optimal_partition_exists`
-    is the UNIQUE optimum — there are no other local minima in the partition lattice.
-
-    PROOF STATUS: Uses `reversible_local_implies_global` axiom which has clear proof path:
-    1. Reversibility → self-adjoint L (PROVED: reversible_implies_selfadjoint)
-    2. Self-adjoint defect operator → spectrum is real
-    3. Courant-Fischer + compactness (NormedBridge) → unique extrema characterization
-    4. Block-constant local optimality transfers to global via operator norm = sup eigenvalue -/
-theorem reversible_local_eq_global (L : Matrix V V ℝ) (pi_dist : V → ℝ)
-    (hπ : ∀ v, 0 < pi_dist v)
-    (hrev : IsReversible L pi_dist) :
-    sgc_spec_local L pi_dist hπ → sgc_spec_global L pi_dist hπ := by
-  intro ⟨P_local, h_local_opt, h_bound⟩
-  -- P_local is locally optimal. Use the axiom to show it's globally optimal.
-  have h_global := reversible_local_implies_global L pi_dist hπ hrev P_local h_local_opt h_bound
-  exact ⟨P_local, h_global⟩
-
-/-- **Equivalence for reversible systems**: local and global optimality coincide. -/
-theorem reversible_local_iff_global (L : Matrix V V ℝ) (pi_dist : V → ℝ)
-    (hπ : ∀ v, 0 < pi_dist v)
-    (hrev : IsReversible L pi_dist) :
-    sgc_spec_local L pi_dist hπ ↔ sgc_spec_global L pi_dist hπ :=
-  ⟨reversible_local_eq_global L pi_dist hπ hrev,
-   global_implies_local L pi_dist hπ⟩
-
 /-! ### The Arrow of Time: Reversibility = Uniqueness of Emergence
 
 **Theorem (Proved)**: Global optimality implies local optimality for ALL generators.
@@ -623,5 +570,101 @@ theorem trivial_partition_zero_defect (L : Matrix V V ℝ) (pi_dist : V → ℝ)
   -- Π fixes block-constant functions
   have h_fix := CoarseProjector_fixes_block_constant (trivialPartition V) pi_dist hπ _ h_all_block
   rw [h_fix, sub_self]
+
+/-! ## Section 10: Zero Operator Norm and Trivial Partition -/
+
+/-- The operator norm of the zero linear map is 0. -/
+lemma opNorm_pi_zero (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) :
+    opNorm_pi pi_dist hπ (0 : (V → ℝ) →ₗ[ℝ] (V → ℝ)) = 0 := by
+  -- 0 is in opNorm_set because: 0 ≤ 0 and ∀ f, ‖0 f‖ = 0 ≤ 0 * ‖f‖
+  have h_zero_in_set : (0 : ℝ) ∈ opNorm_set pi_dist hπ (0 : (V → ℝ) →ₗ[ℝ] (V → ℝ)) := by
+    constructor
+    · exact le_refl 0
+    · intro f
+      simp only [LinearMap.zero_apply, norm_pi, norm_sq_pi, inner_pi, Pi.zero_apply,
+                 mul_zero, Finset.sum_const_zero, Real.sqrt_zero, zero_mul, le_refl]
+  -- opNorm_pi = sInf of the set, which contains 0 and is bounded below by 0
+  have h_nonneg := opNorm_pi_nonneg pi_dist hπ (0 : (V → ℝ) →ₗ[ℝ] (V → ℝ))
+  have h_le_zero : opNorm_pi pi_dist hπ (0 : (V → ℝ) →ₗ[ℝ] (V → ℝ)) ≤ 0 := by
+    unfold opNorm_pi
+    exact csInf_le (opNorm_set_bddBelow pi_dist hπ _) h_zero_in_set
+  linarith
+
+/-- The defect cost of the trivial partition is 0. -/
+lemma trivialPartition_defect_cost_zero (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) :
+    defect_cost L pi_dist hπ (trivialPartition V) = 0 := by
+  unfold defect_cost
+  -- The DefectOperator for trivialPartition is the zero operator
+  have h_zero_op : DefectOperator L (trivialPartition V) pi_dist hπ = 0 := by
+    apply LinearMap.ext
+    exact trivial_partition_zero_defect L pi_dist hπ
+  rw [h_zero_op]
+  exact opNorm_pi_zero pi_dist hπ
+
+/-- **Reversible partition uniqueness**: For reversible generators,
+    local optimality (in the sense of sgc_spec_local) implies global optimality.
+
+    PROOF: The key insight is that the trivial (discrete) partition has zero defect cost
+    (proved in trivialPartition_defect_cost_zero). Therefore h_bound implies
+    defect_cost(P_local) ≤ 0. Since defect_cost is nonnegative (it's an operator norm),
+    this forces defect_cost(P_local) = 0. A zero-defect partition is trivially
+    globally optimal since all partitions have nonnegative defect.
+
+    NOTE: This proof does not actually require reversibility — the hypothesis hrev
+    is unused. The original axiom was designed for a more complex proof path via
+    Courant-Fischer, but the finite lattice shortcut makes it unnecessary. We keep
+    the reversibility hypothesis for API compatibility with downstream theorems. -/
+theorem reversible_local_implies_global
+    (L : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (_hrev : IsReversible L pi_dist)
+    (P_local : Partition V)
+    -- Local optimality: no refinement improves defect on block-constant functions
+    (_h_local : ∀ P₁ : Partition V, P₁ ≤ P_local →
+      ∀ f : V → ℝ, IsBlockConstant P_local f →
+        norm_pi pi_dist (DefectOperator L P₁ pi_dist hπ f) ≤
+        norm_pi pi_dist (DefectOperator L P_local pi_dist hπ f))
+    -- Bounded by trivial
+    (h_bound : defect_cost L pi_dist hπ P_local ≤
+      defect_cost L pi_dist hπ (trivialPartition V)) :
+    ∀ P : Partition V, defect_cost L pi_dist hπ P_local ≤ defect_cost L pi_dist hπ P := by
+  intro P
+  -- Step 1: trivialPartition has zero defect cost
+  have h_triv_zero : defect_cost L pi_dist hπ (trivialPartition V) = 0 :=
+    trivialPartition_defect_cost_zero L pi_dist hπ
+  -- Step 2: h_bound says defect_cost(P_local) ≤ 0
+  rw [h_triv_zero] at h_bound
+  -- Step 3: defect_cost is nonnegative
+  have h_nonneg := defect_cost_nonneg L pi_dist hπ P_local
+  -- Step 4: Therefore defect_cost(P_local) = 0
+  have h_local_zero : defect_cost L pi_dist hπ P_local = 0 := le_antisymm h_bound h_nonneg
+  -- Step 5: A zero-defect partition is globally optimal
+  rw [h_local_zero]
+  exact defect_cost_nonneg L pi_dist hπ P
+
+/-- **The Reversible Uniqueness Theorem**:
+
+    For reversible generators (detailed balance), the global optimum `optimal_partition_exists`
+    is the UNIQUE optimum — there are no other local minima in the partition lattice.
+
+    PROOF STATUS: PROVED via `reversible_local_implies_global` theorem using the finite
+    lattice shortcut: trivialPartition has zero defect, so any locally optimal partition
+    must also have zero defect, making it globally optimal. -/
+theorem reversible_local_eq_global (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v)
+    (hrev : IsReversible L pi_dist) :
+    sgc_spec_local L pi_dist hπ → sgc_spec_global L pi_dist hπ := by
+  intro ⟨P_local, h_local_opt, h_bound⟩
+  -- P_local is locally optimal. Use the theorem to show it's globally optimal.
+  have h_global := reversible_local_implies_global L pi_dist hπ hrev P_local h_local_opt h_bound
+  exact ⟨P_local, h_global⟩
+
+/-- **Equivalence for reversible systems**: local and global optimality coincide. -/
+theorem reversible_local_iff_global (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v)
+    (hrev : IsReversible L pi_dist) :
+    sgc_spec_local L pi_dist hπ ↔ sgc_spec_global L pi_dist hπ :=
+  ⟨reversible_local_eq_global L pi_dist hπ hrev,
+   global_implies_local L pi_dist hπ⟩
 
 end SGC.Renormalization
