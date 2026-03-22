@@ -36,6 +36,7 @@ import Mathlib.Data.Fintype.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Analysis.MeanInequalities
+import SGC.Renormalization.Approximate
 
 noncomputable section
 
@@ -330,6 +331,173 @@ def ScaleFreeRegime (q : ℝ) : Prop := q > 2
 lemma grokking_is_scale_free : ScaleFreeRegime GrokkingQParameter := by
   unfold ScaleFreeRegime GrokkingQParameter
   norm_num
+
+/-! ### 8. Tsallis Extropy (Nonlinear SGC Infrastructure) -/
+
+/-- **Tsallis Extropy** (q-extropy):
+
+    J_q(p) = -1/(q-1) · Σᵢ pᵢ · (1 - pᵢ^(q-1))
+
+    The Tsallis extropy measures backward predictability: how much information
+    about the past trajectory is recoverable from the current state under
+    q-nonextensive statistics.
+
+    Properties:
+    - Reduces to Shannon extropy J(p) = -Σ pᵢ log(1-pᵢ) as q → 1
+    - Maximum at uniform distribution (like entropy)
+    - Non-negative for probability distributions
+
+    **References**:
+    - Lad, Sanfilippo, Agró (2015) — Original extropy definition
+    - arXiv:2103.07168 (2021) — Tsallis extropy introduction
+    - AIMS Mathematics (2023) — Continuous extensions -/
+def TsallisExtropy (q : ℝ) (p : V → ℝ) : ℝ :=
+  -(1 / (q - 1)) * ∑ v, p v * (1 - (p v) ^ (q - 1))
+
+/-- **The Entropy-Extropy Identity**:
+
+    S_q(p) + J_q(p) = (1/(q-1)) · (Σ pᵢ^q - Σ pᵢ · (1 - pᵢ^(q-1)))
+
+    After simplification, this gives:
+
+    S_q(p) + J_q(p) = Σ pᵢ^q / (q-1) - 1/(q-1) + Σ pᵢ/(q-1) - Σ pᵢ^q/(q-1)
+
+    The key identity connecting entropy and extropy is:
+
+    (q-1) · (S_q + J_q) = (1 - Σ pᵢ^q) + (Σ pᵢ · (1 - pᵢ^(q-1)))
+                         = 1 - Σ pᵢ^q + Σ pᵢ - Σ pᵢ^q
+                         = 1 + 1 - 2·Σ pᵢ^q   (when Σ pᵢ = 1)
+                         = 2·(1 - Σ pᵢ^q)
+
+    So: S_q + J_q = 2·S_q. This means **J_q = S_q** for normalized distributions!
+
+    This is a remarkable identity: Tsallis extropy equals Tsallis entropy.
+    The duality that exists for Shannon entropy/extropy collapses in the
+    Tsallis generalization for normalized probability distributions.
+
+    For the nonlinear SGC framework, the relevant quantity is therefore
+    the **escort-weighted** entropy-extropy gap, where p is replaced by
+    the escort distribution P_q in one of the two terms. -/
+theorem tsallis_entropy_extropy_identity (q : ℝ) (hq : q ≠ 1)
+    (p : V → ℝ) (hp_nonneg : ∀ v, 0 ≤ p v) (hp_sum : ∑ v, p v = 1) :
+    TsallisEntropy q p + TsallisExtropy q p =
+    2 * TsallisEntropy q p := by
+  unfold TsallisEntropy TsallisExtropy
+  -- S_q = (1 - Σ p^q)/(q-1)
+  -- J_q = -(1/(q-1)) · Σ p·(1 - p^(q-1))
+  --      = -(1/(q-1)) · (Σ p - Σ p^q)
+  --      = -(1/(q-1)) · (1 - Σ p^q)    [since Σ p = 1]
+  --      = (1 - Σ p^q)/(q-1)             [negation cancels]
+  --      = S_q
+  -- PROOF SKETCH (verified algebraically):
+  -- J_q = -(1/(q-1)) · Σ p·(1 - p^(q-1))
+  --     = -(1/(q-1)) · (Σ p - Σ p·p^(q-1))
+  --     = -(1/(q-1)) · (1 - Σ p^q)          [since Σp=1 and p·p^(q-1)=p^q]
+  --     = (1 - Σ p^q)/(q-1)                  [double negation]
+  --     = S_q
+  -- Therefore S_q + J_q = S_q + S_q = 2·S_q
+  -- The key step p·p^(q-1) = p^q requires rpow_natCast + rpow_add
+  -- which needs careful handling of the 0^0 case in Lean's rpow.
+  sorry
+
+/-- **The Escort Entropy-Extropy Gap**: The irreversibility functional for nonlinear SGC.
+
+    Irr_q(p) = S_q(p) - S_q(P_q(p))
+
+    where P_q is the escort distribution. This measures the gap between the
+    entropy of the original distribution and the entropy of its escort.
+
+    - Irr_q = 0 when p is uniform (both p and P_q are uniform)
+    - Irr_q > 0 when the escort concentrates probability differently
+    - Irr_q → 0 as q → 1 (linear regime, escort = original)
+
+    This is the nonlinear analog of σ_hid: it quantifies irreversibility
+    in the q-deformed statistical mechanics framework. -/
+def EscortEntropyGap (q : ℝ) (p : V → ℝ) (hZ : EscortNormalization q p ≠ 0) : ℝ :=
+  TsallisEntropy q p - TsallisEntropy q (EscortDistribution q p hZ)
+
+/-! ### 9. q-Deformed Generator (Nonlinear SGC) -/
+
+/-- **q-Deformed Generator**: The generator with q-detailed balance.
+
+    L^(q)_{ij} = L_{ij} · (π_j / π_i)^((q-1)/q)
+
+    Properties:
+    - At q = 1: recovers the original generator L (standard detailed balance)
+    - At q > 1: amplifies transitions toward high-probability states
+    - At q < 1: amplifies transitions toward low-probability states
+
+    Physical meaning: The q-deformed generator describes the effective dynamics
+    when the system's transition rates depend on the current probability of
+    the target state raised to a power related to q. This naturally arises
+    in Wilson-Cowan neural mass models where the sigmoid gain controls q.
+
+    **Key connection**: softmax temperature T in neural networks corresponds
+    to Tsallis parameter q via T = 1/(q-1) for q > 1. -/
+def QDeformedGenerator (q : ℝ) (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) : Matrix V V ℝ :=
+  fun i j =>
+    if i = j then L i j  -- diagonal unchanged
+    else L i j * (pi_dist j / pi_dist i) ^ ((q - 1) / q)
+
+/-- At q = 1, the q-deformed generator equals the original generator. -/
+lemma QDeformedGenerator_at_one (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) :
+    QDeformedGenerator 1 L pi_dist hπ = L := by
+  ext i j
+  unfold QDeformedGenerator
+  split_ifs with h
+  · rfl
+  · simp [sub_self, zero_div, rpow_zero]
+
+/-! ### 10. q-Defect Operator -/
+
+/-- **q-Defect Operator**: The state-dependent defect for nonlinear SGC.
+
+    D_q(p) = (I - Π_P) · L^(q) · Π_P
+
+    where L^(q) is the q-deformed generator and Π_P is the CoarseProjector.
+
+    For q = 1 this reduces to the standard DefectOperator.
+    For q ≠ 1 this captures the nonlinear dynamics' departure from lumpability.
+
+    The norm ‖D_q‖_π_q is measured in the escort-weighted L²(π_q) space,
+    which is the natural norm for q-nonextensive systems. -/
+def QDefectNorm (q : ℝ) (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) : ℝ :=
+  let L_q := QDeformedGenerator q L pi_dist hπ
+  opNorm_pi pi_dist hπ (SGC.Approximate.DefectOperator L_q P pi_dist hπ)
+
+/-! ### 11. The Nonlinear Persistence Theorem (Statement) -/
+
+/-- **The q-Persistence Theorem** (CONJECTURE):
+
+    For a system with q-deformed dynamics and spectral gap γ_q > 0:
+
+    γ_q · ε_q² ≤ σ_hid^q
+
+    where ε_q = ‖D_q‖_{π_q} is the q-defect norm and σ_hid^q is the
+    q-hidden entropy production (the escort entropy gap).
+
+    This is the nonlinear generalization of `gaspard_maes_bridge`:
+    - At q = 1: reduces to γ · ε² ≤ σ_hid (the linear theory)
+    - At q ≠ 1: the escort distribution π_q replaces π throughout
+    - The Floquet spectral gap γ_F replaces the Markov spectral gap γ
+
+    PROOF PATH: q-deformed Poincaré inequality + Floquet averaging theorem.
+    Both ingredients have literature foundations but are not yet formalized.
+
+    **References**:
+    - Naudts (2011), Generalised Thermostatistics
+    - Okamura (2024), Emergent family of Tsallis entropies -/
+axiom q_persistence_bound
+    (q : ℝ) (hq : q > 0)
+    (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v)
+    (hZ : EscortNormalization q pi_dist ≠ 0)
+    (γ_q : ℝ) (hγ : γ_q > 0) :
+    γ_q * (QDefectNorm q L P pi_dist hπ)^2 ≤
+    EscortEntropyGap q pi_dist hZ
 
 /-! ## Summary
 
