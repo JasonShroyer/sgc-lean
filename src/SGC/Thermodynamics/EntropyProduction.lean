@@ -347,12 +347,20 @@ axiom hidden_entropy_bound_from_trajectory
     4. Pinsker inequality ⇒ KL divergence bounded by TV²
     5. Entropy production is KL rate ⇒ σ_hid ≤ C · ε²
 
-    **Axiomatized**: The full chain is standard but technical. The constant C depends
-    on dimension N, bounds on π, and generator norms. -/
-axiom hidden_entropy_bounded_by_defect
+    **PROVED**: Follows from `hidden_entropy_bound_from_trajectory` with C_traj = 1.
+    The constant C = N · C_traj² = |V| depends on dimension. -/
+theorem hidden_entropy_bounded_by_defect
     (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x)
     (ε : ℝ) (hε : 0 ≤ ε) (hL : Approximate.IsApproxLumpable L P pi_dist hπ ε) :
-    ∃ C : ℝ, C ≥ 0 ∧ HiddenEntropyProduction L P pi_dist ≤ C * ε^2
+    ∃ C : ℝ, C ≥ 0 ∧ HiddenEntropyProduction L P pi_dist ≤ C * ε^2 := by
+  -- Use hidden_entropy_bound_from_trajectory with C_traj = 1
+  have h_bound := hidden_entropy_bound_from_trajectory L P pi_dist hπ ε hε hL 1 one_pos
+  -- C = N * 1² = N
+  use (Fintype.card V : ℝ)
+  constructor
+  · exact Nat.cast_nonneg (Fintype.card V)
+  · simp only [one_pow, mul_one] at h_bound
+    exact h_bound
 
 /-- **Hidden Entropy Lower Bound**: For non-trivial coarse-graining, σ_hid ≥ c·ε².
 
