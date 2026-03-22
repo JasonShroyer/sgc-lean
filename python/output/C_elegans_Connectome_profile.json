@@ -1,13 +1,13 @@
 {
   "system_name": "C_elegans_Connectome",
-  "timestamp": "2026-03-22T12:04:52.307401",
+  "timestamp": "2026-03-22T12:26:15.559907",
   "commit": "fb0c260",
   "repository": "https://github.com/JasonShroyer/sgc-lean",
   "epsilon": 0.18252665942183874,
   "gamma": 0.06489685302413306,
   "T_star": 5.478651738696935,
   "q": 1.0010329873737145,
-  "N_E": 1603.9973925474073,
+  "N_E": 84.42091539723197,
   "autopoietic_depth": 1,
   "schur_correction_norm": 0.46360412101491344,
   "n_states": 20,
@@ -38,8 +38,8 @@
   ],
   "defect_curve": {
     "2": 0.18252665942183874,
-    "3": 0.2117815094625052,
-    "4": 0.21185619529242722
+    "3": 0.18253925969309706,
+    "4": 0.25988915812483493
   },
   "eigenvalues": [
     [
@@ -171,7 +171,7 @@
       "theorem": "optimal_partition_exists",
       "predicted_value": 0.5,
       "tolerance": 0.2,
-      "actual_value": -0.0294835497412867,
+      "actual_value": -0.025826561282422396,
       "verdict": "REFUTED"
     },
     {
@@ -187,7 +187,7 @@
       "theorem": "emergence_ceiling",
       "predicted_value": 1.0,
       "tolerance": 1.0,
-      "actual_value": 1603.9973925474073,
+      "actual_value": 84.42091539723197,
       "verdict": "CONFIRMED"
     }
   ]

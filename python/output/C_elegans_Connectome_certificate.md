@@ -1,6 +1,6 @@
 # SGC Emergence Certificate: C_elegans_Connectome
 
-**Generated:** 2026-03-22T12:04:52.308401
+**Generated:** 2026-03-22T12:26:15.560907
 
 **Repository:** [https://github.com/JasonShroyer/sgc-lean](https://github.com/JasonShroyer/sgc-lean)
 
@@ -14,7 +14,7 @@
 | γ (spectral gap) | 0.064897 | [dirichlet_gap_non_decrease](https://github.com/JasonShroyer/sgc-lean/blob/fb0c260/src/SGC/Renormalization/Lumpability.lean) | PROVED |
 | T* (validity) | 5.48 | [trajectory_closure_bound](https://github.com/JasonShroyer/sgc-lean/blob/fb0c260/src/SGC/Renormalization/Approximate.lean) | PROVED |
 | q (Tsallis) | 1.0010 | [tsallis_dpi](https://github.com/JasonShroyer/sgc-lean/blob/fb0c260/src/SGC/TsallisStatistics.lean) | PROVED |
-| N_E (capacity) | 1603.9974 | [emergence_ceiling](https://github.com/JasonShroyer/sgc-lean/blob/fb0c260/src/SGC/EmergenceCapacity.lean) | AXIOM |
+| N_E (capacity) | 84.4209 | [emergence_ceiling](https://github.com/JasonShroyer/sgc-lean/blob/fb0c260/src/SGC/EmergenceCapacity.lean) | AXIOM |
 
 ## System Properties
 
@@ -46,7 +46,7 @@
 
 - **Theorem:** optimal_partition_exists (PROVED)
 - **Predicted:** 0.5000 ± 0.2000
-- **Actual:** -0.0295
+- **Actual:** -0.0258
 - **Verdict:** REFUTED
 
 ### ❌ q in (1.2, 1.8)
@@ -60,7 +60,7 @@
 
 - **Theorem:** emergence_ceiling (AXIOM)
 - **Predicted:** 1.0000 ± 1.0000
-- **Actual:** 1603.9974
+- **Actual:** 84.4209
 - **Verdict:** CONFIRMED
 
 

@@ -347,7 +347,7 @@ def run_grokking_experiment(output_dir: str = "output/") -> dict:
     p = 97  # Modular arithmetic base
     d_model = 64
     n_steps = 20000  # Standard grokking requires ~20k steps
-    checkpoint_every = 200
+    checkpoint_every = 50  # High resolution for decay exponent measurement
     lr = 3e-4
     weight_decay = 1.0  # Critical: high weight decay induces grokking
     
@@ -484,7 +484,8 @@ def run_grokking_experiment(output_dir: str = "output/") -> dict:
         print(f"  4. N_E increase: {pred4_result}")
     
     # Measure decay exponent beta (universality class signature)
-    decay_beta = _fit_decay_exponent(steps, epsilon, grok_idx, window=5)
+    # With checkpoint_every=50, we have ~20 points per 1000 steps — use window=20
+    decay_beta = _fit_decay_exponent(steps, epsilon, grok_idx, window=20)
     if decay_beta is not None:
         # Interpret: beta ~ 0.58 = directed percolation, beta ~ 0.25 = tricritical
         if abs(decay_beta - 0.25) < 0.15:

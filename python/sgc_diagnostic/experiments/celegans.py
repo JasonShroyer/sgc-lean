@@ -393,14 +393,36 @@ def run_celegans_experiment(output_dir: str = "output/") -> dict:
         ari_k3, _ = compute_partition_type_correlation(P_k3, neuron_types, labels)
         print(f"  2b. ARI at k=3 (prediction target): {ari_k3:.3f}")
         
+        # Print k=3 block membership - THIS IS THE KEY SCIENTIFIC RESULT
+        print(f"\n  k=3 BLOCK MEMBERSHIP (defect-minimizing partition):")
+        type_names = {0: 'I', 1: 'M', 2: 'NSM'}
+        k3_blocks = {}
+        for block_id in range(3):
+            members = [labels[i] for i in range(n) if P_k3[i] == block_id]
+            types = [neuron_types[m] for m in members]
+            type_str = ' '.join(type_names[t] for t in types)
+            k3_blocks[f"block_{block_id}"] = {
+                "members": members,
+                "types": [type_names[t] for t in types],
+                "type_counts": {
+                    "interneuron": types.count(0),
+                    "motor_pacemaker": types.count(1),
+                    "neurosecretory": types.count(2)
+                }
+            }
+            print(f"    Block {block_id}: {members}")
+            print(f"      Types: [{type_str}]")
+        
         # The prediction is for k=3
         ari = ari_k3
         pred2_result = "[OK] CONFIRMED" if ari > pred2_ari_min else "[X] REFUTED"
         print(f"  2. Verdict: ARI(k=3) = {ari:.3f} [{pred2_result}]")
+        k3_blocks = k3_blocks  # already defined above
     else:
         ari = 0.0
         ari_kstar = 0.0
         ari_k3 = 0.0
+        k3_blocks = {}
         pred2_result = "~ INCONCLUSIVE"
         print(f"  2. Type correlation: {pred2_result}")
     
@@ -491,6 +513,10 @@ def run_celegans_experiment(output_dir: str = "output/") -> dict:
             'emergence_capacity': pred4_result,
         },
         'ari': ari,
+        'ari_k3': ari_k3 if 'ari_k3' in dir() else ari,
+        'k3_blocks': k3_blocks,
+        'is_reversible': is_reversible,
+        'detailed_balance_violation': db_violation,
         'neuron_types': neuron_types,
         'is_real': is_real,
         'data_source': data_source,

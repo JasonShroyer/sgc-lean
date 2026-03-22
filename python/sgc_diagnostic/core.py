@@ -25,6 +25,7 @@ class SGCProfile:
     T_star: float = 0.0              # validity horizon 1/ε     [theorem: trajectory_closure_bound]
     q: float = 1.0                   # Tsallis index            [theorem: tsallis_dpi]
     N_E: float = 0.0                 # emergence capacity       [axiom: emergence_ceiling]
+    N_E_b1_used: int = 1             # b₁ approximation used in N_E calculation [APPROXIMATION]
     
     # Optimal partition
     P_star: np.ndarray = None        # partition assignment (n,) — integer labels
@@ -214,8 +215,12 @@ class SGCDiagnostic:
         q, q_diagnostics = estimate_tsallis_q(self.pi)
         
         # 5. Compute emergence capacity N_E = b₁/(γ·ε)
-        # b₁ ≈ n-1 for connected graphs (first Betti number of complete graph)
-        b1 = n - 1  # approximation
+        # b₁ = Betti number of the QUOTIENT GRAPH at k*, not the full graph
+        # For k blocks, max independent cycles in quotient = k*(k-1)/2
+        # Use min(n-1, k*(k-1)//2) as conservative upper bound
+        # [APPROXIMATION: true b₁ of quotient may be smaller]
+        b1 = min(n - 1, n_blocks * (n_blocks - 1) // 2)
+        b1_used = b1  # store for JSON output
         if gamma > 1e-12 and epsilon > 1e-12:
             N_E = b1 / (gamma * epsilon)
         else:
@@ -257,6 +262,7 @@ class SGCDiagnostic:
             T_star=T_star,
             q=q,
             N_E=N_E,
+            N_E_b1_used=b1_used,
             P_star=P_star,
             n_blocks=n_blocks,
             defect_by_k=defect_by_k,
