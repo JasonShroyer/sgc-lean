@@ -285,22 +285,25 @@ theorem emergence_equivalence (L : Matrix V V ℝ) (pi_dist : V → ℝ)
 /-- **TO PERSIST IS TO PREDICT**
 
     Any system that maintains low hidden entropy production (thermodynamic
-    persistence) must have low prediction error (small defect ε).
+    persistence) must have low prediction error (small defect norm ‖D‖).
 
     This is the converse of emergence_thermodynamic:
-    - Forward: low ε → low σ_hid (emergence creates efficiency)
-    - Backward: low σ_hid → low ε (persistence requires prediction)
+    - Forward: low ‖D‖ → low σ_hid (emergence creates efficiency)
+    - Backward: low σ_hid → low ‖D‖ (persistence requires prediction)
 
-    Together: ε ≈ 0 ⟺ σ_hid ≈ 0 (emergence IS efficiency)
+    Together: ‖D‖ ≈ 0 ⟺ σ_hid ≈ 0 (emergence IS efficiency)
+
+    The quantitative bound: if σ_hid < δ, then ‖D‖² < δ/γ where γ is the
+    spectral gap. The constant γ is explicit and physically meaningful.
 
     PROOF: Direct from efficiency_requires_prediction in EntropyProduction.lean -/
 theorem to_persist_is_to_predict (L : Matrix V V ℝ) (P : Partition V)
     (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (ε : ℝ) (hε : 0 < ε) (hL : IsApproxLumpable L P pi_dist hπ ε)
     (hL_gen : ∀ x y, x ≠ y → 0 ≤ L x y)
-    (δ : ℝ) (hδ : 0 < δ) (h_persist : HiddenEntropyProduction L P pi_dist < δ) :
-    ∃ C : ℝ, C > 0 ∧ ε < Real.sqrt (δ / C) :=
-  efficiency_requires_prediction L P pi_dist hπ ε hε hL hL_gen δ hδ h_persist
+    (γ : ℝ) (hγ : γ > 0) (hγ_gap : γ ≤ DirichletGap L pi_dist)
+    (δ : ℝ) (_hδ : 0 < δ) (h_persist : HiddenEntropyProduction L P pi_dist < δ) :
+    (opNorm_pi pi_dist hπ (DefectOperator L P pi_dist hπ))^2 < δ / γ :=
+  efficiency_requires_prediction L P pi_dist hπ hL_gen γ hγ hγ_gap δ _hδ h_persist
 
 /-! ## Summary: The Theory of Emergent Intelligence
 
