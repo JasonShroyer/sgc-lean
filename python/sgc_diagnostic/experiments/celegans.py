@@ -163,42 +163,74 @@ def _create_synthetic_celegans(n: int = 50) -> Tuple[np.ndarray, List[str], Dict
     return W, labels, neuron_types
 
 
+def _adjusted_rand_index(labels_true: np.ndarray, labels_pred: np.ndarray) -> float:
+    """
+    Pure numpy implementation of adjusted Rand index.
+    ARI = (RI - Expected_RI) / (max(RI) - Expected_RI)
+    
+    Computes from contingency table.
+    """
+    n = len(labels_true)
+    if n == 0:
+        return 0.0
+    
+    # Build contingency table
+    classes_true = np.unique(labels_true)
+    classes_pred = np.unique(labels_pred)
+    
+    # Contingency matrix n_ij = number of samples with true label i and pred label j
+    contingency = np.zeros((len(classes_true), len(classes_pred)), dtype=np.int64)
+    for i, ct in enumerate(classes_true):
+        for j, cp in enumerate(classes_pred):
+            contingency[i, j] = np.sum((labels_true == ct) & (labels_pred == cp))
+    
+    # Sum of combinations C(n_ij, 2) for all cells
+    sum_comb_c = np.sum(contingency * (contingency - 1)) // 2
+    
+    # Row sums and column sums
+    sum_rows = contingency.sum(axis=1)
+    sum_cols = contingency.sum(axis=0)
+    
+    # Sum of C(a_i, 2) and C(b_j, 2)
+    sum_comb_rows = np.sum(sum_rows * (sum_rows - 1)) // 2
+    sum_comb_cols = np.sum(sum_cols * (sum_cols - 1)) // 2
+    
+    # Total combinations C(n, 2)
+    comb_n = n * (n - 1) // 2
+    
+    if comb_n == 0:
+        return 0.0
+    
+    # Expected index
+    expected = (sum_comb_rows * sum_comb_cols) / comb_n if comb_n > 0 else 0
+    
+    # Max index
+    max_index = (sum_comb_rows + sum_comb_cols) / 2
+    
+    # ARI
+    if max_index == expected:
+        return 1.0 if sum_comb_c == expected else 0.0
+    
+    ari = (sum_comb_c - expected) / (max_index - expected)
+    return float(ari)
+
+
 def compute_partition_type_correlation(assignment: np.ndarray, 
                                         neuron_types: Dict[str, int],
                                         labels: List[str]) -> Tuple[float, Dict]:
     """
     Compute correlation between SGC partition and known neuron types.
-    Uses adjusted Rand index.
+    Uses adjusted Rand index (pure numpy, no sklearn).
     """
-    try:
-        from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
-    except ImportError:
-        # Fallback: simple accuracy
-        true_labels = np.array([neuron_types.get(name, 1) for name in labels])
-        # Try all permutations of partition to type mapping
-        from itertools import permutations
-        n_blocks = len(np.unique(assignment))
-        n_types = len(set(neuron_types.values()))
-        
-        best_acc = 0.0
-        for perm in permutations(range(max(n_blocks, n_types))):
-            mapped = np.array([perm[a] if a < len(perm) else a for a in assignment])
-            acc = np.mean(mapped[:len(true_labels)] == true_labels)
-            best_acc = max(best_acc, acc)
-        
-        return best_acc, {'method': 'accuracy', 'best_accuracy': best_acc}
-    
     # Get true type labels
     true_labels = np.array([neuron_types.get(name, 1) for name in labels])
     
-    # Compute metrics
-    ari = adjusted_rand_score(true_labels, assignment)
-    nmi = normalized_mutual_info_score(true_labels, assignment)
+    # Compute adjusted Rand index
+    ari = _adjusted_rand_index(true_labels, assignment)
     
     return ari, {
         'adjusted_rand_index': ari,
-        'normalized_mutual_info': nmi,
-        'method': 'sklearn'
+        'method': 'numpy'
     }
 
 
@@ -340,11 +372,11 @@ def run_celegans_experiment(output_dir: str = "output/") -> dict:
     print(f"  Predictions confirmed: {confirmed}/{total}")
     
     if confirmed >= 3:
-        print("  ★ SGC successfully identifies neural hierarchy from connectivity!")
+        print("  [***] SGC successfully identifies neural hierarchy from connectivity!")
     elif confirmed >= 2:
-        print("  ◐ Partial confirmation of SGC predictions")
+        print("  [**] Partial confirmation of SGC predictions")
     else:
-        print("  ○ SGC predictions not confirmed on this data")
+        print("  [*] SGC predictions not confirmed on this data")
     
     return {
         'profile': profile,

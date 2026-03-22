@@ -58,36 +58,42 @@ def build_asymmetric_chain(alpha: float = 1.0, beta: float = 0.1,
     return L, pi
 
 
-def build_broken_symmetry_chain(alpha: float = 1.0, beta: float = 0.1,
-                                 delta_forward: float = 0.30, 
-                                 delta_backward: float = 0.21) -> tuple[np.ndarray, np.ndarray]:
+def build_broken_symmetry_chain(alpha: float = 1.0, beta: float = 0.1, 
+                                 beta_prime: float = 0.25, delta: float = 0.3) -> tuple[np.ndarray, np.ndarray]:
     """
-    Build the 4-state chain with broken Z2 symmetry.
+    4-state chain where lumpability is BROKEN.
     
-    The asymmetry delta_forward != delta_backward breaks exact lumpability,
-    guaranteeing epsilon > 0. This is the chain where all five predictions
-    should confirm simultaneously.
+    States {0,1,2,3}, natural blocks would be {0,2}|{1,3}.
+    Break: state 0 exits block at rate beta=0.1, state 2 exits at rate beta_prime=0.25.
+    This violates the intertwining condition L*Pi != Pi*L*Pi.
+    
+    Predicted defect: eps > 0 (approximately 0.05-0.15 for these parameters).
     
     Structure:
-        0 <-> 1  (intra-block, rate alpha)
-        2 <-> 3  (intra-block, rate alpha)
-        0 -> 2   (rate delta_forward = 0.30)
-        2 -> 0   (rate delta_backward = 0.21)
-        1 <-> 3  (inter-block symmetric, rate beta)
+        0 <-> 2  (intra-block, rate alpha)
+        1 <-> 3  (intra-block, rate alpha)
+        0 <-> 1  (inter-block, rate beta)
+        2 <-> 3  (inter-block, rate beta_prime != beta)  <-- breaks lumpability
+        0 <-> 3  (asymmetric coupling, rate delta)
     
     Returns:
         L: Generator matrix (4x4)
         pi: Stationary distribution
     """
-    # Build off-diagonal rates with asymmetric 0<->2 coupling
-    L = np.array([
-        [0,     alpha,  delta_forward,   0    ],  # 0 -> 1, 0 -> 2
-        [beta,  0,      0,               alpha],  # 1 -> 0, 1 -> 3
-        [delta_backward, 0, 0,           alpha],  # 2 -> 0, 2 -> 3
-        [0,     beta,   beta,            0    ],  # 3 -> 1, 3 -> 2
-    ], dtype=float)
+    L = np.zeros((4, 4))
     
-    # Set diagonal so rows sum to zero
+    # Intra-block transitions (alpha)
+    L[0, 2] = alpha; L[2, 0] = alpha
+    L[1, 3] = alpha; L[3, 1] = alpha
+    
+    # Inter-block: state 0 exits at beta, state 2 exits at beta_prime
+    L[0, 1] = beta;        L[1, 0] = beta
+    L[2, 3] = beta_prime;  L[3, 2] = beta_prime
+    
+    # Asymmetric coupling between blocks via delta (state 0 only)
+    L[0, 3] = delta;  L[3, 0] = delta
+    
+    # Fix diagonals
     np.fill_diagonal(L, -L.sum(axis=1))
     
     # Compute stationary distribution
@@ -131,8 +137,10 @@ def _run_chain_experiment(L: np.ndarray, pi: np.ndarray, system_name: str,
     print(f"  5. ||Sigma|| > {pred5_schur_min} (second-order effects)")
     
     # COMPUTE PROFILE
+    # k_max=n-1 to exclude trivial partition (which always has eps=0)
     print("\n  Computing SGC profile...")
-    profile = diag.compute_profile(k_min=2, k_max=4, n_restarts=30)
+    n = len(pi)
+    profile = diag.compute_profile(k_min=2, k_max=max(2, n-1), n_restarts=30)
     
     # Register and evaluate predictions
     profile.add_prediction(
@@ -225,19 +233,18 @@ def run_synthetic_chain(output_dir: str = "output/") -> dict:
     print("  EXPERIMENT 1B: Broken Symmetry 4-State Chain")
     print("="*80)
     
-    alpha, beta = 1.0, 0.1
-    delta_forward, delta_backward = 0.30, 0.21
-    print(f"\n  Parameters: alpha={alpha}, beta={beta}")
-    print(f"  Asymmetric coupling: 0->2 rate={delta_forward}, 2->0 rate={delta_backward}")
-    print(f"  This breaks Z2 symmetry, guaranteeing epsilon > 0")
+    alpha, beta, beta_prime, delta = 1.0, 0.1, 0.25, 0.3
+    print(f"\n  Parameters: alpha={alpha}, beta={beta}, beta_prime={beta_prime}, delta={delta}")
+    print(f"  Block {0,2} exits at different rates: state 0 at beta, state 2 at beta_prime")
+    print(f"  This violates intertwining condition, guaranteeing epsilon > 0")
     
-    L2, pi2 = build_broken_symmetry_chain(alpha, beta, delta_forward, delta_backward)
+    L2, pi2 = build_broken_symmetry_chain(alpha, beta, beta_prime, delta)
     print(f"\n  Generator L:")
     print(L2.round(4))
     print(f"\n  Stationary pi: {pi2.round(4)}")
     
     results["broken_symmetry"] = _run_chain_experiment(
-        L2, pi2, "Asymmetric_4State_Broken", output_dir, pred1_epsilon_min=0.02
+        L2, pi2, "Broken_Lumpability_Chain", output_dir, pred1_epsilon_min=0.03
     )
     
     return results

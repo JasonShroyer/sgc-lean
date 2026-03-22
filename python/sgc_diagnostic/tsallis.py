@@ -1,26 +1,57 @@
 # tsallis.py
 """
 Tsallis index estimation and related statistics.
+Pure numpy implementation (no scipy dependency).
 """
 import numpy as np
-from scipy.optimize import minimize_scalar
 from typing import Tuple, Dict, Any
+
+
+def _golden_section_search(f, a: float, b: float, tol: float = 1e-4) -> Tuple[float, float]:
+    """
+    Golden section search for minimum of unimodal function f on [a, b].
+    Returns (x_min, f(x_min)).
+    """
+    phi = (1 + np.sqrt(5)) / 2  # Golden ratio
+    resphi = 2 - phi
+    
+    x1 = a + resphi * (b - a)
+    x2 = b - resphi * (b - a)
+    f1 = f(x1)
+    f2 = f(x2)
+    
+    while abs(b - a) > tol:
+        if f1 < f2:
+            b = x2
+            x2 = x1
+            f2 = f1
+            x1 = a + resphi * (b - a)
+            f1 = f(x1)
+        else:
+            a = x1
+            x1 = x2
+            f1 = f2
+            x2 = b - resphi * (b - a)
+            f2 = f(x2)
+    
+    x_min = (a + b) / 2
+    return x_min, f(x_min)
 
 
 def estimate_tsallis_q(pi: np.ndarray) -> Tuple[float, Dict[str, Any]]:
     """
-    Estimate q from the stationary distribution π using the escort distribution fit.
+    Estimate q from the stationary distribution pi using the escort distribution fit.
     
-    Method: Maximum likelihood fit of π(v) ∝ [1 - (1-q)·E(v)/T]^{1/(1-q)}
-    to the empirical distribution, where E(v) are effective energies = -log π(v).
+    Method: Maximum likelihood fit of pi(v) ~ [1 - (1-q)*E(v)/T]^{1/(1-q)}
+    to the empirical distribution, where E(v) are effective energies = -log pi(v).
     
-    For q=1 (Boltzmann): π(v) ∝ exp(-E(v))
-    For q≠1 (Tsallis):   π(v) ∝ [1-(1-q)E(v)]^{1/(1-q)}
+    For q=1 (Boltzmann): pi(v) ~ exp(-E(v))
+    For q!=1 (Tsallis):  pi(v) ~ [1-(1-q)E(v)]^{1/(1-q)}
     
     The q value where the fit is best is the system's Tsallis index.
     
-    [theorem: TsallisStatistics.lean — D_q ≥ 0 for q ∈ (1,2)]
-    [Note: q estimation from data is EMPIRICAL — not a Lean theorem]
+    [theorem: TsallisStatistics.lean -- D_q >= 0 for q in (1,2)]
+    [Note: q estimation from data is EMPIRICAL -- not a Lean theorem]
     """
     # Ensure valid probability distribution
     pi_safe = np.clip(pi, 1e-15, 1.0)
@@ -32,15 +63,15 @@ def estimate_tsallis_q(pi: np.ndarray) -> Tuple[float, Dict[str, Any]]:
     energies = energies - energies.mean()
     
     def neg_log_likelihood(q: float) -> float:
-        """Negative log-likelihood of π under Tsallis distribution with index q."""
+        """Negative log-likelihood of pi under Tsallis distribution with index q."""
         if abs(q - 1.0) < 1e-6:
-            # q→1 limit: Boltzmann distribution
-            # π(v) ∝ exp(-E(v)), so log π(v) = -E(v) - log(Z)
+            # q->1 limit: Boltzmann distribution
+            # pi(v) ~ exp(-E(v)), so log pi(v) = -E(v) - log(Z)
             log_Z = np.log(np.sum(np.exp(-energies)))
             return float(np.sum(pi_safe * (energies + log_Z)))
         
-        # Tsallis: π_q(v) ∝ [1-(1-q)E]^{1/(1-q)} = exp_q(-E)
-        # log π_q(v) = (1/(1-q)) log[1-(1-q)E] - log(Z_q)
+        # Tsallis: pi_q(v) ~ [1-(1-q)E]^{1/(1-q)} = exp_q(-E)
+        # log pi_q(v) = (1/(1-q)) log[1-(1-q)E] - log(Z_q)
         base = 1.0 - (1.0 - q) * energies
         
         # Check if base is valid (must be positive for real power)
@@ -51,21 +82,14 @@ def estimate_tsallis_q(pi: np.ndarray) -> Tuple[float, Dict[str, Any]]:
         log_Z = np.log(np.sum(np.exp(log_unnorm - log_unnorm.max()))) + log_unnorm.max()
         log_pq_normalized = log_unnorm - log_Z
         
-        # NLL = -Σ π(v) log π_q(v)
+        # NLL = -sum pi(v) log pi_q(v)
         return -float(np.sum(pi_safe * log_pq_normalized))
     
-    # Search over q ∈ (1.0, 2.0) — the physically relevant range
+    # Search over q in (1.0, 2.0) -- the physically relevant range
     # q < 1: compact support distributions (less common)
     # q > 2: very heavy tails (pathological)
     try:
-        result = minimize_scalar(
-            neg_log_likelihood, 
-            bounds=(1.001, 1.999), 
-            method='bounded',
-            options={'xatol': 1e-4}
-        )
-        q_star = float(result.x)
-        nll_tsallis = float(result.fun)
+        q_star, nll_tsallis = _golden_section_search(neg_log_likelihood, 1.001, 1.999, tol=1e-4)
     except Exception:
         q_star = 1.0
         nll_tsallis = neg_log_likelihood(1.0)

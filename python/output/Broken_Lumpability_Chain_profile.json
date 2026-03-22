@@ -1,0 +1,105 @@
+{
+  "system_name": "Broken_Lumpability_Chain",
+  "timestamp": "2026-03-22T10:30:31.303452",
+  "commit": "fb0c260",
+  "repository": "https://github.com/JasonShroyer/sgc-lean",
+  "epsilon": 0.10897247358851679,
+  "gamma": 0.5847822261563318,
+  "T_star": 9.176629354822474,
+  "q": 1.9989670126262855,
+  "N_E": 47.07716280198257,
+  "autopoietic_depth": 1,
+  "schur_correction_norm": 0.005107526881720443,
+  "n_states": 4,
+  "n_blocks": 3,
+  "regime": "EMERGENT (intermediate gamma)",
+  "validity_horizon_label": "FRAGILE (1 < T* <= 10)",
+  "partition": [
+    2,
+    1,
+    2,
+    0
+  ],
+  "defect_curve": {
+    "2": 0.15000000000000005,
+    "3": 0.10897247358851679
+  },
+  "eigenvalues": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      -0.5847822261563318,
+      0.0
+    ],
+    [
+      -2.3312420461362353,
+      0.0
+    ],
+    [
+      -2.3839757277074303,
+      0.0
+    ]
+  ],
+  "dirichlet_decomposition": {
+    "coarse": 0.5825037204269209,
+    "leakage": -0.006780466284325173
+  },
+  "q_diagnostics": {
+    "q_star": 1.9989670126262855,
+    "nll_boltzmann": 1.3862943611198904,
+    "nll_tsallis": 1.3862943611198906,
+    "improvement": -2.220446049250313e-16,
+    "regime": "heavy_tail",
+    "citation": "EMPIRICAL — q estimated from π, not derived from theorem"
+  },
+  "pi": [
+    0.24999999999999997,
+    0.25000000000000006,
+    0.2499999999999999,
+    0.25000000000000006
+  ],
+  "predictions": [
+    {
+      "statement": "Defect epsilon > 0.03",
+      "theorem": "optimal_partition_exists",
+      "predicted_value": 0.03,
+      "tolerance": 0.03,
+      "actual_value": 0.10897247358851679,
+      "verdict": "CONFIRMED"
+    },
+    {
+      "statement": "Optimal partition has 2 blocks",
+      "theorem": "optimal_partition_exists",
+      "predicted_value": 2.0,
+      "tolerance": 0.5,
+      "actual_value": 3.0,
+      "verdict": "INCONCLUSIVE"
+    },
+    {
+      "statement": "Autopoietic depth d >= 1",
+      "theorem": "rg_tower_terminates",
+      "predicted_value": 1.0,
+      "tolerance": 0.5,
+      "actual_value": 1.0,
+      "verdict": "CONFIRMED"
+    },
+    {
+      "statement": "Tsallis q in range (1.0, 1.8)",
+      "theorem": "q_estimation",
+      "predicted_value": 1.4,
+      "tolerance": 0.4,
+      "actual_value": 1.9989670126262855,
+      "verdict": "INCONCLUSIVE"
+    },
+    {
+      "statement": "Schur correction ||Sigma|| > 0.01",
+      "theorem": "schur_self_energy",
+      "predicted_value": 0.01,
+      "tolerance": 0.01,
+      "actual_value": 0.005107526881720443,
+      "verdict": "REFUTED"
+    }
+  ]
+}

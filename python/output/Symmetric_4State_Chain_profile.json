@@ -1,12 +1,12 @@
 {
   "system_name": "Symmetric_4State_Chain",
-  "timestamp": "2026-03-22T09:57:21.770427",
+  "timestamp": "2026-03-22T10:30:31.183853",
   "commit": "fb0c260",
   "repository": "https://github.com/JasonShroyer/sgc-lean",
   "epsilon": 3.162064410414349e-17,
   "gamma": 1.0258342613226066,
   "T_star": Infinity,
-  "q": 1.001064029734474,
+  "q": 1.0010329873737145,
   "N_E": null,
   "autopoietic_depth": 0,
   "schur_correction_norm": 5.5683127268539546e-18,
@@ -22,8 +22,7 @@
   ],
   "defect_curve": {
     "2": 3.162064410414349e-17,
-    "3": 0.22249601278073472,
-    "4": 0.0
+    "3": 0.22249601278073472
   },
   "eigenvalues": [
     [
@@ -48,10 +47,10 @@
     "leakage": -1.9261662570702368e-17
   },
   "q_diagnostics": {
-    "q_star": 1.001064029734474,
+    "q_star": 1.0010329873737145,
     "nll_boltzmann": 0.6602437824004352,
-    "nll_tsallis": 0.6602441139633883,
-    "improvement": -3.315629530931119e-07,
+    "nll_tsallis": 0.660244094875202,
+    "improvement": -3.124747667282435e-07,
     "regime": "near_boltzmann",
     "citation": "EMPIRICAL — q estimated from π, not derived from theorem"
   },
@@ -91,7 +90,7 @@
       "theorem": "q_estimation",
       "predicted_value": 1.4,
       "tolerance": 0.4,
-      "actual_value": 1.001064029734474,
+      "actual_value": 1.0010329873737145,
       "verdict": "CONFIRMED"
     },
     {

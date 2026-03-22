@@ -1,6 +1,6 @@
 # SGC Emergence Certificate: Symmetric_4State_Chain
 
-**Generated:** 2026-03-22T09:57:21.841057
+**Generated:** 2026-03-22T10:30:31.262689
 
 **Repository:** [https://github.com/JasonShroyer/sgc-lean](https://github.com/JasonShroyer/sgc-lean)
 
@@ -13,7 +13,7 @@
 | ε (defect) | 0.000000 | [optimal_partition_exists](https://github.com/JasonShroyer/sgc-lean/blob/fb0c260/src/SGC/Renormalization/OptimalPartition.lean) | PROVED |
 | γ (spectral gap) | 1.025834 | [dirichlet_gap_non_decrease](https://github.com/JasonShroyer/sgc-lean/blob/fb0c260/src/SGC/Renormalization/Lumpability.lean) | PROVED |
 | T* (validity) | inf | [trajectory_closure_bound](https://github.com/JasonShroyer/sgc-lean/blob/fb0c260/src/SGC/Renormalization/Approximate.lean) | PROVED |
-| q (Tsallis) | 1.0011 | [tsallis_dpi](https://github.com/JasonShroyer/sgc-lean/blob/fb0c260/src/SGC/TsallisStatistics.lean) | PROVED |
+| q (Tsallis) | 1.0010 | [tsallis_dpi](https://github.com/JasonShroyer/sgc-lean/blob/fb0c260/src/SGC/TsallisStatistics.lean) | PROVED |
 | N_E (capacity) | ∞ | [emergence_ceiling](https://github.com/JasonShroyer/sgc-lean/blob/fb0c260/src/SGC/EmergenceCapacity.lean) | AXIOM |
 
 ## System Properties
@@ -60,7 +60,7 @@
 
 - **Theorem:** q_estimation (EMPIRICAL)
 - **Predicted:** 1.4000 ± 0.4000
-- **Actual:** 1.0011
+- **Actual:** 1.0010
 - **Verdict:** CONFIRMED
 
 ### ❌ Schur correction ||Sigma|| > 0.01

@@ -54,18 +54,24 @@ def compute_timescales(eigenvalues: np.ndarray) -> np.ndarray:
     return np.sort(timescales)[::-1]  # sorted slowest to fastest
 
 
-def count_timescale_gaps(timescales: np.ndarray, gap_ratio: float = 5.0) -> int:
+def count_timescale_gaps(timescales: np.ndarray, gap_ratio: float = 2.0) -> int:
     """
     Count the number of well-separated timescale clusters.
     A gap exists where T_k / T_{k+1} > gap_ratio.
-    This is the autopoietic depth d(L, π).
+    This is the autopoietic depth d(L, pi).
     [theorem: rg_tower_terminates — tower levels = timescale separations]
+    
+    Default gap_ratio=2.0 detects moderate timescale separation (factor of 2).
+    For stricter separation, use gap_ratio=5.0 or higher.
     """
     if len(timescales) < 2:
         return 0
     
+    # Ensure timescales are sorted in descending order (slowest first)
+    ts = np.sort(timescales)[::-1]
+    
     # Compute ratios between consecutive timescales
-    ratios = timescales[:-1] / np.clip(timescales[1:], 1e-15, None)
+    ratios = ts[:-1] / np.clip(ts[1:], 1e-15, None)
     return int(np.sum(ratios > gap_ratio))
 
 
