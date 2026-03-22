@@ -342,10 +342,56 @@ def run_celegans_experiment(output_dir: str = "output/") -> dict:
     validation = validate_generator(L, pi)
     print(f"  Validation: {'[OK] PASS' if validation['is_valid'] else '[X] FAIL'}")
     
+    # INVESTIGATION 1: Strong connectivity check
+    def is_strongly_connected(L_mat):
+        """Check if the directed graph is strongly connected."""
+        n_mat = len(L_mat)
+        # Adjacency: A[i,j] = 1 if L[i,j] > 0 and i != j
+        A = (L_mat > 1e-10).astype(float)
+        np.fill_diagonal(A, 0)
+        # Use matrix power: (I + A)^n has positive entries iff strongly connected
+        M = np.eye(n_mat) + A
+        Mk = np.linalg.matrix_power(M, n_mat)
+        forward_reachable = np.all(Mk[0, :] > 0)
+        # Check reverse reachability
+        Mk_T = np.linalg.matrix_power(M.T, n_mat)
+        backward_reachable = np.all(Mk_T[0, :] > 0)
+        is_sc = forward_reachable and backward_reachable
+        n_zeros = int(np.sum(np.abs(np.linalg.eigvals(L_mat)) < 1e-8))
+        return is_sc, n_zeros
+    
+    is_sc, n_zero_eigs = is_strongly_connected(L)
+    print(f"\n  CONNECTIVITY ANALYSIS:")
+    print(f"  Strongly connected: {is_sc}")
+    print(f"  Zero eigenvalues: {n_zero_eigs} (expected 1 for irreducible chain)")
+    if n_zero_eigs > 1:
+        print(f"  WARNING: {n_zero_eigs} zero eigenvalues — multiple communicating classes")
+        print(f"  SGC results on non-irreducible chain may be unreliable")
+    
+    # INVESTIGATION 2: Check M3L/M3R connectivity symmetry
+    print(f"\n  BILATERAL SYMMETRY CHECK (M3L/M3R):")
+    m3l_idx = labels.index("M3L") if "M3L" in labels else None
+    m3r_idx = labels.index("M3R") if "M3R" in labels else None
+    if m3l_idx is not None and m3r_idx is not None:
+        for name, idx in [("M3L", m3l_idx), ("M3R", m3r_idx)]:
+            out_deg = int(np.sum(W[idx, :] > 0))
+            in_deg = int(np.sum(W[:, idx] > 0))
+            out_wt = float(np.sum(W[idx, :]))
+            in_wt = float(np.sum(W[:, idx]))
+            print(f"    {name}: out_deg={out_deg}, in_deg={in_deg}, out_wt={out_wt:.1f}, in_wt={in_wt:.1f}")
+            print(f"      pi = {pi[idx]:.4f}")
+        # Check asymmetry
+        m3l_in_sources = [labels[i] for i in range(n) if W[i, m3l_idx] > 0]
+        m3r_in_sources = [labels[i] for i in range(n) if W[i, m3r_idx] > 0]
+        if set(m3l_in_sources) != set(m3r_in_sources):
+            print(f"    ASYMMETRIC INPUT SOURCES DETECTED:")
+            print(f"      M3L inputs: {m3l_in_sources}")
+            print(f"      M3R inputs: {m3r_in_sources}")
+    
     # Check reversibility (detailed balance)
     # The pharyngeal connectome should NOT be reversible (has feedforward structure)
     is_reversible, db_violation = check_detailed_balance(L, pi)
-    print(f"  Detailed balance: {'[OK] REVERSIBLE' if is_reversible else '[X] NON-REVERSIBLE'}")
+    print(f"\n  Detailed balance: {'[OK] REVERSIBLE' if is_reversible else '[X] NON-REVERSIBLE'}")
     print(f"    Max violation: {db_violation:.6f}")
     if not is_reversible:
         print("    (This is expected for directed biological networks)")

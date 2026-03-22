@@ -1,20 +1,28 @@
 {
   "system_name": "C_elegans_Connectome",
-  "timestamp": "2026-03-22T12:26:15.559907",
+  "timestamp": "2026-03-22T13:32:31.921448",
   "commit": "fb0c260",
   "repository": "https://github.com/JasonShroyer/sgc-lean",
-  "epsilon": 0.18252665942183874,
+  "epsilon": 0.21072725463885691,
   "gamma": 0.06489685302413306,
-  "T_star": 5.478651738696935,
+  "T_star": 4.745470640301341,
   "q": 1.0010329873737145,
-  "N_E": 84.42091539723197,
+  "N_E": 73.12327823564345,
   "autopoietic_depth": 1,
-  "schur_correction_norm": 0.46360412101491344,
+  "schur_correction_norm": 0.4571494878284185,
   "n_states": 20,
   "n_blocks": 2,
   "regime": "EMERGENT (intermediate gamma)",
   "validity_horizon_label": "FRAGILE (1 < T* <= 10)",
   "partition": [
+    1,
+    1,
+    0,
+    1,
+    0,
+    0,
+    0,
+    1,
     0,
     0,
     0,
@@ -22,24 +30,16 @@
     0,
     0,
     0,
-    1,
-    1,
-    0,
-    0,
-    1,
     0,
     0,
     0,
-    0,
-    0,
-    1,
     1,
     0
   ],
   "defect_curve": {
-    "2": 0.18252665942183874,
-    "3": 0.18253925969309706,
-    "4": 0.25988915812483493
+    "2": 0.21072725463885691,
+    "3": 0.25280452844157664,
+    "4": 0.21185619529242722
   },
   "eigenvalues": [
     [
@@ -124,8 +124,8 @@
     ]
   ],
   "dirichlet_decomposition": {
-    "coarse": -4.817376818632531e-16,
-    "leakage": 7.011336772370344e-05
+    "coarse": -4.94539743098977e-16,
+    "leakage": -0.00045926397708186703
   },
   "q_diagnostics": {
     "q_star": 1.0010329873737145,
@@ -171,7 +171,7 @@
       "theorem": "optimal_partition_exists",
       "predicted_value": 0.5,
       "tolerance": 0.2,
-      "actual_value": -0.025826561282422396,
+      "actual_value": 0.11758277783848758,
       "verdict": "REFUTED"
     },
     {
@@ -187,7 +187,7 @@
       "theorem": "emergence_ceiling",
       "predicted_value": 1.0,
       "tolerance": 1.0,
-      "actual_value": 84.42091539723197,
+      "actual_value": 73.12327823564345,
       "verdict": "CONFIRMED"
     }
   ]
