@@ -190,12 +190,16 @@ def CycleAvgGenerator (LG : PeriodicGeneratorFamily V) (N : ℕ) (hN : 0 < N) :
     Matrix V V ℝ :=
   (1 / (N : ℝ)) • ∑ k : Fin N, LG.gen (k * LG.period / N)
 
+/-- **Floquet-SGC Bridge**: The Floquet gap bounds cycle-averaged defect for ALL N.
+
+    Universal quantification over N is essential: the physical claim is that the
+    Floquet gap bounds the cycle-averaged defect regardless of discretization resolution. -/
 axiom floquet_sgc_bridge (LG : PeriodicGeneratorFamily V) (γ_F : FloquetGap)
-    (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (N : ℕ) (hN : 0 < N) :
-    γ_F.gap * (opNorm_pi pi_dist hπ
-      (SGC.Approximate.DefectOperator (CycleAvgGenerator LG N hN) P pi_dist hπ))^2 ≤
-    SGC.Thermodynamics.HiddenEntropyProduction (CycleAvgGenerator LG N hN) P pi_dist
+    (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) :
+    ∀ (N : ℕ) (hN : 0 < N),
+      γ_F.gap * (opNorm_pi pi_dist hπ
+        (SGC.Approximate.DefectOperator (CycleAvgGenerator LG N hN) P pi_dist hπ))^2 ≤
+      SGC.Thermodynamics.HiddenEntropyProduction (CycleAvgGenerator LG N hN) P pi_dist
 
 /-! ## Section 7: Empirical Constants -/
 

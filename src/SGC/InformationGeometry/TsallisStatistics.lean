@@ -523,20 +523,41 @@ def QDefectNorm (q : ℝ) (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V �
 
     **CORRECTED**: Previous version used EscortEntropyGap(π) which is
     independent of L and P, making the bound vacuously true or false
-    regardless of the partition choice. -/
+    regardless of the partition choice.
+
+    **V2 UPGRADE**: Now uses q-deformed generator L^(q) and escort distribution π_q,
+    making this a genuine q-deformation of the linear hidden entropy production. -/
 def QHiddenEntropyProduction (q : ℝ) (L : Matrix V V ℝ) (P : Partition V)
-    (pi_dist : V → ℝ) : ℝ :=
-  -- Tsallis analog: difference between full and coarse EP rates
-  -- At q=1 this equals HiddenEntropyProduction L P pi_dist
-  SGC.Thermodynamics.HiddenEntropyProduction L P pi_dist
+    (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (hZ : EscortNormalization q pi_dist ≠ 0) : ℝ :=
+  -- Uses q-deformed generator L^(q) and escort distribution π_q
+  SGC.Thermodynamics.HiddenEntropyProduction
+    (QDeformedGenerator q L pi_dist hπ)
+    P
+    (EscortDistribution q pi_dist hZ)
+
+/-- At q=1, QHiddenEntropyProduction reduces to HiddenEntropyProduction.
+    This is the anchor theorem connecting nonlinear to linear theory. -/
+theorem QHiddenEntropyProduction_at_one (L : Matrix V V ℝ) (P : Partition V)
+    (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) (h_sum : ∑ v, pi_dist v = 1)
+    (hZ : EscortNormalization 1 pi_dist ≠ 0) :
+    QHiddenEntropyProduction 1 L P pi_dist hπ hZ =
+    SGC.Thermodynamics.HiddenEntropyProduction L P pi_dist := by
+  -- At q=1: L^(1) = L by QDeformedGenerator_at_one
+  -- π_1 = p^1/Σp^1 = p/1 = p when Σp = 1 (probability distribution)
+  simp only [QHiddenEntropyProduction, QDeformedGenerator_at_one]
+  congr 1
+  ext v
+  simp only [EscortDistribution, EscortNormalization, Real.rpow_one, h_sum, div_one]
 
 axiom q_persistence_bound
     (q : ℝ) (hq : q > 0)
     (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v)
+    (hZ : EscortNormalization q pi_dist ≠ 0)
     (γ_q : ℝ) (hγ : γ_q > 0) :
     γ_q * (QDefectNorm q L P pi_dist hπ)^2 ≤
-    QHiddenEntropyProduction q L P pi_dist
+    QHiddenEntropyProduction q L P pi_dist hπ hZ
 
 /-! ## Summary
 

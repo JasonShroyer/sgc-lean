@@ -614,8 +614,12 @@ lemma trivialPartition_defect_cost_zero (L : Matrix V V ℝ) (pi_dist : V → �
     NOTE: This proof does not actually require reversibility — the hypothesis hrev
     is unused. The original axiom was designed for a more complex proof path via
     Courant-Fischer, but the finite lattice shortcut makes it unnecessary. We keep
-    the reversibility hypothesis for API compatibility with downstream theorems. -/
-theorem reversible_local_implies_global
+    the reversibility hypothesis for API compatibility with downstream theorems.
+
+    TODO: The genuine local-implies-global theorem (via Courant-Fischer min-max)
+    remains open. That theorem would show: for ANY locally optimal partition (not
+    just zero-defect ones), local optimality implies global optimality. -/
+theorem zero_defect_implies_globally_optimal
     (L : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (_hrev : IsReversible L pi_dist)
     (P_local : Partition V)
@@ -647,7 +651,7 @@ theorem reversible_local_implies_global
     For reversible generators (detailed balance), the global optimum `optimal_partition_exists`
     is the UNIQUE optimum — there are no other local minima in the partition lattice.
 
-    PROOF STATUS: PROVED via `reversible_local_implies_global` theorem using the finite
+    PROOF STATUS: PROVED via `zero_defect_implies_globally_optimal` theorem using the finite
     lattice shortcut: trivialPartition has zero defect, so any locally optimal partition
     must also have zero defect, making it globally optimal. -/
 theorem reversible_local_eq_global (L : Matrix V V ℝ) (pi_dist : V → ℝ)
@@ -656,7 +660,7 @@ theorem reversible_local_eq_global (L : Matrix V V ℝ) (pi_dist : V → ℝ)
     sgc_spec_local L pi_dist hπ → sgc_spec_global L pi_dist hπ := by
   intro ⟨P_local, h_local_opt, h_bound⟩
   -- P_local is locally optimal. Use the theorem to show it's globally optimal.
-  have h_global := reversible_local_implies_global L pi_dist hπ hrev P_local h_local_opt h_bound
+  have h_global := zero_defect_implies_globally_optimal L pi_dist hπ hrev P_local h_local_opt h_bound
   exact ⟨P_local, h_global⟩
 
 /-- **Equivalence for reversible systems**: local and global optimality coincide. -/

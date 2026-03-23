@@ -88,11 +88,23 @@ lemma QuotientGenerator_row_sum_zero (L : Matrix V V ℝ) (P : Partition V)
   rw [Finset.sum_comm]
   -- For fixed x: Σ_y Σ_B (if [x]=A ∧ [y]=B then π(x)·L(x,y) else 0)
   -- The inner Σ_B collapses: for each y, exactly one B = [y] matches
-  -- For each x: Σ_y Σ_B (if [x]=A ∧ [y]=B then π(x)L(x,y) else 0) = 0
-  -- The B-sum collapses (each y matches exactly one B), giving Σ_y π(x)L(x,y) = π(x)·0 = 0
-  -- The Lean proof requires Finset.sum_ite_eq pattern matching on the inner sum.
-  -- PROOF PATH VERIFIED: swap sums, collapse B via sum_ite_eq, factor π, apply hL.
-  sorry
+  by_cases hx : P.quot_map x = A
+  · -- x is in block A: Σ_y Σ_B (if [y]=B then π(x)·L(x,y) else 0) = Σ_y π(x)·L(x,y) = π(x)·0
+    -- First simplify each inner B-sum: for fixed y, Σ_B (if [x]=A ∧ [y]=B then ...) = π(x)·L(x,y)
+    have h_inner : ∀ y : V, ∑ B : Quotient P.rel,
+        (if P.quot_map x = A ∧ P.quot_map y = B then pi_dist x * L x y else 0) =
+        pi_dist x * L x y := by
+      intro y
+      simp only [hx, true_and, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
+    simp only [h_inner]
+    -- Now: Σ_y π(x)·L(x,y) = π(x)·Σ_y L(x,y) = π(x)·0 = 0
+    rw [← Finset.mul_sum, hL x, mul_zero]
+  · -- x is not in block A: all terms are 0
+    apply Finset.sum_eq_zero
+    intro y _
+    apply Finset.sum_eq_zero
+    intro B _
+    simp [hx]
 
 /-! ## Section 2: Quotient Stationary Distribution -/
 
@@ -103,6 +115,15 @@ lemma pi_bar_sum_one_qg (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 
   SGC.pi_bar_sum_one P h_sum
 
 /-! ## Section 3: Multi-Level Composition -/
+
+/-- Coarsening preserves block-constant Rayleigh sets:
+    RayleighSetBlockConstant L P₂ pi_dist ⊆ RayleighSetBlockConstant L P₁ pi_dist
+    when P₁ ≤ P₂ (P₁ refines P₂). -/
+lemma rayleigh_block_subset_of_refines (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+    (P₁ P₂ : Partition V) (h : P₁ ≤ P₂) :
+    RayleighSetBlockConstant L P₂ pi_dist ⊆ RayleighSetBlockConstant L P₁ pi_dist := by
+  intro r ⟨v, hv_ne, hv_block, hv_orth, hv_eq⟩
+  exact ⟨v, hv_ne, proj_refines_subset P₁ P₂ h v hv_block, hv_orth, hv_eq⟩
 
 /-- **Dirichlet Gap Composition**: When P₁ refines P₂ (P₁ ≤ P₂), the Dirichlet gap
     is non-decreasing along the chain V → V/P₁ → V/P₂.
@@ -121,14 +142,11 @@ theorem dirichlet_gap_composition (L : Matrix V V ℝ) (pi_dist : V → ℝ)
     (hS₂ : (RayleighSetBlockConstant L P₂ pi_dist).Nonempty)
     (hT_bdd : BddBelow (RayleighSet L pi_dist)) :
     DirichletGap_bar L P₂ pi_dist ≥ DirichletGap_bar L P₁ pi_dist := by
-  -- PROOF SKETCH:
-  -- The key insight: P₂-block-constant functions form a SUBSET of P₁-block-constant functions
-  -- when P₁ refines P₂ (by proj_refines_subset). DirichletGap_bar is the infimum of Rayleigh
-  -- quotients over the RayleighSetQuot (which equals RayleighSetBlockConstant by h_set_eq in
-  -- dirichlet_gap_non_decrease). Taking the infimum over a smaller set gives ≥ value.
-  --
-  -- The proof requires connecting RayleighSetQuot to RayleighSetBlockConstant via the
-  -- lift bijection, then applying the subset argument.
+  -- PROOF PATH (requires lift bijection infrastructure not yet formalized):
+  -- 1. DirichletGap_bar = sInf(RayleighSetQuot) = sInf(RayleighSetBlockConstant) by lift bijection
+  -- 2. rayleigh_block_subset_of_refines: P₂-block-constant ⊆ P₁-block-constant
+  -- 3. sInf_subset_ge: infimum over smaller set ≥ infimum over larger set
+  -- The mathematical content is settled; this requires formalizing the lift bijection helpers.
   sorry
 
 /-- **Composition Monotonicity**: The hidden entropy production decreases monotonically
