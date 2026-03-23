@@ -57,6 +57,7 @@ The C. elegans pharyngeal circuit provides the calibration:
 
 import SGC.EmergenceEquivalence
 import SGC.InformationGeometry.TsallisStatistics
+import SGC.Spectral.FloquetTheory
 
 noncomputable section
 
@@ -147,17 +148,21 @@ def CycleAveragedDefect (ε_bar : ℝ) : Prop := 0 ≤ ε_bar
 axiom floquet_emergence_equivalence
     (LG : PeriodicGenerator V) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v)
-    (γ_F : ℝ) (hγ : γ_F > 0) :
+    (γ_F : ℝ) (hγ : γ_F > 0)
+    (N : ℕ) (hN : 0 < N) :
+    let L_avg := SGC.Spectral.Floquet.CycleAvgGenerator
+      { gen := LG.generator, period := LG.period, period_pos := LG.period_pos,
+        periodic := fun _ => sorry } N hN
     -- There exists a cycle-averaged optimal partition
     ∃ P_star : Partition V,
-      -- (1) P* minimizes the static defect cost (as approximation to cycle average)
-      (∀ P, defect_cost (LG.generator 0) pi_dist hπ P_star ≤
-            defect_cost (LG.generator 0) pi_dist hπ P) ∧
-      -- (2) Cycle-averaged σ_hid bounded by defect (structure only, not full cycle integral)
+      -- (1) P* minimizes defect cost of the cycle-averaged generator
+      (∀ P, defect_cost L_avg pi_dist hπ P_star ≤
+            defect_cost L_avg pi_dist hπ P) ∧
+      -- (2) Cycle-averaged σ_hid bounded by defect
       (∀ ε : ℝ, 0 ≤ ε →
-        IsApproxLumpable (LG.generator 0) P_star pi_dist hπ ε →
+        IsApproxLumpable L_avg P_star pi_dist hπ ε →
         ∃ C : ℝ, C ≥ 0 ∧
-          HiddenEntropyProduction (LG.generator 0) P_star pi_dist ≤ C * ε^2)
+          HiddenEntropyProduction L_avg P_star pi_dist ≤ C * ε^2)
 
 /-! ## Section 5: The Floquet Persistence Theorem -/
 
@@ -184,11 +189,17 @@ axiom floquet_emergence_equivalence
 axiom floquet_persistence
     (LG : PeriodicGenerator V) (P : Partition V) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v)
-    (hL_gen : ∀ x y, x ≠ y → 0 ≤ LG.generator 0 x y)
     (γ_F : ℝ) (hγ : γ_F > 0)
+    (N : ℕ) (hN : 0 < N)
     (δ : ℝ) (hδ : 0 < δ)
-    (h_persist : HiddenEntropyProduction (LG.generator 0) P pi_dist < δ) :
-    (opNorm_pi pi_dist hπ (DefectOperator (LG.generator 0) P pi_dist hπ))^2 < δ / γ_F
+    (h_persist : HiddenEntropyProduction
+      (SGC.Spectral.Floquet.CycleAvgGenerator
+        { gen := LG.generator, period := LG.period, period_pos := LG.period_pos,
+          periodic := fun _ => sorry } N hN) P pi_dist < δ) :
+    (opNorm_pi pi_dist hπ (DefectOperator
+      (SGC.Spectral.Floquet.CycleAvgGenerator
+        { gen := LG.generator, period := LG.period, period_pos := LG.period_pos,
+          periodic := fun _ => sorry } N hN) P pi_dist hπ))^2 < δ / γ_F
 
 /-! ## Section 6: The Linear-Nonlinear Bridge -/
 

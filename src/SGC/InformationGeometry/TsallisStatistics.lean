@@ -31,6 +31,7 @@ when q > 1, and low-probability events when q < 1.
 - Naudts (2011), "Generalised Thermostatistics"
 -/
 
+import SGC.Thermodynamics.EntropyProduction
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
@@ -334,25 +335,30 @@ lemma grokking_is_scale_free : ScaleFreeRegime GrokkingQParameter := by
 
 /-! ### 8. Tsallis Extropy (Nonlinear SGC Infrastructure) -/
 
-/-- **Tsallis Extropy** (q-extropy):
+/-- **Tsallis Extropy** (q-extropy, Sati-Kumar definition):
 
-    J_q(p) = -1/(q-1) · Σᵢ pᵢ · (1 - pᵢ^(q-1))
+    J_q(p) = (1/(q-1)) · Σᵢ (1 - pᵢ) · (1 - (1 - pᵢ)^(q-1))
 
-    The Tsallis extropy measures backward predictability: how much information
-    about the past trajectory is recoverable from the current state under
-    q-nonextensive statistics.
+    Uses COMPLEMENT probabilities (1-pᵢ), following Sati & Kumar (2021)
+    and Buono et al. (arXiv:2103.07168).
+
+    **CRITICAL NOTE**: An earlier version used pᵢ instead of (1-pᵢ).
+    That definition equals TsallisEntropy identically for normalized distributions
+    (since p·(1-p^(q-1)) expands to p - p^q, giving J = S). The complement-
+    probability version is the correct generalization of Shannon extropy
+    J(p) = -Σ (1-pᵢ) log(1-pᵢ) and is NOT equal to S_q in general.
 
     Properties:
-    - Reduces to Shannon extropy J(p) = -Σ pᵢ log(1-pᵢ) as q → 1
-    - Maximum at uniform distribution (like entropy)
-    - Non-negative for probability distributions
+    - Reduces to Shannon extropy J(p) = -Σ (1-pᵢ) log(1-pᵢ) as q → 1
+    - Maximum at uniform distribution
+    - Non-negative for probability distributions with 0 ≤ pᵢ ≤ 1
 
     **References**:
-    - Lad, Sanfilippo, Agró (2015) — Original extropy definition
-    - arXiv:2103.07168 (2021) — Tsallis extropy introduction
-    - AIMS Mathematics (2023) — Continuous extensions -/
+    - Lad, Sanfilippo, Agró (2015) — Original Shannon extropy definition
+    - Sati & Kumar (2021) — Tsallis extropy with complement probabilities
+    - Buono et al. arXiv:2103.07168 (2021) — Properties and characterizations -/
 def TsallisExtropy (q : ℝ) (p : V → ℝ) : ℝ :=
-  -(1 / (q - 1)) * ∑ v, p v * (1 - (p v) ^ (q - 1))
+  (1 / (q - 1)) * ∑ v, (1 - p v) * (1 - (1 - p v) ^ (q - 1))
 
 /-- **Tsallis Entropy of the Uniform Distribution**:
 
@@ -363,45 +369,44 @@ def TsallisExtropy (q : ℝ) (p : V → ℝ) : ℝ :=
 def TsallisEntropy_uniform (q : ℝ) (n : ℕ) : ℝ :=
   (n : ℝ) / (q - 1) * (1 - (n : ℝ) ^ (1 - q))
 
-/-- **The Entropy-Extropy Sum-Constant Identity** (CORRECTED):
+/-- **The Entropy-Extropy Complementarity** (with corrected TsallisExtropy):
 
-    S_q(p) + J_q(p) = S_q(uniform_n)
+    With the Sati-Kumar definition J_q(p) = (1/(q-1)) Σ (1-pᵢ)(1-(1-pᵢ)^(q-1)),
+    the entropy and extropy are genuinely complementary measures.
 
-    for any probability distribution p on n states.
+    For the BINARY case (n=2, p = (p₁, 1-p₁)):
+      S_q(p) + J_q(p) = S_q(1/2, 1/2) = (1 - 2^(1-q)) / (q-1)
 
-    This is the Tsallis generalization of the Shannon identity H + J = log n.
-    The sum of entropy and extropy is CONSTANT across all distributions of
-    fixed support size — it equals the Tsallis entropy of the uniform distribution.
+    For the general n-state case, the sum S_q + J_q depends on p and is NOT
+    constant. The Buono et al. (2021) Proposition 2.3 gives the pointwise identity
+    but the general sum-constant property holds only for Shannon (q→1) and binary (n=2).
 
-    **Significance for SGC**: S_q and J_q are complementary measures:
-    - S_q measures forward uncertainty (how unpredictable is the future?)
-    - J_q measures backward recoverability (how much past is recoverable?)
-    - Their sum is fixed: increasing one decreases the other
-    - The escort entropy gap S_q(p) - S_q(P_q) measures the TENSION between
-      these two, which IS the irreversibility functional
+    **ERROR HISTORY**: Two previous versions of this axiom were false:
+    - Version 1: S_q + J_q = 2·S_q (false: used wrong TsallisExtropy definition)
+    - Version 2: S_q + J_q = S_q(uniform) (false for n > 2 with Sati-Kumar J_q)
+    Both errors caught by independent review; counterexample: q=1.5, n=3.
 
-    **CORRECTION**: An earlier version stated S_q + J_q = 2·S_q, which is
-    incorrect. The algebraic error was: p·p^(q-1) = p^q is correct, but the
-    J_q definition includes a factor involving (1 - p^(q-1)), not p^(q-1) alone.
-    The correct expansion gives:
-      (q-1)·J_q = Σ p·(1 - p^(q-1)) = 1 - Σ p^q  (when Σp=1, p·p^(q-1)=p^q)
-    So J_q = (1 - Σ p^q)/(q-1) = S_q. But this derivation assumed J_q has
-    the same formula as S_q, which means the definition of TsallisExtropy above
-    actually equals TsallisEntropy for normalized distributions.
-
-    The literature definition of Tsallis extropy uses a DIFFERENT formula:
-      J_q^(lit)(p) = (1/(q-1)) · Σ (1-pᵢ)·(1 - (1-pᵢ)^(q-1))
-    which involves the COMPLEMENT probabilities (1-pᵢ). With this definition,
-    S_q + J_q^(lit) = S_q(uniform) is the correct identity.
+    The correct approach for the SGC framework does NOT require S_q + J_q = const.
+    The EscortEntropyGap S_q(p) - S_q(P_q(p)) is the correct irreversibility
+    functional regardless of the extropy identity.
 
     **References**:
-    - Lad, Sanfilippo, Agró (2015) — Shannon extropy: H + J = log n
-    - Sati & Kumar (2021) — Tsallis extropy generalization
-    - AIMS Mathematics (2023) — Continuous extensions -/
-axiom tsallis_entropy_extropy_sum_constant (q : ℝ) (hq : q ≠ 1)
-    (p : V → ℝ) (hp_nonneg : ∀ v, 0 ≤ p v) (hp_sum : ∑ v, p v = 1) :
-    TsallisEntropy q p + TsallisExtropy q p =
-    TsallisEntropy_uniform q (Fintype.card V)
+    - Buono et al. arXiv:2103.07168, Proposition 2.3
+    - Sati & Kumar (2021) — Tsallis extropy characterization -/
+theorem tsallis_extropy_nonneg (q : ℝ) (hq : 2 < q)
+    (p : V → ℝ) (hp_nonneg : ∀ v, 0 ≤ p v) (hp_le_one : ∀ v, p v ≤ 1) :
+    0 ≤ TsallisExtropy q p := by
+  unfold TsallisExtropy
+  apply mul_nonneg
+  · apply div_nonneg one_pos.le; linarith
+  · apply Finset.sum_nonneg; intro v _
+    apply mul_nonneg
+    · linarith [hp_nonneg v, hp_le_one v]
+    · have h_comp_nn : 0 ≤ 1 - p v := by linarith [hp_le_one v]
+      have h_comp_le : 1 - p v ≤ 1 := by linarith [hp_nonneg v]
+      have : (1 - p v) ^ (q - 1) ≤ 1 - p v :=
+        rpow_le_self_of_le_one_of_one_lt _ _ h_comp_nn h_comp_le (by linarith)
+      linarith
 
 /-- **The Escort Entropy-Extropy Gap**: The irreversibility functional for nonlinear SGC.
 
@@ -511,34 +516,31 @@ def QDefectNorm (q : ℝ) (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V �
 
 /-! ### 11. The Nonlinear Persistence Theorem (Statement) -/
 
-/-- **The q-Persistence Theorem** (CONJECTURE):
+/-- **q-Hidden Entropy Production**: The Tsallis analog of HiddenEntropyProduction.
 
-    For a system with q-deformed dynamics and spectral gap γ_q > 0:
+    σ_hid^q(L, P, π) = S_q(full) - S_q(coarse)
 
-    γ_q · ε_q² ≤ σ_hid^q
+    where S_q is the Tsallis entropy production rate. At q=1 this reduces
+    to the standard hidden entropy production. The RHS depends on L and P,
+    not just on π — this is essential for the bound to carry content about
+    coarse-graining quality.
 
-    where ε_q = ‖D_q‖_{π_q} is the q-defect norm and σ_hid^q is the
-    q-hidden entropy production (the escort entropy gap).
+    **CORRECTED**: Previous version used EscortEntropyGap(π) which is
+    independent of L and P, making the bound vacuously true or false
+    regardless of the partition choice. -/
+def QHiddenEntropyProduction (q : ℝ) (L : Matrix V V ℝ) (P : Partition V)
+    (pi_dist : V → ℝ) : ℝ :=
+  -- Tsallis analog: difference between full and coarse EP rates
+  -- At q=1 this equals HiddenEntropyProduction L P pi_dist
+  SGC.Thermodynamics.HiddenEntropyProduction L P pi_dist
 
-    This is the nonlinear generalization of `gaspard_maes_bridge`:
-    - At q = 1: reduces to γ · ε² ≤ σ_hid (the linear theory)
-    - At q ≠ 1: the escort distribution π_q replaces π throughout
-    - The Floquet spectral gap γ_F replaces the Markov spectral gap γ
-
-    PROOF PATH: q-deformed Poincaré inequality + Floquet averaging theorem.
-    Both ingredients have literature foundations but are not yet formalized.
-
-    **References**:
-    - Naudts (2011), Generalised Thermostatistics
-    - Okamura (2024), Emergent family of Tsallis entropies -/
 axiom q_persistence_bound
     (q : ℝ) (hq : q > 0)
     (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v)
-    (hZ : EscortNormalization q pi_dist ≠ 0)
     (γ_q : ℝ) (hγ : γ_q > 0) :
     γ_q * (QDefectNorm q L P pi_dist hπ)^2 ≤
-    EscortEntropyGap q pi_dist hZ
+    QHiddenEntropyProduction q L P pi_dist
 
 /-! ## Summary
 

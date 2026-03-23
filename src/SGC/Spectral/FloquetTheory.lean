@@ -134,17 +134,16 @@ structure FloquetGap where
   /-- Positivity: perturbations decay -/
   gap_pos : 0 < gap
 
-/-- The Floquet gap bounds the decay of perturbations:
+/-- The **monodromy propagator**: M^n applied to a vector f.
+    Represents the state after n complete cycles. -/
+def MonodromyPropagator (M : MonodromyOperator V) (n : ℕ) (f : V → ℝ) : V → ℝ :=
+  M.matrix ^ n *ᵥ f
 
-    ‖p(t) - p_cycle(t)‖ ≤ C · exp(-γ_F · t) · ‖p(0) - p_cycle(0)‖
-
-    This is the nonlinear analog of the spectral gap bound for Markov chains:
-    ‖p(t) - π‖ ≤ C · exp(-γ · t) · ‖p(0) - π‖ -/
 axiom floquet_decay_bound (M : MonodromyOperator V) (γ_F : FloquetGap)
     (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) :
-    ∃ C : ℝ, C > 0 ∧ ∀ t : ℝ, 0 ≤ t →
-      ∀ f : V → ℝ,
-        norm_pi pi_dist f ≤ C * Real.exp (-γ_F.gap * t) * norm_pi pi_dist f
+    ∃ C : ℝ, C > 0 ∧ ∀ (n : ℕ) (f : V → ℝ),
+        norm_pi pi_dist (MonodromyPropagator M n f) ≤
+        C * Real.exp (-γ_F.gap * (n * M.period)) * norm_pi pi_dist f
 
 /-! ## Section 5: The Linearity Ratio -/
 
@@ -172,27 +171,31 @@ lemma linearity_ratio_range (γ_linear γ_F : ℝ) (hγ_linear : 0 < γ_linear)
   · exact div_pos hγ_linear hγ_F
   · rw [div_le_one hγ_F]; exact h_le
 
-/-! ## Section 6: Connection to SGC -/
+/-! ## Section 6: Connection to SGC
 
-/-- **Floquet-SGC Bridge**: The Floquet spectral gap bounds the cycle-averaged
-    hidden entropy production, exactly as the Markov spectral gap bounds σ_hid
-    in the linear theory.
+**Floquet-SGC Bridge**: The Floquet spectral gap bounds the cycle-averaged
+hidden entropy production: γ_F · ε̄² ≤ (1/T) ∫₀ᵀ σ_hid(t) dt.
 
-    γ_F · ε̄² ≤ (1/T) ∫₀ᵀ σ_hid(t) dt
+**CORRECTED**: Previous version used `M.matrix` (propagator) where generator-based
+definitions are needed. Now uses `CycleAvgGenerator` (discrete Riemann approximation). -/
 
-    This is the nonlinear generalization of `gaspard_maes_bridge`.
+/-- **Cycle-Averaged Generator** (discrete N-step approximation).
 
-    **Proof path**: Apply gaspard_maes_bridge at each time step with the
-    instantaneous generator L(t) and spectral gap, then use the Floquet
-    averaging theorem to replace the instantaneous gap with γ_F.
+    L̄ = (1/T) Σ_{k=0}^{N-1} (T/N) · L(k·T/N)
 
-    **Status**: CONJECTURE — requires Floquet averaging theorem
-    (standard but not yet in Mathlib). -/
-axiom floquet_sgc_bridge (M : MonodromyOperator V) (γ_F : FloquetGap)
-    (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) :
+    This approximates (1/T) ∫₀ᵀ L(t) dt using a Riemann sum.
+    For the Floquet-SGC bridge, this is the generator whose defect
+    and entropy production should be bounded by γ_F. -/
+def CycleAvgGenerator (LG : PeriodicGeneratorFamily V) (N : ℕ) (hN : 0 < N) :
+    Matrix V V ℝ :=
+  (1 / (N : ℝ)) • ∑ k : Fin N, LG.gen (k * LG.period / N)
+
+axiom floquet_sgc_bridge (LG : PeriodicGeneratorFamily V) (γ_F : FloquetGap)
+    (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (N : ℕ) (hN : 0 < N) :
     γ_F.gap * (opNorm_pi pi_dist hπ
-      (SGC.Approximate.DefectOperator (M.matrix) P pi_dist hπ))^2 ≤
-    SGC.Thermodynamics.HiddenEntropyProduction M.matrix P pi_dist
+      (SGC.Approximate.DefectOperator (CycleAvgGenerator LG N hN) P pi_dist hπ))^2 ≤
+    SGC.Thermodynamics.HiddenEntropyProduction (CycleAvgGenerator LG N hN) P pi_dist
 
 /-! ## Section 7: Empirical Constants -/
 
