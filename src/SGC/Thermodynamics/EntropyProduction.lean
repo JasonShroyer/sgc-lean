@@ -391,6 +391,7 @@ theorem hidden_entropy_bounded_by_defect
 axiom gaspard_maes_bridge
     (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x)
     (hL_gen : ∀ x y, x ≠ y → 0 ≤ L x y)
+    (h_stat : ∀ v, ∑ u, pi_dist u * L u v = 0)
     (γ : ℝ) (hγ : γ > 0)
     (hγ_gap : γ ≤ DirichletGap L pi_dist) :
     γ * (opNorm_pi pi_dist hπ (Approximate.DefectOperator L P pi_dist hπ))^2 ≤
@@ -413,10 +414,11 @@ axiom gaspard_maes_bridge
 theorem hidden_entropy_lower_bound
     (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x)
     (hL_gen : ∀ x y, x ≠ y → 0 ≤ L x y)
+    (h_stat : ∀ v, ∑ u, pi_dist u * L u v = 0)
     (γ : ℝ) (hγ : γ > 0) (hγ_gap : γ ≤ DirichletGap L pi_dist) :
     γ * (opNorm_pi pi_dist hπ (Approximate.DefectOperator L P pi_dist hπ))^2 ≤
     HiddenEntropyProduction L P pi_dist :=
-  gaspard_maes_bridge L P pi_dist hπ hL_gen γ hγ hγ_gap
+  gaspard_maes_bridge L P pi_dist hπ hL_gen h_stat γ hγ hγ_gap
 
 /-- **Corollary: Efficiency Requires Prediction**
 
@@ -433,11 +435,12 @@ theorem hidden_entropy_lower_bound
 theorem efficiency_requires_prediction
     (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x)
     (hL_gen : ∀ x y, x ≠ y → 0 ≤ L x y)
+    (h_stat : ∀ v, ∑ u, pi_dist u * L u v = 0)
     (γ : ℝ) (hγ : γ > 0) (hγ_gap : γ ≤ DirichletGap L pi_dist)
     (δ : ℝ) (_hδ : 0 < δ) (h_efficient : HiddenEntropyProduction L P pi_dist < δ) :
     (opNorm_pi pi_dist hπ (Approximate.DefectOperator L P pi_dist hπ))^2 < δ / γ := by
   -- From hidden_entropy_lower_bound: γ · ‖D‖² ≤ σ_hid
-  have h_lower := hidden_entropy_lower_bound L P pi_dist hπ hL_gen γ hγ hγ_gap
+  have h_lower := hidden_entropy_lower_bound L P pi_dist hπ hL_gen h_stat γ hγ hγ_gap
   -- From h_efficient: σ_hid < δ
   -- Therefore: γ · ‖D‖² < δ, so ‖D‖² < δ/γ
   have h_chain : γ * (opNorm_pi pi_dist hπ (Approximate.DefectOperator L P pi_dist hπ))^2 < δ :=

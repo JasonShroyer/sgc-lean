@@ -300,10 +300,11 @@ theorem emergence_equivalence (L : Matrix V V ℝ) (pi_dist : V → ℝ)
 theorem to_persist_is_to_predict (L : Matrix V V ℝ) (P : Partition V)
     (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (hL_gen : ∀ x y, x ≠ y → 0 ≤ L x y)
+    (h_stat : ∀ v, ∑ u, pi_dist u * L u v = 0)
     (γ : ℝ) (hγ : γ > 0) (hγ_gap : γ ≤ DirichletGap L pi_dist)
     (δ : ℝ) (_hδ : 0 < δ) (h_persist : HiddenEntropyProduction L P pi_dist < δ) :
     (opNorm_pi pi_dist hπ (DefectOperator L P pi_dist hπ))^2 < δ / γ :=
-  efficiency_requires_prediction L P pi_dist hπ hL_gen γ hγ hγ_gap δ _hδ h_persist
+  efficiency_requires_prediction L P pi_dist hπ hL_gen h_stat γ hγ hγ_gap δ _hδ h_persist
 
 /-! ## Summary: The Theory of Emergent Intelligence
 

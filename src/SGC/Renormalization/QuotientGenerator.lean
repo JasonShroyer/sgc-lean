@@ -80,13 +80,10 @@ lemma QuotientGenerator_row_sum_zero (L : Matrix V V ℝ) (P : Partition V)
 /-! ## Section 2: Quotient Stationary Distribution -/
 
 /-- π̄ is a probability distribution on V̄ when π is on V. -/
-lemma pi_bar_sum_one (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+lemma pi_bar_sum_one_qg (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (h_sum : ∑ v, pi_dist v = 1) :
-    ∑ A : Quotient P.rel, pi_bar P pi_dist A = 1 := by
-  -- π̄(A) = Σ_{x∈A} π(x), and Σ_A π̄(A) = Σ_A Σ_{x∈A} π(x) = Σ_x π(x) = 1
-  -- This is a reindexing argument that requires connecting the partition structure
-  -- to the sum decomposition.
-  sorry
+    ∑ A : Quotient P.rel, pi_bar P pi_dist A = 1 :=
+  SGC.pi_bar_sum_one P h_sum
 
 /-! ## Section 3: Multi-Level Composition -/
 
