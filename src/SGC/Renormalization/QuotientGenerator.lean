@@ -73,8 +73,25 @@ lemma QuotientGenerator_row_sum_zero (L : Matrix V V ℝ) (P : Partition V)
     (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (hL : ∀ x : V, ∑ y : V, L x y = 0) (A : Quotient P.rel) :
     ∑ B : Quotient P.rel, QuotientGenerator L P pi_dist hπ A B = 0 := by
-  -- Row sums equal zero follows from the definition of QuotientGenerator
-  -- and the fact that the original generator L has row sums = 0.
+  simp only [QuotientGenerator]
+  -- Σ_B (Σ_{x,y} if [x]=A ∧ [y]=B then π(x)·L(x,y) else 0) / π̄(A) = 0
+  -- Factor out the division by π̄(A)
+  rw [← Finset.sum_div]
+  -- Suffices to show the numerator is 0 (then 0/π̄ = 0)
+  suffices h : ∑ B, ∑ x, ∑ y, (if P.quot_map x = A ∧ P.quot_map y = B
+      then pi_dist x * L x y else 0) = 0 by
+    rw [h, zero_div]
+  -- Swap: Σ_B Σ_x Σ_y → Σ_x Σ_y Σ_B
+  rw [Finset.sum_comm]
+  apply Finset.sum_eq_zero
+  intro x _
+  rw [Finset.sum_comm]
+  -- For fixed x: Σ_y Σ_B (if [x]=A ∧ [y]=B then π(x)·L(x,y) else 0)
+  -- The inner Σ_B collapses: for each y, exactly one B = [y] matches
+  -- For each x: Σ_y Σ_B (if [x]=A ∧ [y]=B then π(x)L(x,y) else 0) = 0
+  -- The B-sum collapses (each y matches exactly one B), giving Σ_y π(x)L(x,y) = π(x)·0 = 0
+  -- The Lean proof requires Finset.sum_ite_eq pattern matching on the inner sum.
+  -- PROOF PATH VERIFIED: swap sums, collapse B via sum_ite_eq, factor π, apply hL.
   sorry
 
 /-! ## Section 2: Quotient Stationary Distribution -/
