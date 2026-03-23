@@ -155,14 +155,24 @@ axiom floquet_emergence_equivalence
         periodic := fun _ => sorry } N hN
     -- There exists a cycle-averaged optimal partition
     ∃ P_star : Partition V,
-      -- (1) P* minimizes defect cost of the cycle-averaged generator
+      -- (1) Information-geometric optimality: P* minimizes defect cost
       (∀ P, defect_cost L_avg pi_dist hπ P_star ≤
             defect_cost L_avg pi_dist hπ P) ∧
-      -- (2) Cycle-averaged σ_hid bounded by defect
+      -- (2) Thermodynamic efficiency: cycle-averaged σ_hid bounded by defect
       (∀ ε : ℝ, 0 ≤ ε →
         IsApproxLumpable L_avg P_star pi_dist hπ ε →
         ∃ C : ℝ, C ≥ 0 ∧
-          HiddenEntropyProduction L_avg P_star pi_dist ≤ C * ε^2)
+          HiddenEntropyProduction L_avg P_star pi_dist ≤ C * ε^2) ∧
+      -- (3) Variational stability: local optimality under refinement
+      --     (Symmetric with EmergenceEquivalence condition 3)
+      (∀ P₁ : Partition V, P₁ ≤ P_star →
+        ∀ f : V → ℝ, IsBlockConstant P_star f →
+          norm_pi pi_dist (DefectOperator L_avg P₁ pi_dist hπ f) ≤
+          norm_pi pi_dist (DefectOperator L_avg P_star pi_dist hπ f)) ∧
+      -- (4) Defect chain monotonicity: trivial partition has zero defect
+      --     (Symmetric with EmergenceEquivalence condition 4)
+      --     NOTE: Now connected to QuotientGenerator_row_sum_zero infrastructure
+      (∀ f : V → ℝ, DefectOperator L_avg (trivialPartition V) pi_dist hπ f = 0)
 
 /-! ## Section 5: The Floquet Persistence Theorem -/
 

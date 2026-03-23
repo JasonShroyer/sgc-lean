@@ -4,8 +4,8 @@
 
 | Field | Value |
 |-------|-------|
-| **Date** | January 29, 2026 |
-| **Status** | ✅ VERIFIED CORE (100%) + ⚠️ AXIOMATIC EXTENSIONS + 🧪 OBSERVABLES + 🌐 TENSORIZATION |
+| **Date** | March 23, 2026 |
+| **Status** | ✅ VERIFIED CORE (100%) + ⚠️ AXIOMATIC EXTENSIONS + 🧪 OBSERVABLES + 🌐 TENSORIZATION + 🔄 NONLINEAR |
 | **Lean Version** | Lean 4 |
 | **Mathlib** | v4.25.2 |
 
@@ -161,6 +161,49 @@ non-normal systems (shear flows) can have `Defect > 0` (transient growth) even w
 | Module | Path | Key Theorems |
 |--------|------|--------------|
 | **LeastAction** | `src/SGC/Variational/LeastAction.lean` | `least_action_maximizes_drift`, `variational_drift_optimality` |
+
+### Nonlinear/Floquet Pillar (March 2026) — NEW
+
+The Nonlinear Pillar extends the linear SGC theory to q-deformed systems and periodic dynamics.
+
+| Module | Path | Key Theorem | Status |
+|--------|------|-------------|--------|
+| **QuotientGenerator** | `Renormalization/QuotientGenerator.lean` | `QuotientGenerator_row_sum_zero` | ✅ Proved |
+| **QuotientGenerator** | `Renormalization/QuotientGenerator.lean` | `dirichlet_gap_composition` | ✅ Proved |
+| **QuotientGenerator** | `Renormalization/QuotientGenerator.lean` | `rayleigh_block_subset_of_refines` | ✅ Proved |
+| **Lumpability** | `Renormalization/Lumpability.lean` | `rayleigh_set_quot_eq_block_constant` | ✅ Proved |
+| **TsallisStatistics** | `InformationGeometry/TsallisStatistics.lean` | `QHiddenEntropyProduction_at_one` | ✅ Proved |
+| **TsallisStatistics** | `InformationGeometry/TsallisStatistics.lean` | `tsallis_extropy_nonneg` | ✅ Proved |
+| **OptimalPartition** | `Renormalization/OptimalPartition.lean` | `zero_defect_implies_globally_optimal` | ✅ Proved |
+| **FloquetTheory** | `Spectral/FloquetTheory.lean` | `floquet_sgc_bridge` | ⚠️ Axiom (∀N) |
+| **NonlinearEmergence** | `NonlinearEmergence.lean` | `floquet_emergence_equivalence` | ⚠️ Axiom |
+| **NonlinearEmergence** | `NonlinearEmergence.lean` | `floquet_persistence` | ⚠️ Axiom |
+| **TsallisStatistics** | `InformationGeometry/TsallisStatistics.lean` | `q_persistence_bound` | ⚠️ Axiom |
+
+**Key Results**:
+
+1. **dirichlet_gap_composition**: When P₁ refines P₂, γ(V/P₂) ≥ γ(V/P₁). Proved using:
+   - `rayleigh_set_quot_eq_block_constant`: RayleighSetQuot = RayleighSetBlockConstant
+   - `rayleigh_block_subset_of_refines`: Coarser partition → smaller Rayleigh set
+   - `sInf_subset_ge`: Infimum over smaller set is larger
+
+2. **QHiddenEntropyProduction_at_one**: q=1 recovery anchor theorem. Proves that the
+   nonlinear q-hidden entropy production reduces to the linear hidden entropy production.
+
+3. **q_persistence_bound**: Structured proof architecture documented:
+   - Step 1: q-Poincaré inequality (CONJECTURE)
+   - Step 2: Defect norm to Dirichlet form (MECHANICAL)
+   - Step 3: q-Gaspard identity (OPEN — central mathematical problem)
+
+4. **floquet_emergence_equivalence**: Now symmetric with linear `emergence_equivalence`:
+   - (1) Information-geometric optimality
+   - (2) Thermodynamic efficiency
+   - (3) Variational stability ← NEW
+   - (4) Defect chain monotonicity ← NEW
+
+**Remaining Sorries** (helper lemmas, not blocking main theorems):
+- `inner_pi_eq_factor_inner`: Norm equality under quotient factorization (sum reindexing)
+- `factor_preserves_orthogonality`: Orthogonality lifts through quotient (sum reindexing)
 
 ### Bridge Pillar (Classical-Quantum Correspondence)
 

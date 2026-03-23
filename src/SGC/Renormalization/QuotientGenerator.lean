@@ -114,7 +114,65 @@ lemma pi_bar_sum_one_qg (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 
     ∑ A : Quotient P.rel, pi_bar P pi_dist A = 1 :=
   SGC.pi_bar_sum_one P h_sum
 
-/-! ## Section 3: Multi-Level Composition -/
+/-! ## Section 3: Lift Infrastructure for Block-Constant Functions -/
+
+/-- **Factor a block-constant function through the quotient.**
+
+    If f : V → ℝ is P-block-constant, then f factors uniquely through the quotient:
+    f = factor_block_fun P f hf ∘ P.quot_map
+
+    This is the key construction for relating Rayleigh quotients on V to those on V̄. -/
+noncomputable def factor_block_fun (P : Partition V) (f : V → ℝ)
+    (hf : IsBlockConstant P f) : Quotient P.rel → ℝ :=
+  Quotient.lift f (fun a b hab => hf a b hab)
+
+/-- factor_block_fun correctly inverts the quotient map. -/
+lemma factor_block_fun_spec (P : Partition V) (f : V → ℝ) (hf : IsBlockConstant P f) (v : V) :
+    factor_block_fun P f hf (P.quot_map v) = f v := by
+  simp only [factor_block_fun, Partition.quot_map]
+  rfl
+
+/-- Nonzero functions lift to nonzero functions on the quotient. -/
+lemma factor_block_fun_ne_zero (P : Partition V) (f : V → ℝ) (hf : IsBlockConstant P f)
+    (hf_ne : f ≠ 0) : factor_block_fun P f hf ≠ 0 := by
+  intro h_eq
+  apply hf_ne
+  ext v
+  have : factor_block_fun P f hf (P.quot_map v) = 0 := by rw [h_eq]; rfl
+  rw [← factor_block_fun_spec P f hf v]
+  exact this
+
+/-- **Norm equality under factorization.**
+
+    The π-weighted norm on V equals the π̄-weighted norm on V̄ for block-constant functions:
+    ⟨f, f⟩_π = ⟨factor f, factor f⟩_{π̄}
+
+    This is because both sums aggregate the same values, just grouped differently. -/
+lemma inner_pi_eq_factor_inner (P : Partition V) (pi_dist : V → ℝ)
+    (f : V → ℝ) (hf : IsBlockConstant P f) :
+    inner_pi pi_dist f f =
+    inner_pi (pi_bar P pi_dist) (factor_block_fun P f hf) (factor_block_fun P f hf) := by
+  -- LHS: Σ_v π(v) f(v)²
+  -- RHS: Σ_A π̄(A) (factor f)(A)² = Σ_A (Σ_{v∈A} π(v)) f(v_A)²
+  -- Both aggregate the same terms grouped differently. By factor_block_fun_spec,
+  -- (factor f)([v]) = f(v), so the sums are equal after reindexing.
+  simp only [inner_pi, pi_bar]
+  -- After simp: both sides reduce to sums over v with f(v)² terms
+  -- The reindexing from A to v is mechanical but requires sum manipulation
+  sorry
+
+/-- **Orthogonality lifts through factorization.**
+
+    If f ⊥ 1 in L²(π), then (factor f) ⊥ 1 in L²(π̄). -/
+lemma factor_preserves_orthogonality (P : Partition V) (pi_dist : V → ℝ)
+    (f : V → ℝ) (hf : IsBlockConstant P f)
+    (h_orth : inner_pi pi_dist f constant_vec_one = 0) :
+    inner_pi (pi_bar P pi_dist) (factor_block_fun P f hf) constant_vec_one = 0 := by
+  -- Same reindexing argument: Σ_A π̄(A) · 1 = Σ_v π(v) · 1
+  simp only [inner_pi, constant_vec_one, mul_one, pi_bar] at h_orth ⊢
+  sorry
+
+/-! ## Section 4: Rayleigh Quotient Equivalence -/
 
 /-- Coarsening preserves block-constant Rayleigh sets:
     RayleighSetBlockConstant L P₂ pi_dist ⊆ RayleighSetBlockConstant L P₁ pi_dist
@@ -142,12 +200,21 @@ theorem dirichlet_gap_composition (L : Matrix V V ℝ) (pi_dist : V → ℝ)
     (hS₂ : (RayleighSetBlockConstant L P₂ pi_dist).Nonempty)
     (hT_bdd : BddBelow (RayleighSet L pi_dist)) :
     DirichletGap_bar L P₂ pi_dist ≥ DirichletGap_bar L P₁ pi_dist := by
-  -- PROOF PATH (requires lift bijection infrastructure not yet formalized):
-  -- 1. DirichletGap_bar = sInf(RayleighSetQuot) = sInf(RayleighSetBlockConstant) by lift bijection
-  -- 2. rayleigh_block_subset_of_refines: P₂-block-constant ⊆ P₁-block-constant
-  -- 3. sInf_subset_ge: infimum over smaller set ≥ infimum over larger set
-  -- The mathematical content is settled; this requires formalizing the lift bijection helpers.
-  sorry
+  -- Step 1: DirichletGap_bar = sInf(RayleighSetQuot) = sInf(RayleighSetBlockConstant)
+  -- This equality is proved in rayleigh_set_quot_eq_block via the lift bijection.
+  simp only [DirichletGap_bar]
+  -- Step 2: RayleighSetQuot = RayleighSetBlockConstant for lumpable partitions
+  have h_eq₁ : RayleighSetQuot L P₁ pi_dist = RayleighSetBlockConstant L P₁ pi_dist :=
+    rayleigh_set_quot_eq_block_constant L P₁ pi_dist hL₁
+  have h_eq₂ : RayleighSetQuot L P₂ pi_dist = RayleighSetBlockConstant L P₂ pi_dist :=
+    rayleigh_set_quot_eq_block_constant L P₂ pi_dist hL₂
+  rw [h_eq₁, h_eq₂]
+  -- Step 3: P₂-block-constant ⊆ P₁-block-constant when P₁ ≤ P₂
+  have h_subset := rayleigh_block_subset_of_refines L pi_dist P₁ P₂ h_refines
+  -- Step 4: sInf over smaller set ≥ sInf over larger set
+  have h_bdd₁ : BddBelow (RayleighSetBlockConstant L P₁ pi_dist) :=
+    BddBelow.mono (rayleigh_block_subset L P₁ pi_dist) hT_bdd
+  exact sInf_subset_ge h_subset hS₂ h_bdd₁
 
 /-- **Composition Monotonicity**: The hidden entropy production decreases monotonically
     up the RG tower.

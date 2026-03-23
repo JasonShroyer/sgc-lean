@@ -550,6 +550,53 @@ theorem QHiddenEntropyProduction_at_one (L : Matrix V V ℝ) (P : Partition V)
   ext v
   simp only [EscortDistribution, EscortNormalization, Real.rpow_one, h_sum, div_one]
 
+/-- **q-Persistence Bound**: The nonlinear analog of the SGC persistence theorem.
+
+    γ_q · ‖D_q(L, P)‖²_{π_q} ≤ σ_hid^q(L^(q), P, π_q)
+
+    where:
+    - γ_q is the q-Poincaré constant (spectral gap of L^(q) in L²(π_q))
+    - D_q is the q-defect operator measuring departure from lumpability
+    - σ_hid^q is the q-hidden entropy production
+
+    ## Proof Architecture (3 Steps)
+
+    **Step 1: q-Poincaré inequality for QDeformedGenerator**
+    ```
+    γ_q · ‖f - π_q(f)‖²_{π_q} ≤ ℰ_{L^(q)}(f, f)
+    ```
+    STATUS: CONJECTURE. Would follow from:
+    - q-detailed balance (proved in q_detailed_balance_holds)
+    - Standard Poincaré for the deformed generator L^(q)
+    The key is that L^(q) inherits reversibility from L when q-detailed balance holds.
+
+    **Step 2: Relate defect norm to Dirichlet form of projected error**
+    ```
+    ‖D_q(L, P)‖²_{π_q} ≤ inf_{f orthogonal} ℰ_{L^(q)}(f, f)
+    ```
+    STATUS: MECHANICAL. Same structure as linear case (SGC.Axioms.Geometry.defect_dirichlet)
+    but with L^(q) replacing L and π_q replacing π. The infimum is over functions
+    orthogonal to constants in the escort-weighted inner product.
+
+    **Step 3: q-Gaspard Identity — Dirichlet form bounds QHiddenEntropyProduction**
+    ```
+    ℰ_{L^(q)}(f_opt, f_opt) ≤ σ_hid^q(L^(q), P, π_q)
+    ```
+    STATUS: **OPEN CONJECTURE**. This is the central mathematical problem.
+    The linear version is gaspard_maes_bridge (published: Gaspard-Maes 1993).
+
+    Literature for q-analog:
+    - Naudts (2011) "Generalised Thermostatistics" §7
+    - Tsallis (2009) "Introduction to Nonextensive Statistical Mechanics" Ch. 5
+    - Borges (2004) "A possible deformed algebra and calculus inspired in nonextensive thermostatistics"
+
+    The q-Gaspard conjecture states that the Tsallis entropy production rate
+    provides an upper bound on the q-Dirichlet form, just as Shannon entropy
+    production bounds the standard Dirichlet form.
+
+    ## At q = 1
+    This axiom reduces to the linear persistence_bound via QHiddenEntropyProduction_at_one.
+    The proof tree collapses to the established linear theory. -/
 axiom q_persistence_bound
     (q : ℝ) (hq : q > 0)
     (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)

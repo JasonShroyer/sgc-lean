@@ -646,6 +646,49 @@ lemma lift_fun_is_block_constant (P : Partition V) (f : P.Quot → ℝ) :
   have h_eq : P.quot_map x = P.quot_map y := Quotient.eq'.mpr hxy
   rw [h_eq]
 
+/-- **RayleighSetQuot = RayleighSetBlockConstant** for strongly lumpable partitions.
+
+    This is the key lift bijection: every block-constant function is lift(f) for
+    unique f, and the Rayleigh quotients match by rayleigh_quotient_lift_eq. -/
+lemma rayleigh_set_quot_eq_block_constant (L : Matrix V V ℝ) (P : Partition V)
+    (pi_dist : V → ℝ) (hL : IsStronglyLumpable L P) :
+    RayleighSetQuot L P pi_dist = RayleighSetBlockConstant L P pi_dist := by
+  ext r
+  simp only [RayleighSetQuot, RayleighSetBlockConstant, Set.mem_setOf_eq]
+  constructor
+  · -- Quot → Block: given R̄(f) = r, show R(lift f) = r with lift f block-constant
+    intro ⟨f, hf_ne, hf_orth, hr⟩
+    refine ⟨lift_fun P f, ?_, lift_fun_is_block_constant P f, ?_, ?_⟩
+    · -- lift(f) ≠ 0
+      intro h_zero
+      apply hf_ne
+      ext A
+      have := congr_fun h_zero (Quotient.out A)
+      simp only [lift_fun, Pi.zero_apply, Partition.quot_map] at this
+      rwa [Quotient.out_eq] at this
+    · -- lift(f) ⊥ π
+      rw [← lift_orthog_iff]; exact hf_orth
+    · -- R(lift f) = r
+      rw [rayleigh_quotient_lift_eq L P pi_dist hL f, hr]
+  · -- Block → Quot: given block-constant u with R(u) = r, find f with R̄(f) = r
+    intro ⟨u, hu_ne, hu_block, hu_orth, hr⟩
+    -- Since u is block-constant, u = lift(g) for some g
+    obtain ⟨g, hg_eq⟩ := (block_constant_iff_lift P u).mp hu_block
+    refine ⟨g, ?_, ?_, ?_⟩
+    · -- g ≠ 0
+      intro hg_zero
+      apply hu_ne
+      rw [hg_eq]
+      ext x; simp [hg_zero]
+    · -- g ⊥ π̄
+      rw [lift_orthog_iff]
+      convert hu_orth using 2
+      exact hg_eq.symm
+    · -- R̄(g) = r
+      rw [← rayleigh_quotient_lift_eq L P pi_dist hL g]
+      convert hr using 2
+      exact hg_eq.symm
+
 /-- **Dirichlet Gap Non-Decrease**: γ̄ ≥ γ where γ = inf R(u).
 
     Coarse-graining cannot decrease the Dirichlet gap because:
