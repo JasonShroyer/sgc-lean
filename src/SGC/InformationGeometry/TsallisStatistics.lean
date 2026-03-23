@@ -335,26 +335,24 @@ lemma grokking_is_scale_free : ScaleFreeRegime GrokkingQParameter := by
 
 /-! ### 8. Tsallis Extropy (Nonlinear SGC Infrastructure) -/
 
-/-- **Tsallis Extropy** (q-extropy, Sati-Kumar definition):
+/-- **Tsallis Extropy** (q-extropy, complement-probability form):
 
     J_q(p) = (1/(q-1)) · Σᵢ (1 - pᵢ) · (1 - (1 - pᵢ)^(q-1))
 
-    Uses COMPLEMENT probabilities (1-pᵢ), following Sati & Kumar (2021)
-    and Buono et al. (arXiv:2103.07168).
+    Uses COMPLEMENT probabilities (1-pᵢ), following Sati & Kumar (2021).
 
-    **CRITICAL NOTE**: An earlier version used pᵢ instead of (1-pᵢ).
-    That definition equals TsallisEntropy identically for normalized distributions
-    (since p·(1-p^(q-1)) expands to p - p^q, giving J = S). The complement-
-    probability version is the correct generalization of Shannon extropy
-    J(p) = -Σ (1-pᵢ) log(1-pᵢ) and is NOT equal to S_q in general.
+    **SIGN VERIFICATION** (numerically verified for q=1.5, p=(0.3,0.7)):
+    - Each term (1-pᵢ)·(1-(1-pᵢ)^(q-1)) ≥ 0 for pᵢ ∈ [0,1], q > 1
+      because (1-pᵢ)^(q-1) ∈ [0,1] when 1-pᵢ ∈ [0,1] and q-1 > 0
+    - With 1/(q-1) > 0: J_q ≥ 0 ✓
 
-    Properties:
-    - Reduces to Shannon extropy J(p) = -Σ (1-pᵢ) log(1-pᵢ) as q → 1
-    - Maximum at uniform distribution
-    - Non-negative for probability distributions with 0 ≤ pᵢ ≤ 1
+    **DEFINITION HISTORY** (4 iterations):
+    - V1: pᵢ·(1-pᵢ^(q-1)) with -(1/(q-1)) — equals S_q, wrong definition
+    - V2: (1-pᵢ)·(1-(1-pᵢ)^(q-1)) with 1/(q-1) — correct, J_q ≥ 0 ✓
+    - V3: same with 1/(1-q) — WRONG: gives J_q ≤ 0 for q > 1
+    - V4 (current): back to 1/(q-1) — correct, verified numerically
 
     **References**:
-    - Lad, Sanfilippo, Agró (2015) — Original Shannon extropy definition
     - Sati & Kumar (2021) — Tsallis extropy with complement probabilities
     - Buono et al. arXiv:2103.07168 (2021) — Properties and characterizations -/
 def TsallisExtropy (q : ℝ) (p : V → ℝ) : ℝ :=
@@ -369,31 +367,26 @@ def TsallisExtropy (q : ℝ) (p : V → ℝ) : ℝ :=
 def TsallisEntropy_uniform (q : ℝ) (n : ℕ) : ℝ :=
   (n : ℝ) / (q - 1) * (1 - (n : ℝ) ^ (1 - q))
 
-/-- **The Entropy-Extropy Complementarity** (with corrected TsallisExtropy):
+/-! #### Entropy-Extropy Complementarity Note
 
-    With the Sati-Kumar definition J_q(p) = (1/(q-1)) Σ (1-pᵢ)(1-(1-pᵢ)^(q-1)),
-    the entropy and extropy are genuinely complementary measures.
+For the BINARY case (n=2): S_q + J_q = S_q(1/2, 1/2) is constant.
+For n > 2: the sum depends on p and is NOT constant (Buono et al. 2021).
 
-    For the BINARY case (n=2, p = (p₁, 1-p₁)):
-      S_q(p) + J_q(p) = S_q(1/2, 1/2) = (1 - 2^(1-q)) / (q-1)
+**ERROR HISTORY**: Two previous axioms about S_q + J_q were false and removed:
+- V1: S_q + J_q = 2·S_q (wrong TsallisExtropy definition)
+- V2: S_q + J_q = S_q(uniform) (false for n > 2)
 
-    For the general n-state case, the sum S_q + J_q depends on p and is NOT
-    constant. The Buono et al. (2021) Proposition 2.3 gives the pointwise identity
-    but the general sum-constant property holds only for Shannon (q→1) and binary (n=2).
+The SGC framework uses EscortEntropyGap, not S_q + J_q. -/
 
-    **ERROR HISTORY**: Two previous versions of this axiom were false:
-    - Version 1: S_q + J_q = 2·S_q (false: used wrong TsallisExtropy definition)
-    - Version 2: S_q + J_q = S_q(uniform) (false for n > 2 with Sati-Kumar J_q)
-    Both errors caught by independent review; counterexample: q=1.5, n=3.
+/-- Tsallis extropy is non-negative for all q > 1.
 
-    The correct approach for the SGC framework does NOT require S_q + J_q = const.
-    The EscortEntropyGap S_q(p) - S_q(P_q(p)) is the correct irreversibility
-    functional regardless of the extropy identity.
+    Each term (1-pᵢ)·(1-(1-pᵢ)^(q-1)) ≥ 0 because:
+    - (1-pᵢ) ∈ [0,1] when pᵢ ∈ [0,1]
+    - (1-pᵢ)^(q-1) ∈ [0,1] when (1-pᵢ) ∈ [0,1] and q-1 > 0
+    - Therefore 1-(1-pᵢ)^(q-1) ∈ [0,1], and both factors are non-negative
 
-    **References**:
-    - Buono et al. arXiv:2103.07168, Proposition 2.3
-    - Sati & Kumar (2021) — Tsallis extropy characterization -/
-theorem tsallis_extropy_nonneg (q : ℝ) (hq : 2 < q)
+    With 1/(q-1) > 0 for q > 1, the product is non-negative. -/
+theorem tsallis_extropy_nonneg (q : ℝ) (hq : 1 < q)
     (p : V → ℝ) (hp_nonneg : ∀ v, 0 ≤ p v) (hp_le_one : ∀ v, p v ≤ 1) :
     0 ≤ TsallisExtropy q p := by
   unfold TsallisExtropy
@@ -401,11 +394,14 @@ theorem tsallis_extropy_nonneg (q : ℝ) (hq : 2 < q)
   · apply div_nonneg one_pos.le; linarith
   · apply Finset.sum_nonneg; intro v _
     apply mul_nonneg
-    · linarith [hp_nonneg v, hp_le_one v]
-    · have h_comp_nn : 0 ≤ 1 - p v := by linarith [hp_le_one v]
+    · linarith [hp_le_one v]
+    · -- 0 ≤ 1 - (1-p)^(q-1): need (1-p)^(q-1) ≤ 1
+      -- For x ∈ [0,1] and α > 0: x^α ≤ 1
+      have h_comp_nn : 0 ≤ 1 - p v := by linarith [hp_le_one v]
       have h_comp_le : 1 - p v ≤ 1 := by linarith [hp_nonneg v]
-      have : (1 - p v) ^ (q - 1) ≤ 1 - p v :=
-        rpow_le_self_of_le_one_of_one_lt _ _ h_comp_nn h_comp_le (by linarith)
+      -- (1-p)^(q-1) ≤ (1-p)^0 = 1 when 1-p ≤ 1 (by rpow_le_one)
+      have h_rpow_le : (1 - p v) ^ (q - 1) ≤ 1 :=
+        rpow_le_one h_comp_nn h_comp_le (by linarith)
       linarith
 
 /-- **The Escort Entropy-Extropy Gap**: The irreversibility functional for nonlinear SGC.
