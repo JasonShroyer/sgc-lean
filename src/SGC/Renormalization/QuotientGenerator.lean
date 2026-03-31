@@ -520,8 +520,27 @@ theorem zero_defect_implies_fixed_point (L : Matrix V V ℝ) (P : Partition V)
   have h_local_eq_sgc : ∀ A B, QuotientGenerator L P pi_dist hπ A B = SGC.QuotientGenerator L P pi_dist hπ A B := by
     intro A B
     -- Both definitions compute the same π-weighted average of transition rates
-    -- The difference is only in sum ordering: Σ_{x,y} vs Σ_x Σ_y
-    sorry -- TECHNICAL: sum rearrangement, mathematically trivial
+    -- Local: Σ_x Σ_y (if x∈A ∧ y∈B then π(x)*L(x,y) else 0) / π̄(A)
+    -- SGC:   Σ_x (if x∈A then π(x) * Σ_y (if y∈B then L(x,y) else 0) else 0) / π̄(A)
+    simp only [QuotientGenerator, SGC.QuotientGenerator, row_sum_block]
+    congr 1
+    -- Show the numerators are equal by sum rearrangement
+    apply Finset.sum_congr rfl
+    intro x _
+    by_cases hx : P.quot_map x = A
+    · -- x ∈ A: inner sums match
+      simp only [hx, true_and, ↓reduceIte]
+      rw [Finset.mul_sum]
+      apply Finset.sum_congr rfl
+      intro y _
+      by_cases hy : P.quot_map y = B
+      · simp only [hy, ↓reduceIte]
+      · simp only [hy, ↓reduceIte, mul_zero]
+    · -- x ∉ A: both sides are 0
+      simp only [hx, false_and, ↓reduceIte]
+      rw [Finset.sum_eq_zero]
+      intro y _
+      simp only [hx, false_and, ↓reduceIte]
   -- The Rayleigh sets are equal because the generators are pointwise equal
   have h_rayleigh_eq : RayleighSet (Matrix.of (QuotientGenerator L P pi_dist hπ)) (pi_bar P pi_dist) =
                        RayleighSetQuot L P pi_dist := by
@@ -571,9 +590,48 @@ theorem defect_can_decrease_or_zero (L : Matrix V V ℝ) (P : Partition V)
     (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (h_nonzero : defect_cost L pi_dist hπ P ≠ 0) :
     ∃ P' : Partition V, P' < P ∧ defect_cost L pi_dist hπ P' < defect_cost L pi_dist hπ P := by
-  -- The trivial partition has defect 0 and refines everything
-  -- So there exists some refinement path to lower defect
-  sorry -- OPEN: requires partition lattice structure
+  -- Witness: the trivial partition has defect 0 and refines everything
+  use trivialPartition V
+  constructor
+  · -- trivialPartition < P (strictly refines)
+    constructor
+    · exact trivialPartition_refines_all P
+    · -- ¬(P ≤ trivialPartition): P cannot refine trivial (trivial is already finest)
+      -- If P ≤ trivialPartition, then P.rel implies trivialPartition.rel (equality)
+      -- So P has the same equivalence as trivialPartition
+      intro h_refines
+      -- P refines trivialPartition means: P.rel x y → (x = y)
+      -- Combined with reflexivity, P.rel = Eq, so P = trivialPartition
+      have h_rel_eq : P.rel = (trivialPartition V).rel := by
+        ext x y
+        constructor
+        · intro hxy
+          exact h_refines x y hxy
+        · intro hxy
+          simp only [trivialPartition] at hxy
+          subst hxy
+          exact P.rel.refl x
+      -- Two partitions with the same equivalence relation are equal
+      have h_anti : P = trivialPartition V := by
+        -- Use the same technique as partitionFintype: extensionality on Setoid
+        have h_setoid_eq : P.rel = (trivialPartition V).rel := h_rel_eq
+        cases' P with rel1 dec1
+        simp only [trivialPartition] at h_setoid_eq ⊢
+        subst h_setoid_eq
+        -- The DecidableRel instances are equal by Subsingleton
+        congr 1
+        exact Subsingleton.elim _ _
+      have h_triv_zero := trivialPartition_defect_cost_zero L pi_dist hπ
+      rw [h_anti] at h_nonzero
+      exact h_nonzero h_triv_zero
+  · -- defect(trivialPartition) < defect(P)
+    rw [trivialPartition_defect_cost_zero L pi_dist hπ]
+    -- defect(P) > 0 because defect(P) ≠ 0 and defect is nonneg
+    have h_nonneg := defect_cost_nonneg L pi_dist hπ P
+    rcases lt_trichotomy (defect_cost L pi_dist hπ P) 0 with h_neg | h_zero | h_pos
+    · linarith
+    · exact absurd h_zero h_nonzero
+    · exact h_pos
 
 /-- **The Termination Lemma**:
 
@@ -696,10 +754,14 @@ theorem egi_tower_exists (L : Matrix V V ℝ) (pi_dist : V → ℝ)
     -- The optimal lumpable partition satisfies the fixed point condition
     -- by rayleigh_set_quot_eq_block_constant
     apply zero_defect_implies_fixed_point L P_opt pi_dist hπ
-    · -- Need: defect = 0. This requires showing the optimal partition
-      -- restricted to lumpable partitions has zero defect.
-      -- For now, this is the gap that requires further infrastructure.
-      sorry -- OPEN: requires showing lumpable optimal has zero defect
+    · -- Show: defect_cost P_opt = 0
+      -- P_opt minimizes defect, so defect(P_opt) ≤ defect(trivial) = 0
+      -- Combined with defect ≥ 0, we get defect(P_opt) = 0
+      have h_le_triv := hP_min (trivialPartition V)
+      have h_triv_zero := trivialPartition_defect_cost_zero L pi_dist hπ
+      have h_nonneg := defect_cost_nonneg L pi_dist hπ P_opt
+      rw [h_triv_zero] at h_le_triv
+      linarith
     · exact hP_lump
     · exact hP_nonempty
     · exact hT_bdd
