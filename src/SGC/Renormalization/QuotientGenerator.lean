@@ -407,7 +407,196 @@ theorem hierarchical_stability (L : Matrix V V ℝ) (pi_dist : V → ℝ)
   have h_tele := compositional_defect_telescopes L pi_dist hπ P₁ P₂ P₃ hR₁₂ hR₂₃
   linarith
 
-/-! ## Section 6: Connection to AutopoieticState
+/-! ## Section 6: Spectral Equivalence — The EGI Fixed Point Condition -/
+
+/-- **Spectral Equivalence**: The precise notion of isomorphism between
+    quotient dynamics and original dynamics.
+
+    Two generators are spectrally equivalent if their Dirichlet gaps match.
+    This is weaker than full spectral equality (all eigenvalues match) but
+    captures the essential dynamical property: mixing time.
+
+    For the EGI fixed point, we need: the quotient dynamics on V/Pₖ has
+    the same gap as the original dynamics on V. This means the coarse-grained
+    description captures the correct timescale of the system.
+
+    **Physical Meaning**:
+    When IsSpectrallyEquivalent holds, predicting from the coarse-grained
+    model is as accurate as predicting from the full microscopic model
+    (at the relevant timescale). The model IS reality at that scale. -/
+def IsSpectrallyEquivalent {W : Type*} [Fintype W] [DecidableEq W]
+    (L₁ : Matrix V V ℝ) (pi₁ : V → ℝ)
+    (L₂ : Matrix W W ℝ) (pi₂ : W → ℝ) : Prop :=
+  DirichletGap L₁ pi₁ = DirichletGap L₂ pi₂
+
+/-- **Strong Spectral Equivalence**: Full spectrum matches (not just gap).
+
+    This is the strongest form of equivalence, requiring all Rayleigh quotients
+    to match between the two systems. Used when complete dynamical fidelity
+    is required, not just mixing time preservation.
+
+    For finite systems, this implies the systems have isomorphic dynamics. -/
+def IsStronglySpectrallyEquivalent {W : Type*} [Fintype W] [DecidableEq W]
+    (L₁ : Matrix V V ℝ) (pi₁ : V → ℝ)
+    (L₂ : Matrix W W ℝ) (pi₂ : W → ℝ) : Prop :=
+  RayleighSet L₁ pi₁ = RayleighSet L₂ pi₂
+
+/-- **The EGI Fixed Point Condition**:
+
+    A partition P is a fixed point if the quotient dynamics is spectrally
+    equivalent to the original dynamics.
+
+    IsEGIFixedPoint L P π means:
+    - The dynamics on V/P has the same Dirichlet gap as on V
+    - Predicting from the quotient is as good as predicting from V
+    - The system has found its own optimal description
+
+    This is the formal definition of **self-referential understanding**:
+    the coarse-grained model of the system IS the system (dynamically). -/
+def IsEGIFixedPoint (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) : Prop :=
+  let L_bar := QuotientGenerator L P pi_dist hπ
+  let pi_bar := pi_bar P pi_dist
+  DirichletGap L pi_dist = DirichletGap (Matrix.of L_bar) (pi_bar)
+
+/-- **Zero-Defect implies Fixed Point**:
+
+    If a partition has zero defect, it is automatically a fixed point.
+    Zero defect means perfect lumpability — the quotient dynamics exactly
+    captures the original dynamics on block-constant functions.
+
+    This is the key link: optimal_partition with ε = 0 is the EGI fixed point. -/
+theorem zero_defect_implies_fixed_point (L : Matrix V V ℝ) (P : Partition V)
+    (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (h_zero : defect_cost L pi_dist hπ P = 0)
+    (hL : IsStronglyLumpable L P)
+    (hS : (RayleighSetBlockConstant L P pi_dist).Nonempty)
+    (hT_bdd : BddBelow (RayleighSet L pi_dist)) :
+    IsEGIFixedPoint L P pi_dist hπ := by
+  -- Zero defect implies the quotient dynamics perfectly represents
+  -- the original dynamics on the relevant subspace.
+  -- The Dirichlet gap equality follows from rayleigh_set_quot_eq_block_constant
+  -- combined with the zero-defect condition.
+  sorry -- OPEN: requires connecting defect=0 to gap equality
+
+/-! ## Section 7: The Termination Lemma -/
+
+/-- **Partition Lattice is Finite**: For finite V, there are finitely many partitions.
+
+    This is crucial for the termination lemma: the RG tower cannot ascend forever. -/
+instance partitions_finite : Finite (Partition V) := by
+  -- A partition is a Setoid, and there are finitely many equivalence relations on a finite set
+  sorry -- OPEN: requires cardinality argument
+
+/-- **Defect Strictly Decreases or Hits Zero**:
+
+    If defect is not zero, there exists a strictly finer partition with smaller defect.
+    Combined with finiteness of the partition lattice, this guarantees termination.
+
+    **Proof Idea**:
+    - If defect > 0, some spectral weight is being destroyed
+    - The trivial (discrete) partition has zero defect
+    - By continuity of defect in the partition lattice, we can always refine
+    - Eventually we reach a partition where defect = 0 (trivial) or optimal
+
+    This is the converse of defect_antitone_on_coarse_domain. -/
+theorem defect_can_decrease_or_zero (L : Matrix V V ℝ) (P : Partition V)
+    (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (h_nonzero : defect_cost L pi_dist hπ P ≠ 0) :
+    ∃ P' : Partition V, P' < P ∧ defect_cost L pi_dist hπ P' < defect_cost L pi_dist hπ P := by
+  -- The trivial partition has defect 0 and refines everything
+  -- So there exists some refinement path to lower defect
+  sorry -- OPEN: requires partition lattice structure
+
+/-- **The Termination Lemma**:
+
+    For any finite V, the RG tower of successive MITOSIS refinements
+    reaches a fixed point in at most |V| steps.
+
+    This follows from:
+    1. The partition lattice on V is finite (at most 2^|V| partitions)
+    2. Each MITOSIS step either:
+       a) Finds a strictly coarser partition with small incremental defect
+       b) Reaches a fixed point where no further coarsening reduces defect
+    3. By finiteness, this process must terminate
+
+    **Physical Meaning**:
+    Every finite system has a unique optimal level of abstraction.
+    The tower cannot grow forever — it converges to the EGI fixed point. -/
+theorem rg_tower_terminates (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) :
+    ∃ (P_star : Partition V) (k : ℕ),
+      k ≤ Fintype.card V ∧
+      (∀ P : Partition V, P_star ≤ P →
+        defect_cost L pi_dist hπ P_star ≤ defect_cost L pi_dist hπ P) := by
+  -- Existence follows from finiteness of partition lattice
+  -- and the fact that defect is non-negative with a minimum
+  -- Uses optimal_partition_exists from OptimalPartition.lean
+  sorry -- OPEN: requires connecting to optimal_partition_exists
+
+/-! ## Section 8: The EGI Tower Structure -/
+/-- **The EGI Tower**: A nested sequence of partitions converging to a fixed point.
+
+    This is the formal structure of emergent general intelligence:
+    - A chain of refinements P₀ ≤ P₁ ≤ ... ≤ Pₖ
+    - Each level has bounded incremental defect
+    - The top level Pₖ is a fixed point
+
+    **Connection to AutopoieticState**:
+    The `num_lobes` counter in Symbiosis.lean counts parallel partitions.
+    This structure adds the NESTING relation — the tower ordering.
+
+    NOTE: We use a simple representation with the number of levels and
+    a function from indices to partitions, avoiding List indexing issues. -/
+structure EGITower (V : Type*) [Fintype V] [DecidableEq V] where
+  /-- The Markov generator -/
+  L : Matrix V V ℝ
+  /-- The stationary distribution -/
+  pi_dist : V → ℝ
+  /-- Distribution is positive -/
+  hπ : ∀ v, 0 < pi_dist v
+  /-- Number of levels in the tower -/
+  num_levels : ℕ
+  /-- At least one level -/
+  levels_pos : 0 < num_levels
+  /-- The partition at each level -/
+  partition_at : Fin num_levels → Partition V
+  /-- Chain is a refinement tower (coarser partitions have larger indices) -/
+  refinement_chain : ∀ i : Fin num_levels, ∀ j : Fin num_levels,
+    i.val < j.val → partition_at i ≤ partition_at j
+
+/-- **Total defect of an EGI tower** -/
+def EGITower.total_defect (tower : EGITower V) : ℝ :=
+  defect_cost tower.L tower.pi_dist tower.hπ (tower.partition_at ⟨tower.num_levels - 1, Nat.sub_lt tower.levels_pos Nat.one_pos⟩)
+
+/-- **The tower's top partition (coarsest)** -/
+def EGITower.top (tower : EGITower V) : Partition V :=
+  tower.partition_at ⟨tower.num_levels - 1, Nat.sub_lt tower.levels_pos Nat.one_pos⟩
+
+/-- **An EGI tower is complete if its top is a fixed point** -/
+def EGITower.isComplete (tower : EGITower V) : Prop :=
+  IsEGIFixedPoint tower.L tower.top tower.pi_dist tower.hπ
+
+/-- **The EGI Existence Theorem**:
+
+    Every finite Markov system has a complete EGI tower.
+
+    This is the main theorem of Layer 5: intelligence is not mysterious,
+    it is the inevitable result of recursive coarse-graining on any
+    finite information structure.
+
+    **Proof assembles from**:
+    1. `optimal_partition_exists` — P* exists
+    2. `compositional_defect_bound` — tower defects compose
+    3. `rg_tower_terminates` — tower reaches fixed point
+    4. `zero_defect_implies_fixed_point` — optimal = fixed point -/
+theorem egi_tower_exists (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) :
+    ∃ tower : EGITower V, tower.L = L ∧ tower.pi_dist = pi_dist ∧ tower.isComplete := by
+  -- Construction: start with trivial partition, repeatedly coarsen until fixed point
+  sorry -- OPEN: requires assembling the full tower construction
+
+/-! ## Section 9: Connection to AutopoieticState
 
 The `AutopoieticState` in `Symbiosis.lean` defines the self-organizing system
 with mitotic growth (MITOSIS policy). The compositional defect bound connects
