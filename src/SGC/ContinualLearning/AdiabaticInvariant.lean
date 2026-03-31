@@ -162,7 +162,26 @@ theorem constrained_update_orthogonal
     let projection_coeff := inner_pi pi_dist loss_gradient func_defect_gradient / grad_norm_sq
     let constrained_grad := fun v => loss_gradient v - projection_coeff * func_defect_gradient v
     inner_pi pi_dist constrained_grad func_defect_gradient = 0 := by
-  sorry
+  -- The Rosetta Stone proof: constrained update is orthogonal to functional defect gradient
+  -- This is the formal bridge between Renner's de Finetti reduction and SGC continual learning
+  simp only []
+  -- Rewrite constrained_grad as (loss_gradient - coeff • func_defect_gradient)
+  have h_eq : (fun v => loss_gradient v -
+      (inner_pi pi_dist loss_gradient func_defect_gradient /
+       inner_pi pi_dist func_defect_gradient func_defect_gradient) *
+      func_defect_gradient v) =
+      loss_gradient - (inner_pi pi_dist loss_gradient func_defect_gradient /
+       inner_pi pi_dist func_defect_gradient func_defect_gradient) • func_defect_gradient := by
+    ext v; simp [Pi.sub_apply, Pi.smul_apply, smul_eq_mul]
+  rw [h_eq]
+  -- Apply linearity: inner_pi (f - c • g) g = inner_pi f g - c * inner_pi g g
+  rw [inner_pi_sub_left, inner_pi_smul_left]
+  -- Now we have: inner_pi loss fdg - (inner_pi loss fdg / ||fdg||²) * ||fdg||²
+  -- Since hgrad gives ||fdg||² > 0, the division cancels
+  have hne : inner_pi pi_dist func_defect_gradient func_defect_gradient ≠ 0 :=
+    ne_of_gt hgrad
+  field_simp [hne]
+  ring
 
 /-! ### 4. Comparison with EWC -/
 
