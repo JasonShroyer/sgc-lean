@@ -898,7 +898,7 @@ def print_egi_report(result: SpectralEquivalenceResult):
     print("EGI FIXED POINT MEASUREMENT REPORT")
     print("="*60)
     
-    status = "✓ SATISFIED" if result.is_strong_equivalent else "✗ NOT SATISFIED"
+    status = "[YES] SATISFIED" if result.is_strong_equivalent else "[NO] NOT SATISFIED"
     print(f"\nIsEGIFixedPoint: {status}")
     print(f"Equivalence Type: {result.equivalence_type.value.upper()}")
     
@@ -912,12 +912,12 @@ def print_egi_report(result: SpectralEquivalenceResult):
     print(f"Network Gap: {result.gap_network:.6f}")
     print(f"Quotient Gap: {result.gap_quotient:.6f}")
     print(f"Relative Error: {result.gap_relative_error:.4f}")
-    weak_status = "✓" if result.is_weak_equivalent else "✗"
+    weak_status = "[YES]" if result.is_weak_equivalent else "[NO]"
     print(f"Weak Equivalence (gap-matching): {weak_status}")
     
     print(f"\n--- Tsallis/Lifshitz Diagnostics ---")
     print(f"Estimated q: {result.tsallis_q:.3f}")
-    print(f"At Lifshitz Point (q ≈ 5/3): {'Yes' if result.is_at_lifshitz else 'No'}")
+    print(f"At Lifshitz Point (q ~ 5/3): {'Yes' if result.is_at_lifshitz else 'No'}")
     
     print(f"\n--- Effective Complexity ---")
     print(f"Network Effective Rank: {result.network_rayleigh.effective_rank:.2f}")
