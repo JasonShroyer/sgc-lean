@@ -441,31 +441,55 @@ def IsStronglySpectrallyEquivalent {W : Type*} [Fintype W] [DecidableEq W]
     (L₂ : Matrix W W ℝ) (pi₂ : W → ℝ) : Prop :=
   RayleighSet L₁ pi₁ = RayleighSet L₂ pi₂
 
-/-- **The EGI Fixed Point Condition**:
+/-- **The EGI Fixed Point Condition (Weak)**:
 
-    A partition P is a fixed point if the quotient dynamics is spectrally
-    equivalent to the original dynamics.
+    A partition P is a weak fixed point if the quotient dynamics has the same
+    Dirichlet gap as the original. This is necessary but NOT sufficient for
+    genuine self-reference — two systems can match gaps while having completely
+    different higher-spectral structure.
 
-    IsEGIFixedPoint L P π means:
-    - The dynamics on V/P has the same Dirichlet gap as on V
-    - Predicting from the quotient is as good as predicting from V
-    - The system has found its own optimal description
-
-    This is the formal definition of **self-referential understanding**:
-    the coarse-grained model of the system IS the system (dynamically). -/
-def IsEGIFixedPoint (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    **Warning**: This condition is vacuously satisfiable by lottery-consensus
+    systems (Tanaka 2026). Use `IsEGIFixedPointStrong` for the publishable result. -/
+def IsEGIFixedPointWeak (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v) : Prop :=
   let L_bar := QuotientGenerator L P pi_dist hπ
   let pi_bar := pi_bar P pi_dist
   DirichletGap L pi_dist = DirichletGap (Matrix.of L_bar) (pi_bar)
 
-/-- **Zero-Defect implies Fixed Point**:
+/-- **The EGI Fixed Point Condition (Strong)**:
 
-    If a partition has zero defect, it is automatically a fixed point.
+    A partition P is a STRONG fixed point if the quotient dynamics has the SAME
+    FULL RAYLEIGH SET as the original dynamics restricted to block-constant functions.
+
+    IsEGIFixedPoint L P π means:
+    - The ENTIRE spectrum of V/P matches the relevant part of V's spectrum
+    - Not just the gap (slowest mode), but ALL mixing timescales match
+    - The quotient genuinely IS the original system at that resolution
+
+    This is the formal definition of **self-referential understanding**:
+    the coarse-grained model captures ALL dynamical content, not just the slowest mode.
+
+    **Tanaka Connection**: Systems in the drift regime (lottery-consensus) satisfy
+    the weak condition trivially but FAIL this strong condition. The full spectral
+    structure encodes whether the system is genuinely reasoning or just drifting. -/
+def IsEGIFixedPoint (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) : Prop :=
+  let L_bar := QuotientGenerator L P pi_dist hπ
+  let pi_bar := pi_bar P pi_dist
+  RayleighSetBlockConstant L P pi_dist = RayleighSet (Matrix.of L_bar) pi_bar
+
+/-- **Zero-Defect implies Strong Fixed Point**:
+
+    If a partition has zero defect, it is automatically a STRONG fixed point.
     Zero defect means perfect lumpability — the quotient dynamics exactly
-    captures the original dynamics on block-constant functions.
+    captures the FULL SPECTRUM of the original dynamics on block-constant functions.
 
-    This is the key link: optimal_partition with ε = 0 is the EGI fixed point. -/
+    This is the key link: optimal_partition with ε = 0 is the EGI fixed point.
+
+    **Proof Strategy**:
+    Zero defect means RayleighSetBlockConstant = RayleighSet restricted to lifts.
+    By `rayleigh_set_quot_eq_block_constant`, this equals the quotient's Rayleigh set.
+    The full spectral match follows from the isomorphism of Hilbert spaces. -/
 theorem zero_defect_implies_fixed_point (L : Matrix V V ℝ) (P : Partition V)
     (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (h_zero : defect_cost L pi_dist hπ P = 0)
@@ -473,11 +497,14 @@ theorem zero_defect_implies_fixed_point (L : Matrix V V ℝ) (P : Partition V)
     (hS : (RayleighSetBlockConstant L P pi_dist).Nonempty)
     (hT_bdd : BddBelow (RayleighSet L pi_dist)) :
     IsEGIFixedPoint L P pi_dist hπ := by
-  -- Zero defect implies the quotient dynamics perfectly represents
-  -- the original dynamics on the relevant subspace.
-  -- The Dirichlet gap equality follows from rayleigh_set_quot_eq_block_constant
-  -- combined with the zero-defect condition.
-  sorry -- OPEN: requires connecting defect=0 to gap equality
+  -- Zero defect implies the quotient Rayleigh set equals block-constant Rayleigh set
+  -- This is the content of rayleigh_set_quot_eq_block_constant
+  unfold IsEGIFixedPoint
+  simp only
+  -- The key theorem is rayleigh_set_quot_eq_block_constant from Lumpability.lean
+  -- It states: RayleighSet (QuotientGenerator L P) pi_bar = RayleighSetBlockConstant L P pi_dist
+  -- when the partition is strongly lumpable
+  sorry -- OPEN: requires rayleigh_set_quot_eq_block_constant + symmetry
 
 /-! ## Section 7: The Termination Lemma -/
 
