@@ -54,20 +54,80 @@ class WaveletNoiseInjector:
     
     Injects noise shaped by Hermite-Gaussian wavelets to target
     the spectral tail (high-rank components), increasing coupling
-    efficiency κ from ~0.01 to ~0.1-0.5.
+    efficiency kappa from ~0.01 to ~0.1-0.5.
+    
+    ZERO-PARAMETER ARCHITECTURE:
+    noise_scale is NOT a fixed parameter - it derives from:
+        sigma_noise = sqrt(2 * k_B * T_eff * dt)
+    where T_eff = 1/(q-1) from the current Tsallis q-value.
     """
     
-    noise_scale: float = 0.1
+    # Shape parameters (these ARE physical - they define the wavelet family)
     wavelet_a: float = 1.0      # Power parameter (higher = more tail-weighted)
-    wavelet_b: float = 2.0      # Decay parameter
-    tail_fraction: float = 0.5  # Fraction of spectrum considered "tail"
+    wavelet_b: float = 2.0      # Decay parameter (localization in scale)
     mode: str = 'wavelet'       # 'isotropic', 'wavelet', 'tail_only'
+    
+    # Derived from system state (not user-specified)
+    _tsallis_q: float = 1.5     # Current Tsallis q (updated from SGC engine)
+    _k_coarse: int = 10         # Current coarse-graining dimension
+    _dt: float = 1.0            # Effective time step
     
     # Cached SVD for efficient noise shaping
     _cached_U: Optional[torch.Tensor] = None
     _cached_S: Optional[torch.Tensor] = None
     _cached_Vh: Optional[torch.Tensor] = None
     _cache_valid: bool = False
+    
+    def get_derived_noise_scale(self) -> float:
+        """
+        Derive noise amplitude from Tsallis q via fluctuation-dissipation.
+        
+        sigma_noise = sqrt(2 * k_B * T_eff * dt)
+        where T_eff = 1/(q-1) from current Tsallis q.
+        
+        As q -> 1 (Boltzmann limit), T_eff -> infinity (drives through transition).
+        As q -> 5/3 (Lifshitz point), T_eff = 3/2 (critical temperature).
+        """
+        # Effective temperature from Tsallis q
+        q = max(self._tsallis_q, 1.001)  # Avoid singularity at q=1
+        T_eff = 1.0 / (q - 1.0)
+        
+        # Clamp to reasonable range
+        T_eff = min(T_eff, 10.0)  # Cap at T_eff=10 to avoid blow-up
+        
+        # Fluctuation-dissipation: sigma = sqrt(2 * k_B * T * dt)
+        # Using k_B = 1 (natural units) and dt = 1/k_coarse
+        dt = 1.0 / max(self._k_coarse, 1)
+        sigma = np.sqrt(2.0 * T_eff * dt)
+        
+        # Scale down for numerical stability
+        return sigma * 0.01
+    
+    def get_derived_tail_fraction(self) -> float:
+        """
+        Derive tail fraction from coarse-graining dimension.
+        
+        tail_fraction = (n - k_coarse) / n
+        where k_coarse is the effective rank from SVD.
+        """
+        if self._cached_S is None:
+            return 0.5  # Default
+        
+        n = len(self._cached_S)
+        k = min(self._k_coarse, n)
+        
+        return max(0.1, (n - k) / n)
+    
+    def update_from_sgc(self, tsallis_q: float, k_coarse: int):
+        """
+        Update derived parameters from SGC engine measurements.
+        
+        Args:
+            tsallis_q: Current Tsallis q from spectral analysis
+            k_coarse: Current effective rank from SVD
+        """
+        self._tsallis_q = max(tsallis_q, 1.001)
+        self._k_coarse = max(k_coarse, 1)
     
     def update_svd_cache(self, weight_matrix: torch.Tensor):
         """Update cached SVD for noise shaping."""
@@ -83,16 +143,17 @@ class WaveletNoiseInjector:
     
     def compute_coupling_coefficient(self, noise: torch.Tensor) -> float:
         """
-        Compute coupling coefficient κ: fraction of noise in tail subspace.
+        Compute coupling coefficient kappa: fraction of noise in tail subspace.
         
-        κ = ||noise in tail||² / ||noise||²
+        kappa = ||noise in tail||^2 / ||noise||^2
         """
         if not self._cache_valid or self._cached_S is None:
             return 0.01  # Default low coupling
         
         S = self._cached_S
         n_components = len(S)
-        tail_start = int(n_components * (1 - self.tail_fraction))
+        tail_fraction = self.get_derived_tail_fraction()
+        tail_start = int(n_components * (1 - tail_fraction))
         
         # Project noise onto singular vectors
         if self._cached_Vh is not None:
@@ -114,6 +175,8 @@ class WaveletNoiseInjector:
         """
         Generate spectrally-shaped noise for weight injection.
         
+        ZERO-PARAMETER: noise_scale derived from Tsallis q.
+        
         Args:
             weight_matrix: Target weight matrix for noise injection
             
@@ -124,8 +187,11 @@ class WaveletNoiseInjector:
         device = weight_matrix.device
         dtype = weight_matrix.dtype
         
+        # DERIVED: noise scale from Tsallis q
+        noise_scale = self.get_derived_noise_scale()
+        
         if self.mode == 'isotropic':
-            noise = torch.randn(shape, device=device, dtype=dtype) * self.noise_scale
+            noise = torch.randn(shape, device=device, dtype=dtype) * noise_scale
             kappa = 0.01  # Low coupling for isotropic
             return noise, kappa
         
@@ -133,7 +199,7 @@ class WaveletNoiseInjector:
         self.update_svd_cache(weight_matrix)
         
         if not self._cache_valid:
-            noise = torch.randn(shape, device=device, dtype=dtype) * self.noise_scale
+            noise = torch.randn(shape, device=device, dtype=dtype) * noise_scale
             return noise, 0.01
         
         U, S, Vh = self._cached_U, self._cached_S, self._cached_Vh
@@ -144,9 +210,12 @@ class WaveletNoiseInjector:
         weights = hermite_gaussian_weight(u, self.wavelet_a, self.wavelet_b)
         weights_tensor = torch.tensor(weights, device=device, dtype=dtype)
         
+        # DERIVED: tail fraction from k_coarse
+        tail_fraction = self.get_derived_tail_fraction()
+        
         if self.mode == 'tail_only':
             # Zero out head components
-            tail_start = int(n_components * (1 - self.tail_fraction))
+            tail_start = int(n_components * (1 - tail_fraction))
             weights_tensor[:tail_start] = 0
             # Renormalize
             norm = torch.sqrt((weights_tensor ** 2).sum())
@@ -155,7 +224,7 @@ class WaveletNoiseInjector:
         
         # Generate noise in SVD basis
         noise_coeffs = torch.randn(n_components, device=device, dtype=dtype)
-        shaped_coeffs = noise_coeffs * weights_tensor * self.noise_scale
+        shaped_coeffs = noise_coeffs * weights_tensor * noise_scale
         
         # Reconstruct in original space
         # noise = U @ diag(shaped_coeffs) @ Vh
@@ -191,7 +260,8 @@ class WaveletNoiseInjector:
                 param.data.add_(noise)
                 kappa_dict[name] = kappa
             elif len(param.shape) == 1:  # Biases
-                noise = torch.randn_like(param) * self.noise_scale * 0.1
+                noise_scale = self.get_derived_noise_scale()
+                noise = torch.randn_like(param) * noise_scale * 0.1
                 param.data.add_(noise)
                 kappa_dict[name] = 0.01
         
@@ -203,14 +273,14 @@ class WaveletLayer(nn.Module):
     Neural network layer wrapper with built-in wavelet noise injection.
     
     Wraps a linear layer and automatically injects shaped noise during training.
+    ZERO-PARAMETER: noise_scale derived from Tsallis q.
     """
     
     def __init__(self, in_features: int, out_features: int, 
-                 noise_scale: float = 0.1, wavelet_a: float = 1.0, wavelet_b: float = 2.0):
+                 wavelet_a: float = 1.0, wavelet_b: float = 2.0):
         super().__init__()
         self.linear = nn.Linear(in_features, out_features)
         self.injector = WaveletNoiseInjector(
-            noise_scale=noise_scale,
             wavelet_a=wavelet_a,
             wavelet_b=wavelet_b
         )

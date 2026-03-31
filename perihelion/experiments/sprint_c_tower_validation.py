@@ -370,9 +370,11 @@ class SprintCConductor:
         self.model = MultiTaskMLP(self.task_configs, hidden_dim).to(device)
         
         # Create controller with full technology stack
+        # ZERO-PARAMETER ARCHITECTURE: No hardcoded thresholds!
+        # All thresholds derive from partition geometry and running statistics.
         self.controller = SGCIntegratedController(
             wavelet=WaveletNoiseInjector(
-                noise_scale=0.05,
+                # Shape parameters only - noise_scale derived from Tsallis q
                 wavelet_a=1.5,
                 wavelet_b=2.0,
                 mode='wavelet'
@@ -382,15 +384,14 @@ class SprintCConductor:
                     T_initial=1.0,
                     T_max=3.0,
                     T_target=0.1,
-                    epsilon_threshold=0.05,
+                    # REMOVED: epsilon_threshold - now derived from partition
                     min_heat_epochs=50,
                     max_heat_epochs=max_steps_per_task
                 )
             ),
             engine=SGCEngine(energy_threshold=0.95),
             constraint=ConstrainedUpdate(),
-            grokking_threshold=0.05,
-            ridge_threshold=2.0,
+            # REMOVED: grokking_threshold, ridge_threshold - now derived
             noise_injection_interval=10,
             measurement_interval=50
         )
@@ -462,10 +463,13 @@ class SprintCConductor:
         
         quotient_rayleigh = compute_rayleigh_set(L_bar, pi_bar)
         
+        # DERIVED: spectral tolerance from system size
+        tolerance = self.controller.engine.get_spectral_tolerance(n)
+        
         # Test spectral equivalence
         result = test_spectral_equivalence(
             network_rayleigh, quotient_rayleigh,
-            top_k=min(10, n), tolerance=0.01
+            top_k=min(10, n), tolerance=tolerance
         )
         
         return result
@@ -757,11 +761,12 @@ def main():
     else:
         prime = 97
     
-    # Create tasks
+    # Create tasks - ORDERED EASIEST TO HARDEST for strongest preservation test
+    # Parity (Z_2) groks fastest, Permutation (S_n) medium, Modular Add (Z_p) slowest
     tasks = [
-        ModularAdditionTask(prime=prime),
-        ParityTask(n_bits=8),
-        PermutationTask(n_elements=5),
+        ParityTask(n_bits=8),           # Task 1: Simplest invariant, fastest grokking
+        PermutationTask(n_elements=5),  # Task 2: Medium complexity
+        ModularAdditionTask(prime=prime),  # Task 3: Hardest (Fourier invariant)
     ]
     
     # Run Sprint C

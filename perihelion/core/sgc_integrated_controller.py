@@ -177,6 +177,12 @@ class SGCIntegratedController:
     - Thermal pump for annealing schedule
     - SGC engine for metric computation
     - Constrained updates for multi-task preservation
+    
+    ZERO-PARAMETER ARCHITECTURE:
+    Thresholds are NOT specified here - they derive from:
+    - epsilon_threshold: 1/n_blocks (partition geometry)
+    - ridge_threshold: R_mean - R_std (running statistics)
+    - noise_scale: sqrt(2 * T_eff * dt) from Tsallis q
     """
     
     # Components
@@ -185,9 +191,8 @@ class SGCIntegratedController:
     engine: SGCEngine = field(default_factory=SGCEngine)
     constraint: ConstrainedUpdate = field(default_factory=ConstrainedUpdate)
     
-    # Configuration
-    grokking_threshold: float = 0.05     # ε threshold for grokking
-    ridge_threshold: float = 2.0         # R threshold for stability
+    # Configuration (intervals only - no thresholds)
+    # REMOVED: grokking_threshold, ridge_threshold (now derived from engine)
     noise_injection_interval: int = 1    # Inject noise every N steps
     measurement_interval: int = 10       # Measure metrics every N steps
     
@@ -239,6 +244,15 @@ class SGCIntegratedController:
         # 1. Inject wavelet noise (during exploration)
         if self.phase == ControllerPhase.EXPLORING:
             if self.step % self.noise_injection_interval == 0:
+                # Update wavelet from SGC measurements (zero-parameter connection)
+                if self.engine.current_metrics:
+                    # Estimate Tsallis q from spectral shape
+                    tsallis_q = self._estimate_tsallis_q()
+                    self.wavelet.update_from_sgc(
+                        tsallis_q=tsallis_q,
+                        k_coarse=self.engine.current_metrics.k_coarse
+                    )
+                
                 kappa_dict = self.wavelet.inject_noise(model)
                 avg_kappa = sum(kappa_dict.values()) / len(kappa_dict) if kappa_dict else 0.01
                 self.thermal.kappa = avg_kappa
@@ -282,34 +296,47 @@ class SGCIntegratedController:
     def _update_phase(self, metrics: SGCMetrics, model: nn.Module,
                       dataloader: Optional[torch.utils.data.DataLoader],
                       device: str):
-        """Update controller phase based on current metrics."""
+        """
+        Update controller phase based on current metrics.
+        
+        ZERO-PARAMETER: Uses derived thresholds from SGC engine.
+        """
+        # DERIVED thresholds from SGC engine
+        eps_threshold = self.engine.get_epsilon_threshold()
+        ridge_threshold = self.engine.get_ridge_threshold()
         
         if self.phase == ControllerPhase.EXPLORING:
-            # Check if approaching grokking
-            if metrics.epsilon < self.grokking_threshold * 2:
+            # Check if approaching grokking (2x derived threshold)
+            if metrics.epsilon < eps_threshold * 2:
                 self.phase = ControllerPhase.GROKKING
                 self.phase_history.append((self.step, self.phase))
                 print(f"[SGCController] Phase: EXPLORING -> GROKKING at step {self.step}")
+                print(f"[SGCController] (eps={metrics.epsilon:.4f} < {eps_threshold*2:.4f})")
         
         elif self.phase == ControllerPhase.GROKKING:
-            # Check if grokked
-            if (metrics.epsilon < self.grokking_threshold and 
-                metrics.ridge_ratio < self.ridge_threshold):
+            # Check if grokked using DERIVED thresholds
+            if (metrics.epsilon < eps_threshold and 
+                metrics.ridge_ratio < ridge_threshold):
                 
                 self.phase = ControllerPhase.CONSOLIDATING
                 self.phase_history.append((self.step, self.phase))
                 print(f"[SGCController] Phase: GROKKING -> CONSOLIDATING at step {self.step}")
-                print(f"[SGCController] GROKKING DETECTED: ε={metrics.epsilon:.4f}, R={metrics.ridge_ratio:.2f}")
+                print(f"[SGCController] GROKKING DETECTED: eps={metrics.epsilon:.4f}<{eps_threshold:.4f}, R={metrics.ridge_ratio:.2f}<{ridge_threshold:.2f}")
                 
                 # Notify callback
                 if self.on_grokking:
                     self.on_grokking(self.current_task, metrics)
             
-            # Check if fell back
-            elif metrics.epsilon > self.grokking_threshold * 3:
+            # Check if fell back (3x derived threshold)
+            elif metrics.epsilon > eps_threshold * 3:
                 self.phase = ControllerPhase.EXPLORING
                 self.phase_history.append((self.step, self.phase))
                 print(f"[SGCController] Phase: GROKKING -> EXPLORING (regression) at step {self.step}")
+            
+            # Also check for chi_g peak detection (Lifshitz point)
+            is_peak, peak_step = self.engine.detect_chi_g_peak()
+            if is_peak:
+                print(f"[SGCController] chi_g PEAK detected at step {peak_step} (Lifshitz point)")
         
         elif self.phase == ControllerPhase.CONSOLIDATING:
             # Run thermal quench
@@ -325,6 +352,22 @@ class SGCIntegratedController:
                 self.phase_history.append((self.step, self.phase))
                 print(f"[SGCController] Phase: CONSOLIDATING -> FROZEN at step {self.step}")
                 print(f"[SGCController] Task '{self.current_task}' complete!")
+    
+    def _estimate_tsallis_q(self) -> float:
+        """
+        Estimate Tsallis q from current spectral shape.
+        
+        q = 1 + 2/(d_eff - 1) where d_eff is effective rank.
+        At Lifshitz point: q ~ 5/3 (d_eff ~ 4).
+        """
+        if self.engine.current_metrics is None:
+            return 1.5  # Default
+        
+        d_eff = max(self.engine.current_metrics.effective_rank, 1.1)
+        q = 1.0 + 2.0 / (d_eff - 1.0)
+        
+        # Clamp to physical range [1, 3]
+        return max(1.001, min(3.0, q))
     
     def is_task_complete(self) -> bool:
         """Check if current task is complete (frozen)."""

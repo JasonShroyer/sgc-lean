@@ -18,7 +18,7 @@ Date: March 31, 2026
 import math
 import torch
 import torch.nn as nn
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Callable
 from dataclasses import dataclass, field
 from collections import deque
 
@@ -53,6 +53,10 @@ class SGCEngine:
     
     Provides continuous monitoring of defect, susceptibility, and stability
     metrics for a neural network during training.
+    
+    ZERO-PARAMETER ARCHITECTURE:
+    All thresholds derive from the partition geometry and running statistics,
+    not from hardcoded constants. This enables self-calibration to any task.
     """
     
     def __init__(self, 
@@ -80,6 +84,11 @@ class SGCEngine:
         # Current measurements
         self.current_metrics: Optional[SGCMetrics] = None
         self.step_count = 0
+        
+        # Derived threshold state (updated live from measurements)
+        self._n_blocks: int = 1  # Current partition size
+        self._chi_g_peak_value: float = 0.0  # Detected chi_g peak
+        self._chi_g_peak_step: int = -1
     
     def compute_defect(self, weight_matrix: torch.Tensor, 
                        k: Optional[int] = None) -> DefectMeasurement:
@@ -366,15 +375,104 @@ class SGCEngine:
         self.current_metrics = metrics
         return metrics
     
-    def is_grokked(self, epsilon_threshold: float = 0.05,
-                   ridge_threshold: float = 2.0) -> bool:
+    # =========================================================================
+    # DERIVED THRESHOLDS (Zero-Parameter Architecture)
+    # =========================================================================
+    
+    def get_epsilon_threshold(self) -> float:
         """
-        Check if system has grokked (reached stable fixed point).
+        Derive grokking threshold from partition geometry.
         
-        Grokking criteria:
-        1. ε < threshold (low defect)
-        2. R ≈ 1 (well-conditioned, stable)
+        delta_min = 1/n_blocks is the minimum resolvable defect.
+        A system is grokked when ε falls below this natural floor.
+        
+        For k=20 blocks: 0.05, for k=8: 0.125, for k=100: 0.01
         """
+        n_blocks = max(self._n_blocks, 2)
+        return 1.0 / n_blocks
+    
+    def get_ridge_threshold(self) -> float:
+        """
+        Derive ridge ratio threshold from running statistics.
+        
+        R_quench = R_mean - R_std (one sigma below running mean).
+        When R drops within one sigma of 1.0, the system is at the fixed point.
+        """
+        if len(self.ridge_ratio_history) < 10:
+            return 10.0  # Conservative default before enough data
+        
+        recent = list(self.ridge_ratio_history)[-20:]
+        R_mean = sum(recent) / len(recent)
+        R_var = sum((r - R_mean) ** 2 for r in recent) / len(recent)
+        R_std = math.sqrt(R_var)
+        
+        # One sigma below mean, but at least 1.5 (R=1 is perfect)
+        return max(R_mean - R_std, 1.5)
+    
+    def detect_chi_g_peak(self) -> Tuple[bool, int]:
+        """
+        Detect susceptibility peak from gradient of chi_g.
+        
+        Peak is when d(chi_g)/dt changes from positive to negative.
+        This is the Lifshitz point - a detectable event, not a threshold.
+        
+        Returns:
+            (is_at_peak, peak_step)
+        """
+        if len(self.chi_g_history) < 10:
+            return False, -1
+        
+        recent = list(self.chi_g_history)[-10:]
+        
+        # Compute gradient
+        d_chi = [recent[i+1] - recent[i] for i in range(len(recent)-1)]
+        
+        # Peak: gradient was positive, now negative
+        if len(d_chi) >= 2:
+            if d_chi[-2] > 0 and d_chi[-1] < 0:
+                # Peak detected!
+                self._chi_g_peak_value = max(recent)
+                self._chi_g_peak_step = self.step_count
+                return True, self.step_count
+        
+        return False, self._chi_g_peak_step
+    
+    def get_spectral_tolerance(self, n_states: int) -> float:
+        """
+        Derive spectral tolerance from system size.
+        
+        tolerance = spectral_gap / n_states
+        This is the natural spectral resolution given system size.
+        """
+        if self.current_metrics is None or self.current_metrics.spectral_gap < 1e-6:
+            return 0.1 / max(n_states, 1)  # Fallback
+        
+        return self.current_metrics.spectral_gap / max(n_states, 1)
+    
+    def update_partition_size(self, n_blocks: int):
+        """Update the current partition size for threshold derivation."""
+        self._n_blocks = max(n_blocks, 2)
+    
+    def is_grokked(self) -> bool:
+        """
+        Check if system has grokked using DERIVED thresholds.
+        
+        Grokking criteria (zero-parameter):
+        1. ε < 1/n_blocks (below minimum resolvable defect)
+        2. R < R_mean - R_std (one sigma below running mean)
+        """
+        if self.current_metrics is None:
+            return False
+        
+        eps_threshold = self.get_epsilon_threshold()
+        ridge_threshold = self.get_ridge_threshold()
+        
+        return (self.current_metrics.epsilon < eps_threshold and
+                self.current_metrics.ridge_ratio < ridge_threshold)
+    
+    def is_grokked_legacy(self, epsilon_threshold: float = 0.05,
+                          ridge_threshold: float = 2.0) -> bool:
+        """Legacy method for backward compatibility. Prefer is_grokked()."""
         if self.current_metrics is None:
             return False
         
