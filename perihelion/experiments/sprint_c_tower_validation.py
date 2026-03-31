@@ -48,6 +48,9 @@ from perihelion.core.sgc_engine import SGCEngine, SGCMetrics
 from perihelion.core.sgc_integrated_controller import (
     SGCIntegratedController, ConstrainedUpdate, ControllerPhase
 )
+from perihelion.core.topological_observables import (
+    compute_b1_from_activations, compute_activation_correlation
+)
 from rayleigh_measurement import (
     RayleighMeasurement, SpectralEquivalenceResult, PartitionData,
     measure_egi_fixed_point, print_egi_report
@@ -616,10 +619,26 @@ class SprintCConductor:
                     self.model, loss, test_loader, self.device
                 )
                 
+                # FIX 2 & 3: Track energy for Cv computation and self-derived Re_crit
+                self.controller.thermal.update_energy(loss.item())
+                
                 # Update weight decay based on temperature
                 wd = self.controller.get_weight_decay(base_wd)
                 for param_group in optimizer.param_groups:
                     param_group['weight_decay'] = wd
+                
+                # FIX 3: Modulate learning rate by Fermi quench factor
+                # This replaces hard grokking quench with smooth phase transition
+                # sigma_quench ∈ [0, 1]: higher = more crystallization
+                sigma_quench = self.controller.thermal.get_fermi_quench_factor()
+                
+                # Reduce learning rate smoothly as system crystallizes
+                # lr_effective = lr_base * (1 - 0.9 * sigma_quench)
+                # At sigma=0 (exploring): full learning rate
+                # At sigma=1 (crystallized): 10% of learning rate
+                lr_scale = 1.0 - 0.9 * sigma_quench
+                for param_group in optimizer.param_groups:
+                    param_group['lr'] = 1e-3 * lr_scale
                 
                 # Optimizer step
                 optimizer.step()
@@ -628,9 +647,11 @@ class SprintCConductor:
                 # Logging
                 if step % self.log_interval == 0:
                     train_acc, test_acc = self.compute_accuracy(task_name)
+                    sigma_q = self.controller.thermal.get_fermi_quench_factor()
                     print(f"Step {step:5d} | Train: {train_acc:.3f} | Test: {test_acc:.3f} | "
                           f"eps: {metrics.epsilon:.4f} | R: {metrics.ridge_ratio:.2f} | "
-                          f"T: {self.controller.thermal.temperature:.2f}")
+                          f"T: {self.controller.thermal.temperature:.2f} | "
+                          f"sigma_q: {sigma_q:.3f}")
                 
                 # Phase 3: Preservation monitoring
                 if step % self.preservation_check_interval == 0 and self.tower_result.tasks:

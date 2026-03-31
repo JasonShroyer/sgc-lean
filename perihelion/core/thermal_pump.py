@@ -23,6 +23,9 @@ from dataclasses import dataclass, field
 from typing import List, Tuple, Optional
 from enum import Enum
 
+# Import Fermi quench for smooth phase transition (Fix 3)
+from .topological_observables import fermi_quench_factor, compute_specific_heat
+
 
 class ThermalPhase(Enum):
     """Thermal annealing phases."""
@@ -89,11 +92,19 @@ class ThermalPump:
     chi_g_history: List[Tuple[int, float]] = field(default_factory=list)
     epsilon_history: List[Tuple[int, float]] = field(default_factory=list)
     temperature_history: List[Tuple[int, float]] = field(default_factory=list)
+    energy_history: List[float] = field(default_factory=list)  # For Cv computation
     
     # Peak detection state
     chi_g_peak_detected: bool = False
     chi_g_peak_epoch: int = -1
     chi_g_peak_value: float = 0.0
+    
+    # Cv-derived critical Reynolds number (Fix 2: ZERO-PARAMETER)
+    # Re_crit is NOT a hardcoded constant - it is self-detected from Cv peak
+    Re_crit: float = 1.0  # Initial estimate, updated by Cv peak detection
+    Cv_peak_detected: bool = False
+    Cv_peak_temperature: float = 1.0
+    Cv_history: List[Tuple[int, float]] = field(default_factory=list)
     
     def __post_init__(self):
         self.temperature = self.schedule.T_initial
@@ -110,6 +121,78 @@ class ThermalPump:
         
         self.Re_SGC = (self.kappa * self.temperature * self.lambda_pump) / self.grad_epsilon_norm
         return self.Re_SGC
+    
+    def update_energy(self, energy: float):
+        """
+        Track energy for Cv computation.
+        
+        Energy should be the loss value or free energy of the system.
+        """
+        self.energy_history.append(energy)
+        if len(self.energy_history) > 100:
+            self.energy_history = self.energy_history[-100:]
+        
+        # Compute Cv and check for peak
+        if len(self.energy_history) >= 10:
+            Cv = compute_specific_heat(self.energy_history[-50:], self.temperature)
+            self.Cv_history.append((self.epoch, Cv))
+            
+            # Limit Cv history
+            if len(self.Cv_history) > 200:
+                self.Cv_history = self.Cv_history[-200:]
+            
+            # Detect Cv peak (Fix 2: self-derive Re_crit)
+            self._detect_Cv_peak()
+    
+    def _detect_Cv_peak(self):
+        """
+        Detect specific heat peak using gradient sign change.
+        
+        ZERO-PARAMETER: Re_crit is derived from the temperature at Cv peak.
+        
+        Re_crit = T_peak * κ * λ_pump / ||∇ε||_at_peak
+        
+        This is the phase transition point - where the system should quench.
+        """
+        if len(self.Cv_history) < 10:
+            return
+        
+        recent = [v for _, v in self.Cv_history[-10:]]
+        
+        # Compute gradient (finite differences)
+        d_Cv = [recent[i+1] - recent[i] for i in range(len(recent)-1)]
+        
+        # Peak: gradient was positive, now negative (sign change)
+        if len(d_Cv) >= 3:
+            recent_grad = sum(d_Cv[-4:-1]) / 3 if len(d_Cv) >= 4 else d_Cv[-2]
+            current_grad = d_Cv[-1]
+            
+            if recent_grad > 0 and current_grad < 0 and not self.Cv_peak_detected:
+                # Cv peak detected! Derive Re_crit from current conditions
+                self.Cv_peak_detected = True
+                self.Cv_peak_temperature = self.temperature
+                
+                # Re_crit = T_peak / (κ * λ_pump / ||∇ε||)
+                # This is the Reynolds number at the phase transition
+                if self.grad_epsilon_norm > 1e-10:
+                    self.Re_crit = (self.kappa * self.temperature * self.lambda_pump) / self.grad_epsilon_norm
+                
+                print(f"[ThermalPump] Cv PEAK detected at epoch {self.epoch}")
+                print(f"  T_peak = {self.Cv_peak_temperature:.4f}")
+                print(f"  Re_crit = {self.Re_crit:.4f} (SELF-DERIVED)")
+    
+    def get_fermi_quench_factor(self) -> float:
+        """
+        Compute the Fermi quench factor for smooth crystallization.
+        
+        σ_quench = fermi(Re_crit - Re_SGC)
+        
+        When σ → 1: System is crystallizing (reduce learning rate)
+        When σ → 0: System is still exploring (maintain learning rate)
+        
+        This replaces the hard grokking quench with a continuous phase transition.
+        """
+        return fermi_quench_factor(self.Re_SGC, self.Re_crit, delta=0.2)
     
     def detect_chi_g_peak(self) -> bool:
         """
@@ -318,10 +401,20 @@ class ThermalPump:
         """
         Update temperature during quenching phase.
         
-        ZERO-PARAMETER: Quench rate derived from epsilon dynamics.
+        ZERO-PARAMETER: Uses Fermi quench factor for smooth crystallization.
+        The quench rate is modulated by the distance from Re_crit.
         """
-        # DERIVED: Quench rate proportional to how fast epsilon is dropping
-        quench_rate = self._get_derived_quench_rate()
+        # Fix 3: Use Fermi quench factor for smooth phase transition
+        # sigma_quench ∈ [0, 1]: higher means more crystallization
+        sigma_quench = self.get_fermi_quench_factor()
+        
+        # DERIVED: Base quench rate from epsilon dynamics
+        base_quench_rate = self._get_derived_quench_rate()
+        
+        # Modulate quench rate by Fermi factor
+        # When Re_SGC < Re_crit (crystallizing): sigma_quench → 1, faster quench
+        # When Re_SGC > Re_crit (exploring): sigma_quench → 0, slower quench
+        quench_rate = base_quench_rate * (0.5 + 0.5 * sigma_quench)
         
         # Exponential cooling toward target
         delta = self.temperature - self.schedule.T_target
@@ -331,6 +424,7 @@ class ThermalPump:
         if abs(self.temperature - self.schedule.T_target) < 0.01:
             self.phase = ThermalPhase.STABLE
             print(f"[ThermalPump] STABLE at epoch {self.epoch}, T = {self.temperature:.4f}")
+            print(f"  Final Re_crit = {self.Re_crit:.4f}, sigma_quench = {sigma_quench:.4f}")
     
     def _get_derived_quench_rate(self) -> float:
         """
@@ -389,6 +483,10 @@ class ThermalPump:
             'chi_g': self.chi_g,
             'ridge_ratio': self.ridge_ratio,
             'Re_SGC': self.Re_SGC,
+            'Re_crit': self.Re_crit,  # Self-derived from Cv peak
+            'fermi_quench_factor': self.get_fermi_quench_factor(),
             'chi_g_peak_detected': self.chi_g_peak_detected,
             'chi_g_peak_epoch': self.chi_g_peak_epoch,
+            'Cv_peak_detected': self.Cv_peak_detected,
+            'Cv_peak_temperature': self.Cv_peak_temperature,
         }

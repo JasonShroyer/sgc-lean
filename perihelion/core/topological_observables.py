@@ -68,9 +68,13 @@ def compute_b1(edge_weights: np.ndarray, edge_pairs: List[Tuple[int, int]],
 
 def compute_b1_torch(weight_matrix: torch.Tensor, threshold: float = 0.01) -> int:
     """
-    Compute b1 from a weight matrix (e.g., hidden layer weights).
+    DEPRECATED: Use compute_b1_from_activations instead.
     
-    Treats the weight matrix as defining edge strengths in a bipartite graph.
+    This function computes b1 from the weight matrix bipartite graph,
+    which measures structural redundancy, NOT the Markov blanket condition.
+    
+    The correct graph for the generalization boundary is the activation
+    correlation graph (the quotient generator L from SGC theory).
     """
     W = weight_matrix.detach().cpu().numpy()
     n_out, n_in = W.shape
@@ -81,6 +85,167 @@ def compute_b1_torch(weight_matrix: torch.Tensor, threshold: float = 0.01) -> in
     edge_weights = np.abs(W.T.flatten())  # (n_in * n_out,)
     
     return compute_b1(edge_weights, edge_pairs, n_stalks, threshold)
+
+
+def compute_spectral_gap_from_correlation(corr_matrix: np.ndarray) -> float:
+    """
+    Compute spectral gap from correlation matrix eigenvalues.
+    
+    gap = (λ_1 - λ_2) / λ_1
+    
+    This is used to derive the threshold for b1 computation.
+    """
+    try:
+        eigenvalues = np.linalg.eigvalsh(corr_matrix)
+        eigenvalues = np.sort(np.abs(eigenvalues))[::-1]  # Descending
+        
+        if len(eigenvalues) < 2 or eigenvalues[0] < 1e-10:
+            return 0.1  # Default fallback
+        
+        return (eigenvalues[0] - eigenvalues[1]) / eigenvalues[0]
+    except Exception:
+        return 0.1
+
+
+def compute_b1_from_activations(
+    activation_corr: torch.Tensor,
+    threshold: Optional[float] = None
+) -> int:
+    """
+    Compute b1 from the ACTIVATION CORRELATION MATRIX.
+    
+    THIS IS THE CORRECT FUNCTION for computing the generalization boundary.
+    
+    The Markov blanket condition (b1 >= 1) refers to cycles in the STATE
+    TRANSITION GRAPH of the dynamical system — the graph whose vertices
+    are neurons and whose edges are their co-activation correlations.
+    
+    This is the quotient generator L from the SGC Lean formalization,
+    NOT the weight matrix W.
+    
+    Args:
+        activation_corr: Correlation matrix of activations (n_neurons x n_neurons).
+                        This is the empirical transition operator that the
+                        SGC engine estimates.
+        threshold: Edge threshold. If None, derived from spectral gap.
+                  threshold = gap / n_neurons (spectral resolution)
+    
+    Returns:
+        b1: First Betti number. b1 >= 1 implies Markov blanket exists.
+    
+    ZERO-PARAMETER: When threshold is None, it is derived from the
+    spectral gap of the correlation matrix itself.
+    """
+    if isinstance(activation_corr, torch.Tensor):
+        C = activation_corr.detach().cpu().numpy()
+    else:
+        C = np.asarray(activation_corr)
+    
+    n_neurons = C.shape[0]
+    
+    # ZERO-PARAMETER: Derive threshold from spectral gap
+    if threshold is None:
+        gap = compute_spectral_gap_from_correlation(C)
+        threshold = gap / max(n_neurons, 1)
+    
+    # Build edge pairs: all (i, j) with i < j
+    edge_pairs = [(i, j) for i in range(n_neurons) for j in range(i + 1, n_neurons)]
+    
+    # Edge weights: absolute correlation values (upper triangle)
+    edge_weights = np.array([np.abs(C[i, j]) for i, j in edge_pairs])
+    
+    return compute_b1(edge_weights, edge_pairs, n_neurons, threshold)
+
+
+def compute_activation_correlation(
+    model: torch.nn.Module,
+    dataloader: torch.utils.data.DataLoader,
+    layer_name: str = 'hidden',
+    device: str = 'cuda',
+    n_samples: int = 500
+) -> torch.Tensor:
+    """
+    Compute activation correlation matrix from a batch of inputs.
+    
+    This extracts the QUOTIENT GENERATOR from the network —
+    the empirical transition operator that SGC theory analyzes.
+    
+    Args:
+        model: Neural network with named layers
+        dataloader: Data source
+        layer_name: Name pattern of layer to extract activations from
+        device: Computation device
+        n_samples: Number of samples to collect
+    
+    Returns:
+        Correlation matrix (n_neurons x n_neurons)
+    """
+    model.eval()
+    activations = []
+    
+    # Hook to capture activations
+    activation_store = {}
+    
+    def hook_fn(name):
+        def hook(module, input, output):
+            activation_store[name] = output.detach()
+        return hook
+    
+    # Register hook on target layer
+    hook_handle = None
+    for name, module in model.named_modules():
+        if layer_name in name:
+            hook_handle = module.register_forward_hook(hook_fn(name))
+            break
+    
+    if hook_handle is None:
+        # Fallback: try to find any linear layer
+        for name, module in model.named_modules():
+            if isinstance(module, torch.nn.Linear):
+                hook_handle = module.register_forward_hook(hook_fn(name))
+                break
+    
+    # Collect activations
+    n_collected = 0
+    with torch.no_grad():
+        for x, _ in dataloader:
+            if n_collected >= n_samples:
+                break
+            x = x.to(device)
+            _ = model(x)
+            
+            if activation_store:
+                act = list(activation_store.values())[0]
+                if act.dim() > 2:
+                    act = act.view(act.size(0), -1)  # Flatten spatial dims
+                activations.append(act.cpu())
+                n_collected += len(x)
+    
+    if hook_handle:
+        hook_handle.remove()
+    
+    model.train()
+    
+    if not activations:
+        # Return identity if no activations collected
+        return torch.eye(1)
+    
+    # Stack all activations: (n_samples, n_neurons)
+    A = torch.cat(activations, dim=0)[:n_samples]
+    
+    # Compute correlation matrix
+    # Centered activations
+    A_centered = A - A.mean(dim=0, keepdim=True)
+    
+    # Correlation: C = A^T A / (n-1), normalized
+    n = A_centered.size(0)
+    cov = (A_centered.T @ A_centered) / max(n - 1, 1)
+    
+    # Normalize to correlation
+    std = torch.sqrt(torch.diag(cov) + 1e-8)
+    corr = cov / (std.unsqueeze(0) * std.unsqueeze(1))
+    
+    return corr
 
 
 # =============================================================================

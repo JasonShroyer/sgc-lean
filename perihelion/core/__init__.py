@@ -23,6 +23,8 @@ from .sgc_engine import SGCEngine, SGCMetrics
 from .sgc_integrated_controller import SGCIntegratedController, ConstrainedUpdate
 from .topological_observables import (
     compute_b1, compute_b1_torch,
+    compute_b1_from_activations, compute_activation_correlation,
+    compute_spectral_gap_from_correlation,
     compute_forman_ricci, ricci_flow_step,
     fermi, fermi_quench_factor,
     compute_specific_heat, compute_binder_cumulant,
@@ -41,6 +43,9 @@ __all__ = [
     # Topological observables (from JAX/THRML)
     'compute_b1',
     'compute_b1_torch',
+    'compute_b1_from_activations',
+    'compute_activation_correlation',
+    'compute_spectral_gap_from_correlation',
     'compute_forman_ricci',
     'ricci_flow_step',
     'fermi',
