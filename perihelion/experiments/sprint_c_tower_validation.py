@@ -648,10 +648,23 @@ class SprintCConductor:
                 if step % self.log_interval == 0:
                     train_acc, test_acc = self.compute_accuracy(task_name)
                     sigma_q = self.controller.thermal.get_fermi_quench_factor()
-                    print(f"Step {step:5d} | Train: {train_acc:.3f} | Test: {test_acc:.3f} | "
-                          f"eps: {metrics.epsilon:.4f} | R: {metrics.ridge_ratio:.2f} | "
-                          f"T: {self.controller.thermal.temperature:.2f} | "
-                          f"sigma_q: {sigma_q:.3f}")
+                    thermal = self.controller.thermal
+                    
+                    # Basic metrics
+                    log_line = (f"Step {step:5d} | Train: {train_acc:.3f} | Test: {test_acc:.3f} | "
+                               f"eps: {metrics.epsilon:.4f} | R: {metrics.ridge_ratio:.2f} | "
+                               f"T: {thermal.temperature:.2f} | sigma_q: {sigma_q:.3f}")
+                    
+                    # Verbose: add Cv and Re_SGC tracking
+                    if getattr(self, 'verbose', False):
+                        Cv = 0.0
+                        if len(thermal.Cv_history) > 0:
+                            Cv = thermal.Cv_history[-1][1]
+                        log_line += f" | Cv: {Cv:.3f} | Re: {thermal.Re_SGC:.3f}"
+                        if thermal.Cv_peak_detected:
+                            log_line += f" | Re_crit: {thermal.Re_crit:.3f}"
+                    
+                    print(log_line)
                 
                 # Phase 3: Preservation monitoring
                 if step % self.preservation_check_interval == 0 and self.tower_result.tasks:
@@ -773,12 +786,28 @@ def main():
     parser.add_argument('--output', type=str, default='sprint_c_tower_result.json')
     parser.add_argument('--quick', action='store_true',
                         help='Quick test with reduced parameters')
+    parser.add_argument('--verbose', action='store_true',
+                        help='Verbose logging including Cv tracking')
+    parser.add_argument('--smoke_test', action='store_true',
+                        help='Run 500-step smoke test to verify Cv peak detection')
+    parser.add_argument('--early_stop_on_grok', action='store_true',
+                        help='Stop task immediately after grokking (for smoke test)')
     
     args = parser.parse_args()
     
+    # Smoke test mode
+    if args.smoke_test:
+        args.max_steps = 500
+        args.verbose = True
+        args.early_stop_on_grok = True
+        args.quick = True  # Use smaller prime for smoke test
+        print("\n" + "="*60)
+        print("SMOKE TEST MODE: 500 steps, watching for Cv peak")
+        print("="*60)
+    
     if args.quick:
-        args.max_steps = 2000
-        prime = 17
+        args.max_steps = min(args.max_steps, 2000)
+        prime = 17  # Smaller prime for quick/smoke tests
     else:
         prime = 97
     
@@ -796,12 +825,32 @@ def main():
         hidden_dim=args.hidden_dim,
         device=args.device,
         max_steps_per_task=args.max_steps,
-        log_interval=100,
+        log_interval=50 if args.verbose else 100,
         preservation_check_interval=500
     )
     
+    # Pass verbosity setting
+    conductor.verbose = getattr(args, 'verbose', False)
+    conductor.early_stop_on_grok = getattr(args, 'early_stop_on_grok', False)
+    conductor.smoke_test = getattr(args, 'smoke_test', False)
+    
     result = conductor.run()
     conductor.save_results(args.output)
+    
+    # Smoke test summary
+    if args.smoke_test:
+        print("\n" + "="*60)
+        print("SMOKE TEST SUMMARY")
+        print("="*60)
+        cv_detected = conductor.controller.thermal.Cv_peak_detected
+        print(f"Cv peak detected: {cv_detected}")
+        if cv_detected:
+            print(f"  T_peak = {conductor.controller.thermal.Cv_peak_temperature:.4f}")
+            print(f"  Re_crit = {conductor.controller.thermal.Re_crit:.4f} (SELF-DERIVED)")
+            print("\n[GO] Thermodynamic control loop verified. Ready for full run.")
+        else:
+            print("\n[WAIT] Cv peak not detected in 500 steps.")
+            print("  Check energy tracking in thermal_pump.update_energy()")
     
     return result
 

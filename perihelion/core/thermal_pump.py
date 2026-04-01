@@ -201,6 +201,11 @@ class ThermalPump:
         ZERO-PARAMETER: No threshold comparison.
         Peak is when d(chi_g)/dt changes from positive to negative.
         This is a detectable event, not a threshold.
+        
+        FALLBACK: If Cv peak hasn't been detected by the time chi_g peaks,
+        use the chi_g peak conditions to derive Re_crit. This ensures the
+        Fermi quench has a valid critical Reynolds number even when
+        energy variance is too low for Cv peak detection.
         """
         if len(self.chi_g_history) < 10:
             return False
@@ -220,6 +225,13 @@ class ThermalPump:
                 self.chi_g_peak_detected = True
                 self.chi_g_peak_epoch = self.epoch
                 self.chi_g_peak_value = max(recent)
+                
+                # FALLBACK: If Cv peak hasn't fired, derive Re_crit from chi_g peak
+                # chi_g peak is also a valid phase transition marker
+                if not self.Cv_peak_detected and self.grad_epsilon_norm > 1e-10:
+                    self.Re_crit = (self.kappa * self.temperature * self.lambda_pump) / self.grad_epsilon_norm
+                    print(f"[ThermalPump] chi_g PEAK -> Re_crit = {self.Re_crit:.4f} (FALLBACK)")
+                
                 return True
         
         return False
