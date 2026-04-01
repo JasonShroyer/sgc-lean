@@ -157,19 +157,27 @@ class LossSGCMonitor:
         
         self.loss_history.append(loss)
         
-        if len(self.loss_history) < 3:
+        # Need full window for reliable measurement
+        if len(self.loss_history) < self.window:
             return 0.0
         
-        # BUG 1 FIX: Fixed tolerance relative to INITIAL loss magnitude
-        # trans_rate only approaches 1.0 when losses genuinely cluster near zero,
-        # not when they cluster at a plateau (e.g., 0.22 with low variance)
-        # This is directly analogous to Sprint 2's epsilon_frac * value_range
-        tol = self.initial_loss / max(self.n_blocks, 10)  # e.g., 2.2/10 = 0.22
-        
+        # BUG 1 FIX (refined): trans_rate only meaningful when loss is LOW
+        # Check 1: Loss must have dropped to < initial_loss / 5
+        # Check 2: Then measure transitivity with fixed tolerance
         values = list(self.loss_history)
         mean = np.mean(values)
         
-        trans_rate = self._measure_approx_equal_transitivity(values, tol)
+        # If mean loss still above 20% of initial, not grokked yet
+        loss_dropped = mean < self.initial_loss / 5.0
+        
+        if not loss_dropped:
+            # Pre-grokking: losses haven't collapsed yet
+            trans_rate = 0.0
+        else:
+            # Post-grokking candidate: measure transitivity
+            tol = self.initial_loss / max(self.n_blocks, 10)
+            trans_rate = self._measure_approx_equal_transitivity(values, tol)
+        
         self.trans_rate_history.append((step, trans_rate))
         
         # Detection logic - only fires when losses genuinely cluster near zero
@@ -180,7 +188,7 @@ class LossSGCMonitor:
                 self.grokking_step = step
                 print(f"\n*** LOSS-SGC GROKKING DETECTED at step {step} ***")
                 print(f"    trans_rate = {trans_rate:.4f} (threshold {self.trans_threshold})")
-                print(f"    loss_mean = {mean:.6f}, tol = {tol:.6f} (initial_loss/{self.n_blocks})")
+                print(f"    loss_mean = {mean:.6f} (< {self.initial_loss/5:.4f} = initial/5)")
         else:
             self.consecutive_above = 0
         
@@ -868,7 +876,7 @@ class SprintCConductor:
                     # Basic metrics + Sprint C+2 trans_rate + func_phase
                     log_line = (f"Step {step:5d} | Train: {train_acc:.3f} | Test: {test_acc:.3f} | "
                                f"eps: {metrics.epsilon:.4f} | R: {metrics.ridge_ratio:.2f} | "
-                               f"WD: {wd:.1f} | σ_q: {sigma_quench:.3f} | "
+                               f"WD: {wd:.1f} | sig_q: {sigma_quench:.3f} | "
                                f"phase: {func_phase[:4]}")
                     
                     # Verbose: add Cv and Re_SGC tracking
