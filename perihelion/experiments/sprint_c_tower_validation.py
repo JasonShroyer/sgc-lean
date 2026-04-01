@@ -57,6 +57,9 @@ from rayleigh_measurement import (
 )
 from collections import deque
 
+# BUG 3 FIX: Import FunctionalActiveInferenceController as primary grokking signal
+from functional_grokking_detector import FunctionalActiveInferenceController
+
 
 # ============================================================================
 # LOSS-SGC MONITOR: Real-time grokking detector (Sprint C+1 critical fix)
@@ -73,26 +76,33 @@ class LossSGCMonitor:
     system's own dynamics (loss), not on the weight matrix. The ε measurement
     on weights is a POST-HOC verifier, not a real-time detector.
     
-    ZERO-PARAMETER: tolerance derived from std of loss window.
+    BUG 1 FIX: Tolerance is now fixed relative to INITIAL loss magnitude,
+    not adaptive to window std. This prevents false positives when loss
+    plateaus at a non-zero value with low variance.
     """
     
     def __init__(self, window: int = 20, k_sustained: int = 2, 
-                 trans_threshold: float = 0.83):
+                 trans_threshold: float = 0.83, n_blocks: int = 10):
         """
         Args:
             window: Size of loss history window
             k_sustained: Consecutive windows above threshold needed for detection
             trans_threshold: trans_rate threshold for grokking (default 0.83)
+            n_blocks: Divides initial_loss to set tolerance (Sprint 2 style)
         """
         self.window = window
         self.k_sustained = k_sustained
         self.trans_threshold = trans_threshold
+        self.n_blocks = n_blocks
         
         self.loss_history = deque(maxlen=window)
         self.trans_rate_history = []
         self.consecutive_above = 0
         self.grokking_detected = False
         self.grokking_step = -1
+        
+        # BUG 1 FIX: Track initial loss for fixed tolerance
+        self.initial_loss = None
     
     def _measure_approx_equal_transitivity(self, values: list, tol: float) -> float:
         """
@@ -141,26 +151,28 @@ class LossSGCMonitor:
         Returns:
             Current trans_rate
         """
+        # BUG 1 FIX: Record initial loss for fixed tolerance calculation
+        if self.initial_loss is None:
+            self.initial_loss = loss
+        
         self.loss_history.append(loss)
         
         if len(self.loss_history) < 3:
             return 0.0
         
-        # ZERO-PARAMETER: derive tolerance from std of window
-        # In pre-grokking phase, losses have high variance
-        # Post-grokking, losses cluster near zero, std drops
-        values = list(self.loss_history)
-        std = np.std(values)
-        mean = np.mean(values)
+        # BUG 1 FIX: Fixed tolerance relative to INITIAL loss magnitude
+        # trans_rate only approaches 1.0 when losses genuinely cluster near zero,
+        # not when they cluster at a plateau (e.g., 0.22 with low variance)
+        # This is directly analogous to Sprint 2's epsilon_frac * value_range
+        tol = self.initial_loss / max(self.n_blocks, 10)  # e.g., 2.2/10 = 0.22
         
-        # Tolerance = 0.5 * std (adaptive to current dynamics)
-        # Also cap at mean to handle near-zero case
-        tol = max(0.5 * std, 0.01 * mean + 1e-6)
+        values = list(self.loss_history)
+        mean = np.mean(values)
         
         trans_rate = self._measure_approx_equal_transitivity(values, tol)
         self.trans_rate_history.append((step, trans_rate))
         
-        # Detection logic
+        # Detection logic - only fires when losses genuinely cluster near zero
         if trans_rate >= self.trans_threshold:
             self.consecutive_above += 1
             if self.consecutive_above >= self.k_sustained and not self.grokking_detected:
@@ -168,7 +180,7 @@ class LossSGCMonitor:
                 self.grokking_step = step
                 print(f"\n*** LOSS-SGC GROKKING DETECTED at step {step} ***")
                 print(f"    trans_rate = {trans_rate:.4f} (threshold {self.trans_threshold})")
-                print(f"    loss_mean = {mean:.6f}, loss_std = {std:.6f}")
+                print(f"    loss_mean = {mean:.6f}, tol = {tol:.6f} (initial_loss/{self.n_blocks})")
         else:
             self.consecutive_above = 0
         
@@ -224,8 +236,12 @@ class ModularAdditionTask:
         train_dataset = torch.utils.data.TensorDataset(train_x, train_y)
         test_dataset = torch.utils.data.TensorDataset(test_x, test_y)
         
+        # BUG 4 FIX: Use full-batch for small tasks (n_train <= 100)
+        # Full-batch GD (not SGD) is what Nanda et al. used for clean grokking
+        effective_batch = min(batch_size, len(train_dataset)) if len(train_dataset) <= 100 else batch_size
+        
         train_loader = torch.utils.data.DataLoader(
-            train_dataset, batch_size=batch_size, shuffle=True
+            train_dataset, batch_size=effective_batch, shuffle=True
         )
         test_loader = torch.utils.data.DataLoader(
             test_dataset, batch_size=batch_size, shuffle=False
@@ -253,7 +269,7 @@ class ParityTask:
         self.test_x = all_x[split_idx:]
         self.test_y = all_y[split_idx:]
     
-    def get_dataloaders(self, batch_size: int = 64):
+    def get_dataloaders(self, batch_size: int = 32):  # BUG 4 FIX: 32 not 64
         train_dataset = torch.utils.data.TensorDataset(
             torch.tensor(self.train_x), torch.tensor(self.train_y)
         )
@@ -313,7 +329,7 @@ class PermutationTask:
         self.test_x = all_x[split_idx:]
         self.test_y = all_y[split_idx:]
     
-    def get_dataloaders(self, batch_size: int = 64):
+    def get_dataloaders(self, batch_size: int = 32):  # BUG 4 FIX: 32 not 64
         train_dataset = torch.utils.data.TensorDataset(
             torch.tensor(self.train_x), torch.tensor(self.train_y)
         )
@@ -378,7 +394,7 @@ class MultiTaskMLP(nn.Module):
             raise ValueError(f"Unknown task: {task_name}")
         self.current_task = task_name
     
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, return_hidden: bool = False):
         if self.current_task is None:
             raise ValueError("Must call set_task() before forward()")
         
@@ -387,10 +403,15 @@ class MultiTaskMLP(nn.Module):
         
         # Shared hidden layers
         h = torch.relu(self.hidden1(h))
-        h = torch.relu(self.hidden2(h))
+        h2 = torch.relu(self.hidden2(h))
         
         # Task-specific output
-        return self.output_heads[self.current_task](h)
+        logits = self.output_heads[self.current_task](h2)
+        
+        # BUG 3 FIX: Optionally return hidden states for FunctionalGrokkingDetector
+        if return_hidden:
+            return logits, h2
+        return logits
 
 
 # ============================================================================
@@ -549,7 +570,7 @@ class SprintCConductor:
             constraint=ConstrainedUpdate(),
             # REMOVED: grokking_threshold, ridge_threshold - now derived
             noise_injection_interval=10,
-            measurement_interval=50
+            measurement_interval=10  # BUG 5 FIX: 10 not 50 (match Sprint 5 Kuramoto)
         )
         
         # Results tracking
@@ -742,27 +763,42 @@ class SprintCConductor:
         print(f"PHASE 1: Training task '{task_name}'")
         print(f"{'='*60}")
         
-        # Sprint C+1: Initialize loss-SGC monitor for this task
+        # Sprint C+1: Initialize loss-SGC monitor for this task (secondary signal)
         self.loss_sgc_monitors[task_name] = LossSGCMonitor(
             window=20, k_sustained=2, trans_threshold=0.83
         )
         loss_monitor = self.loss_sgc_monitors[task_name]
         
+        # BUG 3 FIX: Initialize FunctionalActiveInferenceController as PRIMARY signal
+        # This uses within-class variance (algebraic blanket) which is more reliable
+        # than loss transitivity for detecting grokking
+        out_dim = self.task_configs[task_name][1]
+        func_controller = FunctionalActiveInferenceController(
+            base_noise=0.1,
+            base_weight_decay=1.0,
+            base_lr=self.base_learning_rate,
+            num_classes=out_dim
+        )
+        
         # Set up controller
         self.controller.start_task(task_name)
         self.model.set_task(task_name)
         
-        # Sprint C+1: Use higher weight decay (1.0 per Nanda et al. grokking paper)
-        base_wd = self.base_weight_decay
+        # BUG 2 FIX: Two-phase weight decay schedule from Phase 6
+        # Low WD during HEAT (exploring) allows free memorization
+        # High WD during QUENCH (after grokking detected) forces compression
+        wd_heat = 0.1   # Phase 6 value
+        wd_quench = 2.0  # Phase 6 value
         base_lr = self.base_learning_rate
         optimizer = optim.AdamW(
             self.model.parameters(),
             lr=base_lr,
-            weight_decay=base_wd
+            weight_decay=wd_heat  # Start with heat WD
         )
         criterion = nn.CrossEntropyLoss()
         
-        print(f"    weight_decay = {base_wd}, lr = {base_lr}")
+        print(f"    Two-phase WD: heat={wd_heat}, quench={wd_quench}, lr={base_lr}")
+        print(f"    FunctionalActiveInferenceController: num_classes={out_dim}")
         
         step = 0
         grokked_step = -1
@@ -775,9 +811,9 @@ class SprintCConductor:
                 
                 x, y = x.to(self.device), y.to(self.device)
                 
-                # Forward pass
+                # Forward pass with hidden state capture for BUG 3 FIX
                 optimizer.zero_grad()
-                logits = self.model(x)
+                logits, hidden = self.model(x, return_hidden=True)
                 loss = criterion(logits, y)
                 loss.backward()
                 
@@ -786,33 +822,38 @@ class SprintCConductor:
                     self.model, loss, test_loader, self.device
                 )
                 
-                # FIX 2 & 3: Track energy for Cv computation and self-derived Re_crit
+                # Track energy for Cv computation
                 self.controller.thermal.update_energy(loss.item())
                 
-                # Sprint C+1: Update loss-SGC monitor for real-time grokking detection
+                # Sprint C+1: Update loss-SGC monitor (secondary signal)
                 trans_rate = loss_monitor.update(loss.item(), step)
                 
-                # Update weight decay based on temperature
-                wd = self.controller.get_weight_decay(base_wd)
-                for param_group in optimizer.param_groups:
-                    param_group['weight_decay'] = wd
+                # BUG 3 FIX: Update FunctionalActiveInferenceController (PRIMARY signal)
+                # This uses within-class variance which is more reliable than loss transitivity
+                func_controls = func_controller.update(hidden.detach(), y, step)
+                func_phase = func_controls['phase']
+                func_grokked = func_phase == 'grokked'
                 
-                # Sprint C+1 FIX: Gate Fermi quench on loss-SGC detection
-                # Don't crystallize BEFORE grokking is detected!
-                # Prior Sprint C quenched immediately (sigma=0 from step 1)
-                if not loss_monitor.grokking_detected:
-                    # Before grokking: full exploration, no crystallization
+                # Use EITHER loss-SGC OR functional detector for grokking detection
+                # Functional is primary, loss-SGC is secondary/backup
+                grokking_signal = func_grokked or loss_monitor.grokking_detected
+                
+                # BUG 2 FIX: Two-phase weight decay schedule
+                # Before grokking: wd_heat=0.1 (free memorization)
+                # After grokking: wd_quench=2.0 (force compression to quotient)
+                if not grokking_signal:
+                    # HEAT phase: low WD, full LR
+                    wd = wd_heat
+                    lr_scale = 1.0
                     sigma_quench = 0.0
                 else:
-                    # After loss-SGC detects grokking: engage Fermi quench
+                    # QUENCH phase: high WD, engage Fermi quench for LR
+                    wd = wd_quench
                     sigma_quench = self.controller.thermal.get_fermi_quench_factor()
+                    lr_scale = 1.0 - 0.9 * sigma_quench
                 
-                # Reduce learning rate smoothly as system crystallizes
-                # lr_effective = lr_base * (1 - 0.9 * sigma_quench)
-                # At sigma=0 (exploring): full learning rate
-                # At sigma=1 (crystallized): 10% of learning rate
-                lr_scale = 1.0 - 0.9 * sigma_quench
                 for param_group in optimizer.param_groups:
+                    param_group['weight_decay'] = wd
                     param_group['lr'] = base_lr * lr_scale
                 
                 # Optimizer step
@@ -824,11 +865,11 @@ class SprintCConductor:
                     train_acc, test_acc = self.compute_accuracy(task_name)
                     thermal = self.controller.thermal
                     
-                    # Basic metrics + Sprint C+1 trans_rate
+                    # Basic metrics + Sprint C+2 trans_rate + func_phase
                     log_line = (f"Step {step:5d} | Train: {train_acc:.3f} | Test: {test_acc:.3f} | "
                                f"eps: {metrics.epsilon:.4f} | R: {metrics.ridge_ratio:.2f} | "
-                               f"T: {thermal.temperature:.2f} | sigma_q: {sigma_quench:.3f} | "
-                               f"trans: {trans_rate:.3f}")
+                               f"WD: {wd:.1f} | σ_q: {sigma_quench:.3f} | "
+                               f"phase: {func_phase[:4]}")
                     
                     # Verbose: add Cv and Re_SGC tracking
                     if getattr(self, 'verbose', False):
