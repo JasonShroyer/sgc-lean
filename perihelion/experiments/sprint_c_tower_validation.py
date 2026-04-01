@@ -55,6 +55,132 @@ from rayleigh_measurement import (
     RayleighMeasurement, SpectralEquivalenceResult, PartitionData,
     measure_egi_fixed_point, print_egi_report
 )
+from collections import deque
+
+
+# ============================================================================
+# LOSS-SGC MONITOR: Real-time grokking detector (Sprint C+1 critical fix)
+# ============================================================================
+
+class LossSGCMonitor:
+    """
+    Measures trans_rate of APPROX_EQUAL on the running loss sequence.
+    
+    This is the DIRECT grokking detector from Sprint 2 — when loss values
+    cluster near zero, APPROX_EQUAL transitivity spikes and trans_rate → 1.
+    
+    Key insight: Prior successful experiments measured trans_rate on the
+    system's own dynamics (loss), not on the weight matrix. The ε measurement
+    on weights is a POST-HOC verifier, not a real-time detector.
+    
+    ZERO-PARAMETER: tolerance derived from std of loss window.
+    """
+    
+    def __init__(self, window: int = 20, k_sustained: int = 2, 
+                 trans_threshold: float = 0.83):
+        """
+        Args:
+            window: Size of loss history window
+            k_sustained: Consecutive windows above threshold needed for detection
+            trans_threshold: trans_rate threshold for grokking (default 0.83)
+        """
+        self.window = window
+        self.k_sustained = k_sustained
+        self.trans_threshold = trans_threshold
+        
+        self.loss_history = deque(maxlen=window)
+        self.trans_rate_history = []
+        self.consecutive_above = 0
+        self.grokking_detected = False
+        self.grokking_step = -1
+    
+    def _measure_approx_equal_transitivity(self, values: list, tol: float) -> float:
+        """
+        Measure transitivity of APPROX_EQUAL relation on values.
+        
+        trans_rate = P(|a-c| < tol | |a-b| < tol AND |b-c| < tol)
+        
+        When values cluster (all near zero), transitivity → 1.
+        When values spread, transitivity drops.
+        """
+        n = len(values)
+        if n < 3:
+            return 0.0
+        
+        # Sample triplets
+        n_chains = 0
+        n_transitive = 0
+        
+        # For efficiency, sample up to 100 triplets
+        max_triplets = min(100, n * (n-1) * (n-2) // 6)
+        
+        for i in range(n):
+            for j in range(i+1, n):
+                if abs(values[i] - values[j]) < tol:  # a ~ b
+                    for k in range(j+1, n):
+                        if abs(values[j] - values[k]) < tol:  # b ~ c
+                            n_chains += 1
+                            if abs(values[i] - values[k]) < tol:  # a ~ c?
+                                n_transitive += 1
+                            if n_chains >= max_triplets:
+                                break
+                    if n_chains >= max_triplets:
+                        break
+            if n_chains >= max_triplets:
+                break
+        
+        if n_chains == 0:
+            return 0.0
+        
+        return n_transitive / n_chains
+    
+    def update(self, loss: float, step: int) -> float:
+        """
+        Update monitor with new loss value.
+        
+        Returns:
+            Current trans_rate
+        """
+        self.loss_history.append(loss)
+        
+        if len(self.loss_history) < 3:
+            return 0.0
+        
+        # ZERO-PARAMETER: derive tolerance from std of window
+        # In pre-grokking phase, losses have high variance
+        # Post-grokking, losses cluster near zero, std drops
+        values = list(self.loss_history)
+        std = np.std(values)
+        mean = np.mean(values)
+        
+        # Tolerance = 0.5 * std (adaptive to current dynamics)
+        # Also cap at mean to handle near-zero case
+        tol = max(0.5 * std, 0.01 * mean + 1e-6)
+        
+        trans_rate = self._measure_approx_equal_transitivity(values, tol)
+        self.trans_rate_history.append((step, trans_rate))
+        
+        # Detection logic
+        if trans_rate >= self.trans_threshold:
+            self.consecutive_above += 1
+            if self.consecutive_above >= self.k_sustained and not self.grokking_detected:
+                self.grokking_detected = True
+                self.grokking_step = step
+                print(f"\n*** LOSS-SGC GROKKING DETECTED at step {step} ***")
+                print(f"    trans_rate = {trans_rate:.4f} (threshold {self.trans_threshold})")
+                print(f"    loss_mean = {mean:.6f}, loss_std = {std:.6f}")
+        else:
+            self.consecutive_above = 0
+        
+        return trans_rate
+    
+    def get_summary(self) -> dict:
+        return {
+            'grokking_detected': self.grokking_detected,
+            'grokking_step': self.grokking_step,
+            'final_trans_rate': self.trans_rate_history[-1][1] if self.trans_rate_history else 0.0,
+            'n_measurements': len(self.trans_rate_history),
+        }
 
 
 # ============================================================================
@@ -336,7 +462,9 @@ class SprintCConductor:
                  device: str = 'cuda',
                  max_steps_per_task: int = 50000,
                  log_interval: int = 100,
-                 preservation_check_interval: int = 500):
+                 preservation_check_interval: int = 500,
+                 weight_decay: float = 1.0,
+                 learning_rate: float = 1e-3):
         """
         Initialize Sprint C conductor.
         
@@ -347,6 +475,8 @@ class SprintCConductor:
             max_steps_per_task: Maximum training steps per task
             log_interval: Steps between logging
             preservation_check_interval: Steps between preservation checks
+            weight_decay: Base weight decay (Sprint C+1: use 1.0 per Nanda et al.)
+            learning_rate: Base learning rate
         """
         self.tasks = tasks
         self.hidden_dim = hidden_dim
@@ -354,6 +484,12 @@ class SprintCConductor:
         self.max_steps_per_task = max_steps_per_task
         self.log_interval = log_interval
         self.preservation_check_interval = preservation_check_interval
+        self.base_weight_decay = weight_decay
+        self.base_learning_rate = learning_rate
+        
+        # Sprint C+1: Loss-SGC monitor for real-time grokking detection
+        # This gates the thermal pump quench - don't crystallize before grokking!
+        self.loss_sgc_monitors = {}  # Per-task monitors
         
         # Build task configs
         self.task_configs = {}
@@ -593,6 +729,11 @@ class SprintCConductor:
         Train a single task using the full technology stack.
         
         Implements Phase 1 (accelerated grokking) and Phase 2 (fixed point verification).
+        
+        Sprint C+1 changes:
+        - LossSGCMonitor for real-time grokking detection
+        - Fermi quench gated on loss-SGC detection
+        - Higher weight decay (1.0 default per Nanda et al.)
         """
         task_name = task.name
         train_loader, test_loader = self.dataloaders[task_name]
@@ -601,18 +742,27 @@ class SprintCConductor:
         print(f"PHASE 1: Training task '{task_name}'")
         print(f"{'='*60}")
         
+        # Sprint C+1: Initialize loss-SGC monitor for this task
+        self.loss_sgc_monitors[task_name] = LossSGCMonitor(
+            window=20, k_sustained=2, trans_threshold=0.83
+        )
+        loss_monitor = self.loss_sgc_monitors[task_name]
+        
         # Set up controller
         self.controller.start_task(task_name)
         self.model.set_task(task_name)
         
-        # Optimizer with temperature-dependent weight decay
-        base_wd = 0.1
+        # Sprint C+1: Use higher weight decay (1.0 per Nanda et al. grokking paper)
+        base_wd = self.base_weight_decay
+        base_lr = self.base_learning_rate
         optimizer = optim.AdamW(
             self.model.parameters(),
-            lr=1e-3,
+            lr=base_lr,
             weight_decay=base_wd
         )
         criterion = nn.CrossEntropyLoss()
+        
+        print(f"    weight_decay = {base_wd}, lr = {base_lr}")
         
         step = 0
         grokked_step = -1
@@ -639,15 +789,23 @@ class SprintCConductor:
                 # FIX 2 & 3: Track energy for Cv computation and self-derived Re_crit
                 self.controller.thermal.update_energy(loss.item())
                 
+                # Sprint C+1: Update loss-SGC monitor for real-time grokking detection
+                trans_rate = loss_monitor.update(loss.item(), step)
+                
                 # Update weight decay based on temperature
                 wd = self.controller.get_weight_decay(base_wd)
                 for param_group in optimizer.param_groups:
                     param_group['weight_decay'] = wd
                 
-                # FIX 3: Modulate learning rate by Fermi quench factor
-                # This replaces hard grokking quench with smooth phase transition
-                # sigma_quench ∈ [0, 1]: higher = more crystallization
-                sigma_quench = self.controller.thermal.get_fermi_quench_factor()
+                # Sprint C+1 FIX: Gate Fermi quench on loss-SGC detection
+                # Don't crystallize BEFORE grokking is detected!
+                # Prior Sprint C quenched immediately (sigma=0 from step 1)
+                if not loss_monitor.grokking_detected:
+                    # Before grokking: full exploration, no crystallization
+                    sigma_quench = 0.0
+                else:
+                    # After loss-SGC detects grokking: engage Fermi quench
+                    sigma_quench = self.controller.thermal.get_fermi_quench_factor()
                 
                 # Reduce learning rate smoothly as system crystallizes
                 # lr_effective = lr_base * (1 - 0.9 * sigma_quench)
@@ -655,7 +813,7 @@ class SprintCConductor:
                 # At sigma=1 (crystallized): 10% of learning rate
                 lr_scale = 1.0 - 0.9 * sigma_quench
                 for param_group in optimizer.param_groups:
-                    param_group['lr'] = 1e-3 * lr_scale
+                    param_group['lr'] = base_lr * lr_scale
                 
                 # Optimizer step
                 optimizer.step()
@@ -664,13 +822,13 @@ class SprintCConductor:
                 # Logging
                 if step % self.log_interval == 0:
                     train_acc, test_acc = self.compute_accuracy(task_name)
-                    sigma_q = self.controller.thermal.get_fermi_quench_factor()
                     thermal = self.controller.thermal
                     
-                    # Basic metrics
+                    # Basic metrics + Sprint C+1 trans_rate
                     log_line = (f"Step {step:5d} | Train: {train_acc:.3f} | Test: {test_acc:.3f} | "
                                f"eps: {metrics.epsilon:.4f} | R: {metrics.ridge_ratio:.2f} | "
-                               f"T: {thermal.temperature:.2f} | sigma_q: {sigma_q:.3f}")
+                               f"T: {thermal.temperature:.2f} | sigma_q: {sigma_quench:.3f} | "
+                               f"trans: {trans_rate:.3f}")
                     
                     # Verbose: add Cv and Re_SGC tracking
                     if getattr(self, 'verbose', False):
@@ -794,12 +952,13 @@ class SprintCConductor:
 def main():
     import argparse
     
-    parser = argparse.ArgumentParser(description='Sprint C: EGI Tower Validation')
+    parser = argparse.ArgumentParser(description='Sprint C+1: EGI Tower Validation')
     parser.add_argument('--device', type=str, 
                         default='cuda' if torch.cuda.is_available() else 'cpu')
-    parser.add_argument('--max_steps', type=int, default=20000,
+    parser.add_argument('--max_steps', type=int, default=50000,
                         help='Maximum steps per task')
-    parser.add_argument('--hidden_dim', type=int, default=256)
+    parser.add_argument('--hidden_dim', type=int, default=128,
+                        help='Hidden dimension (Sprint C+1: smaller=forces structure)')
     parser.add_argument('--output', type=str, default='sprint_c_tower_result.json')
     parser.add_argument('--quick', action='store_true',
                         help='Quick test with reduced parameters')
@@ -809,6 +968,13 @@ def main():
                         help='Run 500-step smoke test to verify Cv peak detection')
     parser.add_argument('--early_stop_on_grok', action='store_true',
                         help='Stop task immediately after grokking (for smoke test)')
+    # Sprint C+1 additions
+    parser.add_argument('--weight_decay', type=float, default=1.0,
+                        help='Weight decay (Sprint C+1: 1.0 per Nanda et al.)')
+    parser.add_argument('--learning_rate', type=float, default=1e-3,
+                        help='Base learning rate')
+    parser.add_argument('--prime', type=int, default=11,
+                        help='Prime for modular addition task (Sprint C+1: 11 groks in ~5k steps)')
     
     args = parser.parse_args()
     
@@ -826,24 +992,34 @@ def main():
         args.max_steps = min(args.max_steps, 2000)
         prime = 17  # Smaller prime for quick/smoke tests
     else:
-        prime = 97
+        prime = args.prime  # Sprint C+1: Use CLI-specified prime (default 11)
     
     # Create tasks - ORDERED EASIEST TO HARDEST for strongest preservation test
     # Parity (Z_2) groks fastest, Permutation (S_n) medium, Modular Add (Z_p) slowest
+    # Sprint C+1: Use S_3 instead of S_5 for faster grokking
     tasks = [
         ParityTask(n_bits=8),           # Task 1: Simplest invariant, fastest grokking
-        PermutationTask(n_elements=5),  # Task 2: Medium complexity
-        ModularAdditionTask(prime=prime),  # Task 3: Hardest (Fourier invariant)
+        PermutationTask(n_elements=3),  # Task 2: Reduced complexity for faster grokking
+        ModularAdditionTask(prime=prime),  # Task 3: p=11 groks in ~5k steps
     ]
     
-    # Run Sprint C
+    print(f"\n[Sprint C+1] Configuration:")
+    print(f"  hidden_dim = {args.hidden_dim}")
+    print(f"  weight_decay = {args.weight_decay}")
+    print(f"  learning_rate = {args.learning_rate}")
+    print(f"  prime = {prime}")
+    print(f"  max_steps = {args.max_steps}")
+    
+    # Run Sprint C+1
     conductor = SprintCConductor(
         tasks=tasks,
         hidden_dim=args.hidden_dim,
         device=args.device,
         max_steps_per_task=args.max_steps,
         log_interval=50 if args.verbose else 100,
-        preservation_check_interval=500
+        preservation_check_interval=500,
+        weight_decay=args.weight_decay,
+        learning_rate=args.learning_rate
     )
     
     # Pass verbosity setting
