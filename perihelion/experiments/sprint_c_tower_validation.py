@@ -363,10 +363,27 @@ class SprintCConductor:
             train_loader, test_loader = task.get_dataloaders()
             self.dataloaders[task.name] = (train_loader, test_loader)
             
-            # Infer dimensions from first batch
+            # Infer dimensions from first batch (input) and full dataset (output)
             x, y = next(iter(train_loader))
             in_dim = x.shape[1]
-            out_dim = int(y.max().item()) + 1
+            
+            # For output dim, we need ALL labels, not just first batch
+            # Otherwise p=97 modular addition will crash if first batch doesn't have label 96
+            if hasattr(task, 'prime'):
+                # Modular addition: output dim = prime
+                out_dim = task.prime
+            elif hasattr(task, 'n_bits'):
+                # Parity: output dim = 2
+                out_dim = 2
+            elif hasattr(task, 'n_elements'):
+                # Permutation: need to check actual max label
+                all_labels = torch.cat([y for _, y in train_loader])
+                out_dim = int(all_labels.max().item()) + 1
+            else:
+                # Fallback: scan all training labels
+                all_labels = torch.cat([y for _, y in train_loader])
+                out_dim = int(all_labels.max().item()) + 1
+            
             self.task_configs[task.name] = (in_dim, out_dim)
         
         # Create model
