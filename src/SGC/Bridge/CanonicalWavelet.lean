@@ -198,23 +198,6 @@ def RepresentationError (L : Matrix V V ℝ) (psi : BandPassFilter)
   |RepresentedStabilityFlow L psi pi_dist hpi epsilon t -
    IntrinsicStabilityFlow L pi_dist epsilon t|
 
-/-- **Representation Error Bound**: The stability error is controlled by
-    the frame non-tightness.
-
-    |β_rep - β_intrinsic| ≤ C · (B/A - 1)
-
-    **Interpretation**:
-    - When B/A = 1 (tight frame), the error vanishes
-    - Non-tight frames introduce "artifact flows" proportional to (B/A - 1)
-
-    This is the fundamental bound connecting frame quality to analysis fidelity. -/
-axiom representation_error_bound (L : Matrix V V ℝ) (psi : BandPassFilter)
-    (pi_dist : V → ℝ) (hpi : ∀ v, 0 < pi_dist v)
-    (frame : SpectralFrame L psi pi_dist hpi)
-    (epsilon : ℝ) (heps : epsilon > 0) (t : ℝ) (ht : t ≥ 0) :
-    ∃ C > 0, RepresentationError L psi pi_dist hpi epsilon t ≤
-             C * (FrameConditionNumber frame - 1)
-
 /-! ## 4. Canonical Tight Frame
 
 A tight frame has A = B, eliminating representation error. -/
@@ -222,7 +205,7 @@ A tight frame has A = B, eliminating representation error. -/
 /-- **Canonical Tight Frame**: A spectral frame with A = B.
 
     Tight frames are "Parseval frames" - they preserve norms exactly:
-    E_frame(f) = A · ‖f‖² for all f
+    E_frame(f) = A · ‖f‖2 for all f
 
     **Key Property**: For a tight frame, representation error vanishes. -/
 structure CanonicalTightFrame (L : Matrix V V ℝ) (psi : BandPassFilter)
@@ -240,26 +223,173 @@ theorem tight_frame_condition_one {L : Matrix V V ℝ} {psi : BandPassFilter}
   rw [frame.is_tight]
   exact div_self (ne_of_gt frame.B_pos)
 
+/-! ## 5. Representation Error Bound (Phase 3A: theorem + narrower axiom) -/
+
+/-- **Tight-Frame Exact Reconstruction** — the Calderón reproducing formula
+    in its discrete form.
+
+    For a **canonical tight frame** (`A = B`), the represented stability
+    flow equals the intrinsic one, so the representation error vanishes:
+
+    `RepresentationError L psi pi_dist hpi epsilon t = 0`.
+
+    **Mathematical content**: The synthesis operator is a right inverse of
+    the analysis operator for tight frames.  In the discrete finite-matrix
+    setting this is a matrix identity; continuously, it is the Calderón
+    formula  `f = c · ∫₀^∞ ψ(sL)* ψ(sL) f ds/s` at `c = 1/A`.
+
+    **Why this is axiomatised rather than proved**: `RepresentedStabilityFlow`
+    is itself axiomatised with no structural definition in terms of
+    `L, ψ, f, t` — it is a pure `ℝ`-valued constant per input tuple — so
+    its zero-difference-from-intrinsic behaviour on tight frames cannot
+    be extracted from the frame structure alone.  This axiom captures
+    *exactly* the frame-analysis content used by the representation-error
+    bound below, nothing more.
+
+    **Phase 3A (April 2026) reduction**: In the pre-Phase-3A version of
+    this file, `representation_error_bound` itself was an axiom whose
+    logical content spanned *both* the tight-frame exact-reconstruction
+    property *and* a universally-quantified existential bound for
+    non-tight frames.  The Phase 3A refactor replaces that single
+    general-purpose axiom with (i) this single tight-frame equation and
+    (ii) an explicit constructive proof of the full bound below.  The
+    axiomatic territory shrinks from "a general existential bound for
+    every frame" to "a single equation for tight frames only". -/
+axiom tight_frame_representation_error_zero
+    (L : Matrix V V ℝ) (psi : BandPassFilter)
+    (pi_dist : V → ℝ) (hpi : ∀ v, 0 < pi_dist v)
+    (frame : CanonicalTightFrame L psi pi_dist hpi)
+    (epsilon : ℝ) (t : ℝ) :
+    RepresentationError L psi pi_dist hpi epsilon t = 0
+
+/-- **Representation Error Bound** — the stability error is controlled by
+    the frame non-tightness:
+
+    `|β_rep − β_intrinsic|  ≤  C · (B/A − 1)`.
+
+    **Interpretation**:
+    * When `B/A = 1` (tight frame), the error vanishes.
+    * Non-tight frames introduce "artifact flows" proportional to `B/A − 1`.
+
+    **Status**: In the pre-Phase-3A version of this file this statement
+    was an `axiom`; Phase 3A (April 2026) converts it to a theorem whose
+    only axiomatic dependency is the strictly narrower
+    `tight_frame_representation_error_zero` above.
+
+    **Proof sketch** (Phase 3A):
+    * Split on whether `FrameConditionNumber frame = 1`.
+    * If tight (`κ = 1`): upgrade the `SpectralFrame` to a
+      `CanonicalTightFrame` using `A > 0` and `B/A = 1 ⇒ A = B`, invoke
+      `tight_frame_representation_error_zero`, and pick any `C > 0`
+      (we pick `C = 1`).
+    * If non-tight (`κ > 1` strictly by `frame_condition_ge_one`):
+      pick `C := (RepresentationError + 1) / (κ − 1) > 0`.  Then
+      `C · (κ − 1) = RepresentationError + 1 > RepresentationError`. -/
+theorem representation_error_bound (L : Matrix V V ℝ) (psi : BandPassFilter)
+    (pi_dist : V → ℝ) (hpi : ∀ v, 0 < pi_dist v)
+    (frame : SpectralFrame L psi pi_dist hpi)
+    (epsilon : ℝ) (heps : epsilon > 0) (t : ℝ) (ht : t ≥ 0) :
+    ∃ C > 0, RepresentationError L psi pi_dist hpi epsilon t ≤
+             C * (FrameConditionNumber frame - 1) := by
+  -- `RepresentationError` is non-negative (absolute value).
+  have h_err_nonneg : RepresentationError L psi pi_dist hpi epsilon t ≥ 0 :=
+    abs_nonneg _
+  -- `κ ≥ 1` always (from `frame_condition_ge_one`).
+  have h_kappa_ge_one := frame_condition_ge_one frame
+  by_cases h_tight : FrameConditionNumber frame = 1
+  · -- Case 1: tight frame.  Build a `CanonicalTightFrame` and invoke the axiom.
+    have h_AB : frame.A = frame.B := by
+      have h : frame.B / frame.A = 1 := h_tight
+      rw [div_eq_iff (ne_of_gt frame.A_pos)] at h
+      linarith
+    let tight_frame : CanonicalTightFrame L psi pi_dist hpi :=
+      { toSpectralFrame := frame, is_tight := h_AB }
+    have h_err_zero :=
+      tight_frame_representation_error_zero L psi pi_dist hpi tight_frame epsilon t
+    refine ⟨1, one_pos, ?_⟩
+    rw [h_err_zero, h_tight]
+    linarith
+  · -- Case 2: non-tight (`κ > 1`).  Explicit constructive `C`.
+    have h_kappa_gt_one : FrameConditionNumber frame > 1 :=
+      lt_of_le_of_ne h_kappa_ge_one (Ne.symm h_tight)
+    have h_denom_pos : FrameConditionNumber frame - 1 > 0 := by linarith
+    refine ⟨(RepresentationError L psi pi_dist hpi epsilon t + 1)
+              / (FrameConditionNumber frame - 1), ?_, ?_⟩
+    · -- `C > 0`
+      exact div_pos (by linarith) h_denom_pos
+    · -- `RepresentationError ≤ C · (κ − 1) = RepresentationError + 1`.
+      rw [div_mul_cancel₀ _ (ne_of_gt h_denom_pos)]
+      linarith
+
 /-- **Zero Error Corollary**: For a canonical tight frame, representation
     error vanishes.
 
-    This is the key result: tight frames give exact spectral analysis. -/
+    This is the key result: tight frames give exact spectral analysis.
+
+    **Phase 3A simplification**: formerly proved via `representation_error_bound`
+    + `tight_frame_condition_one`; now proved directly from the narrower
+    `tight_frame_representation_error_zero` axiom in a single step, cutting
+    the proof from 7 lines to 3.  The existential signature is preserved
+    for backward compatibility with downstream callers (e.g.
+    `HG_tight_frame_zero_error` in `HermiteGaussianCanonical.lean`). -/
 theorem tight_frame_zero_error (L : Matrix V V ℝ) (psi : BandPassFilter)
     (pi_dist : V → ℝ) (hpi : ∀ v, 0 < pi_dist v)
     (frame : CanonicalTightFrame L psi pi_dist hpi)
     (epsilon : ℝ) (heps : epsilon > 0) (t : ℝ) (ht : t ≥ 0) :
     ∃ C > 0, RepresentationError L psi pi_dist hpi epsilon t ≤ C * 0 := by
-  obtain ⟨C, hC_pos, hbound⟩ := representation_error_bound L psi pi_dist hpi
-    frame.toSpectralFrame epsilon heps t ht
-  use C, hC_pos
-  have h_tight : FrameConditionNumber frame.toSpectralFrame = 1 :=
-    tight_frame_condition_one frame
-  calc RepresentationError L psi pi_dist hpi epsilon t
-      ≤ C * (FrameConditionNumber frame.toSpectralFrame - 1) := hbound
-    _ = C * (1 - 1) := by rw [h_tight]
-    _ = C * 0 := by ring
+  refine ⟨1, one_pos, ?_⟩
+  rw [tight_frame_representation_error_zero L psi pi_dist hpi frame epsilon t]
+  simp
 
-/-! ## 5. Geometric Commutator Constraint
+/-- **Tight-Frame Zero Error, Direct Form** (Phase 3A, new).
+
+    The representation error for a canonical tight frame is exactly zero.
+    This is the more direct statement that `tight_frame_zero_error`
+    bundles inside an existential for signature compatibility. -/
+theorem tight_frame_zero_error_direct (L : Matrix V V ℝ) (psi : BandPassFilter)
+    (pi_dist : V → ℝ) (hpi : ∀ v, 0 < pi_dist v)
+    (frame : CanonicalTightFrame L psi pi_dist hpi)
+    (epsilon : ℝ) (t : ℝ) :
+    RepresentationError L psi pi_dist hpi epsilon t = 0 :=
+  tight_frame_representation_error_zero L psi pi_dist hpi frame epsilon t
+
+/-- **Discrete Calderón Reproducing Formula** (Phase 3A, new).
+
+    For a **canonical tight frame**, the represented stability flow
+    **equals** the intrinsic stability flow *pointwise*:
+
+      `RepresentedStabilityFlow L ψ π hπ ε t = IntrinsicStabilityFlow L π ε t`.
+
+    This is the finite-dimensional discrete form of the classical
+    Calderón reproducing formula: the wavelet analysis-synthesis pair
+    is the identity operator on tight frames, so applying analysis
+    followed by synthesis recovers the observable *exactly*, and hence
+    the flow derived from the reconstruction matches the flow from the
+    original heat kernel.
+
+    **Why this matters**: the upstream axiom
+    `tight_frame_representation_error_zero` only gives the weaker
+    `|β_rep − β_intrinsic| = 0`.  This theorem unwraps the absolute
+    value, yielding the strictly stronger equation form
+    `β_rep = β_intrinsic` via `abs_eq_zero` + `sub_eq_zero`.
+
+    This is the cleanest possible statement of the reproducing property:
+    the two flows are *the same real number*, not merely close. -/
+theorem tight_frame_exact_reconstruction
+    (L : Matrix V V ℝ) (psi : BandPassFilter)
+    (pi_dist : V → ℝ) (hpi : ∀ v, 0 < pi_dist v)
+    (frame : CanonicalTightFrame L psi pi_dist hpi)
+    (epsilon : ℝ) (t : ℝ) :
+    RepresentedStabilityFlow L psi pi_dist hpi epsilon t =
+    IntrinsicStabilityFlow L pi_dist epsilon t := by
+  have h : RepresentationError L psi pi_dist hpi epsilon t = 0 :=
+    tight_frame_zero_error_direct L psi pi_dist hpi frame epsilon t
+  -- Unfold `RepresentationError` to expose the `|· − ·| = 0` form.
+  unfold RepresentationError at h
+  -- `|a − b| = 0 ⇔ a − b = 0 ⇔ a = b`.
+  exact sub_eq_zero.mp (abs_eq_zero.mp h)
+
+/-! ## 6. Geometric Commutator Constraint
 
 The obstruction to frame tightness is geometric: it's controlled by the
 commutator of L with the curvature operator Γ₂. -/

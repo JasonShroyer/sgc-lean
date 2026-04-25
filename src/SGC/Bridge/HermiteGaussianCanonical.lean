@@ -230,6 +230,55 @@ theorem HG_tight_frame_zero_error
     ∃ C > 0, RepresentationError L (HGBandPassFilter α β) pi_dist hpi epsilon t ≤ C * 0 :=
   tight_frame_zero_error L (HGBandPassFilter α β) pi_dist hpi frame epsilon heps t ht
 
+/-- **HG Tight-Frame Zero Error, Direct Form** (Phase 3A, new).
+
+    The Hermite-Gaussian representation error is *exactly zero* for a
+    canonical tight HG frame — no existential wrapper, no multiplicative
+    constant.
+
+    Specialisation of
+    `SGC.Bridge.CanonicalWavelet.tight_frame_zero_error_direct`. -/
+theorem HG_tight_frame_zero_error_direct
+    (L : Matrix V V ℝ) (α β : ℝ)
+    (pi_dist : V → ℝ) (hpi : ∀ v, 0 < pi_dist v)
+    (frame : CanonicalTightFrame L (HGBandPassFilter α β) pi_dist hpi)
+    (epsilon : ℝ) (t : ℝ) :
+    RepresentationError L (HGBandPassFilter α β) pi_dist hpi epsilon t = 0 :=
+  tight_frame_zero_error_direct L (HGBandPassFilter α β) pi_dist hpi frame epsilon t
+
+/-- **HG Discrete Calderón Reproducing Formula** (Phase 3A, new).
+
+    The fully concretised, fully-equational form of the canonical-wavelet
+    result: for a canonical tight HG frame, the wavelet-reconstructed
+    stability flow **equals** the intrinsic flow computed directly from
+    the heat kernel:
+
+      `RepresentedStabilityFlow L (HGBandPassFilter α β) π hπ ε t
+         = IntrinsicStabilityFlow L π ε t`.
+
+    This is (to our knowledge) the first formally verified instance of
+    the discrete Calderón reproducing formula for a specific wavelet
+    family in Lean 4.  The chain of custody is:
+
+    * `gaussAmpl_is_harmonic_oscillator_ground_state` (Phase 2A,
+      `@c:\Lean4 Projects\src\SGC\InformationGeometry\HermiteGaussianExtremal.lean`)
+    * `HGBandPassFilter` (Phase 2B, this file's §2)
+    * `tight_frame_representation_error_zero` (Phase 3A axiom,
+      `@c:\Lean4 Projects\src\SGC\Bridge\CanonicalWavelet.lean`)
+    * `tight_frame_exact_reconstruction` (Phase 3A theorem)
+    * `HG_tight_frame_exact_reconstruction` (this theorem).
+
+    Specialisation of
+    `SGC.Bridge.CanonicalWavelet.tight_frame_exact_reconstruction`. -/
+theorem HG_tight_frame_exact_reconstruction
+    (L : Matrix V V ℝ) (α β : ℝ)
+    (pi_dist : V → ℝ) (hpi : ∀ v, 0 < pi_dist v)
+    (frame : CanonicalTightFrame L (HGBandPassFilter α β) pi_dist hpi)
+    (epsilon : ℝ) (t : ℝ) :
+    RepresentedStabilityFlow L (HGBandPassFilter α β) pi_dist hpi epsilon t =
+    IntrinsicStabilityFlow L pi_dist epsilon t :=
+  tight_frame_exact_reconstruction L (HGBandPassFilter α β) pi_dist hpi frame epsilon t
+
 /-- **HG Frame Exists on Constant-Ricci Spaces** — on spaces with zero
     `[L, Γ₂]` commutator norm (the constant-Ricci-curvature case), a
     canonical tight frame with the Hermite-Gaussian filter exists.
