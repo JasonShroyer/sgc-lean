@@ -230,6 +230,26 @@ theorem HG_tight_frame_zero_error
     ∃ C > 0, RepresentationError L (HGBandPassFilter α β) pi_dist hpi epsilon t ≤ C * 0 :=
   tight_frame_zero_error L (HGBandPassFilter α β) pi_dist hpi frame epsilon heps t ht
 
+/-- **HG Triangle Bound on `RepresentedStabilityFlow`** (Phase 4B, new).
+
+    For the canonical Hermite-Gaussian filter, the magnitude of the
+    represented stability flow is bounded by the magnitude of the
+    intrinsic stability flow plus the representation error:
+
+      `|β_rep|  ≤  |β_intrinsic|  +  RepresentationError`.
+
+    Specialisation of
+    `SGC.Bridge.CanonicalWavelet.represented_stability_flow_triangle_bound`. -/
+theorem HG_represented_stability_flow_triangle_bound
+    (L : Matrix V V ℝ) (α β : ℝ)
+    (pi_dist : V → ℝ) (hpi : ∀ v, 0 < pi_dist v)
+    (epsilon : ℝ) (t : ℝ) :
+    |RepresentedStabilityFlow L (HGBandPassFilter α β) pi_dist hpi epsilon t| ≤
+    |IntrinsicStabilityFlow L pi_dist epsilon t| +
+    RepresentationError L (HGBandPassFilter α β) pi_dist hpi epsilon t :=
+  represented_stability_flow_triangle_bound L (HGBandPassFilter α β)
+    pi_dist hpi epsilon t
+
 /-- **HG Tight-Frame Zero Error, Direct Form** (Phase 3A, new).
 
     The Hermite-Gaussian representation error is *exactly zero* for a

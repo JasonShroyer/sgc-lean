@@ -321,6 +321,41 @@ theorem representation_error_bound (L : Matrix V V ℝ) (psi : BandPassFilter)
       rw [div_mul_cancel₀ _ (ne_of_gt h_denom_pos)]
       linarith
 
+/-- **Triangle inequality bound on `RepresentedStabilityFlow`** (Phase 4B, new).
+
+    For *any* band-pass filter, *any* positive distribution, *any*
+    parameters, the magnitude of the represented stability flow is
+    bounded by the sum of the magnitude of the intrinsic stability
+    flow and the representation error:
+
+      `|β_rep|  ≤  |β_intrinsic|  +  RepresentationError`.
+
+    **Proof.**  Direct triangle inequality on real numbers:
+    `β_rep = β_intrinsic + (β_rep − β_intrinsic)` is a ring identity,
+    so `|β_rep| = |β_int + (β_rep − β_int)| ≤ |β_int| + |β_rep − β_int|`,
+    and the second summand is `RepresentationError` by definition.
+
+    **Use case.**  Combined with `representation_error_bound` (Phase 3A
+    theorem), this gives a fully constructive bound on `|β_rep|` in
+    terms of `|β_intrinsic|` and the frame condition number, with no
+    additional axioms beyond those already in this module. -/
+theorem represented_stability_flow_triangle_bound
+    (L : Matrix V V ℝ) (psi : BandPassFilter)
+    (pi_dist : V → ℝ) (hpi : ∀ v, 0 < pi_dist v)
+    (epsilon : ℝ) (t : ℝ) :
+    |RepresentedStabilityFlow L psi pi_dist hpi epsilon t| ≤
+    |IntrinsicStabilityFlow L pi_dist epsilon t| +
+    RepresentationError L psi pi_dist hpi epsilon t := by
+  unfold RepresentationError
+  calc |RepresentedStabilityFlow L psi pi_dist hpi epsilon t|
+      = |IntrinsicStabilityFlow L pi_dist epsilon t +
+         (RepresentedStabilityFlow L psi pi_dist hpi epsilon t -
+          IntrinsicStabilityFlow L pi_dist epsilon t)| := by
+        congr 1; ring
+    _ ≤ |IntrinsicStabilityFlow L pi_dist epsilon t| +
+         |RepresentedStabilityFlow L psi pi_dist hpi epsilon t -
+          IntrinsicStabilityFlow L pi_dist epsilon t| := abs_add_le _ _
+
 /-- **Zero Error Corollary**: For a canonical tight frame, representation
     error vanishes.
 
