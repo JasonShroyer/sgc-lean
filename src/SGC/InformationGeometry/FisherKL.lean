@@ -64,10 +64,42 @@ variable {V : Type*} [Fintype V] [DecidableEq V]
 def KL_divergence (p q : V → ℝ) : ℝ :=
   ∑ v, if p v = 0 then 0 else p v * Real.log (p v / q v)
 
-/-- KL divergence is non-negative (Gibbs' inequality). -/
-axiom KL_nonneg (p q : V → ℝ) (hp : ∀ v, 0 ≤ p v) (hq : ∀ v, 0 < q v)
+/-- KL divergence is non-negative (Gibbs' inequality).
+
+    **Proof** (post-Phase-2E sprint, Apr 26 2026 — formerly axiomatised):
+    Pointwise, for each `v` we show
+    `p v − q v ≤ ite (p v = 0) 0 (p v · log (p v / q v))`.
+    On `p v = 0` this reduces to `−q v ≤ 0`, true since `q v > 0`.
+    On `p v > 0`, apply `Real.one_sub_inv_le_log_of_pos` to
+    `(p v / q v) > 0` to get `1 − q v / p v ≤ log (p v / q v)`, then
+    multiply through by `p v > 0`.  Summing the pointwise bound over `V`
+    and using `∑ p = ∑ q = 1` yields `0 ≤ KL_divergence p q`. -/
+theorem KL_nonneg (p q : V → ℝ) (hp : ∀ v, 0 ≤ p v) (hq : ∀ v, 0 < q v)
     (hp_sum : ∑ v, p v = 1) (hq_sum : ∑ v, q v = 1) :
-    0 ≤ KL_divergence p q
+    0 ≤ KL_divergence p q := by
+  -- Pointwise bound: `p v − q v ≤ ite (p v = 0) 0 (p v · log (p v / q v))`.
+  have h_point : ∀ v ∈ (Finset.univ : Finset V),
+      p v - q v ≤ if p v = 0 then 0 else p v * Real.log (p v / q v) := by
+    intro v _
+    by_cases hpv : p v = 0
+    · rw [if_pos hpv, hpv]
+      linarith [hq v]
+    · rw [if_neg hpv]
+      have hpv_pos : 0 < p v := lt_of_le_of_ne (hp v) (Ne.symm hpv)
+      have hqv_pos : 0 < q v := hq v
+      have hpq_pos : 0 < p v / q v := div_pos hpv_pos hqv_pos
+      have h_log : 1 - (p v / q v)⁻¹ ≤ Real.log (p v / q v) :=
+        Real.one_sub_inv_le_log_of_pos hpq_pos
+      rw [show (p v / q v)⁻¹ = q v / p v from by rw [inv_div]] at h_log
+      have h_mul := mul_le_mul_of_nonneg_left h_log (le_of_lt hpv_pos)
+      have h_simp : p v * (1 - q v / p v) = p v - q v := by field_simp
+      linarith [h_simp ▸ h_mul]
+  unfold KL_divergence
+  calc (0 : ℝ)
+      = (∑ v, p v) - (∑ v, q v) := by rw [hp_sum, hq_sum]; ring
+    _ = ∑ v, (p v - q v) := by rw [Finset.sum_sub_distrib]
+    _ ≤ ∑ v, if p v = 0 then 0 else p v * Real.log (p v / q v) :=
+        Finset.sum_le_sum h_point
 
 /-- KL divergence is zero iff p = q. -/
 axiom KL_eq_zero_iff (p q : V → ℝ) (hp : ∀ v, 0 < p v) (hq : ∀ v, 0 < q v)

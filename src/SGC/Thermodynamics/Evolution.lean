@@ -127,10 +127,52 @@ axiom stationary_is_probability (G : WeightedGraph V) :
 noncomputable def KLDivergence (p q : V → ℝ) : ℝ :=
   ∑ v : V, p v * Real.log (p v / q v)
 
-/-- KL divergence is non-negative (Gibbs' inequality). -/
-axiom kl_divergence_nonneg (p q : V → ℝ)
-    (hp : ∀ v, 0 ≤ p v) (hq : ∀ v, 0 < q v) :
-    KLDivergence p q ≥ 0
+/-- KL divergence is non-negative (Gibbs' inequality).
+
+    **Signature note (Apr 26 2026)**: the previous axiom omitted the
+    sum-to-1 hypotheses `hp_sum, hq_sum` and was therefore
+    *mathematically incorrect* — the inequality `KL ≥ 0` fails for
+    arbitrary non-negative `p, q` (e.g., `p = (½, 0), q = (1, 1)` gives
+    `KL = -½ log 2 < 0`).  This refactor converts the broken axiom to a
+    correctly-hypothesised theorem and updates the single downstream
+    caller `surgery_cost_nonneg` to supply the missing hypotheses (which
+    come for free from `stationary_is_probability`).
+
+    **Proof**: pointwise Gibbs inequality via
+    `Real.one_sub_inv_le_log_of_pos`, summed and combined with
+    `∑ p = ∑ q = 1`.  Mirrors `KLDiv_nonneg` in
+    `@c:\Lean4 Projects\src\SGC\Thermodynamics\EntropyProduction.lean`. -/
+theorem kl_divergence_nonneg (p q : V → ℝ)
+    (hp : ∀ v, 0 ≤ p v) (hq : ∀ v, 0 < q v)
+    (hp_sum : ∑ v, p v = 1) (hq_sum : ∑ v, q v = 1) :
+    KLDivergence p q ≥ 0 := by
+  -- Pointwise bound: `p v - q v ≤ p v * log (p v / q v)`.  No `if`
+  -- guard here because the definition of `KLDivergence` in this file
+  -- does not have one (Mathlib convention `Real.log 0 = 0` makes the
+  -- `p v = 0` case automatic via `0 * Real.log 0 = 0`).
+  have h_point : ∀ v ∈ (Finset.univ : Finset V),
+      p v - q v ≤ p v * Real.log (p v / q v) := by
+    intro v _
+    by_cases hpv : p v = 0
+    · -- `p v = 0`: LHS = `-q v ≤ 0`, RHS = `0 * log 0 = 0`.
+      rw [hpv]
+      simp only [zero_sub, zero_mul]
+      linarith [(hq v).le]
+    · have hpv_pos : 0 < p v := lt_of_le_of_ne (hp v) (Ne.symm hpv)
+      have hqv_pos : 0 < q v := hq v
+      have hpq_pos : 0 < p v / q v := div_pos hpv_pos hqv_pos
+      have h_log : 1 - (p v / q v)⁻¹ ≤ Real.log (p v / q v) :=
+        Real.one_sub_inv_le_log_of_pos hpq_pos
+      rw [show (p v / q v)⁻¹ = q v / p v from by rw [inv_div]] at h_log
+      have h_mul := mul_le_mul_of_nonneg_left h_log (le_of_lt hpv_pos)
+      have h_simp : p v * (1 - q v / p v) = p v - q v := by field_simp
+      linarith [h_simp ▸ h_mul]
+  unfold KLDivergence
+  show 0 ≤ ∑ v, p v * Real.log (p v / q v)
+  calc (0 : ℝ)
+      = (∑ v, p v) - (∑ v, q v) := by rw [hp_sum, hq_sum]; ring
+    _ = ∑ v, (p v - q v) := by rw [Finset.sum_sub_distrib]
+    _ ≤ ∑ v, p v * Real.log (p v / q v) := Finset.sum_le_sum h_point
 
 /-- KL divergence is zero iff distributions are equal. -/
 axiom kl_divergence_zero_iff (p q : V → ℝ)
@@ -164,6 +206,8 @@ theorem surgery_cost_nonneg (G G' : WeightedGraph V) :
   apply kl_divergence_nonneg
   · exact fun v => (stationary_is_probability G).1 v
   · exact stationary_strictly_positive G'
+  · exact (stationary_is_probability G).2
+  · exact (stationary_is_probability G').2
 
 /-- Surgery cost is zero iff topology change doesn't affect equilibrium. -/
 theorem surgery_cost_zero_iff (G G' : WeightedGraph V)

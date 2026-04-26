@@ -74,12 +74,50 @@ noncomputable def KLDiv (p q : V → ℝ) : ℝ :=
 
 /-- KL divergence is non-negative (Gibbs' inequality).
 
-    D_KL(p ‖ q) ≥ 0, with equality iff p = q.
+    `D_KL(p ‖ q) ≥ 0`, with equality iff `p = q`.
 
-    **Axiomatized**: Standard result (Gibbs' inequality via Jensen). -/
-axiom KLDiv_nonneg (p q : V → ℝ) (hp : ∀ x, 0 ≤ p x) (hq : ∀ x, 0 < q x)
+    **Proof** (post-Phase-2E sprint, Apr 26 2026 — formerly axiomatised):
+    Pointwise, for each `x` we show
+    `p x − q x ≤ ite (p x = 0) 0 (p x · log (p x / q x))`.
+    On `p x = 0` this reduces to `−q x ≤ 0`, true since `q x > 0`.
+    On `p x > 0`, apply `Real.one_sub_inv_le_log_of_pos` to
+    `(p x / q x) > 0` to get `1 − q x / p x ≤ log (p x / q x)`, then
+    multiply through by `p x > 0`.  Summing the pointwise bound over `V`
+    and using `∑ p = ∑ q = 1` yields `0 ≤ KLDiv p q`. -/
+theorem KLDiv_nonneg (p q : V → ℝ) (hp : ∀ x, 0 ≤ p x) (hq : ∀ x, 0 < q x)
     (hp_sum : ∑ x, p x = 1) (hq_sum : ∑ x, q x = 1) :
-    0 ≤ KLDiv p q
+    0 ≤ KLDiv p q := by
+  -- Pointwise bound: `p x − q x ≤ ite (p x = 0) 0 (p x · log (p x / q x))`.
+  have h_point : ∀ x ∈ (Finset.univ : Finset V),
+      p x - q x ≤ if p x = 0 then 0 else p x * log (p x / q x) := by
+    intro x _
+    by_cases hpx : p x = 0
+    · -- Case `p x = 0`: `p x − q x = −q x ≤ 0`.
+      rw [if_pos hpx, hpx]
+      linarith [hq x]
+    · -- Case `p x > 0`: use Gibbs' pointwise inequality.
+      rw [if_neg hpx]
+      have hpx_pos : 0 < p x := lt_of_le_of_ne (hp x) (Ne.symm hpx)
+      have hqx_pos : 0 < q x := hq x
+      have hpq_pos : 0 < p x / q x := div_pos hpx_pos hqx_pos
+      -- `1 − (p x / q x)⁻¹ ≤ log (p x / q x)` from Mathlib.
+      have h_log : 1 - (p x / q x)⁻¹ ≤ log (p x / q x) :=
+        Real.one_sub_inv_le_log_of_pos hpq_pos
+      -- `(p x / q x)⁻¹ = q x / p x`.
+      rw [show (p x / q x)⁻¹ = q x / p x from by rw [inv_div]] at h_log
+      -- Multiply both sides by `p x > 0`.
+      have h_mul := mul_le_mul_of_nonneg_left h_log (le_of_lt hpx_pos)
+      -- `p x · (1 − q x / p x) = p x − q x` (since `p x ≠ 0`).
+      have h_simp : p x * (1 - q x / p x) = p x - q x := by
+        field_simp
+      linarith [h_simp ▸ h_mul]
+  -- Sum the pointwise bound: `0 = (∑ p) − (∑ q) = ∑ (p − q) ≤ ∑ ite (...) = KLDiv`.
+  unfold KLDiv
+  calc (0 : ℝ)
+      = (∑ x, p x) - (∑ x, q x) := by rw [hp_sum, hq_sum]; ring
+    _ = ∑ x, (p x - q x) := by rw [Finset.sum_sub_distrib]
+    _ ≤ ∑ x, if p x = 0 then 0 else p x * log (p x / q x) :=
+        Finset.sum_le_sum h_point
 
 /-- KL divergence equals zero iff p = q.
 

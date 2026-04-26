@@ -208,6 +208,47 @@ design doc): once `RepresentedStabilityFlow` is defined via the
 synthesis-operator integral, the `normalized` field provides the
 hypothesis required for the `synthesisOperator_calderon_id` step.
 
+## Priority 4 status (Apr 26 2026 — cheap axiom sweep, partially complete)
+
+Three KL-divergence non-negativity axioms discharged via direct
+Gibbs-inequality proofs using Mathlib's
+`Real.one_sub_inv_le_log_of_pos`:
+
+- **`KLDiv_nonneg`** in
+  `@c:\Lean4 Projects\src\SGC\Thermodynamics\EntropyProduction.lean`:
+  axiom → theorem, same hypotheses.
+- **`KL_nonneg`** in
+  `@c:\Lean4 Projects\src\SGC\InformationGeometry\FisherKL.lean`:
+  axiom → theorem, same hypotheses.
+- **`kl_divergence_nonneg`** in
+  `@c:\Lean4 Projects\src\SGC\Thermodynamics\Evolution.lean`:
+  axiom → theorem, with **signature correction** (added the missing
+  `∑ p = 1, ∑ q = 1` hypotheses; the original axiom statement was
+  *mathematically false* without them — counterexample
+  `p = (½, 0), q = (1, 1)` gives `KL = -½ log 2 < 0`).  Sole downstream
+  caller `surgery_cost_nonneg` updated to supply the new hypotheses
+  (which come for free from `stationary_is_probability`).
+
+**Net axiom delta from Priority 4: -3.**
+
+What remains in this axiom family (deferred):
+
+- **`KLDiv_eq_zero_iff`, `KL_eq_zero_iff`, `kl_divergence_zero_iff`** —
+  the converse Gibbs inequality (KL = 0 iff p = q).  Requires the
+  *strict* form `log y < y - 1` for `y ≠ 1`, plus careful argument
+  about pointwise equality.  Tractable but ~2× the work of the
+  non-negativity direction.
+- **`pinsker_inequality`** in `EntropyProduction.lean` — the
+  Csiszár–Kullback–Pinsker inequality `2·TV² ≤ KL`.  Genuine
+  theorem-prover work; deferred.
+- **`stationary_is_probability`, `stationary_strictly_positive`,
+  `StationaryDistribution`** in `Evolution.lean` — these axioms are
+  inseparable: `StationaryDistribution` is a black-box `V → ℝ` axiom,
+  so its properties must also be axiomatic.  Eliminating them requires
+  defining the stationary distribution constructively (e.g., via
+  Perron-Frobenius for stochastic matrices), which is a larger
+  refactor scoped for a later sprint.
+
 ## Why this is the right call for SGC
 
 - **Historically defensible**: "first formally verified discrete Calderón" becomes genuinely
