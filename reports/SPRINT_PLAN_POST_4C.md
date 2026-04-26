@@ -152,12 +152,50 @@ complex contour integration as the axiom comments suggest). Design doc this spri
 
 ## Success criteria for this sprint
 
-- [ ] `src/SGC/Spectral/NormedBridge.lean`: 3 axioms → 0 axioms, zero new `sorry`s.
-- [ ] Full `lake build` clean.
-- [ ] Cherry-picked onto `lean-foundation-phases-1-2c` and pushed.
-- [ ] Axiom count across the full tree decreases by 3.
-- [ ] (Stretch) Phase 2E landed with `Real.Gamma`-based Calderón normalization.
+- [x] `src/SGC/Spectral/NormedBridge.lean`: 3 axioms → 0 axioms, zero new `sorry`s. **(Apr 26 2026)**
+- [x] Full `lake build` clean. **(3113 jobs, 0 errors)**
+- [x] Cherry-picked onto `lean-foundation-phases-1-2c` and pushed. **(commit `500ca6e`)**
+- [x] Axiom count across the full tree decreases by 3.
+- [x] (Stretch) Phase 2E landed with `Real.Gamma`-based Calderón normalization. **(see Phase 2E status below)**
 - [ ] (Stretch) `reports/DESIGN_REPRESENTED_STABILITY_FLOW.md` written.
+
+## Phase 2E status (Apr 26 2026 — soft refactor, complete)
+
+Landed in `src/SGC/Bridge/HermiteGaussianCanonical.lean` (Section 4):
+
+- **`IsCalderonNormalized (ψ : ℝ → ℝ) : Prop`** — definition of the
+  classical reproducing condition `∫₀^∞ |ψ(u)|² du/u = 1`.
+- **`hermiteGaussianFilter_calderon_integral`** — proven theorem:
+  `∫₀^∞ (ψ_{α,β}(u))² du/u = Γ(α) / (2·(2β)^α)` for `0 < α, 0 < β`,
+  via Mathlib's `integral_rpow_mul_exp_neg_mul_rpow` (generalised
+  Gaussian moment formula). This is the `Real.Gamma`-based concrete
+  computation flagged in Priority 2.
+- **`hgCalderonConstant α β`** — the explicit normalisation constant
+  `√(2·(2β)^α / Γ(α))`, with positivity lemma.
+- **`hermiteGaussianFilterNormalized α β`** — the rescaled filter
+  `C_{α,β} · ψ_{α,β}`.
+- **`hermiteGaussianFilterNormalized_isCalderonNormalized`** — proven
+  theorem: the rescaled filter satisfies `IsCalderonNormalized`, the
+  reproducing condition `∫₀^∞ |ψ̃|² du/u = 1` (zero `sorry`, zero new
+  axioms).
+
+**What was deliberately deferred** (the "hard refactor"):
+- Tightening `BandPassFilter.normalized : True` (in `CanonicalWavelet.lean`)
+  to `BandPassFilter.normalized : IsCalderonNormalized func`.
+- Updating the `HGBandPassFilter α β` definition (and its ~30 downstream
+  call sites in `CanonicalWaveletFisherRao.lean`,
+  `RepresentedStabilityFlowDecay.lean`, `HermiteGaussianCanonical.lean`)
+  to thread `0 < α, 0 < β` hypotheses and use
+  `hermiteGaussianFilterNormalized` in place of `hermiteGaussianFilter`.
+
+The deferred refactor is mechanical (signature propagation) but invasive.
+It is now strictly easier than before, since every required ingredient
+(`IsCalderonNormalized`, the Calderón integral, the constant, the
+normalised filter, the `IsCalderonNormalized` proof) is in place.
+
+A clean diff would replace `normalized := trivial` in `HGBandPassFilter`
+with `normalized := hermiteGaussianFilterNormalized_isCalderonNormalized hα hβ`
+once the `BandPassFilter` structure carries the strengthened field.
 
 ## Why this is the right call for SGC
 

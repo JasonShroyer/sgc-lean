@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: SGC Formalization Team
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.MeasureTheory.Integral.Gamma
 import SGC.Bridge.CanonicalWavelet
 import SGC.InformationGeometry.HermiteGaussianExtremal
 
@@ -347,7 +348,187 @@ theorem HG_frame_condition_ge_one
     FrameConditionNumber frame ≥ 1 :=
   frame_condition_ge_one frame
 
-/-! ## 4. Summary — the completed canonical wavelet proof chain
+/-! ## 4. Phase 2E: Concrete Calderón normalisation via `Real.Gamma`
+
+This section discharges the long-standing placeholder
+`BandPassFilter.normalized : True` for the canonical Hermite-Gaussian
+filter by proving the **concrete Calderón admissibility integral**
+
+  `∫₀^∞ |ψ_{α,β}(u)|² du/u  =  Γ(α) / (2·(2β)^α)`,
+
+and by exhibiting the **normalised scaled filter**
+
+  `ψ̃_{α,β}(u)  :=  C_{α,β} · ψ_{α,β}(u)`,
+  `C_{α,β}     :=  √(2·(2β)^α / Γ(α))`,
+
+which satisfies the Calderón reproducing condition
+`∫₀^∞ |ψ̃(u)|² du/u = 1` exactly.
+
+The integral identity uses Mathlib's
+`integral_rpow_mul_exp_neg_mul_rpow` (a generalised Gaussian moment
+formula in terms of `Real.Gamma`).  The `BandPassFilter` structure in
+`CanonicalWavelet.lean` is *not* yet refactored to carry the
+strengthened `normalized` field; that refactor (a downstream sprint)
+would propagate the `0 < α, 0 < β` hypotheses to all `HGBandPassFilter`
+call sites, a mechanical but invasive change.  The present section
+provides the **mathematical content** of the upgrade: every ingredient
+needed to populate the strengthened `normalized` field once the
+structure is refactored. -/
+
+open MeasureTheory Set
+
+/-- **Calderón admissibility condition** for a band-pass filter
+    `ψ : ℝ → ℝ`:
+
+      `∫₀^∞ |ψ(u)|² du/u  =  1`.
+
+    This is the standard tight-frame reproducing condition for
+    continuous wavelet analysis (Calderón 1964, Daubechies 1992 §2.4).
+    It expresses that the filter has unit `L²(ℝ₊, du/u)` norm, which
+    is the natural Haar measure on the multiplicative group of
+    positive reals. -/
+def IsCalderonNormalized (ψ : ℝ → ℝ) : Prop :=
+  ∫ u in Set.Ioi (0 : ℝ), (ψ u) ^ 2 / u = 1
+
+/-- **The Calderón integral for the Hermite-Gaussian filter**:
+
+      `∫₀^∞ (ψ_{α,β}(u))² du/u  =  Γ(α) / (2 · (2β)^α)`.
+
+    This is the classical generalised-Gaussian moment integral.  We
+    rewrite the integrand on `Ioi 0` as
+    `u^{2α−1} · exp(−(2β) · u²)` (using `(ψ)²/u = u^{2α−1} exp(−2β u²)`)
+    and apply Mathlib's
+    `integral_rpow_mul_exp_neg_mul_rpow` with `p = 2, q = 2α−1, b = 2β`. -/
+theorem hermiteGaussianFilter_calderon_integral {α β : ℝ}
+    (hα : 0 < α) (hβ : 0 < β) :
+    ∫ u in Set.Ioi (0 : ℝ), (hermiteGaussianFilter α β u) ^ 2 / u =
+    Real.Gamma α / (2 * (2 * β) ^ α) := by
+  have hβ2 : (0 : ℝ) < 2 * β := by linarith
+  have hβ2_nn : (0 : ℝ) ≤ 2 * β := le_of_lt hβ2
+  -- Step 1: rewrite the integrand on `Ioi 0` to `u^(2α−1) * exp(−(2β)·u^(2:ℝ))`
+  -- in `rpow` form, ready for Mathlib's Gamma-integral formula.
+  have h_eq : Set.EqOn
+      (fun u => (hermiteGaussianFilter α β u) ^ 2 / u)
+      (fun u => u ^ (2 * α - 1) * Real.exp (-(2 * β) * u ^ (2 : ℝ)))
+      (Set.Ioi (0 : ℝ)) := by
+    intro u hu
+    have hu_pos : (0 : ℝ) < u := hu
+    have hu_nn : (0 : ℝ) ≤ u := le_of_lt hu_pos
+    have hu_ne : u ≠ 0 := ne_of_gt hu_pos
+    -- Unfold filter on positive branch.
+    show (hermiteGaussianFilter α β u) ^ 2 / u = _
+    unfold hermiteGaussianFilter
+    rw [if_pos hu_pos]
+    -- Build all key equalities up front, then chain them.
+    -- (a) (u^α)² = u^(2α): via `Real.rpow_add` with explicit `α + α = 2*α`.
+    have h_rpow_sq : (Real.rpow u α) ^ 2 = Real.rpow u (2 * α) := by
+      have h_add : Real.rpow u (α + α) = Real.rpow u α * Real.rpow u α :=
+        Real.rpow_add hu_pos α α
+      rw [sq, ← h_add]
+      congr 1; ring
+    -- (b) (exp(-(β·u²)))² = exp(-(2β)·u²) via `exp_add`.
+    have h_exp_sq : (Real.exp (-(β * u ^ 2))) ^ 2 = Real.exp (-(2 * β) * u ^ 2) := by
+      rw [sq, ← Real.exp_add]
+      congr 1; ring
+    -- (c) u² (npow) = u^(2:ℝ) (rpow).
+    have h_u_sq : (u : ℝ) ^ (2 : ℕ) = u ^ (2 : ℝ) := (Real.rpow_two u).symm
+    -- (d) u^(2α) / u = u^(2α-1) via `Real.rpow_sub_one`.
+    have h_rpow_div : Real.rpow u (2 * α) / u = Real.rpow u (2 * α - 1) :=
+      (Real.rpow_sub_one hu_ne (2 * α)).symm
+    -- Now assemble:
+    --   (u^α · exp(-(β·u²)))² / u
+    -- = (u^α)² · (exp(-(β·u²)))² / u    [mul_pow]
+    -- = u^(2α) · exp(-(2β)·u²) / u      [h_rpow_sq, h_exp_sq]
+    -- = u^(2α) / u · exp(-(2β)·u²)      [reassoc]
+    -- = u^(2α-1) · exp(-(2β)·u²)        [h_rpow_div]
+    -- = u^(2α-1) · exp(-(2β)·u^(2:ℝ))   [h_u_sq applied to the `u²` inside `exp`]
+    rw [mul_pow, h_rpow_sq, h_exp_sq]
+    rw [show Real.rpow u (2 * α) * Real.exp (-(2 * β) * u ^ 2) / u =
+            Real.rpow u (2 * α) / u * Real.exp (-(2 * β) * u ^ 2) from by ring]
+    rw [h_rpow_div, h_u_sq]
+    -- Beta-reduce the RHS lambda; LHS and RHS are now definitionally equal.
+    rfl
+  -- Step 2: replace the integrand with the canonical form.
+  rw [MeasureTheory.setIntegral_congr_fun measurableSet_Ioi h_eq]
+  -- Step 3: apply Mathlib's generalised-Gaussian moment formula.
+  rw [integral_rpow_mul_exp_neg_mul_rpow (by norm_num : (0 : ℝ) < 2)
+        (by linarith : (-1 : ℝ) < 2 * α - 1) hβ2]
+  -- Step 4: simplify `(2β)^(−(2α−1+1)/2) · (1/2) · Γ((2α−1+1)/2) = Γ(α) / (2·(2β)^α)`.
+  have h_idx : (2 * α - 1 + 1) / 2 = α := by ring
+  have h_neg : -(2 * α - 1 + 1) / 2 = -α := by ring
+  rw [h_idx, h_neg, Real.rpow_neg hβ2_nn]
+  have h_pos : 0 < (2 * β) ^ α := Real.rpow_pos_of_pos hβ2 α
+  field_simp
+
+/-- **Hermite-Gaussian Calderón normalisation constant**:
+
+      `C_{α,β}  :=  √(2 · (2β)^α / Γ(α))`.
+
+    This is the unique positive scalar such that
+    `C_{α,β}² · (Calderón integral of ψ_{α,β}) = 1`. -/
+def hgCalderonConstant (α β : ℝ) : ℝ :=
+  Real.sqrt (2 * (2 * β) ^ α / Real.Gamma α)
+
+/-- The Calderón constant is non-negative. -/
+lemma hgCalderonConstant_nonneg (α β : ℝ) : 0 ≤ hgCalderonConstant α β :=
+  Real.sqrt_nonneg _
+
+/-- The Calderón constant is strictly positive when `0 < α, 0 < β`. -/
+lemma hgCalderonConstant_pos {α β : ℝ} (hα : 0 < α) (hβ : 0 < β) :
+    0 < hgCalderonConstant α β := by
+  unfold hgCalderonConstant
+  apply Real.sqrt_pos.mpr
+  have h1 : (0 : ℝ) < 2 := by norm_num
+  have h2 : (0 : ℝ) < (2 * β) ^ α := Real.rpow_pos_of_pos (by linarith) α
+  have h3 : (0 : ℝ) < Real.Gamma α := Real.Gamma_pos_of_pos hα
+  positivity
+
+/-- **The normalised Hermite-Gaussian filter**:
+
+      `ψ̃_{α,β}(u)  :=  C_{α,β} · ψ_{α,β}(u)`,
+
+    scaled so that the Calderón integral `∫₀^∞ |ψ̃|² du/u = 1`. -/
+def hermiteGaussianFilterNormalized (α β : ℝ) : ℝ → ℝ :=
+  fun u => hgCalderonConstant α β * hermiteGaussianFilter α β u
+
+/-- **Calderón condition for the normalised HG filter**:
+
+      `∫₀^∞ |ψ̃_{α,β}(u)|² du/u  =  1`.
+
+    This is the concrete realisation of the abstract
+    `BandPassFilter.normalized` field for the canonical Hermite-Gaussian
+    filter, parameterised by `0 < α, 0 < β`.
+
+    Proof: by definition `(ψ̃ u)² = C² · (ψ u)²`, so the integral equals
+    `C² · Γ(α)/(2·(2β)^α)` by `hermiteGaussianFilter_calderon_integral`.
+    Substituting `C² = 2·(2β)^α/Γ(α)` (from `Real.sq_sqrt`) yields `1`. -/
+theorem hermiteGaussianFilterNormalized_isCalderonNormalized {α β : ℝ}
+    (hα : 0 < α) (hβ : 0 < β) :
+    IsCalderonNormalized (hermiteGaussianFilterNormalized α β) := by
+  unfold IsCalderonNormalized hermiteGaussianFilterNormalized
+  -- Pull out the constant: ∫ (C·ψ)² / u = C² · ∫ ψ² / u.
+  have h_eq : ∀ u ∈ Set.Ioi (0 : ℝ),
+      (hgCalderonConstant α β * hermiteGaussianFilter α β u) ^ 2 / u =
+      hgCalderonConstant α β ^ 2 * ((hermiteGaussianFilter α β u) ^ 2 / u) := by
+    intro u _
+    ring
+  rw [MeasureTheory.setIntegral_congr_fun measurableSet_Ioi h_eq]
+  rw [MeasureTheory.integral_const_mul]
+  rw [hermiteGaussianFilter_calderon_integral hα hβ]
+  -- Now: C² · Γ(α)/(2·(2β)^α) = 1.
+  -- C² = (√(2(2β)^α/Γ(α)))² = 2(2β)^α/Γ(α).
+  unfold hgCalderonConstant
+  have hΓ_pos : 0 < Real.Gamma α := Real.Gamma_pos_of_pos hα
+  have h2β_pos : (0 : ℝ) < 2 * β := by linarith
+  have h2βα_pos : (0 : ℝ) < (2 * β) ^ α := Real.rpow_pos_of_pos h2β_pos α
+  have h_arg_nonneg : (0 : ℝ) ≤ 2 * (2 * β) ^ α / Real.Gamma α := by
+    apply div_nonneg
+    · positivity
+    · exact le_of_lt hΓ_pos
+  rw [Real.sq_sqrt h_arg_nonneg]
+  field_simp
+
+/-! ## 5. Summary — the completed canonical wavelet proof chain
 
 With `HGBandPassFilter` defined and the specialisations above, the SGC
 Canonical Wavelet theorem chain is now structurally complete in Lean:
