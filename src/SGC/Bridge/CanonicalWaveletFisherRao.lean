@@ -157,15 +157,15 @@ theorem wavelet_coefficient_preserves_tangent_isometry
     the tangent isometry on wavelet coefficients holds at every scale
     `s > 0` and every parameter pair `(α, β)`. -/
 theorem HG_wavelet_coefficient_preserves_tangent_isometry
-    (L : Matrix V V ℝ) (α β : ℝ)
+    (L : Matrix V V ℝ) (α β : ℝ) (hα : 0 < α) (hβ : 0 < β)
     (s : ℝ) (hs : s > 0)
     (ψ Δψ : V → ℝ) (hψ : ∀ x, 0 < ψ x) :
     fisherRaoQuadForm (lift ψ)
-        (liftDiff ψ (WaveletCoefficient L (HGBandPassFilter α β) s hs Δψ)) =
+        (liftDiff ψ (WaveletCoefficient L (HGBandPassFilter α β hα hβ) s hs Δψ)) =
     4 * euclideanQuadForm
-          (WaveletCoefficient L (HGBandPassFilter α β) s hs Δψ) :=
+          (WaveletCoefficient L (HGBandPassFilter α β hα hβ) s hs Δψ) :=
   wavelet_coefficient_preserves_tangent_isometry L
-    (HGBandPassFilter α β) s hs ψ Δψ hψ
+    (HGBandPassFilter α β hα hβ) s hs ψ Δψ hψ
 
 /-- **Bound corollary**: the Fisher-Rao tangent norm-squared of the
     lifted wavelet coefficient is bounded above by four times its
@@ -210,12 +210,12 @@ theorem wavelet_coefficient_fisherRao_le_four_euclidean
     * `lift ψ` (Phase 1A definition)
     * **this theorem** (Phase 4A integration). -/
 theorem HG_canonical_wavelet_recovers_stability_flow_on_lifted_amplitude
-    (L : Matrix V V ℝ) (α β : ℝ)
+    (L : Matrix V V ℝ) (α β : ℝ) (hα : 0 < α) (hβ : 0 < β)
     (ψ : V → ℝ) (hψ : ∀ x, 0 < ψ x)
-    (frame : CanonicalTightFrame L (HGBandPassFilter α β) (lift ψ)
+    (frame : CanonicalTightFrame L (HGBandPassFilter α β hα hβ) (lift ψ)
               (lift_pos hψ))
     (epsilon : ℝ) (t : ℝ) :
-    RepresentedStabilityFlow L (HGBandPassFilter α β) (lift ψ)
+    RepresentedStabilityFlow L (HGBandPassFilter α β hα hβ) (lift ψ)
       (lift_pos hψ) epsilon t =
     stability_flow L (lift ψ) epsilon t := by
   -- `HG_tight_frame_exact_reconstruction` (Phase 3A) gives:
@@ -223,7 +223,7 @@ theorem HG_canonical_wavelet_recovers_stability_flow_on_lifted_amplitude
   -- `IntrinsicStabilityFlow` is *definitionally* `stability_flow`
   -- (see `@c:\Lean4 Projects\src\SGC\Bridge\CanonicalWavelet.lean:175-177`),
   -- so after the rewrite the two sides are syntactically equal.
-  rw [HG_tight_frame_exact_reconstruction L α β (lift ψ) (lift_pos hψ)
+  rw [HG_tight_frame_exact_reconstruction L α β hα hβ (lift ψ) (lift_pos hψ)
         frame epsilon t]
   rfl
 
@@ -233,14 +233,14 @@ theorem HG_canonical_wavelet_recovers_stability_flow_on_lifted_amplitude
     representation-error form: for a canonical tight HG frame on a
     lifted amplitude, `RepresentationError = 0` exactly. -/
 theorem tight_frame_lifted_amplitude_zero_error
-    (L : Matrix V V ℝ) (α β : ℝ)
+    (L : Matrix V V ℝ) (α β : ℝ) (hα : 0 < α) (hβ : 0 < β)
     (ψ : V → ℝ) (hψ : ∀ x, 0 < ψ x)
-    (frame : CanonicalTightFrame L (HGBandPassFilter α β) (lift ψ)
+    (frame : CanonicalTightFrame L (HGBandPassFilter α β hα hβ) (lift ψ)
               (lift_pos hψ))
     (epsilon : ℝ) (t : ℝ) :
-    RepresentationError L (HGBandPassFilter α β) (lift ψ) (lift_pos hψ)
+    RepresentationError L (HGBandPassFilter α β hα hβ) (lift ψ) (lift_pos hψ)
       epsilon t = 0 :=
-  HG_tight_frame_zero_error_direct L α β (lift ψ) (lift_pos hψ) frame
+  HG_tight_frame_zero_error_direct L α β hα hβ (lift ψ) (lift_pos hψ) frame
     epsilon t
 
 /-! ## 4. Quantitative non-tight bound on lifted amplitudes -/
@@ -273,15 +273,15 @@ theorem tight_frame_lifted_amplitude_zero_error
     using that `IntrinsicStabilityFlow L (lift ψ) ε t` is definitionally
     `stability_flow L (lift ψ) ε t`. -/
 theorem HG_represented_stability_flow_triangle_bound_lifted_amplitude
-    (L : Matrix V V ℝ) (α β : ℝ)
+    (L : Matrix V V ℝ) (α β : ℝ) (hα : 0 < α) (hβ : 0 < β)
     (ψ : V → ℝ) (hψ : ∀ x, 0 < ψ x)
     (epsilon : ℝ) (t : ℝ) :
-    |RepresentedStabilityFlow L (HGBandPassFilter α β) (lift ψ)
+    |RepresentedStabilityFlow L (HGBandPassFilter α β hα hβ) (lift ψ)
         (lift_pos hψ) epsilon t| ≤
     |stability_flow L (lift ψ) epsilon t| +
-    RepresentationError L (HGBandPassFilter α β) (lift ψ) (lift_pos hψ)
+    RepresentationError L (HGBandPassFilter α β hα hβ) (lift ψ) (lift_pos hψ)
       epsilon t :=
-  HG_represented_stability_flow_triangle_bound L α β (lift ψ)
+  HG_represented_stability_flow_triangle_bound L α β hα hβ (lift ψ)
     (lift_pos hψ) epsilon t
 
 /-- **Lifted-amplitude representation error bound.**
@@ -296,14 +296,15 @@ theorem HG_represented_stability_flow_triangle_bound_lifted_amplitude
     (Phase 3A theorem) specialised to the lifted distribution
     `lift ψ`. -/
 theorem HG_lifted_amplitude_representation_error_bound
-    (L : Matrix V V ℝ) (α β : ℝ)
+    (L : Matrix V V ℝ) (α β : ℝ) (hα : 0 < α) (hβ : 0 < β)
     (ψ : V → ℝ) (hψ : ∀ x, 0 < ψ x)
-    (frame : SpectralFrame L (HGBandPassFilter α β) (lift ψ) (lift_pos hψ))
+    (frame : SpectralFrame L (HGBandPassFilter α β hα hβ) (lift ψ)
+              (lift_pos hψ))
     (epsilon : ℝ) (heps : epsilon > 0) (t : ℝ) (ht : t ≥ 0) :
-    ∃ C > 0, RepresentationError L (HGBandPassFilter α β) (lift ψ)
+    ∃ C > 0, RepresentationError L (HGBandPassFilter α β hα hβ) (lift ψ)
               (lift_pos hψ) epsilon t ≤
               C * (FrameConditionNumber frame - 1) :=
-  HG_representation_error_bound L α β (lift ψ) (lift_pos hψ) frame
+  HG_representation_error_bound L α β hα hβ (lift ψ) (lift_pos hψ) frame
     epsilon heps t ht
 
 end

@@ -93,9 +93,9 @@ variable {V : Type*} [Fintype V] [DecidableEq V] [Nonempty V]
     `pi_sum := lift_sum_eq_one hψ_norm`. -/
 theorem HG_represented_stability_flow_spectral_decay_tight
     [Nontrivial V]
-    (L H : Matrix V V ℝ) (α β : ℝ)
+    (L H : Matrix V V ℝ) (α β : ℝ) (hα : 0 < α) (hβ : 0 < β)
     (ψ : V → ℝ) (hψ : ∀ x, 0 < ψ x) (hψ_norm : ∑ x, (ψ x) ^ 2 = 1)
-    (frame : CanonicalTightFrame L (HGBandPassFilter α β) (lift ψ)
+    (frame : CanonicalTightFrame L (HGBandPassFilter α β hα hβ) (lift ψ)
               (lift_pos hψ))
     (h_irred : IrreducibilityAssumptions L H (lift ψ))
     (h_gap_pos : SpectralGap_pi (lift ψ) H > 0)
@@ -114,11 +114,11 @@ theorem HG_represented_stability_flow_spectral_decay_tight
     (t : ℝ) (ht : 0 ≤ t)
     (hK1 : toLin' (HeatKernel L t) (fun _ => 1) = fun _ => 1) :
     ∃ C ≥ 0,
-      |RepresentedStabilityFlow L (HGBandPassFilter α β) (lift ψ)
+      |RepresentedStabilityFlow L (HGBandPassFilter α β hα hβ) (lift ψ)
           (lift_pos hψ) epsilon t| ≤
       C * Real.exp (-(SpectralGap_pi (lift ψ) H) * t) := by
   rw [HG_canonical_wavelet_recovers_stability_flow_on_lifted_amplitude
-        L α β ψ hψ frame epsilon t]
+        L α β hα hβ ψ hψ frame epsilon t]
   exact spectral_stability_bound h_irred h_gap_pos hL1 hK1 hH_const
     h_sa h_psd h_rel h_pos' h_eps_min (lift_pos hψ)
     (lift_sum_eq_one hψ_norm) t ht
@@ -148,7 +148,7 @@ theorem HG_represented_stability_flow_spectral_decay_tight
     and applying transitivity yields the claim. -/
 theorem HG_represented_stability_flow_spectral_decay_triangle
     [Nontrivial V]
-    (L H : Matrix V V ℝ) (α β : ℝ)
+    (L H : Matrix V V ℝ) (α β : ℝ) (hα : 0 < α) (hβ : 0 < β)
     (ψ : V → ℝ) (hψ : ∀ x, 0 < ψ x) (hψ_norm : ∑ x, (ψ x) ^ 2 = 1)
     (h_irred : IrreducibilityAssumptions L H (lift ψ))
     (h_gap_pos : SpectralGap_pi (lift ψ) H > 0)
@@ -167,10 +167,10 @@ theorem HG_represented_stability_flow_spectral_decay_triangle
     (t : ℝ) (ht : 0 ≤ t)
     (hK1 : toLin' (HeatKernel L t) (fun _ => 1) = fun _ => 1) :
     ∃ C ≥ 0,
-      |RepresentedStabilityFlow L (HGBandPassFilter α β) (lift ψ)
+      |RepresentedStabilityFlow L (HGBandPassFilter α β hα hβ) (lift ψ)
           (lift_pos hψ) epsilon t| ≤
       C * Real.exp (-(SpectralGap_pi (lift ψ) H) * t) +
-      RepresentationError L (HGBandPassFilter α β) (lift ψ)
+      RepresentationError L (HGBandPassFilter α β hα hβ) (lift ψ)
         (lift_pos hψ) epsilon t := by
   -- Obtain the spectral envelope C ≥ 0, |β| ≤ C · exp(−gap · t).
   obtain ⟨C, hC_nonneg, h_spectral⟩ :=
@@ -180,17 +180,17 @@ theorem HG_represented_stability_flow_spectral_decay_triangle
   refine ⟨C, hC_nonneg, ?_⟩
   -- Triangle: |β_rep| ≤ |β| + error ≤ C·exp(...) + error.
   have h_tri :
-      |RepresentedStabilityFlow L (HGBandPassFilter α β) (lift ψ)
+      |RepresentedStabilityFlow L (HGBandPassFilter α β hα hβ) (lift ψ)
           (lift_pos hψ) epsilon t| ≤
       |stability_flow L (lift ψ) epsilon t| +
-      RepresentationError L (HGBandPassFilter α β) (lift ψ)
+      RepresentationError L (HGBandPassFilter α β hα hβ) (lift ψ)
         (lift_pos hψ) epsilon t :=
     HG_represented_stability_flow_triangle_bound_lifted_amplitude
-      L α β ψ hψ epsilon t
+      L α β hα hβ ψ hψ epsilon t
   -- Chain the two bounds.
   exact h_tri.trans
     (add_le_add_right h_spectral
-      (RepresentationError L (HGBandPassFilter α β) (lift ψ)
+      (RepresentationError L (HGBandPassFilter α β hα hβ) (lift ψ)
         (lift_pos hψ) epsilon t))
 
 /-! ## 3. Fully constructive envelope with frame non-tightness penalty -/
@@ -223,9 +223,10 @@ theorem HG_represented_stability_flow_spectral_decay_triangle
     `HG_lifted_amplitude_representation_error_bound`. -/
 theorem HG_represented_stability_flow_exponential_envelope
     [Nontrivial V]
-    (L H : Matrix V V ℝ) (α β : ℝ)
+    (L H : Matrix V V ℝ) (α β : ℝ) (hα : 0 < α) (hβ : 0 < β)
     (ψ : V → ℝ) (hψ : ∀ x, 0 < ψ x) (hψ_norm : ∑ x, (ψ x) ^ 2 = 1)
-    (frame : SpectralFrame L (HGBandPassFilter α β) (lift ψ) (lift_pos hψ))
+    (frame : SpectralFrame L (HGBandPassFilter α β hα hβ) (lift ψ)
+              (lift_pos hψ))
     (h_irred : IrreducibilityAssumptions L H (lift ψ))
     (h_gap_pos : SpectralGap_pi (lift ψ) H > 0)
     (hL1 : toLin' L (fun _ => 1) = 0)
@@ -243,18 +244,18 @@ theorem HG_represented_stability_flow_exponential_envelope
     (t : ℝ) (ht : 0 ≤ t)
     (hK1 : toLin' (HeatKernel L t) (fun _ => 1) = fun _ => 1) :
     ∃ C ≥ 0, ∃ C' > 0,
-      |RepresentedStabilityFlow L (HGBandPassFilter α β) (lift ψ)
+      |RepresentedStabilityFlow L (HGBandPassFilter α β hα hβ) (lift ψ)
           (lift_pos hψ) epsilon t| ≤
       C * Real.exp (-(SpectralGap_pi (lift ψ) H) * t) +
       C' * (FrameConditionNumber frame - 1) := by
   -- Spectral + triangle envelope.
   obtain ⟨C, hC_nonneg, h_triangle⟩ :=
     HG_represented_stability_flow_spectral_decay_triangle
-      L H α β ψ hψ hψ_norm h_irred h_gap_pos hL1 hH_const
+      L H α β hα hβ ψ hψ hψ_norm h_irred h_gap_pos hL1 hH_const
       h_sa h_psd h_rel epsilon h_pos' h_eps_min t ht hK1
   -- Representation error bound (Phase 3A, lifted-amplitude specialisation).
   obtain ⟨C', hC'_pos, h_err⟩ :=
-    HG_lifted_amplitude_representation_error_bound L α β ψ hψ frame
+    HG_lifted_amplitude_representation_error_bound L α β hα hβ ψ hψ frame
       epsilon heps t ht
   refine ⟨C, hC_nonneg, C', hC'_pos, ?_⟩
   -- Chain: |β_rep| ≤ C·exp(...) + error ≤ C·exp(...) + C'·(B/A − 1).

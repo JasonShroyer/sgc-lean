@@ -3,6 +3,7 @@ Copyright (c) 2026 SGC Project. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: SGC Formalization Team
 -/
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 import SGC.Bridge.GeometricClosure
 import SGC.Spectral.Defs
 
@@ -50,6 +51,27 @@ open Finset Matrix Real
 
 variable {V : Type*} [Fintype V] [DecidableEq V] [Nonempty V]
 
+/-! ## 0. Calderón admissibility condition -/
+
+/-- **Calderón admissibility condition** for a band-pass filter
+    `ψ : ℝ → ℝ`:
+
+      `∫₀^∞ |ψ(u)|² du/u  =  1`.
+
+    This is the standard tight-frame reproducing condition for
+    continuous wavelet analysis (Calderón 1964, Daubechies 1992 §2.4).
+    The measure `du/u` is the Haar measure on the multiplicative group
+    `ℝ₊`, so this expresses that `ψ` has unit `L²(ℝ₊, du/u)` norm.
+
+    Every concrete `BandPassFilter` in this codebase is required to
+    carry a proof of `IsCalderonNormalized func` in its `normalized`
+    field.  A worked example witness for the Hermite-Gaussian family
+    lives in
+    `@c:\Lean4 Projects\src\SGC\Bridge\HermiteGaussianCanonical.lean:487`
+    (`hermiteGaussianFilterNormalized_isCalderonNormalized`). -/
+def IsCalderonNormalized (ψ : ℝ → ℝ) : Prop :=
+  ∫ u in Set.Ioi (0 : ℝ), (ψ u) ^ 2 / u = 1
+
 /-! ## 1. Sectorial Generators and Functional Calculus
 
 A sectorial operator admits a holomorphic functional calculus, allowing us to
@@ -66,12 +88,24 @@ structure IsSectorial (L : Matrix V V ℝ) (omega : ℝ) : Prop where
   spectrum_in_sector : True  -- Axiomatized: spectrum(L) ⊆ Σ_ω
   resolvent_bound : True     -- Axiomatized: ‖(z - L)⁻¹‖ ≤ C/|z| outside Σ_ω
 
-/-- **Band-Pass Filter**: A scalar function ψ : ℝ⁺ → ℝ that localizes
-    to a frequency band. Normalized so that ∫ |ψ(s)|² ds/s = 1. -/
+/-- **Band-Pass Filter**: A scalar function `ψ : ℝ → ℝ` supported on
+    the positive reals and **Calderón-normalised**:
+
+      `∫₀^∞ |ψ(u)|² du/u = 1`.
+
+    **Field contents (Phase 2E, April 2026 — `hard-refactor`)**:
+    * `func` — the scalar filter profile.
+    * `support_pos` — `ψ` vanishes on non-positive reals.
+    * `normalized` — `IsCalderonNormalized func`, i.e., the Calderón
+      reproducing condition `∫₀^∞ |ψ|² du/u = 1`.  This field was
+      formerly a `True` placeholder; it now carries the genuine
+      admissibility witness and is consumed by the Phase-R4 constructive
+      `RepresentedStabilityFlow` refactor once that lands (see
+      `@c:\Lean4 Projects\reports\DESIGN_REPRESENTED_STABILITY_FLOW.md`). -/
 structure BandPassFilter where
   func : ℝ → ℝ
   support_pos : ∀ s, func s ≠ 0 → s > 0
-  normalized : True  -- Axiomatized: ∫₀^∞ |ψ(s)|² ds/s = 1
+  normalized : IsCalderonNormalized func
 
 /-- **Sectorial Functional Calculus**: For a sectorial generator L and
     a suitable function ψ, we can define the operator ψ(sL).

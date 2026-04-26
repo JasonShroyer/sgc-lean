@@ -179,23 +179,34 @@ Landed in `src/SGC/Bridge/HermiteGaussianCanonical.lean` (Section 4):
   reproducing condition `∫₀^∞ |ψ̃|² du/u = 1` (zero `sorry`, zero new
   axioms).
 
-**What was deliberately deferred** (the "hard refactor"):
-- Tightening `BandPassFilter.normalized : True` (in `CanonicalWavelet.lean`)
-  to `BandPassFilter.normalized : IsCalderonNormalized func`.
-- Updating the `HGBandPassFilter α β` definition (and its ~30 downstream
-  call sites in `CanonicalWaveletFisherRao.lean`,
-  `RepresentedStabilityFlowDecay.lean`, `HermiteGaussianCanonical.lean`)
-  to thread `0 < α, 0 < β` hypotheses and use
-  `hermiteGaussianFilterNormalized` in place of `hermiteGaussianFilter`.
+**Phase 2E hard-refactor (Apr 26 2026 — done)**:
 
-The deferred refactor is mechanical (signature propagation) but invasive.
-It is now strictly easier than before, since every required ingredient
-(`IsCalderonNormalized`, the Calderón integral, the constant, the
-normalised filter, the `IsCalderonNormalized` proof) is in place.
+- `BandPassFilter.normalized : True` is now `BandPassFilter.normalized :
+  IsCalderonNormalized func`.
+- `IsCalderonNormalized` predicate moved to
+  `@c:\Lean4 Projects\src\SGC\Bridge\CanonicalWavelet.lean` so the
+  structure can reference it; minimal MeasureTheory import added there.
+- `HGBandPassFilter α β` is now `HGBandPassFilter α β hα hβ` and uses
+  `hermiteGaussianFilterNormalized` (the scaled, Calderón-normalised
+  filter) rather than the raw `hermiteGaussianFilter`.
+- `hermiteGaussianFilterNormalized_support_pos` lemma added.
+- `hα : 0 < α` and `hβ : 0 < β` threaded through all ~25 downstream
+  HG-specialised theorems in:
+  - `@c:\Lean4 Projects\src\SGC\Bridge\HermiteGaussianCanonical.lean` (8 theorems)
+  - `@c:\Lean4 Projects\src\SGC\Bridge\CanonicalWaveletFisherRao.lean` (5 theorems)
+  - `@c:\Lean4 Projects\src\SGC\Bridge\RepresentedStabilityFlowDecay.lean` (3 theorems)
+- Section reorganisation in `HermiteGaussianCanonical.lean`: Phase 2E
+  content (formerly Section 4) now sits as Section 2, since the
+  `HGBandPassFilter` instance in Section 3 depends on
+  `hermiteGaussianFilterNormalized_isCalderonNormalized`.
 
-A clean diff would replace `normalized := trivial` in `HGBandPassFilter`
-with `normalized := hermiteGaussianFilterNormalized_isCalderonNormalized hα hβ`
-once the `BandPassFilter` structure carries the strengthened field.
+Verification: `lake build` clean, 3113 jobs, 0 errors, 0 new sorrys.
+
+The `BandPassFilter` structure is now ready to be consumed by the
+constructive `RepresentedStabilityFlow` refactor (Phase R4 of the
+design doc): once `RepresentedStabilityFlow` is defined via the
+synthesis-operator integral, the `normalized` field provides the
+hypothesis required for the `synthesisOperator_calderon_id` step.
 
 ## Why this is the right call for SGC
 
