@@ -152,9 +152,11 @@ theorem weightedToStd_eq_zero_iff (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dis
 /-! ## Section 5: Compactness Transfer
 
 The key application: the weighted unit sphere {f | ‖f‖_π = 1} is compact
-because it is the preimage of the standard unit sphere under the
-continuous bijection T. Since V is Fintype, V → ℝ is finite-dimensional,
-and closed bounded sets are compact. -/
+because `(V → ℝ)` is a finite-dimensional normed space (and hence a
+`ProperSpace`), so closed bounded sets are compact. The continuity of
+`norm_sq_pi π` and `inner_pi π (·) 1` lets us identify ball, sphere, and
+the constrained sphere as closed sets, and a direct sup-norm estimate
+bounds them. -/
 
 /-- **Weighted Unit Sphere is Bounded**: The set {f | ‖f‖_π ≤ 1} maps
     into the standard unit ball under T, which is bounded. -/
@@ -164,15 +166,112 @@ theorem weightedToStd_maps_ball (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist 
   rw [weightedToStd_norm_sq]
   exact hf
 
+/-! ### Section 5.1: Continuity of `norm_sq_pi` and `inner_pi (·) 1`
+
+Both are polynomial in the coordinates of `f`, hence continuous on `V → ℝ`. -/
+
+/-- `norm_sq_pi π` is continuous as a function `(V → ℝ) → ℝ`. -/
+lemma norm_sq_pi_continuous (pi_dist : V → ℝ) :
+    Continuous (norm_sq_pi pi_dist : (V → ℝ) → ℝ) := by
+  unfold norm_sq_pi inner_pi
+  refine continuous_finset_sum _ (fun v _ => ?_)
+  exact (continuous_const.mul (continuous_apply v)).mul (continuous_apply v)
+
+/-- `inner_pi π f (fun _ => 1)` is continuous in `f`. -/
+lemma inner_pi_const_one_continuous (pi_dist : V → ℝ) :
+    Continuous (fun f : V → ℝ => inner_pi pi_dist f (fun _ => 1)) := by
+  unfold inner_pi
+  refine continuous_finset_sum _ (fun v _ => ?_)
+  exact (continuous_const.mul (continuous_apply v)).mul continuous_const
+
+/-! ### Section 5.2: Boundedness of the weighted closed ball
+
+If `norm_sq_pi π f ≤ r`, then for each `v`, `π v · (f v)² ≤ r` (the other
+summands are non-negative), so `|f v| ≤ √(r / π_min)` where
+`π_min = inf_v π v > 0`. This bounds the Pi sup norm. -/
+
+/-- The weighted closed ball is bounded in the Pi (sup) norm. -/
+lemma weighted_ball_isBounded (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (r : ℝ) (hr : 0 ≤ r) :
+    Bornology.IsBounded {f : V → ℝ | norm_sq_pi pi_dist f ≤ r} := by
+  by_cases hV : Nonempty V
+  · -- V nonempty: use π_min := min over V.
+    have h_ne : (Finset.univ : Finset V).Nonempty := Finset.univ_nonempty
+    set π_min : ℝ := Finset.univ.inf' h_ne pi_dist with hπ_min_def
+    have hπ_min_pos : 0 < π_min := by
+      rw [hπ_min_def, Finset.lt_inf'_iff]
+      intro v _
+      exact hπ v
+    have hπ_min_le : ∀ v, π_min ≤ pi_dist v := fun v => by
+      rw [hπ_min_def]
+      exact Finset.inf'_le _ (Finset.mem_univ v)
+    set R : ℝ := Real.sqrt (r / π_min) with hR_def
+    have hR_nonneg : 0 ≤ R := Real.sqrt_nonneg _
+    rw [Metric.isBounded_iff_subset_closedBall (0 : V → ℝ)]
+    refine ⟨R, ?_⟩
+    intro f hf
+    rw [Metric.mem_closedBall, dist_zero_right]
+    rw [pi_norm_le_iff_of_nonneg hR_nonneg]
+    intro v
+    -- |f v| ≤ R since π_min · (f v)² ≤ π v · (f v)² ≤ ∑_x π x · (f x)² ≤ r.
+    have h_term_nonneg : ∀ x, 0 ≤ pi_dist x * (f x)^2 := fun x =>
+      mul_nonneg (le_of_lt (hπ x)) (sq_nonneg _)
+    have h_each_le : pi_dist v * (f v)^2 ≤ r := by
+      have h_in_sum : pi_dist v * (f v)^2 ≤ ∑ x, pi_dist x * (f x)^2 :=
+        Finset.single_le_sum (f := fun x => pi_dist x * (f x)^2)
+          (fun x _ => h_term_nonneg x) (Finset.mem_univ v)
+      have hsum : ∑ x, pi_dist x * (f x)^2 ≤ r := by
+        have hf' : norm_sq_pi pi_dist f ≤ r := hf
+        rw [norm_sq_pi_eq_sum] at hf'
+        exact hf'
+      linarith
+    have h_pim_le : π_min * (f v)^2 ≤ r := by
+      calc π_min * (f v)^2
+          ≤ pi_dist v * (f v)^2 :=
+            mul_le_mul_of_nonneg_right (hπ_min_le v) (sq_nonneg _)
+        _ ≤ r := h_each_le
+    have h_sq_le : (f v)^2 ≤ r / π_min :=
+      (le_div_iff₀ hπ_min_pos).mpr (by linarith)
+    have h_abs : ‖f v‖ = Real.sqrt ((f v)^2) := by
+      rw [Real.sqrt_sq_eq_abs]
+      rfl
+    rw [h_abs]
+    have h_rdiv_nonneg : 0 ≤ r / π_min := div_nonneg hr (le_of_lt hπ_min_pos)
+    exact Real.sqrt_le_sqrt h_sq_le
+  · -- V empty: V → ℝ is a subsingleton, so any subset is bounded.
+    have h_sub : Subsingleton (V → ℝ) := by
+      refine ⟨fun f g => ?_⟩
+      ext v
+      exact absurd ⟨v⟩ hV
+    refine Bornology.IsBounded.subset (Bornology.isBounded_singleton (x := (0 : V → ℝ))) ?_
+    intro f _
+    exact Set.mem_singleton_iff.mpr (Subsingleton.elim _ _)
+
 /-- **Compactness of Weighted Sphere with Constraint** (for Courant-Fischer):
 
     The set {f : V → ℝ | norm_sq_pi π f = r ∧ inner_pi π f 1 = 0} is compact.
 
-    PROOF: Intersection of compact sphere (axiom) with closed hyperplane. -/
-axiom weighted_sphere_compact (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    PROOF: It is closed (intersection of two preimages of singletons under
+    continuous functions) and bounded (subset of the closed ball of radius
+    `√r`), hence compact via the Heine–Borel theorem on the proper space
+    `(V → ℝ)`. -/
+theorem weighted_sphere_compact (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (r : ℝ) (hr : 0 ≤ r) :
     IsCompact {f : V → ℝ | norm_sq_pi pi_dist f = r ∧
-      inner_pi pi_dist f (fun _ => 1) = 0}
+      inner_pi pi_dist f (fun _ => 1) = 0} := by
+  have h_closed : IsClosed {f : V → ℝ | norm_sq_pi pi_dist f = r ∧
+      inner_pi pi_dist f (fun _ => 1) = 0} := by
+    have h1 : IsClosed {f : V → ℝ | norm_sq_pi pi_dist f = r} :=
+      isClosed_eq (norm_sq_pi_continuous pi_dist) continuous_const
+    have h2 : IsClosed {f : V → ℝ | inner_pi pi_dist f (fun _ => 1) = 0} :=
+      isClosed_eq (inner_pi_const_one_continuous pi_dist) continuous_const
+    exact h1.inter h2
+  have h_bounded : Bornology.IsBounded {f : V → ℝ | norm_sq_pi pi_dist f = r ∧
+      inner_pi pi_dist f (fun _ => 1) = 0} := by
+    refine Bornology.IsBounded.subset (weighted_ball_isBounded pi_dist hπ r hr) ?_
+    intro f hf
+    exact le_of_eq hf.1
+  exact Metric.isCompact_of_isClosed_isBounded h_closed h_bounded
 
 /-! ## Section 6: EuclideanSpace ℝ V Bridge
 
@@ -212,19 +311,31 @@ This follows from finite-dimensionality: (V → ℝ) is a proper metric space.
 
 /-- **Weighted Closed Ball is Compact**: {f | norm_sq_pi π f ≤ r} is compact.
 
-    PROOF: The ball is closed (preimage of [0,r] under continuous norm_sq_pi)
-    and bounded (norm_sq_pi f ≤ r implies ‖f‖_∞ ≤ √(r/π_min)).
-    In finite dimensions, closed + bounded = compact. -/
-axiom weighted_closedBall_compact (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    PROOF: The ball is closed (preimage of `Set.Iic r` under the continuous
+    function `norm_sq_pi π`) and bounded (`weighted_ball_isBounded`).
+    `(V → ℝ)` is a finite-dimensional real normed space, hence a `ProperSpace`,
+    so the Heine–Borel theorem gives compactness. -/
+theorem weighted_closedBall_compact (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (r : ℝ) (hr : 0 ≤ r) :
-    IsCompact {f : V → ℝ | norm_sq_pi pi_dist f ≤ r}
+    IsCompact {f : V → ℝ | norm_sq_pi pi_dist f ≤ r} := by
+  have h_closed : IsClosed {f : V → ℝ | norm_sq_pi pi_dist f ≤ r} :=
+    isClosed_le (norm_sq_pi_continuous pi_dist) continuous_const
+  exact Metric.isCompact_of_isClosed_isBounded h_closed
+    (weighted_ball_isBounded pi_dist hπ r hr)
 
 /-- **Weighted Sphere is Compact**: {f | norm_sq_pi π f = r} is compact.
 
-    PROOF: Closed subset of compact ball. -/
-axiom weighted_sphere_is_compact (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    PROOF: Closed subset of the compact closed ball. -/
+theorem weighted_sphere_is_compact (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (r : ℝ) (hr : 0 ≤ r) :
-    IsCompact {f : V → ℝ | norm_sq_pi pi_dist f = r}
+    IsCompact {f : V → ℝ | norm_sq_pi pi_dist f = r} := by
+  have h_closed : IsClosed {f : V → ℝ | norm_sq_pi pi_dist f = r} :=
+    isClosed_eq (norm_sq_pi_continuous pi_dist) continuous_const
+  have h_bounded : Bornology.IsBounded {f : V → ℝ | norm_sq_pi pi_dist f = r} := by
+    refine Bornology.IsBounded.subset (weighted_ball_isBounded pi_dist hπ r hr) ?_
+    intro f hf
+    exact le_of_eq hf
+  exact Metric.isCompact_of_isClosed_isBounded h_closed h_bounded
 
 /-! ## Summary
 
@@ -245,12 +356,15 @@ and Mathlib's EuclideanSpace ℝ V:
 - `toEuclidean`: f ↦ (WithLp.equiv.symm (iso f)) to EuclideanSpace
 - `toEuclidean_norm`: ‖toEuclidean f‖ = norm_pi f
 
-**AXIOMS (3, with documented proof paths):**
-- `weighted_sphere_compact`: {f | norm_sq_pi π f = r ∧ ⟨f,1⟩_π = 0} is compact
+**PROVED (Apr 2026, replacing former axioms):**
+- `norm_sq_pi_continuous`, `inner_pi_const_one_continuous`: continuity helpers
+- `weighted_ball_isBounded`: sup-norm bound on the closed ball
 - `weighted_closedBall_compact`: {f | norm_sq_pi π f ≤ r} is compact
 - `weighted_sphere_is_compact`: {f | norm_sq_pi π f = r} is compact
+- `weighted_sphere_compact`: {f | norm_sq_pi π f = r ∧ ⟨f,1⟩_π = 0} is compact
 
-Proof path: closed + bounded in finite-dim = compact (ProperSpace).
+Proof path: closed + bounded in finite-dim = compact (Heine–Borel on the
+`ProperSpace` instance for `(V → ℝ)` from `FiniteDimensional.proper_real`).
 -/
 
 end SGC.Spectral.NormedBridge
