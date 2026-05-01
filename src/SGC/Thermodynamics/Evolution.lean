@@ -174,10 +174,85 @@ theorem kl_divergence_nonneg (p q : V → ℝ)
     _ = ∑ v, (p v - q v) := by rw [Finset.sum_sub_distrib]
     _ ≤ ∑ v, p v * Real.log (p v / q v) := Finset.sum_le_sum h_point
 
-/-- KL divergence is zero iff distributions are equal. -/
-axiom kl_divergence_zero_iff (p q : V → ℝ)
-    (hp : ∀ v, 0 ≤ p v) (hq : ∀ v, 0 < q v) :
-    KLDivergence p q = 0 ↔ p = q
+/-- KL divergence is zero iff distributions are equal.
+
+    **Signature note (May 1 2026)**: like `kl_divergence_nonneg` above,
+    the previous axiom omitted the sum-to-1 hypotheses and was therefore
+    *mathematically incorrect* — e.g., `p = (½, 0), q = (1, 1)` gives
+    `KLDivergence p q = 0` but `p ≠ q`.  This refactor converts the
+    broken axiom to a correctly-hypothesised theorem and updates the
+    sole downstream caller `surgery_cost_zero_iff` to supply the missing
+    hypotheses (which come for free from `stationary_is_probability`).
+
+    **Proof**: same strategy as `KLDiv_eq_zero_iff` in
+    `@c:\Lean4 Projects\src\SGC\Thermodynamics\EntropyProduction.lean`,
+    adapted to the no-`if`-guard `KLDivergence` definition used here
+    (Mathlib convention `Real.log 0 = 0` makes the `p v = 0` case
+    handle itself: `0 * log 0 = 0`). -/
+theorem kl_divergence_zero_iff (p q : V → ℝ)
+    (hp : ∀ v, 0 ≤ p v) (hq : ∀ v, 0 < q v)
+    (hp_sum : ∑ v, p v = 1) (hq_sum : ∑ v, q v = 1) :
+    KLDivergence p q = 0 ↔ p = q := by
+  constructor
+  · intro h_zero
+    -- Pointwise Gibbs bound (no `if` guard).
+    have h_point : ∀ v ∈ (Finset.univ : Finset V),
+        p v - q v ≤ p v * Real.log (p v / q v) := by
+      intro v _
+      by_cases hpv : p v = 0
+      · rw [hpv]; simp only [zero_sub, zero_mul]; linarith [(hq v).le]
+      · have hpv_pos : 0 < p v := lt_of_le_of_ne (hp v) (Ne.symm hpv)
+        have hpq_pos : 0 < p v / q v := div_pos hpv_pos (hq v)
+        have h_log : 1 - (p v / q v)⁻¹ ≤ Real.log (p v / q v) :=
+          Real.one_sub_inv_le_log_of_pos hpq_pos
+        rw [show (p v / q v)⁻¹ = q v / p v from by rw [inv_div]] at h_log
+        have h_mul := mul_le_mul_of_nonneg_left h_log (le_of_lt hpv_pos)
+        have h_simp : p v * (1 - q v / p v) = p v - q v := by field_simp
+        linarith [h_simp ▸ h_mul]
+    have h_sum_eq :
+        ∑ v, (p v - q v) = ∑ v, p v * Real.log (p v / q v) := by
+      rw [Finset.sum_sub_distrib, hp_sum, hq_sum, sub_self]
+      exact h_zero.symm
+    have h_pt_eq : ∀ v ∈ (Finset.univ : Finset V),
+        p v - q v = p v * Real.log (p v / q v) :=
+      (Finset.sum_eq_sum_iff_of_le h_point).mp h_sum_eq
+    funext v
+    have h_v := h_pt_eq v (Finset.mem_univ v)
+    by_cases hpv : p v = 0
+    · -- `p v = 0`: tightness equation reduces to `-q v = 0`,
+      -- contradiction with `q v > 0`.
+      rw [hpv] at h_v
+      simp only [zero_sub, zero_mul] at h_v
+      linarith [hq v]
+    · have hpv_pos : 0 < p v := lt_of_le_of_ne (hp v) (Ne.symm hpv)
+      have hqv_pos : 0 < q v := hq v
+      by_contra hne
+      have hqp_pos : 0 < q v / p v := div_pos hqv_pos hpv_pos
+      have hqp_ne : q v / p v ≠ 1 := by
+        intro h
+        apply hne
+        have hp_ne : p v ≠ 0 := ne_of_gt hpv_pos
+        field_simp at h
+        linarith
+      have h_strict : Real.log (q v / p v) < q v / p v - 1 :=
+        Real.log_lt_sub_one_of_pos hqp_pos hqp_ne
+      have h_inv : Real.log (p v / q v) = -Real.log (q v / p v) := by
+        rw [show p v / q v = (q v / p v)⁻¹ from by rw [inv_div]]
+        rw [Real.log_inv]
+      have h_pos_log : Real.log (p v / q v) > 1 - q v / p v := by
+        rw [h_inv]; linarith
+      have h_pos_mul : p v * Real.log (p v / q v) > p v * (1 - q v / p v) :=
+        mul_lt_mul_of_pos_left h_pos_log hpv_pos
+      have h_simp : p v * (1 - q v / p v) = p v - q v := by field_simp
+      linarith [h_simp ▸ h_pos_mul]
+  · intro h_eq
+    rw [h_eq]
+    unfold KLDivergence
+    apply Finset.sum_eq_zero
+    intro v _
+    by_cases hqv : q v = 0
+    · rw [hqv, div_zero, Real.log_zero, mul_zero]
+    · rw [div_self hqv, Real.log_one, mul_zero]
 
 /-- **Stationary distribution is strictly positive** for connected graphs.
 
@@ -216,6 +291,8 @@ theorem surgery_cost_zero_iff (G G' : WeightedGraph V)
   apply kl_divergence_zero_iff
   · exact fun v => (stationary_is_probability G).1 v
   · exact hpos
+  · exact (stationary_is_probability G).2
+  · exact (stationary_is_probability G').2
 
 end SurgeryCost
 

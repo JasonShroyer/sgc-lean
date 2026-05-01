@@ -229,6 +229,115 @@ lemma fisherRaoQuadForm_lift_nonneg
   have hsum : 0 ≤ euclideanQuadForm Δψ := euclideanQuadForm_nonneg Δψ
   linarith
 
+/-! ### 5b. Manifold non-degeneracy at interior amplitudes (narrow form)
+
+The next two lemmas formalise the **narrow, locally-statable form of the
+"Manifold Admissibility" principle** discussed in the May 2026 strategic
+review:
+
+> *Reasoning about probabilities of certainty is geometrically singular —
+>  the Fisher-Rao metric collapses at the boundary of the simplex.
+>  Training architectures that respect the manifold (analog noise, HG
+>  wavelet pump) are precisely those that keep distributions in the
+>  interior where the metric is non-degenerate.*
+
+**Honest scope.** The general "iff" form (the Fisher information matrix
+is positive definite *iff* the distribution is interior) is *not*
+statable against the current `ParametricFamily` structure in
+`@c:\Lean4 Projects\src\SGC\InformationGeometry\FisherKL.lean`, because:
+
+* `ParametricFamily.positive` already requires `0 < dist θ v` as a
+  *structural* axiom of the type — interiority is built in, not a
+  hypothesis we can vary.
+* `score_function` is itself axiomatised — there is no concrete
+  derivative to compute against.
+* `FisherMatrix_posSemidef` is axiomatised at PSD level only; the
+  upgrade to PD requires either a concrete score realisation or a
+  separate score-linear-independence hypothesis.
+
+What *is* statable, here, against the lifted-amplitude Fisher-Rao
+quadratic form whose isometry to the flat ℓ² form we already proved,
+is the following pair of lemmas: at a pointwise-positive `ψ`, the
+lifted FR form is non-degenerate as a quadratic form on tangent
+perturbations `Δψ`.  This is the precise mathematical content of
+"the manifold has well-defined geometry at interior amplitudes" in
+the structure that actually exists in this repository.
+
+A fully general `fisherMetric_nondegenerate_iff_interior` theorem on
+an arbitrary (boundary-allowing) parametric family would be a
+multi-week refactor of `FisherKL.lean` and is *deliberately* out of
+scope here. -/
+
+/-- **Euclidean tangent quadratic form vanishes iff perturbation is zero.**
+
+    `∑ x, (Δψ x)² = 0 ↔ Δψ = 0` — a basic fact about sums of squares
+    over a finite type.  Stated separately so the FR consequence reads
+    cleanly. -/
+lemma euclideanQuadForm_eq_zero_iff (Δψ : V → ℝ) :
+    euclideanQuadForm Δψ = 0 ↔ Δψ = 0 := by
+  unfold euclideanQuadForm
+  constructor
+  · intro h
+    -- Sum of nonneg = 0 ⇒ each term = 0 ⇒ each `Δψ x = 0`.
+    have h_each : ∀ x ∈ (Finset.univ : Finset V), (Δψ x) ^ 2 = 0 := by
+      intro x _
+      have h_nonneg : ∀ x ∈ (Finset.univ : Finset V), 0 ≤ (Δψ x) ^ 2 :=
+        fun y _ => sq_nonneg _
+      exact (Finset.sum_eq_zero_iff_of_nonneg h_nonneg).mp h x (Finset.mem_univ x)
+    funext x
+    exact pow_eq_zero_iff (n := 2) (by norm_num) |>.mp (h_each x (Finset.mem_univ x))
+  · intro h
+    subst h
+    simp
+
+/-- **Fisher-Rao tangent quadratic form is non-degenerate at interior
+    amplitudes** (narrow Manifold Admissibility lemma).
+
+    For a pointwise-positive amplitude `ψ : V → ℝ`, the lifted
+    Fisher-Rao quadratic form vanishes on a tangent perturbation
+    `Δψ` if and only if `Δψ` is identically zero:
+
+    `fisherRaoQuadForm (lift ψ) (liftDiff ψ Δψ) = 0 ↔ Δψ = 0`.
+
+    **Mathematical content.** The Fisher-Rao metric on the lifted
+    distribution `P = ψ²` defines a *positive definite* (not merely
+    positive semidefinite) bilinear form on tangent vectors at any
+    interior amplitude.  In particular the "geometry" at `ψ` — the
+    notion of length, angle, and orthogonality of perturbations — is
+    well-defined; the manifold is non-degenerate at this point.
+
+    **Proof.** Direct from `fisher_euclidean_tangent_isometry`
+    (which equates the FR form to `4 · ‖Δψ‖²_{ℓ²}`) plus
+    `euclideanQuadForm_eq_zero_iff`.  The factor `4 ≠ 0` is the only
+    arithmetic step.
+
+    **Connection to the wider research programme.** This lemma is the
+    Lean-statable kernel of the "Manifold Admissibility" thesis from
+    the May 2026 strategic review.  It does NOT prove (and is not
+    intended to prove) the wider claims that:
+
+    * the wavelet pump is the *unique* Fisher-Rao-respecting noise
+      geometry (multiple Calderón-admissible wavelet families satisfy
+      the same property; HG is special for *Heisenberg-Gabor*
+      time-frequency uncertainty, which is a different optimality
+      criterion); or
+    * isotropic Gaussian noise is "provably wrong" (this is an
+      empirical observation about coupling efficiency, not a Lean
+      theorem).
+
+    What it *does* prove, formally, is that at any positive amplitude
+    the geometry is well-defined.  The contrapositive — that
+    geometric reasoning fails at boundary amplitudes — is then a
+    direct consequence of the divergence of `(Δψ)² / ψ` when `ψ → 0`,
+    visible in the very definition of `fisherRaoQuadForm`. -/
+theorem fisherRaoQuadForm_lift_eq_zero_iff
+    (ψ Δψ : V → ℝ) (hψ : ∀ x, 0 < ψ x) :
+    fisherRaoQuadForm (lift ψ) (liftDiff ψ Δψ) = 0 ↔ Δψ = 0 := by
+  rw [fisher_euclidean_tangent_isometry ψ Δψ hψ]
+  rw [show (4 : ℝ) * euclideanQuadForm Δψ = 0 ↔ euclideanQuadForm Δψ = 0 from
+        ⟨fun h => by linarith, fun h => by rw [h]; ring⟩]
+  exact euclideanQuadForm_eq_zero_iff Δψ
+
 /-! ## 6. Connection to `SGC.InformationGeometry.FisherKL` (commentary)
 
 The local isometry above specialises the general `FisherQuadForm` machinery

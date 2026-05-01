@@ -101,10 +101,73 @@ theorem KL_nonneg (p q : V → ℝ) (hp : ∀ v, 0 ≤ p v) (hq : ∀ v, 0 < q v
     _ ≤ ∑ v, if p v = 0 then 0 else p v * Real.log (p v / q v) :=
         Finset.sum_le_sum h_point
 
-/-- KL divergence is zero iff p = q. -/
-axiom KL_eq_zero_iff (p q : V → ℝ) (hp : ∀ v, 0 < p v) (hq : ∀ v, 0 < q v)
+/-- KL divergence is zero iff `p = q`.
+
+    **Proof** (post-Phase-2E sprint, May 1 2026 — formerly axiomatised):
+    Mirrors `KLDiv_eq_zero_iff` in
+    `@c:\Lean4 Projects\src\SGC\Thermodynamics\EntropyProduction.lean`.
+    The strict-positive hypothesis on `p` here makes the proof slightly
+    shorter: the `p v = 0` case is excluded by `ne_of_gt (hp v)`. -/
+theorem KL_eq_zero_iff (p q : V → ℝ) (hp : ∀ v, 0 < p v) (hq : ∀ v, 0 < q v)
     (hp_sum : ∑ v, p v = 1) (hq_sum : ∑ v, q v = 1) :
-    KL_divergence p q = 0 ↔ p = q
+    KL_divergence p q = 0 ↔ p = q := by
+  constructor
+  · intro h_zero
+    have h_point : ∀ v ∈ (Finset.univ : Finset V),
+        p v - q v ≤ if p v = 0 then 0 else p v * Real.log (p v / q v) := by
+      intro v _
+      have hpv_ne : p v ≠ 0 := ne_of_gt (hp v)
+      rw [if_neg hpv_ne]
+      have hpv_pos : 0 < p v := hp v
+      have hpq_pos : 0 < p v / q v := div_pos hpv_pos (hq v)
+      have h_log : 1 - (p v / q v)⁻¹ ≤ Real.log (p v / q v) :=
+        Real.one_sub_inv_le_log_of_pos hpq_pos
+      rw [show (p v / q v)⁻¹ = q v / p v from by rw [inv_div]] at h_log
+      have h_mul := mul_le_mul_of_nonneg_left h_log (le_of_lt hpv_pos)
+      have h_simp : p v * (1 - q v / p v) = p v - q v := by field_simp
+      linarith [h_simp ▸ h_mul]
+    have h_sum_eq :
+        ∑ v, (p v - q v) =
+        ∑ v, if p v = 0 then 0 else p v * Real.log (p v / q v) := by
+      rw [Finset.sum_sub_distrib, hp_sum, hq_sum, sub_self]
+      exact h_zero.symm
+    have h_pt_eq : ∀ v ∈ (Finset.univ : Finset V),
+        p v - q v = if p v = 0 then 0 else p v * Real.log (p v / q v) :=
+      (Finset.sum_eq_sum_iff_of_le h_point).mp h_sum_eq
+    funext v
+    have h_v := h_pt_eq v (Finset.mem_univ v)
+    have hpv_ne : p v ≠ 0 := ne_of_gt (hp v)
+    rw [if_neg hpv_ne] at h_v
+    have hpv_pos : 0 < p v := hp v
+    have hqv_pos : 0 < q v := hq v
+    by_contra hne
+    have hqp_pos : 0 < q v / p v := div_pos hqv_pos hpv_pos
+    have hqp_ne : q v / p v ≠ 1 := by
+      intro h
+      apply hne
+      have hp_ne : p v ≠ 0 := ne_of_gt hpv_pos
+      field_simp at h
+      linarith
+    have h_strict : Real.log (q v / p v) < q v / p v - 1 :=
+      Real.log_lt_sub_one_of_pos hqp_pos hqp_ne
+    have h_inv : Real.log (p v / q v) = -Real.log (q v / p v) := by
+      rw [show p v / q v = (q v / p v)⁻¹ from by rw [inv_div]]
+      rw [Real.log_inv]
+    have h_pos_log : Real.log (p v / q v) > 1 - q v / p v := by
+      rw [h_inv]; linarith
+    have h_pos_mul : p v * Real.log (p v / q v) > p v * (1 - q v / p v) :=
+      mul_lt_mul_of_pos_left h_pos_log hpv_pos
+    have h_simp : p v * (1 - q v / p v) = p v - q v := by field_simp
+    linarith [h_simp ▸ h_pos_mul]
+  · intro h_eq
+    rw [h_eq]
+    unfold KL_divergence
+    apply Finset.sum_eq_zero
+    intro v _
+    by_cases hqv : q v = 0
+    · rw [if_pos hqv]
+    · rw [if_neg hqv]
+      rw [div_self hqv, Real.log_one, mul_zero]
 
 /-! ### 2. Parametric Families -/
 

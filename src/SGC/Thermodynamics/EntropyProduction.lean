@@ -119,12 +119,106 @@ theorem KLDiv_nonneg (p q : V → ℝ) (hp : ∀ x, 0 ≤ p x) (hq : ∀ x, 0 < 
     _ ≤ ∑ x, if p x = 0 then 0 else p x * log (p x / q x) :=
         Finset.sum_le_sum h_point
 
-/-- KL divergence equals zero iff p = q.
+/-- KL divergence equals zero iff `p = q`.
 
-    **Axiomatized**: Standard characterization of KL divergence. -/
-axiom KLDiv_eq_zero_iff (p q : V → ℝ) (hp : ∀ x, 0 ≤ p x) (hq : ∀ x, 0 < q x)
+    **Proof** (post-Phase-2E sprint, May 1 2026 — formerly axiomatised):
+
+    *Backward (`p = q ⇒ KLDiv p p = 0`)*: each summand is either `0`
+    (on the `p x = 0` branch) or `p x · log (p x / p x) = p x · log 1 = 0`.
+
+    *Forward (`KLDiv p q = 0 ⇒ p = q`)*: from the same pointwise Gibbs
+    bound used in `KLDiv_nonneg`, namely
+    `p x − q x ≤ ite (p x = 0) 0 (p x · log (p x / q x))`, plus
+    `∑ (p x − q x) = 0 = KLDiv` (the hypothesis), the bound is tight at
+    every `x` (`Finset.sum_eq_sum_iff_of_le`).  Pointwise:
+    * If `p x = 0`, tightness forces `−q x = 0`, contradicting `q x > 0`.
+    * If `p x > 0`, tightness gives
+      `p x − q x = p x · log (p x / q x)`.  Suppose for contradiction
+      `p x ≠ q x`.  Then `q x / p x > 0` and `q x / p x ≠ 1`, so by
+      `Real.log_lt_sub_one_of_pos` we get
+      `log (q x / p x) < q x / p x − 1`, hence
+      `log (p x / q x) > 1 − q x / p x`.  Multiplying by `p x > 0`
+      yields `p x · log (p x / q x) > p x − q x`, contradicting the
+      tightness equation.  Hence `p x = q x`. -/
+theorem KLDiv_eq_zero_iff (p q : V → ℝ) (hp : ∀ x, 0 ≤ p x) (hq : ∀ x, 0 < q x)
     (hp_sum : ∑ x, p x = 1) (hq_sum : ∑ x, q x = 1) :
-    KLDiv p q = 0 ↔ p = q
+    KLDiv p q = 0 ↔ p = q := by
+  constructor
+  · -- Forward direction: KLDiv = 0 ⇒ p = q.
+    intro h_zero
+    -- Pointwise Gibbs bound (same as in `KLDiv_nonneg`).
+    have h_point : ∀ x ∈ (Finset.univ : Finset V),
+        p x - q x ≤ if p x = 0 then 0 else p x * log (p x / q x) := by
+      intro x _
+      by_cases hpx : p x = 0
+      · rw [if_pos hpx, hpx]; linarith [hq x]
+      · rw [if_neg hpx]
+        have hpx_pos : 0 < p x := lt_of_le_of_ne (hp x) (Ne.symm hpx)
+        have hpq_pos : 0 < p x / q x := div_pos hpx_pos (hq x)
+        have h_log : 1 - (p x / q x)⁻¹ ≤ log (p x / q x) :=
+          Real.one_sub_inv_le_log_of_pos hpq_pos
+        rw [show (p x / q x)⁻¹ = q x / p x from by rw [inv_div]] at h_log
+        have h_mul := mul_le_mul_of_nonneg_left h_log (le_of_lt hpx_pos)
+        have h_simp : p x * (1 - q x / p x) = p x - q x := by field_simp
+        linarith [h_simp ▸ h_mul]
+    -- Sum-equality: `∑ (p x - q x) = 0 = KLDiv = ∑ ite (...)`.
+    have h_sum_eq :
+        ∑ x, (p x - q x) =
+        ∑ x, if p x = 0 then 0 else p x * log (p x / q x) := by
+      rw [Finset.sum_sub_distrib, hp_sum, hq_sum, sub_self]
+      exact h_zero.symm
+    -- Tightness: pointwise equality from `Finset.sum_eq_sum_iff_of_le`.
+    have h_pt_eq : ∀ x ∈ (Finset.univ : Finset V),
+        p x - q x = if p x = 0 then 0 else p x * log (p x / q x) :=
+      (Finset.sum_eq_sum_iff_of_le h_point).mp h_sum_eq
+    -- Pointwise conclude `p x = q x`.
+    funext x
+    have h_x := h_pt_eq x (Finset.mem_univ x)
+    by_cases hpx : p x = 0
+    · -- `p x = 0` forces `q x = 0`, contradicting `q x > 0`.
+      rw [if_pos hpx, hpx] at h_x
+      linarith [hq x]
+    · -- `p x > 0`: tightness equation `p x - q x = p x · log (p x / q x)`.
+      rw [if_neg hpx] at h_x
+      have hpx_pos : 0 < p x := lt_of_le_of_ne (hp x) (Ne.symm hpx)
+      have hqx_pos : 0 < q x := hq x
+      -- Suppose for contradiction `p x ≠ q x`.
+      by_contra hne
+      have hqp_pos : 0 < q x / p x := div_pos hqx_pos hpx_pos
+      have hqp_ne : q x / p x ≠ 1 := by
+        intro h
+        apply hne
+        have : q x = p x := by
+          have hp_ne : p x ≠ 0 := ne_of_gt hpx_pos
+          field_simp at h
+          linarith
+        linarith
+      have h_strict : log (q x / p x) < q x / p x - 1 :=
+        Real.log_lt_sub_one_of_pos hqp_pos hqp_ne
+      -- Convert: `log (p x / q x) = -log (q x / p x)`, so
+      --   `log (p x / q x) > 1 - q x / p x`.
+      have h_inv : log (p x / q x) = -log (q x / p x) := by
+        rw [show p x / q x = (q x / p x)⁻¹ from by rw [inv_div]]
+        rw [Real.log_inv]
+      have h_pos_log : log (p x / q x) > 1 - q x / p x := by
+        rw [h_inv]; linarith
+      -- Multiply by `p x > 0` to get `p x · log (p x / q x) > p x - q x`.
+      have h_pos_mul : p x * log (p x / q x) > p x * (1 - q x / p x) :=
+        mul_lt_mul_of_pos_left h_pos_log hpx_pos
+      have h_simp : p x * (1 - q x / p x) = p x - q x := by field_simp
+      -- Contradiction with the tightness equation.
+      linarith [h_simp ▸ h_pos_mul]
+  · -- Backward direction: `p = q ⇒ KLDiv p q = 0`.
+    intro h_eq
+    rw [h_eq]
+    unfold KLDiv
+    apply Finset.sum_eq_zero
+    intro x _
+    by_cases hqx : q x = 0
+    · rw [if_pos hqx]
+    · rw [if_neg hqx]
+      have h_div : q x / q x = 1 := div_self hqx
+      rw [h_div, Real.log_one, mul_zero]
 
 /-! ### 2. Data Processing Inequality (DPI) -/
 
