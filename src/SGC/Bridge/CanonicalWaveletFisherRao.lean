@@ -88,6 +88,7 @@ open SGC.Bridge.CanonicalWavelet
 open SGC.Bridge.HermiteGaussianCanonical
 open SGC.InformationGeometry.HellingerLift
 open SGC.Spectral
+open SGC.Spectral.WeightedHermitian (IsSymmPi)
 
 set_option linter.unusedSectionVars false
 
@@ -142,14 +143,16 @@ theorem lift_amplitude_valid_distribution
     (Phase 1A) to the wavelet coefficient.  No new analytical content
     beyond Phase 1A's pointwise identity. -/
 theorem wavelet_coefficient_preserves_tangent_isometry
-    (L : Matrix V V ℝ) (psi : BandPassFilter)
+    (L : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (hL_sa : IsSymmPi L pi_dist hπ)
+    (psi : BandPassFilter)
     (s : ℝ) (hs : s > 0)
     (ψ Δψ : V → ℝ) (hψ : ∀ x, 0 < ψ x) :
     fisherRaoQuadForm (lift ψ)
-        (liftDiff ψ (WaveletCoefficient L psi s hs Δψ)) =
-    4 * euclideanQuadForm (WaveletCoefficient L psi s hs Δψ) :=
+        (liftDiff ψ (WaveletCoefficient L pi_dist hπ hL_sa psi s hs Δψ)) =
+    4 * euclideanQuadForm (WaveletCoefficient L pi_dist hπ hL_sa psi s hs Δψ) :=
   fisher_euclidean_tangent_isometry ψ
-    (WaveletCoefficient L psi s hs Δψ) hψ
+    (WaveletCoefficient L pi_dist hπ hL_sa psi s hs Δψ) hψ
 
 /-- **HG specialisation of the wavelet coefficient tangent isometry.**
 
@@ -157,14 +160,18 @@ theorem wavelet_coefficient_preserves_tangent_isometry
     the tangent isometry on wavelet coefficients holds at every scale
     `s > 0` and every parameter pair `(α, β)`. -/
 theorem HG_wavelet_coefficient_preserves_tangent_isometry
-    (L : Matrix V V ℝ) (α β : ℝ) (hα : 0 < α) (hβ : 0 < β)
+    (L : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (hL_sa : IsSymmPi L pi_dist hπ)
+    (α β : ℝ) (hα : 0 < α) (hβ : 0 < β)
     (s : ℝ) (hs : s > 0)
     (ψ Δψ : V → ℝ) (hψ : ∀ x, 0 < ψ x) :
     fisherRaoQuadForm (lift ψ)
-        (liftDiff ψ (WaveletCoefficient L (HGBandPassFilter α β hα hβ) s hs Δψ)) =
+        (liftDiff ψ (WaveletCoefficient L pi_dist hπ hL_sa
+           (HGBandPassFilter α β hα hβ) s hs Δψ)) =
     4 * euclideanQuadForm
-          (WaveletCoefficient L (HGBandPassFilter α β hα hβ) s hs Δψ) :=
-  wavelet_coefficient_preserves_tangent_isometry L
+          (WaveletCoefficient L pi_dist hπ hL_sa
+            (HGBandPassFilter α β hα hβ) s hs Δψ) :=
+  wavelet_coefficient_preserves_tangent_isometry L pi_dist hπ hL_sa
     (HGBandPassFilter α β hα hβ) s hs ψ Δψ hψ
 
 /-- **Bound corollary**: the Fisher-Rao tangent norm-squared of the
@@ -172,13 +179,17 @@ theorem HG_wavelet_coefficient_preserves_tangent_isometry
     Euclidean norm-squared (with equality, by the isometry).  Useful
     when only an upper bound is required at the call-site. -/
 theorem wavelet_coefficient_fisherRao_le_four_euclidean
-    (L : Matrix V V ℝ) (psi : BandPassFilter)
+    (L : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (hL_sa : IsSymmPi L pi_dist hπ)
+    (psi : BandPassFilter)
     (s : ℝ) (hs : s > 0)
     (ψ Δψ : V → ℝ) (hψ : ∀ x, 0 < ψ x) :
     fisherRaoQuadForm (lift ψ)
-        (liftDiff ψ (WaveletCoefficient L psi s hs Δψ)) ≤
-    4 * euclideanQuadForm (WaveletCoefficient L psi s hs Δψ) := by
-  rw [wavelet_coefficient_preserves_tangent_isometry L psi s hs ψ Δψ hψ]
+        (liftDiff ψ (WaveletCoefficient L pi_dist hπ hL_sa psi s hs Δψ)) ≤
+    4 * euclideanQuadForm
+          (WaveletCoefficient L pi_dist hπ hL_sa psi s hs Δψ) := by
+  rw [wavelet_coefficient_preserves_tangent_isometry L pi_dist hπ hL_sa psi
+        s hs ψ Δψ hψ]
 
 /-! ## 3. Discrete Calderón reproducing formula on lifted amplitudes -/
 

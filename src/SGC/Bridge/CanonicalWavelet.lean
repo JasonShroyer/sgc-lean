@@ -6,6 +6,7 @@ Authors: SGC Formalization Team
 import Mathlib.MeasureTheory.Integral.Bochner.Set
 import SGC.Bridge.GeometricClosure
 import SGC.Spectral.Defs
+import SGC.Spectral.WeightedHermitian
 
 /-!
 # Canonical Wavelet Frame: Spectral Analysis of Intrinsic Dynamics
@@ -47,6 +48,8 @@ namespace SGC.Bridge.CanonicalWavelet
 open SGC.Bridge.GeometricClosure
 open SGC.Bridge.Consolidation
 open SGC.Spectral
+open SGC.Spectral.WeightedHermitian (IsSymmPi funCalculus_SA
+  funCalculus_SA_commute_HeatKernel funCalculus_SA_scaling)
 open Finset Matrix Real
 
 variable {V : Type*} [Fintype V] [DecidableEq V] [Nonempty V]
@@ -107,32 +110,65 @@ structure BandPassFilter where
   support_pos : ∀ s, func s ≠ 0 → s > 0
   normalized : IsCalderonNormalized func
 
-/-- **Sectorial Functional Calculus**: For a sectorial generator L and
-    a suitable function ψ, we can define the operator ψ(sL).
+/-- **Sectorial Functional Calculus** — the operator `ψ(sL)`.
 
-    This is the holomorphic functional calculus of McIntosh.
+    **Phase R1 (May 2026): formerly axiomatised, now a constructive
+    `def`** built from the finite-dimensional spectral decomposition of
+    `L` under the `π`-weighted inner product (when `L` is
+    `IsSymmPi`-self-adjoint).  The construction lives in
+    `@c:\Lean4 Projects\src\SGC\Spectral\WeightedHermitian.lean`:
+    `funCalculus_SA L π hπ hL_sa ψ s :=
+      D^{-1/2} · cfc (ψ ∘ (s•·)) (D^{1/2} L D^{-1/2}) · D^{1/2}`,
+    where `D = diag(π)`.
 
-    **Properties**:
-    1. Commutes with semigroup: ψ(sL) · e^{-tL} = e^{-tL} · ψ(sL)
-    2. Spectral mapping: spectrum(ψ(sL)) ⊆ ψ(s · spectrum(L))
-    3. Composition: (ψ₁ · ψ₂)(sL) = ψ₁(sL) · ψ₂(sL)
+    **Signature change vs. pre-Phase-R1**: the function now takes the
+    extra hypotheses `(pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (hL_sa : IsSymmPi L pi_dist hπ)`.  Downstream callers must thread
+    these.  This restricts the operator to the *reversible*
+    (π-detailed-balance) case, which is the setting of every Phase-4
+    theorem in this codebase via the `h_sa` hypothesis.
 
-    **Axiomatized**: The full construction requires contour integration
-    in the complex plane. We axiomatize existence and key properties. -/
-axiom SectorialFunctionalCalculus (L : Matrix V V ℝ) (psi : BandPassFilter) (s : ℝ)
-    (hs : s > 0) : Matrix V V ℝ
+    **Properties** (all now provable):
+    1. Commutes with semigroup: see `functional_calculus_commutes_semigroup`.
+    2. Scaling: see `functional_calculus_scaling`.
+    3. Spectral mapping & composition: inherited from Mathlib's `cfc`. -/
+def SectorialFunctionalCalculus (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) (hL_sa : IsSymmPi L pi_dist hπ)
+    (psi : BandPassFilter) (s : ℝ) (_hs : s > 0) : Matrix V V ℝ :=
+  funCalculus_SA L pi_dist hπ hL_sa psi.func s
 
-/-- The functional calculus commutes with the semigroup. -/
-axiom functional_calculus_commutes_semigroup (L : Matrix V V ℝ)
-    (psi : BandPassFilter) (s t : ℝ) (hs : s > 0) (ht : t ≥ 0) :
-    SectorialFunctionalCalculus L psi s hs * HeatKernel L t =
-    HeatKernel L t * SectorialFunctionalCalculus L psi s hs
+/-- The functional calculus commutes with the heat semigroup `e^{tL}`.
 
-/-- The functional calculus respects scalar multiplication in the argument. -/
-axiom functional_calculus_scaling (L : Matrix V V ℝ)
-    (psi : BandPassFilter) (s c : ℝ) (hs : s > 0) (hc : c > 0) :
-    SectorialFunctionalCalculus L psi (c * s) (mul_pos hc hs) =
-    SectorialFunctionalCalculus (c • L) psi s hs
+    **Phase R1 (May 2026): formerly an axiom, now a theorem** proved
+    via `funCalculus_SA_commute_HeatKernel` in
+    `@c:\Lean4 Projects\src\SGC\Spectral\WeightedHermitian.lean`. -/
+theorem functional_calculus_commutes_semigroup (L : Matrix V V ℝ)
+    (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (hL_sa : IsSymmPi L pi_dist hπ)
+    (psi : BandPassFilter) (s t : ℝ) (hs : s > 0) (_ht : t ≥ 0) :
+    SectorialFunctionalCalculus L pi_dist hπ hL_sa psi s hs *
+      HeatKernel L t =
+    HeatKernel L t *
+      SectorialFunctionalCalculus L pi_dist hπ hL_sa psi s hs := by
+  unfold SectorialFunctionalCalculus HeatKernel
+  exact funCalculus_SA_commute_HeatKernel L pi_dist hπ hL_sa psi.func s t
+
+/-- The functional calculus respects scalar multiplication in the argument.
+
+    **Phase R1 (May 2026): formerly an axiom, now a theorem** proved
+    via `funCalculus_SA_scaling`.  The hypothesis
+    `Continuous psi.func` is new vs. the original axiom — it is needed
+    to invoke Mathlib's `cfc_comp_const_mul`.  Concrete BandPassFilter
+    instances (e.g., `HGBandPassFilter` for `α, β > 0`) satisfy this. -/
+theorem functional_calculus_scaling (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) (hL_sa : IsSymmPi L pi_dist hπ)
+    (psi : BandPassFilter) (hpsi : Continuous psi.func)
+    (s c : ℝ) (hs : s > 0) (hc : c > 0) :
+    SectorialFunctionalCalculus L pi_dist hπ hL_sa psi (c * s)
+      (mul_pos hc hs) =
+    SectorialFunctionalCalculus (c • L) pi_dist hπ (hL_sa.smul c) psi s hs := by
+  unfold SectorialFunctionalCalculus
+  exact funCalculus_SA_scaling L pi_dist hπ hL_sa psi.func hpsi s c
 
 /-! ## 2. Spectral Frame and Frame Bounds
 
@@ -141,12 +177,17 @@ decomposition of functions across scales. -/
 
 /-- **Wavelet Coefficient**: The coefficient of f at scale s.
 
-    W_s(f) = ψ(sL) f
+    `W_s(f) = ψ(sL) f`.
 
-    This measures the "energy" of f at scale s. -/
-def WaveletCoefficient (L : Matrix V V ℝ) (psi : BandPassFilter)
-    (s : ℝ) (hs : s > 0) (f : V → ℝ) : V → ℝ :=
-  SectorialFunctionalCalculus L psi s hs *ᵥ f
+    This measures the "energy" of f at scale s.
+
+    **Phase R1 (May 2026): signature change** — now takes
+    `pi_dist`, `hπ`, `hL_sa` to thread the constructive
+    `SectorialFunctionalCalculus`. -/
+def WaveletCoefficient (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) (hL_sa : IsSymmPi L pi_dist hπ)
+    (psi : BandPassFilter) (s : ℝ) (hs : s > 0) (f : V → ℝ) : V → ℝ :=
+  SectorialFunctionalCalculus L pi_dist hπ hL_sa psi s hs *ᵥ f
 
 /-- **Scale-Integrated Energy**: The total energy across all scales.
 
