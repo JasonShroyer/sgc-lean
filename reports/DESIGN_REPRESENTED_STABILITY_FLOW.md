@@ -1,9 +1,39 @@
 # Design doc: `RepresentedStabilityFlow` axiom-to-definition refactor
 
-**Status**: draft (Apr 26, 2026)
-**Author**: Cascade (post-4C sprint, Priority 3)
+**Status**: **Phase R1 complete** (May 1, 2026); R2-R5 queued
+**Author**: Cascade (post-4C sprint, Priority 3; updated post-Phase-R1)
 **Target branch**: `lean-foundation-phases-1-2c`
-**Precedes**: multi-sprint refactor of `src/SGC/Bridge/CanonicalWavelet.lean`
+**Active commits on Phase R1**: `8eb081e` (`wip-quantum-bridge`), `d3be8c5` (`lean-foundation-phases-1-2c`)
+
+## 0. Progress tracker (updated May 1, 2026)
+
+| Phase | Description | Status | Axiom delta |
+|---|---|---|---|
+| **R1** | Constructive `funCalculus_SA` via Mathlib's `IsHermitian.cfc` + `weightedToStd` transport.  Replaces `SectorialFunctionalCalculus` (def), `functional_calculus_commutes_semigroup` (theorem), `functional_calculus_scaling` (theorem). | ✅ **complete** (commit `8eb081e`) | **−3** |
+| R2 | Convert `ScaleIntegratedEnergy` from axiom to definition (the `∫₀^∞ ‖ψ(sL) f‖² ds/s` integral). | 🟡 queued | −1 |
+| R3 | Convert `RepresentedStabilityFlow` from axiom to constructive definition via the synthesis-formula derivative. | 🟡 queued | −1 |
+| R4 | Convert `tight_frame_representation_error_zero` from axiom to theorem (using R3's constructive form). | 🟡 queued | −1 |
+| R5 | Optional: discharge `geometric_commutator_constraint` and `constant_ricci_tight_frame_exists` via the constructive frame. | 🟡 queued | up to −2 |
+
+**Cumulative axiom reduction so far**: −3 (R1) of an upper-bound −6 (R1–R4) or −8 (R1–R5).
+
+**R2 blocker**: `ScaleIntegratedEnergy` is referenced in 2 fields of the
+`SpectralFrame` structure (`lower_bound`, `upper_bound`), which is in turn
+used in 12+ sites across 4 files (`CanonicalWavelet.lean`,
+`HermiteGaussianCanonical.lean`, `CanonicalWaveletFisherRao.lean`,
+`RepresentedStabilityFlowDecay.lean`).  Adding `IsSymmPi` to its signature
+propagates through `CanonicalTightFrame` (extends `SpectralFrame`) and all
+downstream theorems.  This is a *structural* refactor of comparable size
+to R1 itself, not a "stretch goal" within R1.  Suggested approach for R2:
+treat as its own dedicated sprint.
+
+**R3 blocker**: `RepresentedStabilityFlow` has even broader reach than
+`ScaleIntegratedEnergy`.  Its constructive definition involves the
+synthesis operator + a time derivative of `expected_log_return_prob`, both
+of which require the R1 spectral decomposition + R2 integration to be in
+place first.  R3 should follow R2.
+
+**Precedes**: R2 (ScaleIntegratedEnergy refactor sprint).
 
 ## 1. Executive summary
 
