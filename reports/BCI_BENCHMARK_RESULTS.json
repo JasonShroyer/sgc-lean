@@ -1,0 +1,119 @@
+{
+  "config": {
+    "n_neurons": 100,
+    "duration_s": 500.0,
+    "bin_width_s": 0.02,
+    "seed": 42,
+    "fast": false
+  },
+  "results": [
+    {
+      "decoder": "Kalman",
+      "condition": "baseline",
+      "r2_vx": 0.9041,
+      "r2_vy": 0.8987,
+      "r2_combined": 0.9014,
+      "mae_cms": 7.509,
+      "lag_ms": 0.0
+    },
+    {
+      "decoder": "Hellinger",
+      "condition": "baseline",
+      "r2_vx": 0.8934,
+      "r2_vy": 0.8916,
+      "r2_combined": 0.8919,
+      "mae_cms": 7.597,
+      "lag_ms": 0.0
+    },
+    {
+      "decoder": "SGC-NESS",
+      "condition": "baseline",
+      "r2_vx": 0.8588,
+      "r2_vy": 0.8577,
+      "r2_combined": 0.858,
+      "mae_cms": 24.161,
+      "lag_ms": 0.0
+    },
+    {
+      "decoder": "Kalman",
+      "condition": "rate_shift",
+      "r2_vx": 0.9017,
+      "r2_vy": 0.8991,
+      "r2_combined": 0.9005,
+      "mae_cms": 7.918,
+      "lag_ms": 0.0
+    },
+    {
+      "decoder": "Hellinger",
+      "condition": "rate_shift",
+      "r2_vx": 0.9011,
+      "r2_vy": 0.9031,
+      "r2_combined": 0.9004,
+      "mae_cms": 7.36,
+      "lag_ms": 0.0
+    },
+    {
+      "decoder": "SGC-NESS",
+      "condition": "rate_shift",
+      "r2_vx": 0.8692,
+      "r2_vy": 0.8683,
+      "r2_combined": 0.8678,
+      "mae_cms": 21.27,
+      "lag_ms": 0.0
+    },
+    {
+      "decoder": "Kalman",
+      "condition": "dir_rotation",
+      "r2_vx": 0.8491,
+      "r2_vy": 0.8404,
+      "r2_combined": 0.8441,
+      "mae_cms": 9.37,
+      "lag_ms": 0.0
+    },
+    {
+      "decoder": "Hellinger",
+      "condition": "dir_rotation",
+      "r2_vx": 0.8415,
+      "r2_vy": 0.8412,
+      "r2_combined": 0.8411,
+      "mae_cms": 9.361,
+      "lag_ms": 0.0
+    },
+    {
+      "decoder": "SGC-NESS",
+      "condition": "dir_rotation",
+      "r2_vx": 0.8113,
+      "r2_vy": 0.8143,
+      "r2_combined": 0.8129,
+      "mae_cms": 26.015,
+      "lag_ms": 0.0
+    },
+    {
+      "decoder": "Kalman",
+      "condition": "dropout",
+      "r2_vx": 0.8734,
+      "r2_vy": 0.8652,
+      "r2_combined": 0.8694,
+      "mae_cms": 8.927,
+      "lag_ms": 0.0
+    },
+    {
+      "decoder": "Hellinger",
+      "condition": "dropout",
+      "r2_vx": 0.8639,
+      "r2_vy": 0.8604,
+      "r2_combined": 0.8606,
+      "mae_cms": 8.742,
+      "lag_ms": 0.0
+    },
+    {
+      "decoder": "SGC-NESS",
+      "condition": "dropout",
+      "r2_vx": 0.8139,
+      "r2_vy": 0.81,
+      "r2_combined": 0.811,
+      "mae_cms": 19.635,
+      "lag_ms": 0.0
+    }
+  ]
+}
