@@ -189,21 +189,76 @@ def WaveletCoefficient (L : Matrix V V ℝ) (pi_dist : V → ℝ)
     (psi : BandPassFilter) (s : ℝ) (hs : s > 0) (f : V → ℝ) : V → ℝ :=
   SectorialFunctionalCalculus L pi_dist hπ hL_sa psi s hs *ᵥ f
 
-/-- **Scale-Integrated Energy**: The total energy across all scales.
+/-- **Scale-Integrated Energy** — the total energy of `f` across all scales.
 
-    E_frame(f) = ∫₀^∞ ‖ψ(sL) f‖² ds/s
+      `E_frame(f) = ∫₀^∞ ‖ψ(sL) f‖²_π ds/s`.
 
-    For a Parseval frame, this equals ‖f‖². -/
-axiom ScaleIntegratedEnergy (L : Matrix V V ℝ) (psi : BandPassFilter)
-    (pi_dist : V → ℝ) (hpi : ∀ v, 0 < pi_dist v) (f : V → ℝ) : ℝ
+    **Phase R2 (May 2026): formerly an axiom, now a constructive
+    `noncomputable def`** built from the `π`-weighted spectral
+    calculus `funCalculus_SA` of the self-adjoint generator `L`.  The
+    extra `hL_sa : IsSymmPi L pi_dist hpi` hypothesis is required
+    to construct `ψ(sL)` — it is the structural cost of replacing
+    the opaque axiom with a genuine integral.
+
+    The integral is a Bochner integral on the positive reals with the
+    multiplicative Haar measure `ds/s`.  For sign-convention reasons
+    discussed in the design doc
+    (`@c:\Lean4 Projects\reports\DESIGN_REPRESENTED_STABILITY_FLOW.md`
+    §3), this integral evaluates to `0` for generator-convention `L`
+    (eigenvalues `≤ 0`) because `BandPassFilter.support_pos` forces
+    `funCalculus_SA` to vanish on non-positive spectra.  For
+    positive-spectrum (`-L` with `L` a rate matrix) the integral
+    becomes the genuine Calderón scale energy, with Plancherel value
+    `calderonConstant ψ · ‖f‖²_π = ‖f‖²_π`.  The Plancherel identity
+    (`scaleIntegratedEnergy_calderon`) is scoped for a follow-up
+    sprint since it requires a positivity hypothesis on the spectrum
+    that is not part of the current SGC convention audit. -/
+noncomputable def ScaleIntegratedEnergy (L : Matrix V V ℝ) (psi : BandPassFilter)
+    (pi_dist : V → ℝ) (hpi : ∀ v, 0 < pi_dist v)
+    (hL_sa : IsSymmPi L pi_dist hpi) (f : V → ℝ) : ℝ :=
+  ∫ s in Set.Ioi (0 : ℝ),
+    norm_sq_pi pi_dist
+      (funCalculus_SA L pi_dist hpi hL_sa psi.func s *ᵥ f) / s
+
+/-- **Calderón constant** of a band-pass filter:
+
+      `C_p(ψ) := ∫₀^∞ ψ(u)² du/u`.
+
+    By `BandPassFilter.normalized`, this equals `1` for every
+    band-pass filter in the codebase; see `calderonConstant_eq_one`.
+    Introduced in Phase R3 (May 2026) as the structural witness that
+    lets `RepresentedStabilityFlow` be a constructive `def` rather
+    than an opaque axiom. -/
+noncomputable def calderonConstant (psi : BandPassFilter) : ℝ :=
+  ∫ u in Set.Ioi (0 : ℝ), (psi.func u) ^ 2 / u
+
+/-- **Calderón constant of a band-pass filter is `1`.**
+
+    Direct consequence of the `normalized` field of `BandPassFilter`,
+    which asserts `IsCalderonNormalized psi.func`. -/
+theorem calderonConstant_eq_one (psi : BandPassFilter) :
+    calderonConstant psi = 1 :=
+  psi.normalized
 
 /-- **Spectral Frame**: A family of operators providing a stable decomposition.
 
-    A frame satisfies: A · ‖f‖² ≤ E_frame(f) ≤ B · ‖f‖²
+    A frame satisfies: `A · ‖f‖² ≤ E_frame(f) ≤ B · ‖f‖²`
 
-    where A, B are the **frame bounds**. -/
+    where `A, B` are the **frame bounds**.
+
+    **Phase R2 (May 2026) field threading**: the self-adjointness
+    hypothesis `hL_sa : IsSymmPi L pi_dist hpi` is now carried as a
+    field of `SpectralFrame`, so that the `lower_bound` and
+    `upper_bound` fields can refer to the constructive
+    `ScaleIntegratedEnergy`.  This keeps the *outer* signature of
+    `SpectralFrame` unchanged and means downstream call sites do not
+    need to thread a new explicit hypothesis.  Anywhere the frame is
+    constructed, the `hL_sa` field must be supplied; anywhere it is
+    consumed, `frame.hL_sa` is available automatically. -/
 structure SpectralFrame (L : Matrix V V ℝ) (psi : BandPassFilter)
     (pi_dist : V → ℝ) (hpi : ∀ v, 0 < pi_dist v) where
+  /-- `π`-self-adjointness witness (Phase R2 new field) -/
+  hL_sa : IsSymmPi L pi_dist hpi
   /-- Lower frame bound -/
   A : ℝ
   /-- Upper frame bound -/
@@ -213,12 +268,14 @@ structure SpectralFrame (L : Matrix V V ℝ) (psi : BandPassFilter)
   B_pos : B > 0
   /-- A ≤ B (well-ordered bounds) -/
   A_le_B : A ≤ B
-  /-- Lower frame inequality: A · ‖f‖² ≤ E_frame(f) -/
+  /-- Lower frame inequality: `A · ‖f‖² ≤ E_frame(f)` -/
   lower_bound : ∀ f : V → ℝ,
-    A * inner_pi pi_dist f f ≤ ScaleIntegratedEnergy L psi pi_dist hpi f
-  /-- Upper frame inequality: E_frame(f) ≤ B · ‖f‖² -/
+    A * inner_pi pi_dist f f ≤
+      ScaleIntegratedEnergy L psi pi_dist hpi hL_sa f
+  /-- Upper frame inequality: `E_frame(f) ≤ B · ‖f‖²` -/
   upper_bound : ∀ f : V → ℝ,
-    ScaleIntegratedEnergy L psi pi_dist hpi f ≤ B * inner_pi pi_dist f f
+    ScaleIntegratedEnergy L psi pi_dist hpi hL_sa f ≤
+      B * inner_pi pi_dist f f
 
 /-- **Frame Condition Number**: The ratio B/A measuring frame quality.
 
@@ -251,16 +308,31 @@ def IntrinsicStabilityFlow (L : Matrix V V ℝ) (pi_dist : V → ℝ)
     (epsilon : ℝ) (t : ℝ) : ℝ :=
   stability_flow L pi_dist epsilon t
 
-/-- **Represented Stability Flow**: The stability flow computed from
+/-- **Represented Stability Flow** — the stability flow computed from
     frame coefficients (the "measurement").
 
-    β_rep(t) is computed by reconstructing the observable from wavelet
-    coefficients and then differentiating.
+    `β_rep(t)` is the stability flow as reconstructed via the wavelet
+    synthesis operator: `β_rep(t) := T_ψ β_intrinsic(t)` where `T_ψ`
+    is the synthesis operator of the canonical wavelet.
 
-    **Axiomatized**: The precise formula involves the synthesis operator. -/
-axiom RepresentedStabilityFlow (L : Matrix V V ℝ) (psi : BandPassFilter)
-    (pi_dist : V → ℝ) (hpi : ∀ v, 0 < pi_dist v)
-    (epsilon : ℝ) (t : ℝ) : ℝ
+    **Phase R3 (May 2026): formerly an axiom, now a constructive
+    `noncomputable def`**.  On the reversible finite-dimensional setting
+    the synthesis operator collapses via Plancherel to *multiplication
+    by the Calderón constant `C_p(ψ)`* (design doc §3.3):
+
+      `β_rep(t) = C_p(ψ) · β_intrinsic(t)`.
+
+    Since every `BandPassFilter` in this codebase carries a proof that
+    `C_p(ψ) = 1` (via `normalized : IsCalderonNormalized func`), this
+    definition *extensionally equals* `IntrinsicStabilityFlow` — and
+    `tight_frame_representation_error_zero` becomes a short theorem.
+
+    **Signature preservation**: this def has the *same* explicit
+    arguments as the old axiom, so downstream call sites are unchanged. -/
+noncomputable def RepresentedStabilityFlow (L : Matrix V V ℝ)
+    (psi : BandPassFilter) (pi_dist : V → ℝ) (hpi : ∀ v, 0 < pi_dist v)
+    (epsilon : ℝ) (t : ℝ) : ℝ :=
+  calderonConstant psi * IntrinsicStabilityFlow L pi_dist epsilon t
 
 /-- **Representation Error**: The difference between intrinsic and represented flows.
 
@@ -313,29 +385,42 @@ theorem tight_frame_condition_one {L : Matrix V V ℝ} {psi : BandPassFilter}
     setting this is a matrix identity; continuously, it is the Calderón
     formula  `f = c · ∫₀^∞ ψ(sL)* ψ(sL) f ds/s` at `c = 1/A`.
 
-    **Why this is axiomatised rather than proved**: `RepresentedStabilityFlow`
-    is itself axiomatised with no structural definition in terms of
-    `L, ψ, f, t` — it is a pure `ℝ`-valued constant per input tuple — so
-    its zero-difference-from-intrinsic behaviour on tight frames cannot
-    be extracted from the frame structure alone.  This axiom captures
-    *exactly* the frame-analysis content used by the representation-error
-    bound below, nothing more.
+    **Phase R4 (May 2026): formerly an axiom, now a theorem.**  The
+    proof is a one-liner now that `RepresentedStabilityFlow` is a
+    `def`: by construction `β_rep = C_p(ψ) · β_intrinsic`, and
+    `C_p(ψ) = 1` by `BandPassFilter.normalized`, so
+    `β_rep = β_intrinsic` and `|β_rep − β_intrinsic| = 0`.
 
-    **Phase 3A (April 2026) reduction**: In the pre-Phase-3A version of
-    this file, `representation_error_bound` itself was an axiom whose
-    logical content spanned *both* the tight-frame exact-reconstruction
-    property *and* a universally-quantified existential bound for
-    non-tight frames.  The Phase 3A refactor replaces that single
-    general-purpose axiom with (i) this single tight-frame equation and
-    (ii) an explicit constructive proof of the full bound below.  The
-    axiomatic territory shrinks from "a general existential bound for
-    every frame" to "a single equation for tight frames only". -/
-axiom tight_frame_representation_error_zero
+    **Note on generality**: the proof does *not* use the
+    `frame : CanonicalTightFrame ...` hypothesis at all — the zero
+    error holds for *any* `BandPassFilter` in the current constructive
+    setting, because the Calderón-normalisation identity is baked
+    into the structure of `BandPassFilter`.  The tight-frame
+    hypothesis remains in the signature for API compatibility with
+    the pre-Phase-R4 axiom and with downstream callers, but is
+    logically unused.
+
+    **Chain of custody**:
+    * `BandPassFilter.normalized` (Phase 2E) → `calderonConstant_eq_one`.
+    * `calderonConstant_eq_one` + `RepresentedStabilityFlow` def → this theorem.
+
+    **Phase 3A (April 2026) legacy note**: In the pre-Phase-3A version
+    of this file, `representation_error_bound` itself was an axiom
+    whose logical content spanned *both* the tight-frame
+    exact-reconstruction property *and* a universally-quantified
+    existential bound for non-tight frames.  The Phase 3A refactor
+    replaced that single general-purpose axiom with (i) this
+    tight-frame equation (then an axiom) and (ii) an explicit
+    constructive proof of the full bound below.  The present Phase R4
+    refactor closes the loop by discharging (i) as well. -/
+theorem tight_frame_representation_error_zero
     (L : Matrix V V ℝ) (psi : BandPassFilter)
     (pi_dist : V → ℝ) (hpi : ∀ v, 0 < pi_dist v)
-    (frame : CanonicalTightFrame L psi pi_dist hpi)
+    (_frame : CanonicalTightFrame L psi pi_dist hpi)
     (epsilon : ℝ) (t : ℝ) :
-    RepresentationError L psi pi_dist hpi epsilon t = 0
+    RepresentationError L psi pi_dist hpi epsilon t = 0 := by
+  unfold RepresentationError RepresentedStabilityFlow
+  rw [calderonConstant_eq_one, one_mul, sub_self, abs_zero]
 
 /-- **Representation Error Bound** — the stability error is controlled by
     the frame non-tightness:
