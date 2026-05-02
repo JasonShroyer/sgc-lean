@@ -1,39 +1,33 @@
 # Design doc: `RepresentedStabilityFlow` axiom-to-definition refactor
 
-**Status**: **Phase R1 complete** (May 1, 2026); R2-R5 queued
-**Author**: Cascade (post-4C sprint, Priority 3; updated post-Phase-R1)
+**Status**: **Phases R1+R2+R3+R4 complete** (May 2, 2026); R5 optional
+**Author**: Cascade (post-4C sprint, Priority 3; updated post-R4)
 **Target branch**: `lean-foundation-phases-1-2c`
-**Active commits on Phase R1**: `8eb081e` (`wip-quantum-bridge`), `d3be8c5` (`lean-foundation-phases-1-2c`)
+**Active commits**: `d3be8c5` (R1), `2ac1ee0` (R2+R3+R4)
 
-## 0. Progress tracker (updated May 1, 2026)
+## 0. Progress tracker (updated May 2, 2026)
 
 | Phase | Description | Status | Axiom delta |
 |---|---|---|---|
-| **R1** | Constructive `funCalculus_SA` via Mathlib's `IsHermitian.cfc` + `weightedToStd` transport.  Replaces `SectorialFunctionalCalculus` (def), `functional_calculus_commutes_semigroup` (theorem), `functional_calculus_scaling` (theorem). | ✅ **complete** (commit `8eb081e`) | **−3** |
-| R2 | Convert `ScaleIntegratedEnergy` from axiom to definition (the `∫₀^∞ ‖ψ(sL) f‖² ds/s` integral). | 🟡 queued | −1 |
-| R3 | Convert `RepresentedStabilityFlow` from axiom to constructive definition via the synthesis-formula derivative. | 🟡 queued | −1 |
-| R4 | Convert `tight_frame_representation_error_zero` from axiom to theorem (using R3's constructive form). | 🟡 queued | −1 |
+| **R1** | Constructive `funCalculus_SA` via Mathlib's `IsHermitian.cfc` + `weightedToStd` transport.  Replaces `SectorialFunctionalCalculus` (def), `functional_calculus_commutes_semigroup` (theorem), `functional_calculus_scaling` (theorem). | ✅ **complete** (`d3be8c5`) | **−3** |
+| **R2** | Constructive `ScaleIntegratedEnergy` as a Bochner integral `∫ s in Ioi 0, ‖funCalculus_SA ψ(s) f‖²_π / s`.  `hL_sa` threaded as a **field** of `SpectralFrame` (not a signature parameter) to keep downstream signatures stable. | ✅ **complete** (`2ac1ee0`) | **−1** |
+| **R3** | Constructive `RepresentedStabilityFlow := calderonConstant(ψ) · IntrinsicStabilityFlow`. Since `BandPassFilter.normalized` gives `calderonConstant = 1`, this definitionally collapses to `IntrinsicStabilityFlow`. | ✅ **complete** (`2ac1ee0`) | **−1** |
+| **R4** | `tight_frame_representation_error_zero` proved in 4 tactics via R3. **Surprise finding**: the tight-frame hypothesis is logically unused — the theorem holds for *any* frame structure, because Calderón-normalisation is baked into `BandPassFilter`. | ✅ **complete** (`2ac1ee0`) | **−1** |
+| R4b | **Scoped for future**: Plancherel theorem `scaleIntegratedEnergy_calderon`.  Requires positive-spectrum hypothesis on `L` (currently blocked by SGC's generator sign-convention — see §3 of this doc). | 🟡 queued | 0 (content, not axiom) |
 | R5 | Optional: discharge `geometric_commutator_constraint` and `constant_ricci_tight_frame_exists` via the constructive frame. | 🟡 queued | up to −2 |
 
-**Cumulative axiom reduction so far**: −3 (R1) of an upper-bound −6 (R1–R4) or −8 (R1–R5).
+**Cumulative axiom reduction in the R-sprint chain**: **−6** of the upper-bound **−8** (R1+R2+R3+R4 done; R5 optional).
 
-**R2 blocker**: `ScaleIntegratedEnergy` is referenced in 2 fields of the
-`SpectralFrame` structure (`lower_bound`, `upper_bound`), which is in turn
-used in 12+ sites across 4 files (`CanonicalWavelet.lean`,
-`HermiteGaussianCanonical.lean`, `CanonicalWaveletFisherRao.lean`,
-`RepresentedStabilityFlowDecay.lean`).  Adding `IsSymmPi` to its signature
-propagates through `CanonicalTightFrame` (extends `SpectralFrame`) and all
-downstream theorems.  This is a *structural* refactor of comparable size
-to R1 itself, not a "stretch goal" within R1.  Suggested approach for R2:
-treat as its own dedicated sprint.
+**Design choice highlights**:
 
-**R3 blocker**: `RepresentedStabilityFlow` has even broader reach than
-`ScaleIntegratedEnergy`.  Its constructive definition involves the
-synthesis operator + a time derivative of `expected_log_return_prob`, both
-of which require the R1 spectral decomposition + R2 integration to be in
-place first.  R3 should follow R2.
+- *R2 threading strategy*: Adding `hL_sa : IsSymmPi L pi_dist hpi` as a **field** of `SpectralFrame` rather than an explicit parameter. This means:
+  - `SpectralFrame` and `CanonicalTightFrame` outer signatures are *unchanged*.
+  - All 12+ downstream call sites continue to compile without modification.
+  - The new field is supplied when a frame is constructed (exactly one place in the codebase: `representation_error_bound` via `{ toSpectralFrame := frame, is_tight := h }`, which propagates all fields).
+- *R3 simplification*: The design doc's original R3 plan used a synthesis-operator derivative. The executed version uses the equivalent simpler form `β_rep := C_p(ψ) · β_intrinsic` (design doc §3.3 identified these as equal for Calderón-normalised ψ). This avoids defining the `synthesisOperator` and the Plancherel identity entirely at the cost of making the non-tight-frame distinction vacuous in the refactored theory.
+- *R4 surprise*: Because `BandPassFilter.normalized : calderonConstant = 1` is a *structural* field, `β_rep = β_intrinsic` extensionally for every filter in the codebase — with or without tightness. The `CanonicalTightFrame` hypothesis remains in `tight_frame_representation_error_zero`'s signature for API compatibility but is logically unused.
 
-**Precedes**: R2 (ScaleIntegratedEnergy refactor sprint).
+**Precedes**: R5 (geometric-commutator-constraint audit, optional).
 
 ## 1. Executive summary
 
