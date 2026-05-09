@@ -4,9 +4,12 @@
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Build Status](https://github.com/JasonShroyer/sgc-lean/actions/workflows/build.yml/badge.svg)](https://github.com/JasonShroyer/sgc-lean/actions)
+[![Release](https://img.shields.io/badge/Release-v1.0--actuation--phase--1-success)](RELEASE_NOTES_v1.0.md)
 
 SGC-Lean is a formal library for the **Physics of Emergence**. It provides a rigorous mathematical framework for "Approximate Lumpability"—the conditions under which a complex micro-system can be validly described by a simpler macro-theory.
 
+> **🚩 v1.0 release (May 2026)** — 15 axioms retired, zero-parameter `SGCNESSDecoder` shipped, Phase R4b-1 sibling structure proved.  See [`RELEASE_NOTES_v1.0.md`](RELEASE_NOTES_v1.0.md), [`THEORETICAL_MANIFEST.md`](THEORETICAL_MANIFEST.md), [`PRIORITY_CLAIMS.md`](PRIORITY_CLAIMS.md).
+>
 > **🎯 New to this project?** Start with [docs/RESEARCH_NARRATIVE.md](docs/RESEARCH_NARRATIVE.md) for a guided tour.
 
 ## 🔥 Recent Breakthrough (February 2026)
@@ -84,9 +87,12 @@ We formalize the physics of grokking:
 *   `SGC/Spectral`: Theorems on spectral gaps and timescales.
 *   `SGC/Renormalization`: The core "Renormalization Group" flow for Markov chains.
 *   `SGC/Bridge`: Connectors to Quantum Information (`SGC.Bridge.Quantum`).
-*   `SGC/FunctionalBlanket`: **(NEW)** Functional defect and grokking detection.
-*   `SGC/Grokking`: **(NEW)** Unified grokking formalization.
-*   `SGC/ContinualLearning`: **(NEW)** Adiabatic invariants for continual learning.
+*   `SGC/FunctionalBlanket`: Functional defect and grokking detection.
+*   `SGC/Grokking`: Unified grokking formalization.
+*   `SGC/ContinualLearning`: Adiabatic invariants for continual learning.
+*   `SGC/Spectral/WeightedHermitian`: **(v1.0)** Constructive π-self-adjoint functional calculus.
+*   `SGC/Spectral/GeneratorBandPassFilter`: **(v1.0)** Calderón wavelets on the negative half-line (Phase R4b-1).
+*   `SGC/Bridge/CanonicalWavelet`: **(v1.0)** ScaleIntegratedEnergy, RepresentedStabilityFlow, tight-frame error theorem.
 
 ### Documentation
 
@@ -99,6 +105,7 @@ We formalize the physics of grokking:
 
 *   `demos/lifshitz_transition_experiment.py`: Validates Lifshitz transition
 *   `demos/functional_grokking_detector.py`: Intrinsic grokking detection
+*   `demos/sgc_bci_benchmark.py`: **(v1.0)** Zero-parameter SGC-NESS vs Kalman vs Hellinger-Kalman BCI decoder benchmark
 *   `reports/`: Phase reports and analysis
 
 ## 🤝 Contributing
