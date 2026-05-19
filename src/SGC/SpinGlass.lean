@@ -51,12 +51,15 @@ import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.FinCases
 
 noncomputable section
 
 namespace SGC.SpinGlass
 
-open Finset
+open Finset Classical
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
 
@@ -90,14 +93,45 @@ def IsSatisfiable (G : SignedGraph V) : Prop :=
 
 /-! ### 3. Gauge Transformations -/
 
+/-- **Extensionality helper for `SignedGraph`**: two signed graphs are equal
+    if their data fields (`graph` and `sign`) are equal. The propositional
+    fields (`sign_symm`, `sign_on_edges`) collapse by proof irrelevance. -/
+private theorem signedGraph_ext {G₁ G₂ : SignedGraph V}
+    (h_graph : G₁.graph = G₂.graph) (h_sign : G₁.sign = G₂.sign) : G₁ = G₂ := by
+  cases G₁ with
+  | mk g₁ sn₁ ss₁ soe₁ =>
+    cases G₂ with
+    | mk g₂ sn₂ ss₂ soe₂ =>
+      simp only at h_graph h_sign
+      subst h_graph
+      subst h_sign
+      rfl
+
 /-- A gauge transformation flips signs at a subset of vertices.
-    Under gauge, edge signs transform as: J'_{uv} = J_{uv} + g_u + g_v (mod 2)
-    where g_v ∈ {0, 1} is the gauge at vertex v. -/
+    Under gauge, **on edges** the sign transforms as:
+      `J'_{uv} = J_{uv} + g_u + g_v (mod 2)`
+    where `g_v ∈ {0, 1}` is the gauge at vertex `v`.
+    On non-edges the sign remains 0 (this is what the `sign_on_edges`
+    invariant of `SignedGraph` requires; without the edge-guard the
+    structural invariant is broken since `g_u + g_v` need not vanish on
+    non-adjacent pairs).
+
+    **Structural correction (2026-05-19)**: the original definition omitted
+    the `if Adj` guard, which made `sign_on_edges` unprovable in general.
+    This is the 5th instance of the formalization catching a precision flaw
+    in the prose; see the journal note in
+    `reports/SPINGLASS_GAUGE_AUDIT.md`. -/
 def GaugeAction (G : SignedGraph V) (gauge : V → ZMod 2) : SignedGraph V where
   graph := G.graph
-  sign := fun u v => G.sign u v + gauge u + gauge v
-  sign_symm := fun u v => by simp only [G.sign_symm]; sorry
-  sign_on_edges := fun u v hadj => by simp only [G.sign_on_edges u v hadj, zero_add]; sorry
+  sign := fun u v => if G.graph.Adj u v then G.sign u v + gauge u + gauge v else 0
+  sign_symm := fun u v => by
+    by_cases h : G.graph.Adj u v
+    · have h' : G.graph.Adj v u := G.graph.symm h
+      rw [if_pos h, if_pos h', G.sign_symm v u]
+      ring
+    · have h' : ¬ G.graph.Adj v u := fun h'' => h (G.graph.symm h'')
+      rw [if_neg h, if_neg h']
+  sign_on_edges := fun u v hadj => if_neg hadj
 
 /-- Two signed graphs are gauge-equivalent if one is obtained from the other
     by a gauge transformation. -/
@@ -111,19 +145,84 @@ def IsUnfrustrated (G : SignedGraph V) : Prop := IsSatisfiable G
 
 /-! ### 5. Main Theorems -/
 
-/-- **Gauge Invariance**: Applying a gauge transformation preserves satisfiability.
-    If s satisfies G, then (s + gauge) satisfies (GaugeAction G gauge). -/
+/-- **Gauge Invariance (CLOSED 2026-05-19)**: Applying a gauge transformation
+    preserves satisfiability per edge. If `s` satisfies `G` at `(u,v)`, then
+    `(s + gauge)` satisfies `(GaugeAction G gauge)` at `(u,v)`. *Real theorem.*
+
+    **Proof**: in `ℤ₂`, `x + x = 0` for every `x`, so `gauge u + gauge u`
+    and `gauge v + gauge v` cancel. Both sides of the iff equal
+    `s u + s v + G.sign u v` as `ℤ₂` expressions. -/
 theorem gauge_preserves_satisfiability (G : SignedGraph V) (gauge : V → ZMod 2)
     (s : SpinConfig V) (u v : V) (hadj : G.graph.Adj u v) :
     EdgeSatisfied G s u v ↔ EdgeSatisfied (GaugeAction G gauge) (fun w => s w + gauge w) u v := by
-  sorry -- Proof: gauge terms cancel in ℤ₂ (g + g = 0)
+  unfold EdgeSatisfied
+  show s u + s v + G.sign u v = 0 ↔
+       (s u + gauge u) + (s v + gauge v) +
+       (if G.graph.Adj u v then G.sign u v + gauge u + gauge v else 0) = 0
+  rw [if_pos hadj]
+  -- In ℤ₂, x + x = 0 for any x.
+  have zmod2_self : ∀ x : ZMod 2, x + x = 0 := fun x => by fin_cases x <;> decide
+  have h1 := zmod2_self (gauge u)
+  have h2 := zmod2_self (gauge v)
+  have key : (s u + gauge u) + (s v + gauge v) + (G.sign u v + gauge u + gauge v) =
+             s u + s v + G.sign u v := by
+    linear_combination h1 + h2
+  rw [key]
 
-/-- **Characterization Theorem**: A signed graph is gauge-equivalent to an all-positive
-    (ferromagnetic) graph if and only if it is unfrustrated. -/
+/-- **Characterization Theorem (CLOSED 2026-05-19)**: A signed graph is
+    gauge-equivalent to an all-positive (ferromagnetic) graph if and only
+    if it is unfrustrated. *Real theorem.*
+
+    **Note (2026-05-19)**: the original docstring claimed this requires the
+    cycle-basis theorem from algebraic graph theory. It does not. Both
+    directions follow directly from `gauge_preserves_satisfiability`:
+    - **(→)** If `s` satisfies `G`, take `gauge := s`; then
+      `GaugeAction G s` is ferromagnetic since each edge sign
+      `G.sign u v + s u + s v = 0` by `EdgeSatisfied`.
+    - **(←)** If `GaugeAction G g` is ferromagnetic, the all-zero spin
+      satisfies it; pulling back through gauge invariance yields `g` as
+      a satisfying assignment for `G`.
+
+    The cycle-basis theorem is needed for a *different* characterization
+    ("balanced ↔ every cycle has even number of negative edges"), which is
+    not what this lemma states. -/
 theorem unfrustrated_iff_gauge_positive (G : SignedGraph V) :
     IsUnfrustrated G ↔
     IsGaugeEquivalent G ⟨G.graph, fun _ _ => 0, fun _ _ => rfl, fun _ _ _ => rfl⟩ := by
-  sorry -- Requires cycle basis theorem from algebraic graph theory
+  unfold IsUnfrustrated IsSatisfiable IsGaugeEquivalent
+  constructor
+  · -- (→) Satisfiable → gauge-equivalent to ferromagnetic, witness gauge := s.
+    rintro ⟨s, hs⟩
+    refine ⟨s, ?_⟩
+    -- Goal: GaugeAction G s = ⟨G.graph, fun _ _ => 0, _, _⟩
+    -- Both have graph = G.graph; show the sign field collapses to 0.
+    have h_sign_eq :
+        (fun u v => if G.graph.Adj u v then G.sign u v + s u + s v else (0 : ZMod 2)) =
+        (fun (_ : V) (_ : V) => (0 : ZMod 2)) := by
+      funext u v
+      by_cases h : G.graph.Adj u v
+      · rw [if_pos h]
+        have h_sat := hs u v h
+        unfold EdgeSatisfied at h_sat
+        linear_combination h_sat
+      · exact if_neg h
+    -- Structural equality reduces to the sign-field equality via the helper.
+    apply signedGraph_ext
+    · rfl  -- graph fields both = G.graph by definition of GaugeAction
+    · -- sign fields equal: (GaugeAction G s).sign = fun _ _ => 0
+      exact h_sign_eq
+  · -- (←) Gauge-equivalent to ferromagnetic → satisfiable, witness s := g.
+    rintro ⟨g, hg⟩
+    refine ⟨g, ?_⟩
+    intro u v hadj
+    unfold EdgeSatisfied
+    -- (GaugeAction G g).sign u v = 0 from hg.
+    have h_zero : (GaugeAction G g).sign u v = 0 := by rw [hg]
+    have h_unfold : (GaugeAction G g).sign u v =
+        (if G.graph.Adj u v then G.sign u v + g u + g v else (0 : ZMod 2)) := rfl
+    rw [h_unfold, if_pos hadj] at h_zero
+    -- h_zero : G.sign u v + g u + g v = 0
+    linear_combination h_zero
 
 /-! ### 6. Connection to SGC Defect Operator -/
 
