@@ -22,3 +22,38 @@ docs/COMMISSIONING_LETTER.md
 # Legacy ignored files
 FHDT Final Submission Package.txt
 FHDT Lean4 Implementation Plan.txt
+
+# === PRIVACY PROTECTION (Phase 3 minimal implementation — 2026-05-12) ===
+# These paths must never reach the public 'origin' remote (sgc-lean).
+# Defense in depth: this .gitignore is layer 1; pre-commit and pre-push
+# hooks in .git/hooks/ enforce additional checks even if this file is
+# reverted. Full architecture spec: PHASE_3_PRIVACY_ARCHITECTURE_PROPOSAL.md
+#
+# UPAT theory archive (private)
+/src/UPAT/
+/src/UPAT.lean
+#
+# FHDT pre-SGC archive (private)
+/src/FHDT/
+/src/FHDT.lean
+#
+# Private / unpublished engines and demos
+/demos/upat_scope.py
+/demos/sgc_nonlinear_physics.py
+# === END PRIVACY PROTECTION ===
+
+# === Internal research documents — not for public distribution ===
+# Working journals, recovery records, and architecture proposals that
+# inform the public sprint commits but are themselves internal-only.
+/PHASE_3_PRIVACY_ARCHITECTURE_PROPOSAL.md
+/RECOVERED_ARTIFACTS.md
+/RESEARCH_JOURNAL.md
+/reports/NONLINEAR_PHYSICS_ENGINE_CELEGANS.md
+# === END INTERNAL DOCS ===
+
+# === Python build artefacts (never commit) ===
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+# === END PYTHON ARTEFACTS ===
