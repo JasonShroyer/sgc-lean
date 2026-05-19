@@ -58,16 +58,16 @@ variable {V : Type*} [Fintype V] [DecidableEq V]
 structure LaplacianSpectrum where
   eigenvalues : List ℝ
   eigenvalues_sorted : eigenvalues.Sorted (· ≤ ·)
-  eigenvalues_nonneg : ∀ λ ∈ eigenvalues, 0 ≤ λ
+  eigenvalues_nonneg : ∀ lam ∈ eigenvalues, 0 ≤ lam
 
 /-- Count eigenvalues near zero (within threshold). -/
 def nearZeroCount (spectrum : LaplacianSpectrum) (threshold : ℝ) : ℕ :=
-  spectrum.eigenvalues.countP (fun λ => λ < threshold)
+  spectrum.eigenvalues.countP (fun lam => lam < threshold)
 
 /-! ### 2. Van Hove Singularity -/
 
 /-- **Van Hove Singularity**: The density of states exhibits √λ scaling near zero.
-    
+
     This is the signature of a topological phase transition where the Fermi surface
     changes topology. In our context, it indicates the blanket closure moment. -/
 structure VanHoveSingularity where
@@ -81,13 +81,13 @@ structure VanHoveSingularity where
 
 /-- The **critical dimension** d is the number of eigenvalues crossing zero
     at the Lifshitz transition point.
-    
+
     **Empirical finding (March 2026)**: Mean 2.74 ≈ 3 near-zero eigenvalues
     across 96 blanket closure events. -/
 def criticalDimension (spectrum : LaplacianSpectrum) : ℕ :=
   nearZeroCount spectrum 0.1
 
-/-- The theoretically predicted critical dimension for gauge-covariant 
+/-- The theoretically predicted critical dimension for gauge-covariant
     sheaf diffusion on 2D grids. -/
 def expectedCriticalDimension : ℕ := 3
 
@@ -97,7 +97,7 @@ def expectedCriticalDimension : ℕ := 3
     1. Functional defect collapses below threshold
     2. Class separation explodes
     3. Critical dimension is approximately 3
-    
+
     This captures the full thermodynamic signature of grokking. -/
 structure IsLifshitzTransition_Full
     (h_before h_after : HiddenStates V)
@@ -113,11 +113,11 @@ structure IsLifshitzTransition_Full
 /-! ### 5. Free Energy Scaling at Transition -/
 
 /-- **Free Energy Scaling** at a 2½-order Lifshitz transition.
-    
+
     At a Lifshitz transition with d zero-crossing eigenvalues, the Free Energy
     scales as F(μ) ∝ μ^(d/2 + 1) where μ is the chemical potential distance
     from the transition.
-    
+
     For d=3: F(μ) ∝ μ^(5/2) = μ^2.5 -/
 def freeEnergyExponent (d : ℕ) : ℝ := d / 2 + 1
 
@@ -130,7 +130,7 @@ theorem free_energy_exponent_d3 : freeEnergyExponent 3 = 2.5 := by
 
 /-- **Blanket Closure Theorem**: When the functional defect drops below
     the threshold, the system undergoes a Lifshitz transition.
-    
+
     This connects the empirical observable (FD < 0.15) to the topological
     phase transition (d=3 critical modes). -/
 theorem blanket_closure_is_lifshitz
@@ -144,12 +144,14 @@ theorem blanket_closure_is_lifshitz
 /-! ### 7. Van Hove Signature Implies Critical Structure -/
 
 /-- If a Van Hove singularity is observed at the transition, the critical
-    dimension must be at least 1 (at least one mode crosses zero). -/
+    dimension must be at least 1 (at least one mode crosses zero), or the
+    spectrum has zero critical dimension. *Real theorem — the disjunction
+    is decidable for `ℕ` regardless of `vh` and `h_nonempty`.* -/
 theorem van_hove_implies_critical_mode
     (vh : VanHoveSingularity)
-    (h_nonempty : vh.spectrum.eigenvalues ≠ []) :
-    0 < criticalDimension vh.spectrum ∨ criticalDimension vh.spectrum = 0 := by
-  exact Or.inr rfl |>.symm.elim_or (Or.inl (Nat.zero_lt_one.trans_le (Nat.one_le_iff_ne_zero.mpr sorry)))
+    (_h_nonempty : vh.spectrum.eigenvalues ≠ []) :
+    0 < criticalDimension vh.spectrum ∨ criticalDimension vh.spectrum = 0 :=
+  (Nat.eq_zero_or_pos _).symm
 
 /-! ### 8. Empirical Constants -/
 

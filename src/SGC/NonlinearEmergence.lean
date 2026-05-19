@@ -86,6 +86,10 @@ structure PeriodicGenerator (V : Type*) [Fintype V] where
   period : ℝ
   /-- Period is positive -/
   period_pos : 0 < period
+  /-- Periodicity: `L(t + period) = L(t)` (added 2026-05-19 to enable
+      `floquet_emergence_equivalence` and `floquet_persistence` to be
+      stated without `sorry` in their types). -/
+  periodic : ∀ t, generator (t + period) = generator t
 
 /-! ## Section 2: Floquet Spectral Gap -/
 
@@ -152,7 +156,7 @@ axiom floquet_emergence_equivalence
     (N : ℕ) (hN : 0 < N) :
     let L_avg := SGC.Spectral.Floquet.CycleAvgGenerator
       { gen := LG.generator, period := LG.period, period_pos := LG.period_pos,
-        periodic := fun _ => sorry } N hN
+        periodic := LG.periodic } N hN
     -- There exists a cycle-averaged optimal partition
     ∃ P_star : Partition V,
       -- (1) Information-geometric optimality: P* minimizes defect cost
@@ -205,11 +209,11 @@ axiom floquet_persistence
     (h_persist : HiddenEntropyProduction
       (SGC.Spectral.Floquet.CycleAvgGenerator
         { gen := LG.generator, period := LG.period, period_pos := LG.period_pos,
-          periodic := fun _ => sorry } N hN) P pi_dist < δ) :
+          periodic := LG.periodic } N hN) P pi_dist < δ) :
     (opNorm_pi pi_dist hπ (DefectOperator
       (SGC.Spectral.Floquet.CycleAvgGenerator
         { gen := LG.generator, period := LG.period, period_pos := LG.period_pos,
-          periodic := fun _ => sorry } N hN) P pi_dist hπ))^2 < δ / γ_F
+          periodic := LG.periodic } N hN) P pi_dist hπ))^2 < δ / γ_F
 
 /-! ## Section 6: The Linear-Nonlinear Bridge -/
 
