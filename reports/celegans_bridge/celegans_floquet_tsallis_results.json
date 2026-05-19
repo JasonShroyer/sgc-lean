@@ -1,0 +1,91 @@
+{
+  "lean": {
+    "r": 0.08,
+    "q": 1.92,
+    "alpha": 0.04,
+    "ugm_alpha_baseline": 0.5,
+    "theorem_chain": [
+      "SGC.NonlinearEmergence.CelegansLinearityRatio",
+      "SGC.Bridge.CelegansFloquetTsallis.linearity_ratio_to_Tsallis_q",
+      "SGC.Bridge.CelegansFloquetTsallis.predicted_alpha_eq_r_half",
+      "SGC.Bridge.CelegansFloquetTsallis.celegans_anomalous_diffusion_value",
+      "SGC.Bridge.CelegansFloquetTsallis.celegans_scaling_lt_UGM"
+    ]
+  },
+  "measured": {
+    "gamma_linear": 0.07489782408298984,
+    "gamma_F": 0.8147642910438551,
+    "mu1": -0.8147642910438551,
+    "mu2": -0.8896621151268449,
+    "limit_cycle_period": 3.08,
+    "r": 0.09192575681861642,
+    "q": 1.9080742431813835,
+    "alpha_via_r_half": 0.04596287840930821,
+    "alpha_via_msd": 0.527562846988951
+  },
+  "residuals": {
+    "r_minus_lean": 0.01192575681861642,
+    "alpha_bridge_minus_lean": 0.00596287840930821,
+    "alpha_msd_minus_lean": 0.48756284698895097
+  },
+  "msd": {
+    "tau": [
+      0.02,
+      0.03,
+      0.04,
+      0.06,
+      0.1,
+      0.15,
+      0.23,
+      0.35000000000000003,
+      0.53,
+      0.81,
+      1.22,
+      1.85,
+      2.79,
+      4.22,
+      6.37,
+      9.620000000000001,
+      14.530000000000001,
+      21.94,
+      33.12,
+      50.0
+    ],
+    "msd": [
+      3.9983474196812025e-05,
+      5.965216961119251e-05,
+      7.915803302718737e-05,
+      0.00011773086156117947,
+      0.0001925812302732512,
+      0.00028214861427708674,
+      0.0004164993619877677,
+      0.0005982209297798806,
+      0.0008319541600791926,
+      0.0011192284688795024,
+      0.0014160327451939497,
+      0.0016890247579409855,
+      0.0018817270176238485,
+      0.00198556465731387,
+      0.0020332671601166422,
+      0.002018155571795607,
+      0.002023647086107423,
+      0.0020045191732723446,
+      0.0020262229365805968,
+      0.002028212491900762
+    ],
+    "fit_window": [
+      4,
+      16
+    ],
+    "sigma": 0.01,
+    "n_trajectories": 8
+  },
+  "metadata": {
+    "n_neurons": 20,
+    "n_edges": 161,
+    "wilson_cowan_gain": 2.0,
+    "wilson_cowan_tau": 1.0,
+    "langevin_sigma": 0.01,
+    "n_trajectories": 8
+  }
+}

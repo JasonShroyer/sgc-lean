@@ -1,0 +1,15 @@
+quantity,value,source
+lean_r,0.08,SGC.NonlinearEmergence.CelegansLinearityRatio
+lean_q,1.92,SGC.Bridge.CelegansFloquetTsallis.CelegansTsallisQ
+lean_alpha,0.04,SGC.Bridge.CelegansFloquetTsallis.CelegansAnomalousDiffusion
+measured_mu1,-0.8147642910438551,largest Floquet exponent (slowest contracting mode)
+measured_mu2,-0.8896621151268449,second-largest Floquet exponent
+measured_gamma_F,0.8147642910438551,|mu1| = spectral abscissa @ Wilson-Cowan gain=2
+measured_gamma_linear,0.07489782408298984,|mu1 - mu2| = linear spectral gap
+measured_r,0.09192575681861642,gamma_linear / gamma_F
+measured_q,1.9080742431813835,2 - r
+bridge_alpha,0.04596287840930821,r / 2  (predicted_alpha_eq_r_half)
+msd_alpha,0.527562846988951,log-log slope of MSD(tau) on stochastic WC
+r_residual,0.01192575681861642,|measured_r - lean_r|
+alpha_bridge_residual,0.00596287840930821,|bridge_alpha - lean_alpha|
+alpha_msd_residual,0.48756284698895097,|msd_alpha - lean_alpha|
