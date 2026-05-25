@@ -495,7 +495,12 @@ axiom pinsker_inequality (p q : V → ℝ)
     where N = |V| is the state space cardinality.
     Follows from Cauchy-Schwarz: Σ|v_i| = Σ 1·|v_i| ≤ √N · √(Σv_i²)
 
-    **Axiomatized**: Cauchy-Schwarz inequality. -/
+    **Axiomatized**: Cauchy-Schwarz inequality. The proof requires locating the
+    exact Mathlib name for discrete Cauchy-Schwarz on `Finset.univ` over a
+    `Fintype`. A natural future-sprint target: this axiom is pure analysis,
+    no physics. Likely one of `Finset.inner_mul_le_norm_mul_norm` (under
+    `RCLike`), `Finset.sum_mul_sq_le_sq_mul_sq`, or via the `EuclideanSpace`
+    structure on `V → ℝ`. -/
 axiom l1_le_sqrt_card_l2 (v : V → ℝ) :
     ∑ x, |v x| ≤ Real.sqrt (Fintype.card V) * Real.sqrt (∑ x, (v x)^2)
 
