@@ -405,10 +405,38 @@ def PiAdjoint (M : Matrix V V ℝ) (pi_dist : V → ℝ) : Matrix V V ℝ :=
 
     ⟨f, M g⟩_π = ⟨M†_π f, g⟩_π
 
-    **Status**: Stated as axiom; direct proof requires careful summation manipulation. -/
-axiom pi_adjoint_inner (M : Matrix V V ℝ) (pi_dist : V → ℝ)
+    **PROVED**: Both sides reduce to the canonical double sum
+    `∑ x ∑ y, π(x) M(x,y) f(x) g(y)` after expanding the π-adjoint and
+    cancelling `π(x)` against the denominator (uses `hπ` for non-vanishing).
+    The two presentations match by `Finset.sum_comm` (alpha-equivalent
+    bound-variable rename). -/
+theorem pi_adjoint_inner (M : Matrix V V ℝ) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v) (f g : V → ℝ) :
-    inner_pi pi_dist f (M *ᵥ g) = inner_pi pi_dist (PiAdjoint M pi_dist *ᵥ f) g
+    inner_pi pi_dist f (M *ᵥ g) = inner_pi pi_dist (PiAdjoint M pi_dist *ᵥ f) g := by
+  -- Bring both sides to a canonical double-sum form.
+  have lhs_eq : inner_pi pi_dist f (M *ᵥ g) =
+                 ∑ x : V, ∑ y : V, pi_dist x * M x y * f x * g y := by
+    unfold inner_pi Matrix.mulVec dotProduct
+    apply Finset.sum_congr rfl
+    intro x _
+    rw [Finset.mul_sum]
+    apply Finset.sum_congr rfl
+    intro y _
+    ring
+  have rhs_eq : inner_pi pi_dist (PiAdjoint M pi_dist *ᵥ f) g =
+                 ∑ x : V, ∑ y : V, pi_dist y * M y x * f y * g x := by
+    unfold inner_pi Matrix.mulVec dotProduct PiAdjoint
+    apply Finset.sum_congr rfl
+    intro x _
+    -- Goal: (pi_dist x * (∑ y, (if ...) * f y)) * g x = ∑ y, pi_dist y * M y x * f y * g x
+    -- Move pi_dist x inside, then move g x inside
+    rw [Finset.mul_sum, Finset.sum_mul]
+    apply Finset.sum_congr rfl
+    intro y _
+    have hπx : pi_dist x ≠ 0 := ne_of_gt (hπ x)
+    simp only [if_neg hπx]
+    field_simp
+  rw [lhs_eq, rhs_eq, Finset.sum_comm]
 
 /-- Self-adjointness is equivalent to detailed balance.
 
@@ -487,10 +515,13 @@ def NonNormalityCommutator (L : Matrix V V ℝ) (pi_dist : V → ℝ) : Matrix V
 
     L = L†_π implies [L, L†_π] = 0
 
-    **Status**: Axiom - matrix algebra proof is routine but tedious. -/
-axiom normal_of_self_adjoint (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+    **PROVED**: After substituting L for L†, the commutator is L·L - L·L = 0. -/
+theorem normal_of_self_adjoint (L : Matrix V V ℝ) (pi_dist : V → ℝ)
     (h_self : L = PiAdjoint L pi_dist) :
-    NonNormalityCommutator L pi_dist = 0
+    NonNormalityCommutator L pi_dist = 0 := by
+  unfold NonNormalityCommutator
+  rw [← h_self]
+  exact sub_self _
 
 /-- Detailed balance implies normality (zero commutator). -/
 theorem detailed_balance_implies_normal (L : Matrix V V ℝ) (pi_dist : V → ℝ)
@@ -535,14 +566,19 @@ theorem sector_condition (L : Matrix V V ℝ) (pi_dist : V → ℝ)
 
     ⟨f, Lf⟩_π = -⟨f, Hf⟩_π where H = -L_sym
 
-    **Proof**: From sector_condition, ⟨f, Lf⟩ = ⟨f, L_sym f⟩.
-    Since H = -L_sym, we have -⟨f, Hf⟩ = -⟨f, -L_sym f⟩ = ⟨f, L_sym f⟩.
-
-    **Status**: Axiomatized; inner_pi linearity requires additional lemmas. -/
-axiom sector_condition_companion (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+    **PROVED**: From `dirichlet_form_eq_symmetric_part`, ⟨f, Lf⟩ = ⟨f, L_sym f⟩.
+    Since H = -L_sym, ⟨f, Hf⟩ = -⟨f, L_sym f⟩ (inner_pi is linear in the
+    negative right argument), so -⟨f, Hf⟩ = ⟨f, L_sym f⟩ = ⟨f, Lf⟩. -/
+theorem sector_condition_companion (L : Matrix V V ℝ) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v) (f : V → ℝ) :
     inner_pi pi_dist f (L *ᵥ f) =
-    -inner_pi pi_dist f (SymmetricCompanion L pi_dist *ᵥ f)
+    -inner_pi pi_dist f (SymmetricCompanion L pi_dist *ᵥ f) := by
+  -- inner_pi is linear in the negative right argument.
+  have h_neg_inner : inner_pi pi_dist f (SymmetricCompanion L pi_dist *ᵥ f) =
+                     -inner_pi pi_dist f (SymmetricPart L pi_dist *ᵥ f) := by
+    unfold SymmetricCompanion inner_pi Matrix.mulVec dotProduct
+    simp only [Matrix.neg_apply, neg_mul, Finset.sum_neg_distrib, mul_neg]
+  rw [dirichlet_form_eq_symmetric_part L pi_dist hπ f, h_neg_inner, neg_neg]
 
 /-- **Non-Normality from Flux**: Non-zero L_anti implies potential non-normality.
 

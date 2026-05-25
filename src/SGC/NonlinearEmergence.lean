@@ -142,7 +142,7 @@ def CycleAveragedDefect (ε_bar : ℝ) : Prop := 0 ≤ ε_bar
     **Proof Path**:
     - (1): Finite partition space + continuous dependence on t → compactness
     - (2): Upper from hidden_entropy_bounded_by_defect per cycle step;
-           Lower from gaspard_maes_bridge with γ_F replacing γ
+           Lower from gaspard_path_space_identity with γ_F replacing γ
     - (3): Floquet theory: monodromy eigenvectors define invariant subspaces
     - (4): defect_antitone_on_coarse_domain applied at each time step
 
@@ -198,7 +198,7 @@ axiom floquet_emergence_equivalence
 
     This is the nonlinear generalization of `to_persist_is_to_predict`.
 
-    PROOF PATH: Apply gaspard_maes_bridge with γ_F replacing γ,
+    PROOF PATH: Apply gaspard_path_space_identity with γ_F replacing γ,
     using the cycle-averaged defect in place of the static defect. -/
 axiom floquet_persistence
     (LG : PeriodicGenerator V) (P : Partition V) (pi_dist : V → ℝ)
@@ -224,7 +224,7 @@ axiom floquet_persistence
     (a) QDeformedGenerator 1 L π = L                    (PROVED: QDeformedGenerator_at_one)
     (b) EscortDistribution 1 p = p                      (escort = original at q=1)
     (c) EscortEntropyGap 1 p = 0                        (no irreversibility gap at q=1)
-    (d) q_persistence_bound at q=1 = gaspard_maes_bridge (bounds match)
+    (d) q_persistence_bound at q=1 = gaspard_path_space_identity (bounds match)
 
     This ensures the nonlinear theory is a genuine continuous deformation of
     the linear theory, not a separate structure.

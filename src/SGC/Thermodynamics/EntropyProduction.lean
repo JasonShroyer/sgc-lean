@@ -494,33 +494,52 @@ theorem hidden_entropy_bounded_by_defect
   · simp only [one_pow, mul_one] at h_bound
     exact h_bound
 
-/-- **The Gaspard-Maes Bridge**: Hidden entropy production is bounded below by the
-    Dirichlet form of the defect operator.
+/-- **The Gaspard Path-Space Identity**: Hidden entropy production is bounded
+    below by the spectral gap times the squared operator norm of the defect.
 
-    σ_hid(L, P, π) ≥ γ · ε²
+    σ_hid(L, P, π) ≥ γ · ‖D‖²_op
 
-    where γ = DirichletGap(L, π) > 0 is the spectral gap and ε = ‖D‖_π is the defect.
+    where γ = DirichletGap(L, π) > 0 is the spectral gap and D is the defect
+    operator from approximate lumpability (`Approximate.DefectOperator`).
 
-    **Mathematical Content** (Gaspard 2004, Maes-Netočný 2003, arXiv:2602.15663):
-    1. σ_hid = KL rate between forward and time-reversed coarse-grained path measures
-    2. This KL rate ≥ Dirichlet form ℰ(Df, Df) for the defect (path → pointwise)
-    3. Poincaré inequality: ℰ(g, g) ≥ γ · ‖g‖²_π for g ⊥ constants
-    4. Taking sup over unit-norm f: γ · ‖D‖²_op ≥ γ · ε²
+    ## What this axiom captures (and what would close it)
 
-    The bridge from path-space KL to pointwise Dirichlet form (step 2) is the
-    Gaspard identity: the difference between time-reversed and forward dynamical
-    entropies per unit time equals the entropy production rate. For the coarse-grained
-    system, this gives σ_hid ≥ ℰ(Df, Df) / ‖f‖²_π for appropriate test functions.
+    **Mathematical staging** (Gaspard 2004, Maes-Netočný 2003, arXiv:2602.15663):
 
-    **Axiomatized**: The path-space → pointwise bridge (step 2) requires formalizing
-    the Gaspard/Maes time-reversal identity for finite Markov chains. Steps 3-4 are
-    algebraic consequences of the spectral gap definition already in Lumpability.lean.
+    1. σ_hid = KL rate between forward and time-reversed coarse-grained path
+       measures (the **definitional** content of hidden entropy production).
+    2. This KL rate ≥ Dirichlet form ℰ(Df) for the defect operator
+       (the **path-space → pointwise bridge** — the deep step).
+    3. Poincaré inequality: ℰ(g) ≥ γ · ‖g‖²_π for g ⊥ constants
+       (already formalized via `DirichletForm` and `DirichletGap` in
+       `SGC.Renormalization.Lumpability` / `SGC.Renormalization.QuotientGenerator`).
+    4. Taking sup over unit-norm test functions: γ · ‖D‖²_op ≤ σ_hid (algebra).
+
+    Steps 1, 3, 4 are infrastructure-comfortable in the existing repo. Step 2 is
+    the genuinely open content: it requires formalizing path-space probability
+    measures, the time-reversal operator on path measures, and the
+    Donsker-Varadhan / Maes-Netočný identity that converts the path-space KL
+    rate into a pointwise Dirichlet form. None of this infrastructure currently
+    exists in Mathlib in the form needed for finite Markov chains.
+
+    **Stepping stones for future closure**:
+    - Path measure on continuous-time trajectories of an irreducible
+      finite-state Markov chain (would enable defining σ_hid directly as a
+      KL rate, replacing the current `HiddenEntropyProduction` definition).
+    - Time-reversal operator on those path measures.
+    - The Maes-Netočný "fluctuation symmetry": the difference of the forward
+      and time-reversed dynamical entropies equals the entropy production
+      rate. Once formalized, step 2 follows by combining with the Schnakenberg
+      formula (already in `EntropyProduction.lean`).
+
+    **Until those exist**, this axiom is the cleanest single-statement summary
+    of the path-space → operator-norm content.
 
     **References**:
     - Gaspard (2004) JSP 117:599 — time-reversed entropy and EP
     - Maes & Netočný (2003) cond-mat/0202501 — entropy production and time reversal
     - arXiv:2602.15663 (2026) — experimental confirmation of σ_hid ~ ε² scaling -/
-axiom gaspard_maes_bridge
+axiom gaspard_path_space_identity
     (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x)
     (hL_gen : ∀ x y, x ≠ y → 0 ≤ L x y)
     (h_stat : ∀ v, ∑ u, pi_dist u * L u v = 0)
@@ -529,13 +548,31 @@ axiom gaspard_maes_bridge
     γ * (opNorm_pi pi_dist hπ (Approximate.DefectOperator L P pi_dist hπ))^2 ≤
     HiddenEntropyProduction L P pi_dist
 
+/-- **Backward-compatible alias** for the renamed `gaspard_path_space_identity`.
+
+    Earlier drafts of this module called the path-space identity
+    `gaspard_maes_bridge`. The 2026-05-25 sprint renamed it to make the
+    path-space gap explicit. This alias preserves the older name so that
+    downstream files / external references continue to typecheck. -/
+@[deprecated gaspard_path_space_identity (since := "2026-05-25")]
+theorem gaspard_maes_bridge
+    (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x)
+    (hL_gen : ∀ x y, x ≠ y → 0 ≤ L x y)
+    (h_stat : ∀ v, ∑ u, pi_dist u * L u v = 0)
+    (γ : ℝ) (hγ : γ > 0)
+    (hγ_gap : γ ≤ DirichletGap L pi_dist) :
+    γ * (opNorm_pi pi_dist hπ (Approximate.DefectOperator L P pi_dist hπ))^2 ≤
+    HiddenEntropyProduction L P pi_dist :=
+  gaspard_path_space_identity L P pi_dist hπ hL_gen h_stat γ hγ hγ_gap
+
 /-- **Hidden Entropy Lower Bound**: σ_hid ≥ γ · (defect_cost)².
 
     This is the **converse** of hidden_entropy_bounded_by_defect. Together they give:
     γ·ε² ≤ σ_hid ≤ C·ε², meaning prediction error and dissipation are equivalent.
 
-    **PROVED**: Direct corollary of gaspard_maes_bridge. The constant c = γ (spectral gap)
-    is explicit and physically meaningful: it measures how fast the system mixes.
+    **PROVED**: Direct corollary of `gaspard_path_space_identity`. The constant
+    c = γ (spectral gap) is explicit and physically meaningful: it measures how
+    fast the system mixes.
 
     NOTE: Uses `defect_cost` (the actual operator norm ‖D‖_π) rather than the
     approximate lumpability parameter ε. This is mathematically correct because
@@ -550,7 +587,7 @@ theorem hidden_entropy_lower_bound
     (γ : ℝ) (hγ : γ > 0) (hγ_gap : γ ≤ DirichletGap L pi_dist) :
     γ * (opNorm_pi pi_dist hπ (Approximate.DefectOperator L P pi_dist hπ))^2 ≤
     HiddenEntropyProduction L P pi_dist :=
-  gaspard_maes_bridge L P pi_dist hπ hL_gen h_stat γ hγ hγ_gap
+  gaspard_path_space_identity L P pi_dist hπ hL_gen h_stat γ hγ hγ_gap
 
 /-- **Corollary: Efficiency Requires Prediction**
 

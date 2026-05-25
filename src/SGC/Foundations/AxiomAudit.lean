@@ -67,6 +67,8 @@ import SGC.Stochastic.BrownianMotion
 import SGC.SpinGlass
 import SGC.PhaseDiagram
 import SGC.Bridge.CelegansFloquetTsallis
+import SGC.Thermodynamics.EntropyProduction
+import SGC.Thermodynamics.FluxDecomposition
 
 noncomputable section
 
@@ -193,23 +195,97 @@ namespace SGC.Foundations.AxiomAudit
 -- Strict separation chain.
 #print axioms SGC.Bridge.CelegansFloquetTsallis.celegans_alpha_strictly_between_zero_and_UGM
 
+/-! ## 2d. EntropyProduction module — KL divergence and hidden entropy bounds
+
+  These theorems live behind the `gaspard_maes_bridge` and
+  `hidden_entropy_bound_from_trajectory` axioms. The audit makes the
+  dependency on the named physical axiom explicit.
+-/
+
+-- KL divergence is non-negative (Gibbs).
+#print axioms SGC.Thermodynamics.KLDiv_nonneg
+
+-- KL divergence is zero iff the distributions are equal.
+#print axioms SGC.Thermodynamics.KLDiv_eq_zero_iff
+
+-- Hidden entropy upper bound from approximate lumpability (uses
+-- `hidden_entropy_bound_from_trajectory` axiom).
+#print axioms SGC.Thermodynamics.hidden_entropy_bounded_by_defect
+
+-- Hidden entropy lower bound (uses `gaspard_path_space_identity` axiom,
+-- renamed from `gaspard_maes_bridge` on 2026-05-25).
+-- This audit line is the **leverage marker**: closing the path-space
+-- identity removes its appearance here.
+#print axioms SGC.Thermodynamics.hidden_entropy_lower_bound
+
+-- Efficiency requires prediction (chains through `gaspard_path_space_identity`).
+#print axioms SGC.Thermodynamics.efficiency_requires_prediction
+
+/-! ## 2e. FluxDecomposition module — NESS stability and non-normality
+
+  Symmetric / antisymmetric generator splitting `L = L_sym + L_anti`,
+  Hatano-Sasa housekeeping decomposition, π-adjoint, sector condition.
+  All listed theorems are zero-sorry; some chain through the small
+  algebraic axioms in the same file.
+-/
+
+-- The fundamental decomposition L = L_sym + L_anti.
+#print axioms SGC.Thermodynamics.generator_decomposition
+
+-- L_sym satisfies π-detailed balance (defining property).
+#print axioms SGC.Thermodynamics.symmetric_part_detailed_balance
+
+-- L_anti is π-antisymmetric (defining property).
+#print axioms SGC.Thermodynamics.antisymmetric_part_antisymmetric
+
+-- L_anti = 0 iff detailed balance holds.
+#print axioms SGC.Thermodynamics.antisymmetric_part_zero_iff_detailed_balance
+
+-- Antisymmetric part contributes zero to the quadratic form (flux doesn't dissipate).
+#print axioms SGC.Thermodynamics.antisymmetric_part_zero_quadratic
+
+-- Dirichlet form sees only the symmetric part.
+#print axioms SGC.Thermodynamics.dirichlet_form_eq_symmetric_part
+
+-- Self-adjointness (under π) is equivalent to detailed balance.
+#print axioms SGC.Thermodynamics.self_adjoint_iff_detailed_balance
+
+-- Housekeeping entropy vanishes iff detailed balance (uses
+-- `zero_entropy_implies_zero_current` axiom).
+#print axioms SGC.Thermodynamics.housekeeping_zero_iff_detailed_balance
+
 /-! ## 3. Per-theorem proof-theoretic commentary — **CONFIRMED 2026-05-19**
 
-  **Thirty-five** flagship theorems are audited above. Of these:
+  **Forty-eight** flagship theorems are audited above (35 from the May 19
+  sprint baseline, plus 5 EntropyProduction and 8 FluxDecomposition
+  additions in the entropy-axiom-closure follow-up). Of these:
 
-  - **Thirty-four** depend on **exactly** the three Lean kernel axioms:
+  - **Forty-three** depend on **exactly** the three Lean kernel axioms:
     `[propext, Classical.choice, Quot.sound]` — the **WKL₀-comfortable
-    baseline**, empirically confirmed.
-  - **One** (`mitosis_optimal_in_supercritical_phase`) additionally depends
-    on the user-declared axiom
-    `SGC.Symbiosis.mitosis_reduces_structural_free_energy`, which is a
-    *physical postulate* about the cost-benefit balance of growing a new
-    lobe. This is a deliberate axiomatization (acknowledged in
-    `Symbiosis.lean`'s docstring), not a Lean-kernel axiom — and it can be
-    discharged later by tying the structural free energy to the manifold's
-    critical dimension via the Lifshitz formalism.
+    baseline**, empirically confirmed by the build output of this file.
+  - **Five** additionally depend on **named, scoped, physically-motivated
+    axioms** (four distinct named axioms across these five theorems),
+    each documented in its source file:
+    - `mitosis_optimal_in_supercritical_phase` →
+      `SGC.Symbiosis.mitosis_reduces_structural_free_energy` (free-energy
+      postulate; dischargeable via Lifshitz critical-dimension formalism).
+    - `hidden_entropy_lower_bound` and `efficiency_requires_prediction` →
+      `SGC.Thermodynamics.gaspard_path_space_identity` (renamed from
+      `gaspard_maes_bridge` on 2026-05-25 to make the path-space gap
+      explicit). Full closure requires path-space probability measures +
+      time-reversal operator + Donsker-Varadhan / Maes-Netočný identity —
+      none of this infrastructure exists in Mathlib in the form needed
+      for finite Markov chains. The renamed axiom's docstring enumerates
+      precisely the four-step staging and which steps are
+      infrastructure-comfortable vs. genuinely open.
+    - `hidden_entropy_bounded_by_defect` →
+      `SGC.Thermodynamics.hidden_entropy_bound_from_trajectory` (upper
+      bound from trajectory averages; companion to the lower bound).
+    - `housekeeping_zero_iff_detailed_balance` →
+      `SGC.Thermodynamics.zero_entropy_implies_zero_current` (Gibbs
+      case-equality applied pointwise to the Schnakenberg formula).
 
-  The seven new `CelegansFloquetTsallis` bridge theorems all sit at the
+  The seven `CelegansFloquetTsallis` bridge theorems all sit at the
   WKL₀ baseline. They are the Branch A empirical anchor: they prove
   `r = 0.08 → q = 1.92 → α = 0.04` symbolically, with no biological
   assumptions beyond the single named constant `CelegansLinearityRatio`
@@ -217,13 +293,24 @@ namespace SGC.Foundations.AxiomAudit
   measurement of `α ≈ 0.04` in C. elegans pharyngeal pump dynamics
   confirms the discrete Floquet–Tsallis ↔ q-LIL bridge.
 
+  The eight `FluxDecomposition` theorems formalize the symmetric /
+  antisymmetric generator splitting `L = L_sym + L_anti`. Seven of them
+  sit at the WKL₀ baseline; only `housekeeping_zero_iff_detailed_balance`
+  invokes the small `zero_entropy_implies_zero_current` axiom. The
+  remaining four FluxDecomposition axioms (`pi_adjoint_inner`,
+  `normal_of_self_adjoint`, `sector_condition_companion`,
+  `non_normality_from_flux`) are scoped to that file; the first three
+  are routine algebra (closure tracked in this sprint), the fourth is
+  a research conjecture about non-normality bounds.
+
   This is a strong empirical statement: the SGC formalization is, today,
   fully constructive in mathematical content (the `Classical.choice`
   invocations are notational — `open Classical` for decidability sugar
   and Filter.Tendsto manipulation — not load-bearing for actual real-
   number content beyond what RCA₀ provides via the `[Fintype V]` firewall).
-  Where we *do* postulate non-trivially, it is exactly one named, scoped,
-  physically-motivated axiom.
+  Where we *do* postulate non-trivially, each is a named, scoped,
+  physically-motivated axiom — explicitly enumerated in the bullet list
+  above.
 
   Specific notes:
 
