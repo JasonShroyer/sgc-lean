@@ -296,18 +296,83 @@ noncomputable def EntropyProductionRate (L : Matrix V V ℝ) (pi_dist : V → �
     else (pi_dist x * L x y - pi_dist y * L y x) *
          log (pi_dist x * L x y / (pi_dist y * L y x))
 
-/-- Entropy production is non-negative.
+/-- **Gibbs term inequality**: `(a - b) · log(a/b) ≥ 0` for `a, b > 0`.
+
+    The single-pair version of the second law. By trichotomy on `a ⋚ b`:
+    `a < b` ⇒ both factors negative; `a = b` ⇒ first factor zero;
+    `a > b` ⇒ both factors positive. -/
+lemma gibbs_term_nonneg {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
+    0 ≤ (a - b) * Real.log (a / b) := by
+  rcases lt_trichotomy a b with hlt | heq | hgt
+  · -- a < b: both (a - b) and log(a/b) are negative; product is positive.
+    have h1 : a - b < 0 := sub_neg.mpr hlt
+    have h2 : a / b < 1 := (div_lt_one hb).mpr hlt
+    have h3 : Real.log (a / b) < 0 := Real.log_neg (div_pos ha hb) h2
+    exact le_of_lt (mul_pos_of_neg_of_neg h1 h3)
+  · -- a = b: first factor is zero.
+    rw [heq, sub_self, zero_mul]
+  · -- a > b: both factors are positive.
+    have h1 : 0 < a - b := sub_pos.mpr hgt
+    have h2 : 1 < a / b := (one_lt_div hb).mpr hgt
+    have h3 : 0 < Real.log (a / b) := Real.log_pos h2
+    exact le_of_lt (mul_pos h1 h3)
+
+/-- **Gibbs term equality**: `(a - b) · log(a/b) = 0 ↔ a = b` for `a, b > 0`.
+
+    The case-equality companion to `gibbs_term_nonneg`, used in the converse
+    direction of `housekeeping_zero_iff_detailed_balance`. -/
+lemma gibbs_term_eq_zero_iff {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
+    (a - b) * Real.log (a / b) = 0 ↔ a = b := by
+  refine ⟨fun h => ?_, fun h => by rw [h, sub_self, zero_mul]⟩
+  rcases mul_eq_zero.mp h with h1 | h2
+  · linarith [sub_eq_zero.mp h1]
+  · -- log(a/b) = 0 with a/b > 0 forces a/b = 1, hence a = b.
+    have hab_pos : 0 < a / b := div_pos ha hb
+    rcases Real.log_eq_zero.mp h2 with hab | hab | hab
+    · linarith
+    · -- a/b = 1
+      have hb_ne : b ≠ 0 := ne_of_gt hb
+      field_simp at hab
+      exact hab
+    · linarith
+
+/-- **Entropy production is non-negative** — the second law of thermodynamics
+    for finite Markov chains.
 
     σ(L, π) ≥ 0
 
-    This is the second law of thermodynamics for Markov processes.
-    Each term (a - b) * log(a/b) ≥ 0 for a, b > 0.
+    **PROVED** (no longer an axiom). Each term `(π_x L_{xy} - π_y L_{yx}) ·
+    log(π_x L_{xy} / π_y L_{yx})` is non-negative by `gibbs_term_nonneg`;
+    summing preserves non-negativity.
 
-    **Axiomatized**: Second law of thermodynamics for Markov chains. -/
-axiom entropy_production_nonneg (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+    The `hL_nonneg` hypothesis (off-diagonals are ≥ 0) is essential: it
+    upgrades the "L_{xy} ≠ 0" guard in the Schnakenberg formula to the
+    strict "L_{xy} > 0" needed to apply the Gibbs inequality. Without it,
+    Lean's junk-value convention `Real.log r = 0` for `r ≤ 0` makes the
+    statement formally vacuous on pathological inputs.
+
+    Combined with `hL_pos` (forward irreducibility), `L_{xy} > 0 ⇒ L_{yx} > 0`,
+    which ensures both `π_x L_{xy}` and `π_y L_{yx}` are strictly positive
+    in the else-branch where the Gibbs inequality applies. -/
+theorem entropy_production_nonneg (L : Matrix V V ℝ) (pi_dist : V → ℝ)
     (hπ : ∀ x, 0 < pi_dist x)
+    (hL_nonneg : ∀ x y, x ≠ y → 0 ≤ L x y)
     (hL_pos : ∀ x y, x ≠ y → L x y > 0 → L y x > 0) :
-    0 ≤ EntropyProductionRate L pi_dist
+    0 ≤ EntropyProductionRate L pi_dist := by
+  unfold EntropyProductionRate
+  apply mul_nonneg (by norm_num : (0:ℝ) ≤ 1/2)
+  apply Finset.sum_nonneg
+  intro x _
+  apply Finset.sum_nonneg
+  intro y _
+  split_ifs with h
+  · exact le_refl _
+  · push_neg at h
+    obtain ⟨hxy, hLxy⟩ := h
+    have hLxy_pos : 0 < L x y :=
+      lt_of_le_of_ne (hL_nonneg x y hxy) (Ne.symm hLxy)
+    have hLyx_pos : 0 < L y x := hL_pos x y hxy hLxy_pos
+    exact gibbs_term_nonneg (mul_pos (hπ x) hLxy_pos) (mul_pos (hπ y) hLyx_pos)
 
 /-- At detailed balance, entropy production vanishes.
 

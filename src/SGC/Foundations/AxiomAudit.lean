@@ -208,6 +208,19 @@ namespace SGC.Foundations.AxiomAudit
 -- KL divergence is zero iff the distributions are equal.
 #print axioms SGC.Thermodynamics.KLDiv_eq_zero_iff
 
+-- **Second Law of Thermodynamics** for finite Markov chains: σ(L, π) ≥ 0.
+-- **PROVED 2026-05-25** (previously an axiom). Each Schnakenberg summand
+-- (π_x L_{xy} - π_y L_{yx}) · log(π_x L_{xy} / (π_y L_{yx})) is non-negative
+-- by `gibbs_term_nonneg`; the sum preserves non-negativity.
+#print axioms SGC.Thermodynamics.entropy_production_nonneg
+
+-- Gibbs term inequality (the single-pair second law).
+#print axioms SGC.Thermodynamics.gibbs_term_nonneg
+
+-- Gibbs term equality (used in the converse direction of detailed-balance
+-- characterization).
+#print axioms SGC.Thermodynamics.gibbs_term_eq_zero_iff
+
 -- Hidden entropy upper bound from approximate lumpability (uses
 -- `hidden_entropy_bound_from_trajectory` axiom).
 #print axioms SGC.Thermodynamics.hidden_entropy_bounded_by_defect
@@ -250,21 +263,32 @@ namespace SGC.Foundations.AxiomAudit
 -- Self-adjointness (under π) is equivalent to detailed balance.
 #print axioms SGC.Thermodynamics.self_adjoint_iff_detailed_balance
 
--- Housekeeping entropy vanishes iff detailed balance (uses
--- `zero_entropy_implies_zero_current` axiom).
+-- Housekeeping entropy vanishes iff detailed balance.
+-- **PROVED 2026-05-25**: no longer depends on a named axiom. The forward
+-- direction now invokes the closed `zero_entropy_implies_zero_current`
+-- theorem (next entry).
 #print axioms SGC.Thermodynamics.housekeeping_zero_iff_detailed_balance
 
-/-! ## 3. Per-theorem proof-theoretic commentary — **CONFIRMED 2026-05-19**
+-- Zero entropy production implies zero current.
+-- **PROVED 2026-05-25** (previously an axiom). Strategy: σ = 0 + each
+-- Schnakenberg summand ≥ 0 ⇒ each summand = 0 ⇒ Gibbs equality at each
+-- pair ⇒ π_x L_{xy} = π_y L_{yx} ⇒ J(x,y) = 0.
+#print axioms SGC.Thermodynamics.zero_entropy_implies_zero_current
 
-  **Forty-eight** flagship theorems are audited above (35 from the May 19
-  sprint baseline, plus 5 EntropyProduction and 8 FluxDecomposition
-  additions in the entropy-axiom-closure follow-up). Of these:
+/-! ## 3. Per-theorem proof-theoretic commentary — **CONFIRMED 2026-05-25**
 
-  - **Forty-three** depend on **exactly** the three Lean kernel axioms:
+  **Fifty** flagship theorems are audited above (35 from the May 19
+  sprint baseline, 6 EntropyProduction additions including the newly
+  closed `entropy_production_nonneg`, 9 FluxDecomposition theorems
+  including the newly closed `zero_entropy_implies_zero_current`).
+  The audit also prints axioms for two auxiliary Gibbs-term lemmas
+  used to close the two new theorems. Of the 50 flagship theorems:
+
+  - **Forty-six** depend on **exactly** the three Lean kernel axioms:
     `[propext, Classical.choice, Quot.sound]` — the **WKL₀-comfortable
     baseline**, empirically confirmed by the build output of this file.
-  - **Five** additionally depend on **named, scoped, physically-motivated
-    axioms** (four distinct named axioms across these five theorems),
+  - **Four** additionally depend on **named, scoped, physically-motivated
+    axioms** (three distinct named axioms across these four theorems),
     each documented in its source file:
     - `mitosis_optimal_in_supercritical_phase` →
       `SGC.Symbiosis.mitosis_reduces_structural_free_energy` (free-energy
@@ -281,9 +305,37 @@ namespace SGC.Foundations.AxiomAudit
     - `hidden_entropy_bounded_by_defect` →
       `SGC.Thermodynamics.hidden_entropy_bound_from_trajectory` (upper
       bound from trajectory averages; companion to the lower bound).
-    - `housekeeping_zero_iff_detailed_balance` →
-      `SGC.Thermodynamics.zero_entropy_implies_zero_current` (Gibbs
-      case-equality applied pointwise to the Schnakenberg formula).
+
+  **Closure history on this branch** (`sprint/entropy-axiom-closure-2026-05-25`):
+
+  - **2026-05-25 (Sprint 1)** — Three FluxDecomposition axioms closed:
+    `normal_of_self_adjoint` (trivial via `sub_self`), `pi_adjoint_inner`
+    (double-sum manipulation + `Finset.sum_comm` + alpha-equivalence),
+    `sector_condition_companion` (`dirichlet_form_eq_symmetric_part` +
+    `inner_pi` linearity in negation). Plus: `gaspard_maes_bridge` staged
+    to `gaspard_path_space_identity` with deprecated alias for backward
+    compatibility.
+
+  - **2026-05-25 (Sprint 2)** — Two more axioms closed via a unified
+    Gibbs-term framework:
+    - `entropy_production_nonneg` (the **second law of thermodynamics for
+      finite Markov chains**, σ ≥ 0). Proved via new lemma
+      `gibbs_term_nonneg : (a-b) · log(a/b) ≥ 0` for `a, b > 0`, applied
+      pointwise to the Schnakenberg summand.
+    - `zero_entropy_implies_zero_current` (σ = 0 ⇒ J = 0). Proved via
+      `Finset.sum_eq_zero_iff_of_nonneg` (twice, for the double sum) plus
+      a new companion lemma `gibbs_term_eq_zero_iff : (a-b) · log(a/b) = 0
+      ↔ a = b` for `a, b > 0`.
+    - Cascade: `housekeeping_zero_iff_detailed_balance` no longer depends
+      on any named axiom — it now sits at the WKL₀ baseline.
+
+  **Required hypothesis upgrade**: both Sprint-2 closures require an
+  additional `hL_nonneg : ∀ x y, x ≠ y → 0 ≤ L x y` hypothesis. This is
+  what every valid Markov generator satisfies, but it is not derivable
+  from the previous `hL_irred` alone — Lean's junk-value convention
+  `Real.log r = 0` for `r ≤ 0` creates pathological counterexamples
+  without it. This is a genuine formalization-vs-textbook distinction
+  worth recording.
 
   The seven `CelegansFloquetTsallis` bridge theorems all sit at the
   WKL₀ baseline. They are the Branch A empirical anchor: they prove

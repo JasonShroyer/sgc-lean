@@ -268,16 +268,108 @@ theorem housekeeping_eq_total_at_ness (L : Matrix V V ℝ) (pi_dist : V → ℝ)
   unfold HousekeepingEntropy EntropyProductionRate ProbabilityCurrent
   rfl
 
-/-- Auxiliary axiom: Zero entropy production with irreducibility implies zero current.
-    This is the core of the forward direction: J·log(a/b) = 0 for all pairs implies J = 0. -/
-axiom zero_entropy_implies_zero_current (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+/-- **Zero entropy production implies zero current** — the forward direction of
+    the detailed-balance characterization.
+
+    σ(L, π) = 0 ⇒ ∀ x y, J(x,y) = 0
+
+    **PROVED** (no longer an axiom). Strategy:
+    1. From σ = 0 and each Schnakenberg summand ≥ 0 (by `gibbs_term_nonneg`),
+       each summand is 0.
+    2. For `L_{xy} > 0`: the summand `(π_x L_{xy} - π_y L_{yx}) · log(...)` = 0
+       forces `π_x L_{xy} = π_y L_{yx}` by `gibbs_term_eq_zero_iff`, hence
+       J(x,y) = 0.
+    3. For `L_{xy} = 0`: by `hL_nonneg` + contrapositive of `hL_irred` applied
+       at (y, x), `L_{yx} = 0` too, hence J(x,y) = 0.
+    4. For `x = y`: trivially J = 0.
+
+    The new `hL_nonneg` hypothesis (off-diagonals ≥ 0) is what every valid
+    Markov generator satisfies; without it, the irreducibility `hL_irred`
+    alone is too weak to handle the `L_{xy} = 0` case (Lean's junk-value
+    convention for `Real.log` on non-positive reals creates pathological
+    counterexamples). -/
+theorem zero_entropy_implies_zero_current (L : Matrix V V ℝ) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v)
+    (hL_nonneg : ∀ x y, x ≠ y → 0 ≤ L x y)
     (hL_irred : ∀ x y, x ≠ y → L x y > 0 → L y x > 0)
     (h_zero : EntropyProductionRate L pi_dist = 0) :
-    ∀ x y, ProbabilityCurrent L pi_dist x y = 0
+    ∀ x y, ProbabilityCurrent L pi_dist x y = 0 := by
+  intro x y
+  unfold ProbabilityCurrent
+  -- Case 1: x = y → trivial.
+  by_cases hxy : x = y
+  · subst hxy; ring
+  -- Case 2a: L x y = 0 → use contrapositive of hL_irred at (y, x).
+  by_cases hLxy : L x y = 0
+  · have hyx : y ≠ x := fun h => hxy h.symm
+    have hLyx_zero : L y x = 0 := by
+      by_contra hLyx_ne
+      have hLyx_pos : 0 < L y x :=
+        lt_of_le_of_ne (hL_nonneg y x hyx) (Ne.symm hLyx_ne)
+      have : 0 < L x y := hL_irred y x hyx hLyx_pos
+      linarith
+    rw [hLxy, hLyx_zero]; ring
+  -- Case 2b: L x y > 0 → use Gibbs equality on the (x, y) summand.
+  · have hLxy_pos : 0 < L x y :=
+      lt_of_le_of_ne (hL_nonneg x y hxy) (Ne.symm hLxy)
+    have hLyx_pos : 0 < L y x := hL_irred x y hxy hLxy_pos
+    have ha : 0 < pi_dist x * L x y := mul_pos (hπ x) hLxy_pos
+    have hb : 0 < pi_dist y * L y x := mul_pos (hπ y) hLyx_pos
+    -- Step 1: σ = 0 ⇒ the outer double sum = 0.
+    have h_outer_sum : ∑ a : V, ∑ b : V,
+        (if a = b ∨ L a b = 0 then (0:ℝ)
+         else (pi_dist a * L a b - pi_dist b * L b a) *
+              Real.log (pi_dist a * L a b / (pi_dist b * L b a))) = 0 := by
+      unfold EntropyProductionRate at h_zero
+      have h_half_ne : (1/2 : ℝ) ≠ 0 := by norm_num
+      rcases mul_eq_zero.mp h_zero with h | h
+      · exact absurd h h_half_ne
+      · exact h
+    -- Step 2: each row sum is ≥ 0, so each row sum is 0.
+    have h_inner_nonneg : ∀ a ∈ (Finset.univ : Finset V),
+        0 ≤ ∑ b : V,
+          (if a = b ∨ L a b = 0 then (0:ℝ)
+           else (pi_dist a * L a b - pi_dist b * L b a) *
+                Real.log (pi_dist a * L a b / (pi_dist b * L b a))) := by
+      intro a _
+      apply Finset.sum_nonneg
+      intro b _
+      split_ifs with h
+      · exact le_refl _
+      · push_neg at h
+        obtain ⟨hab, hLab⟩ := h
+        have hLab_pos : 0 < L a b :=
+          lt_of_le_of_ne (hL_nonneg a b hab) (Ne.symm hLab)
+        have hLba_pos : 0 < L b a := hL_irred a b hab hLab_pos
+        exact gibbs_term_nonneg (mul_pos (hπ a) hLab_pos) (mul_pos (hπ b) hLba_pos)
+    have h_inner_x :=
+      (Finset.sum_eq_zero_iff_of_nonneg h_inner_nonneg).mp h_outer_sum x (Finset.mem_univ x)
+    -- Step 3: each term in the (x, ·) row is ≥ 0, so each term is 0.
+    have h_term_nonneg : ∀ b ∈ (Finset.univ : Finset V),
+        0 ≤ (if x = b ∨ L x b = 0 then (0:ℝ)
+             else (pi_dist x * L x b - pi_dist b * L b x) *
+                  Real.log (pi_dist x * L x b / (pi_dist b * L b x))) := by
+      intro b _
+      split_ifs with h
+      · exact le_refl _
+      · push_neg at h
+        obtain ⟨hxb, hLxb⟩ := h
+        have hLxb_pos : 0 < L x b :=
+          lt_of_le_of_ne (hL_nonneg x b hxb) (Ne.symm hLxb)
+        have hLbx_pos : 0 < L b x := hL_irred x b hxb hLxb_pos
+        exact gibbs_term_nonneg (mul_pos (hπ x) hLxb_pos) (mul_pos (hπ b) hLbx_pos)
+    have h_y_term :=
+      (Finset.sum_eq_zero_iff_of_nonneg h_term_nonneg).mp h_inner_x y (Finset.mem_univ y)
+    -- Step 4: the if is false (since x ≠ y ∧ L x y ≠ 0), so the body = 0.
+    have h_or_false : ¬(x = y ∨ L x y = 0) := fun hor => hor.elim hxy hLxy
+    rw [if_neg h_or_false] at h_y_term
+    -- Step 5: Gibbs equality on the body gives π_x L_{xy} = π_y L_{yx}.
+    have h_eq := (gibbs_term_eq_zero_iff ha hb).mp h_y_term
+    linarith
 
 theorem housekeeping_zero_iff_detailed_balance (L : Matrix V V ℝ) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v)
+    (hL_nonneg : ∀ x y, x ≠ y → 0 ≤ L x y)
     (hL_irred : ∀ x y, x ≠ y → L x y > 0 → L y x > 0) :
     HousekeepingEntropy L pi_dist = 0 ↔ DetailedBalance L pi_dist := by
   rw [housekeeping_eq_total_at_ness]
@@ -285,7 +377,7 @@ theorem housekeeping_zero_iff_detailed_balance (L : Matrix V V ℝ) (pi_dist : V
   · -- Forward direction: σ = 0 implies detailed balance
     intro h_zero
     rw [detailed_balance_iff_zero_current]
-    exact zero_entropy_implies_zero_current L pi_dist hπ hL_irred h_zero
+    exact zero_entropy_implies_zero_current L pi_dist hπ hL_nonneg hL_irred h_zero
   · -- Backward direction: detailed balance implies σ = 0
     intro h_db
     simp only [EntropyProductionRate]
