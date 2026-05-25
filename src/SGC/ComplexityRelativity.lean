@@ -300,4 +300,107 @@ theorem reversibility_implies_unique_emergence
     sgc_spec_global L pi_dist hπ :=
   reversible_local_eq_global L pi_dist hπ hrev h_local
 
+/-! ## Section 4: The Constrained-Coarseness Complexity Theorem
+
+The `complexity_is_relational` theorem above states that the GLOBAL minimum
+of `defect_cost` is `0`, attained at the trivial (discrete) partition. This
+makes the literal "complexity gap" relative to the global minimum vacuous —
+it collapses to `defect_cost(P)` itself.
+
+The substantive complexity theorem is the **constrained-coarseness** version:
+given a resolution budget `K` (an observer with at most `K` macroscopic
+states), the optimal partition within that budget generally has **non-zero**
+defect, and the complexity gap measures the observer's distance from that
+constrained optimum.
+
+This section formalizes the constrained version. The infrastructure
+(`indiscretePartition`, `Partition.blockCount`, `Partition.IsKBounded`,
+`optimal_kBounded_partition_exists`) lives in
+`SGC.Renormalization.OptimalPartition`.
+
+**Conceptual significance**: this is the public-library analog of the
+constrained-coarseness optimization performed by the (proprietary) SGC
+runtime engine. The runtime engine implements gradient descent on a
+parametric family of `K`-bounded partitions; this theorem certifies that
+such a search has a target — a Lean-verified optimum to converge toward.
+-/
+
+/-- **THE CONSTRAINED-COARSENESS COMPLEXITY RELATIVITY THEOREM**.
+
+    For any resolution budget `K ≥ 1`, there exists a `K`-bounded partition
+    `P_K_star` such that:
+
+    (1) `P_K_star` is itself `K`-bounded (achievable by the observer).
+
+    (2) `P_K_star` minimizes the defect cost **among all `K`-bounded
+        partitions** — no observer with resolution `K` can do better.
+
+    (3) Every `K`-bounded observer `P` has a non-negative complexity gap
+        relative to `P_K_star`: `defect_cost(P) - defect_cost(P_K_star) ≥ 0`.
+
+    **Unlike the unconstrained `complexity_is_relational` theorem**, the
+    minimum value here is generally **non-zero**: for non-lumpable `L` at
+    coarseness `K < |V|`, no `K`-block partition achieves zero defect, and
+    the complexity gap is a substantive (positive) quantity.
+
+    **PROVED** by direct composition with `optimal_kBounded_partition_exists`.
+    Zero new axioms.
+
+    **Physical interpretation**: this is the formal counterpart of the
+    *renormalization-group coarse-graining* — the irreducible model error
+    when one's resolution budget is finite.
+
+    **Connection to runtime engines**: the proprietary SGC runtime performs
+    gradient descent over a parametric family of `K`-bounded partitions.
+    This theorem certifies that the search has a well-defined target. -/
+theorem constrained_complexity_is_relational
+    (L : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (K : ℕ) (hK : 1 ≤ K) :
+    ∃ P_K_star : Partition V,
+      -- (1) The minimizer is K-bounded
+      P_K_star.IsKBounded K ∧
+      -- (2) The minimizer attains the K-constrained minimum
+      (∀ P : Partition V, P.IsKBounded K →
+          defect_cost L pi_dist hπ P_K_star ≤ defect_cost L pi_dist hπ P) ∧
+      -- (3) The K-constrained complexity gap is non-negative
+      (∀ P : Partition V, P.IsKBounded K →
+          0 ≤ ComplexityGap L pi_dist hπ P P_K_star) := by
+  obtain ⟨P_K_star, h_kbounded, h_min⟩ :=
+    optimal_kBounded_partition_exists L pi_dist hπ K hK
+  refine ⟨P_K_star, h_kbounded, h_min, ?_⟩
+  intro P hP
+  unfold ComplexityGap
+  linarith [h_min P hP]
+
+/-- **Corollary: a constrained-optimal partition exists**.
+
+    Existence-only form of `constrained_complexity_is_relational`, useful
+    when the minimality and non-negativity clauses are not needed. -/
+theorem constrained_optimum_exists
+    (L : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (K : ℕ) (hK : 1 ≤ K) :
+    ∃ P_K_star : Partition V, P_K_star.IsKBounded K := by
+  obtain ⟨P_K_star, h_kbounded, _, _⟩ :=
+    constrained_complexity_is_relational L pi_dist hπ K hK
+  exact ⟨P_K_star, h_kbounded⟩
+
+/-- **The constrained minimum is bounded above by the unconstrained
+    optimum's defect (when that optimum happens to be K-bounded)**.
+
+    This is the trivial "monotonicity in resolution": more resolution
+    (larger K) never makes the constrained minimum larger. Stated as a
+    fact about specific witnesses; the universal monotonicity statement
+    would require comparing minimizers across different K values, which
+    is more delicate. -/
+theorem constrained_minimum_le_of_isKBounded
+    (L : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (K : ℕ) (hK : 1 ≤ K)
+    (P_witness : Partition V) (h_witness_kbounded : P_witness.IsKBounded K) :
+    ∃ P_K_star : Partition V,
+      P_K_star.IsKBounded K ∧
+      defect_cost L pi_dist hπ P_K_star ≤ defect_cost L pi_dist hπ P_witness := by
+  obtain ⟨P_K_star, h_kbounded, h_min, _⟩ :=
+    constrained_complexity_is_relational L pi_dist hπ K hK
+  exact ⟨P_K_star, h_kbounded, h_min P_witness h_witness_kbounded⟩
+
 end SGC.ComplexityRelativity

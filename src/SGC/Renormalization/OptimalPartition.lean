@@ -672,3 +672,122 @@ theorem reversible_local_iff_global (L : Matrix V V ℝ) (pi_dist : V → ℝ)
    global_implies_local L pi_dist hπ⟩
 
 end SGC.Renormalization
+
+/-! ## Section 11: K-Bounded Partitions (Constrained Coarseness)
+
+The Complexity Relativity Theorem (`ComplexityRelativity.lean`) shows that the
+GLOBAL minimum of `defect_cost` is `0`, attained at the trivial (discrete)
+partition. This makes the literal "complexity gap" vacuous — for the global
+minimum, the gap is just `defect_cost(P)` itself.
+
+The conceptually interesting object is the **constrained-coarseness minimum**:
+fixing a resolution budget `K` (at most `K` blocks), what is the lowest-cost
+partition?
+
+For non-lumpable systems, this constrained minimum is generally **non-zero**:
+the observer is forced to give up some information by aggregating states, and
+the residual defect measures the resulting model error.
+
+The methods below live in the `SGC` namespace (matching the namespace of the
+`Partition` type itself) so that dot notation `P.blockCount`, `P.IsKBounded K`
+works uniformly.
+-/
+
+namespace SGC
+
+variable {V : Type*} [Fintype V] [DecidableEq V]
+
+/-- The **block count** of a partition: the number of equivalence classes.
+    Always finite because `[Fintype V]`. -/
+def Partition.blockCount (P : Partition V) : ℕ := Fintype.card P.Quot
+
+/-- A partition is **K-bounded** if it has at most `K` blocks.
+    This is the formal counterpart of "observer with resolution budget K". -/
+def Partition.IsKBounded (P : Partition V) (K : ℕ) : Prop := P.blockCount ≤ K
+
+instance Partition.decidable_isKBounded (P : Partition V) (K : ℕ) :
+    Decidable (P.IsKBounded K) := by
+  unfold Partition.IsKBounded; exact inferInstance
+
+end SGC
+
+namespace SGC.Renormalization
+
+variable {V : Type*} [Fintype V] [DecidableEq V]
+
+/-- The **indiscrete partition**: every pair of elements is equivalent.
+    This is the COARSEST partition (single block, dual to `trivialPartition`).
+
+    For non-empty `V`, this has exactly 1 block. -/
+def indiscretePartition (V : Type*) [DecidableEq V] : Partition V where
+  rel := ⟨fun _ _ => True, fun _ => trivial, fun _ => trivial, fun _ _ => trivial⟩
+  decRel := fun _ _ => isTrue trivial
+
+/-- **The indiscrete partition has at most one block**.
+
+    Because every pair is equivalent under the universal relation, the
+    quotient `Partition.Quot` is `Subsingleton`, so its cardinality is ≤ 1.
+    (For non-empty `V` it is exactly `1`; for empty `V` it is `0`.) -/
+lemma indiscretePartition_blockCount_le_one (V : Type*) [Fintype V] [DecidableEq V] :
+    (indiscretePartition V).blockCount ≤ 1 := by
+  have h_sub : Subsingleton (indiscretePartition V).Quot := by
+    refine ⟨fun a b => ?_⟩
+    obtain ⟨x, hx⟩ := Quotient.exists_rep a
+    obtain ⟨y, hy⟩ := Quotient.exists_rep b
+    have hxy : (indiscretePartition V).rel.r x y := trivial
+    rw [← hx, ← hy]
+    exact Quotient.sound hxy
+  unfold Partition.blockCount
+  exact Fintype.card_le_one_iff_subsingleton.mpr h_sub
+
+/-- The indiscrete partition is `K`-bounded for any `K ≥ 1`. -/
+lemma indiscretePartition_isKBounded (V : Type*) [Fintype V] [DecidableEq V]
+    {K : ℕ} (hK : 1 ≤ K) : (indiscretePartition V).IsKBounded K :=
+  le_trans (indiscretePartition_blockCount_le_one V) hK
+
+/-- **THE CONSTRAINED-COARSENESS OPTIMAL PARTITION THEOREM**.
+
+    For any resolution budget `K ≥ 1`, there exists a `K`-bounded partition
+    that minimizes the defect cost **among all `K`-bounded partitions**.
+
+    This is the constrained-optimization analog of `optimal_partition_exists`.
+    Unlike the unconstrained case (where the global minimum is `0`, attained
+    at the trivial partition), the constrained minimum may be strictly
+    positive when no `K`-block partition is lumpable.
+
+    **Physical interpretation**: an observer with at most `K` macroscopic
+    states has a best-possible coarse-graining; the residual defect is the
+    irreducible model error at that resolution.
+
+    **Proof strategy**: identical to `optimal_partition_exists` but applied
+    to the (finite, non-empty) subset of `K`-bounded partitions. The
+    indiscrete partition witnesses non-emptiness. -/
+theorem optimal_kBounded_partition_exists
+    (L : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (K : ℕ) (hK : 1 ≤ K) :
+    ∃ P : Partition V, P.IsKBounded K ∧
+      ∀ P' : Partition V, P'.IsKBounded K →
+        defect_cost L pi_dist hπ P ≤ defect_cost L pi_dist hπ P' := by
+  classical
+  -- The K-bounded partitions form a finite, non-empty subset of Partition V
+  let S : Finset (Partition V) :=
+    (Finset.univ : Finset (Partition V)).filter (fun P => P.IsKBounded K)
+  have h_indiscrete_mem : indiscretePartition V ∈ S := by
+    simp only [S, Finset.mem_filter, Finset.mem_univ, true_and]
+    exact indiscretePartition_isKBounded V hK
+  -- Minimum over a finite non-empty set exists
+  obtain ⟨P_min, hP_min_mem, h_min⟩ :=
+    Finset.exists_min_image S (defect_cost L pi_dist hπ) ⟨_, h_indiscrete_mem⟩
+  -- Extract membership and minimality
+  have h_P_kbounded : P_min.IsKBounded K := by
+    have := hP_min_mem
+    simp only [S, Finset.mem_filter, Finset.mem_univ, true_and] at this
+    exact this
+  refine ⟨P_min, h_P_kbounded, ?_⟩
+  intro P' hP'
+  have hP'_mem : P' ∈ S := by
+    simp only [S, Finset.mem_filter, Finset.mem_univ, true_and]
+    exact hP'
+  exact h_min P' hP'_mem
+
+end SGC.Renormalization
