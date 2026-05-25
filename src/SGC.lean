@@ -35,6 +35,9 @@ import SGC.Thermodynamics.FluxDecomposition
 -- Variational Pillar: Principle of Least Action
 import SGC.Variational.LeastAction
 
+-- Complexity Relativity: complexity is observer-relative, not intrinsic to L
+import SGC.ComplexityRelativity
+
 -- Bridge Pillar: Continuum Limits and Quantum Correspondence
 import SGC.Bridge.Discretization
 import SGC.Bridge.Quantum

@@ -164,3 +164,62 @@ lake build SGC.Foundations.AxiomAudit 2>&1 | Select-String "entropy_production_n
 ```
 
 The WKL₀-baseline claim is **empirically verified by Lean's kernel** every time the audit module compiles.
+
+---
+
+## Sprint 3 Addendum (2026-05-25, same day) — The Complexity Relativity Theorem
+
+After the second-law arc was pushed (commits `076ac0f`, `f3385b5`, `90794c5`), the colleague's proposed Complexity Relativity Theorem was examined in detail, ground-checked against the codebase, and **formalized** in a new module `src/SGC/ComplexityRelativity.lean`.
+
+### Ground-truth audit of the colleague's claims
+
+The colleague's text references a sketch theorem `complexity_is_relational` with three sub-claims (CR-1, CR-2, CR-3). The ground-check revealed:
+
+| Colleague's claim | Status in repo |
+|---|---|
+| `optimal_partition_exists` | **PROVED** (`OptimalPartition.lean:108`) |
+| `defect_antitone_on_coarse_domain` | **PROVED** (`OptimalPartition.lean:269`) |
+| `trivial_partition_zero_defect` | **PROVED** (`OptimalPartition.lean:558`) |
+| `to_persist_is_to_predict` | **PROVED** (`EmergenceEquivalence.lean:300`) |
+| `complexity_is_relational` | **Proposed only — NOT in repo prior to this sprint** |
+| `directedCheegerConst` | **Proposed only — would require Fan Chung infrastructure** |
+
+The colleague's framing of CR-1 (`P = P* ⇒ C = 0`) as a biconditional was **mathematically incorrect for NESS systems**: distinct partitions can attain the same minimum defect when detailed balance fails. The formalized version restates the claim honestly:
+
+- **Biconditional preserved** only for reversible L (via `reversible_local_eq_global`).
+- **For NESS L**, the complexity gap can vanish without `P = P_ref` — only equal cost is forced.
+
+### The new theorem
+
+`SGC.ComplexityRelativity.complexity_is_relational` bundles five structural claims:
+
+1. **Non-negativity** of complexity (`defect_cost_nonneg`).
+2. **Trivial partition is the global min** with value 0 (`trivialPartition_defect_cost_zero`).
+3. **Refinement monotonicity** on the coarse domain (`defect_antitone_on_coarse_domain`).
+4. **A global minimum exists** (`optimal_partition_exists`).
+5. **Reversibility uniqueness** — for detailed-balance L, local ⇒ global (`reversible_local_eq_global`).
+
+Plus the supporting definition `ComplexityGap L π h P P_ref := defect_cost(P) - defect_cost(P_ref)` with three corollary theorems.
+
+**Zero new axioms.** All six theorems audit at `[propext, Classical.choice, Quot.sound]` — exact WKL₀ baseline.
+
+### Conceptual sharpening that emerged from the formalization
+
+**The trivial partition is the global minimum, with value zero.** This is a substantive observation — not a defect. It means the *literal* complexity gap `C(P) − C(P*)` collapses to `defect_cost(P)` when P* is the global minimum. The conceptually interesting object is the **constrained-coarseness** minimum: at most K blocks, what's the lowest-cost partition? This requires defining a coarseness sub-lattice and re-running `optimal_partition_exists` on it — a future formalization target.
+
+**The arrow of time creates ambiguity in optimal coarse-graining.** Clause (5) is sharper than the colleague's version: for reversible L, the local optimum **is** globally optimal; for NESS L, this need not hold. The theorem now states uniqueness as a *property of reversibility*, not a universal claim.
+
+### Audit surface update
+
+| | After Sprint 2 | After Sprint 3 |
+|---|---|---|
+| Audited flagship theorems | 50 | **56** (+6 in ComplexityRelativity) |
+| At WKL₀ baseline | 46 | **52** (+6) |
+| With named physical axioms | 4 | 4 (unchanged) |
+| Distinct named axioms | 3 | 3 (unchanged) |
+
+### What this means for the broader theoretical arc
+
+The colleague's claim that "complexity is a relationship, not a property" now has a Lean-verified formal counterpart, named exactly `complexity_is_relational`, with the proof composing only PROVED theorems. This is the single shortest distance from a sentence in natural language to a `#print axioms` output showing only kernel axioms — which is what formal verification is for.
+
+The directed Cheeger track remains the natural sequel: once the Lau-Tung 2022 reweighted spectral gap and Chatterjee 2025 singular-value gap are formalized, the **tight** form of the complexity bound becomes provable, replacing the structural facts of clauses (1)-(5) with a *quantitative* convergence rate. That is a multi-sprint program; this sprint closes the existential-structural part.

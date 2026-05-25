@@ -69,6 +69,7 @@ import SGC.PhaseDiagram
 import SGC.Bridge.CelegansFloquetTsallis
 import SGC.Thermodynamics.EntropyProduction
 import SGC.Thermodynamics.FluxDecomposition
+import SGC.ComplexityRelativity
 
 noncomputable section
 
@@ -275,16 +276,46 @@ namespace SGC.Foundations.AxiomAudit
 -- pair ⇒ π_x L_{xy} = π_y L_{yx} ⇒ J(x,y) = 0.
 #print axioms SGC.Thermodynamics.zero_entropy_implies_zero_current
 
+/-! ### Complexity Relativity Theorem (NEW 2026-05-25)
+
+  The Complexity Relativity Theorem formalizes the claim that complexity is
+  not intrinsic to a Markov generator `L`, but a relational property between
+  `L` and an observer's partition `P`. It is composed entirely from PROVED
+  theorems (no new axioms): `defect_cost_nonneg`,
+  `trivialPartition_defect_cost_zero`, `defect_antitone_on_coarse_domain`,
+  `optimal_partition_exists`, `reversible_local_eq_global`.
+-/
+
+-- The capstone five-clause Complexity Relativity Theorem.
+#print axioms SGC.ComplexityRelativity.complexity_is_relational
+
+-- The complexity gap is non-negative when the reference is a global minimum.
+#print axioms SGC.ComplexityRelativity.complexity_gap_nonneg_of_optimal
+
+-- Complexity gap vanishes iff defect costs match (NESS non-uniqueness preserved).
+#print axioms SGC.ComplexityRelativity.complexity_gap_eq_zero_iff_eq_cost
+
+-- The trivial partition is a global minimum of complexity.
+#print axioms SGC.ComplexityRelativity.trivial_partition_is_global_min
+
+-- Finer observers have lower complexity on the coarse domain.
+#print axioms SGC.ComplexityRelativity.finer_observer_lower_complexity_on_coarse
+
+-- Reversibility implies uniqueness of the emergent description.
+#print axioms SGC.ComplexityRelativity.reversibility_implies_unique_emergence
+
 /-! ## 3. Per-theorem proof-theoretic commentary — **CONFIRMED 2026-05-25**
 
-  **Fifty** flagship theorems are audited above (35 from the May 19
+  **Fifty-six** flagship theorems are audited above (35 from the May 19
   sprint baseline, 6 EntropyProduction additions including the newly
   closed `entropy_production_nonneg`, 9 FluxDecomposition theorems
-  including the newly closed `zero_entropy_implies_zero_current`).
-  The audit also prints axioms for two auxiliary Gibbs-term lemmas
-  used to close the two new theorems. Of the 50 flagship theorems:
+  including the newly closed `zero_entropy_implies_zero_current`, and
+  **6 Complexity Relativity theorems** in the new `ComplexityRelativity`
+  module). The audit also prints axioms for two auxiliary Gibbs-term
+  lemmas used to close the two new entropy theorems. Of the 56 flagship
+  theorems:
 
-  - **Forty-six** depend on **exactly** the three Lean kernel axioms:
+  - **Fifty-two** depend on **exactly** the three Lean kernel axioms:
     `[propext, Classical.choice, Quot.sound]` — the **WKL₀-comfortable
     baseline**, empirically confirmed by the build output of this file.
   - **Four** additionally depend on **named, scoped, physically-motivated
