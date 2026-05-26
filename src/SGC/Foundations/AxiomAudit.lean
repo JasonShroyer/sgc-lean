@@ -325,20 +325,35 @@ namespace SGC.Foundations.AxiomAudit
 -- Resolution monotonicity (witness-form).
 #print axioms SGC.ComplexityRelativity.constrained_minimum_le_of_isKBounded
 
+/-! ### L¹-L² Norm Equivalence (Sprint 5, 2026-05-26)
+
+  Pure-analysis Cauchy-Schwarz fact: `Σ|v_x| ≤ √N · √(Σ v_x²)` for finite-
+  dimensional real vectors. **PROVED 2026-05-26** (previously an axiom). Uses
+  `Finset.sum_mul_sq_le_sq_mul_sq` from Mathlib applied to `f := 1, g := |v|`.
+
+  This was the deferred closure flagged in the May 25 sprint as
+  "axiom-likely-closeable; pure analysis, no physics".
+-/
+
+-- L¹ ≤ √card · L² for unweighted finite-dimensional real vectors.
+#print axioms SGC.Thermodynamics.l1_le_sqrt_card_l2
+
 /-! ## 3. Per-theorem proof-theoretic commentary — **CONFIRMED 2026-05-25**
 
-  **Sixty** flagship theorems are audited above (35 from the May 19
+  **Sixty-one** flagship theorems are audited above (35 from the May 19
   sprint baseline, 6 EntropyProduction additions including the newly
   closed `entropy_production_nonneg`, 9 FluxDecomposition theorems
   including the newly closed `zero_entropy_implies_zero_current`,
   6 Complexity Relativity theorems in the `ComplexityRelativity`
-  module, and **4 Constrained-Coarseness theorems** (Sprint 4) covering
+  module, 4 Constrained-Coarseness theorems (Sprint 4) covering
   `optimal_kBounded_partition_exists` and three corollaries in the
-  `ComplexityRelativity` module). The audit also prints axioms for two
-  auxiliary Gibbs-term lemmas used to close the two new entropy theorems.
-  Of the 60 flagship theorems:
+  `ComplexityRelativity` module, and **1 Cauchy-Schwarz closure** of
+  the previously-axiomatized `l1_le_sqrt_card_l2` (Sprint 5,
+  2026-05-26)). The audit also prints axioms for two auxiliary
+  Gibbs-term lemmas used to close the two new entropy theorems.
+  Of the 61 flagship theorems:
 
-  - **Fifty-six** depend on **exactly** the three Lean kernel axioms:
+  - **Fifty-seven** depend on **exactly** the three Lean kernel axioms:
     `[propext, Classical.choice, Quot.sound]` — the **WKL₀-comfortable
     baseline**, empirically confirmed by the build output of this file.
   - **Four** additionally depend on **named, scoped, physically-motivated

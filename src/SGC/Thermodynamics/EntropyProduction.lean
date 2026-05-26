@@ -493,16 +493,39 @@ axiom pinsker_inequality (p q : V → ℝ)
     ‖v‖₁ ≤ √N · ‖v‖₂
 
     where N = |V| is the state space cardinality.
-    Follows from Cauchy-Schwarz: Σ|v_i| = Σ 1·|v_i| ≤ √N · √(Σv_i²)
 
-    **Axiomatized**: Cauchy-Schwarz inequality. The proof requires locating the
-    exact Mathlib name for discrete Cauchy-Schwarz on `Finset.univ` over a
-    `Fintype`. A natural future-sprint target: this axiom is pure analysis,
-    no physics. Likely one of `Finset.inner_mul_le_norm_mul_norm` (under
-    `RCLike`), `Finset.sum_mul_sq_le_sq_mul_sq`, or via the `EuclideanSpace`
-    structure on `V → ℝ`. -/
-axiom l1_le_sqrt_card_l2 (v : V → ℝ) :
-    ∑ x, |v x| ≤ Real.sqrt (Fintype.card V) * Real.sqrt (∑ x, (v x)^2)
+    **PROVED 2026-05-26** (previously an axiom). Pure Cauchy-Schwarz with
+    `f := 1` and `g := |v|`: `(Σ 1·|v_i|)² ≤ (Σ 1²)·(Σ|v_i|²) = N·Σ(v_i)²`.
+    Taking square roots gives `Σ|v_i| ≤ √N · √(Σ(v_i)²)`. Uses the existing
+    `Finset.sum_mul_sq_le_sq_mul_sq` from Mathlib. -/
+theorem l1_le_sqrt_card_l2 (v : V → ℝ) :
+    ∑ x, |v x| ≤ Real.sqrt (Fintype.card V) * Real.sqrt (∑ x, (v x)^2) := by
+  -- Step 1: Cauchy-Schwarz with f = 1, g = |v|.
+  have h_cs : (∑ x : V, (1 : ℝ) * |v x|)^2 ≤
+      (∑ x : V, (1 : ℝ)^2) * (∑ x : V, |v x|^2) :=
+    Finset.sum_mul_sq_le_sq_mul_sq Finset.univ (fun _ => (1 : ℝ)) (fun x => |v x|)
+  -- Step 2: Simplify each factor.
+  --   ∑ 1·|v x| = ∑ |v x|
+  --   ∑ 1² = ∑ 1 = Fintype.card V
+  --   |v x|² = (v x)²
+  have h_lhs : (∑ x : V, (1 : ℝ) * |v x|) = ∑ x, |v x| := by
+    refine Finset.sum_congr rfl (fun x _ => ?_); ring
+  have h_ones_sq : (∑ x : V, (1 : ℝ)^2) = (Fintype.card V : ℝ) := by
+    simp [Finset.sum_const, Finset.card_univ]
+  have h_abs_sq : (∑ x : V, |v x|^2) = ∑ x, (v x)^2 := by
+    refine Finset.sum_congr rfl (fun x _ => ?_); exact sq_abs (v x)
+  rw [h_lhs, h_ones_sq, h_abs_sq] at h_cs
+  -- Step 3: positivity hypotheses for sqrt-monotonicity and sqrt-mul.
+  have h_lhs_nn : (0 : ℝ) ≤ ∑ x, |v x| :=
+    Finset.sum_nonneg (fun x _ => abs_nonneg _)
+  have h_card_nn : (0 : ℝ) ≤ (Fintype.card V : ℝ) := Nat.cast_nonneg _
+  -- Step 4: take square roots and split.
+  calc ∑ x, |v x|
+      = Real.sqrt ((∑ x, |v x|)^2) := (Real.sqrt_sq h_lhs_nn).symm
+    _ ≤ Real.sqrt ((Fintype.card V : ℝ) * (∑ x, (v x)^2)) :=
+        Real.sqrt_le_sqrt h_cs
+    _ = Real.sqrt (Fintype.card V) * Real.sqrt (∑ x, (v x)^2) :=
+        Real.sqrt_mul h_card_nn _
 
 /-- **L² norm in our setting**: The unweighted L² norm. -/
 noncomputable def l2_norm (v : V → ℝ) : ℝ := Real.sqrt (∑ x, (v x)^2)
