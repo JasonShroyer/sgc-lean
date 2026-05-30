@@ -65,14 +65,25 @@ def TsallisEntropy (q : ℝ) (p : V → ℝ) : ℝ :=
   (1 - ∑ v, (p v) ^ q) / (q - 1)
 
 /-- For 0 ≤ x ≤ 1 and q > 1, x^q ≤ x.
-    This is because x ≤ 1 implies x^q ≤ x^1 = x when q > 1. -/
-axiom rpow_le_self_of_le_one_of_one_lt (x q : ℝ) (hx : 0 ≤ x) (hx1 : x ≤ 1) (hq : 1 < q) :
-    x ^ q ≤ x
+    This is because x ≤ 1 implies x^q ≤ x^1 = x when q > 1.
+
+    **PROVED 2026-05-30** (previously an axiom). Direct application of
+    Mathlib's `Real.rpow_le_self_of_le_one` (which requires `1 ≤ q`,
+    weaker than our `1 < q`). -/
+theorem rpow_le_self_of_le_one_of_one_lt (x q : ℝ) (hx : 0 ≤ x) (hx1 : x ≤ 1) (hq : 1 < q) :
+    x ^ q ≤ x :=
+  Real.rpow_le_self_of_le_one hx hx1 (le_of_lt hq)
 
 /-- For 0 ≤ x ≤ 1 and 0 < q < 1, x^q ≥ x.
-    This is because x ≤ 1 implies x^q ≥ x^1 = x when q < 1. -/
-axiom self_le_rpow_of_le_one_of_lt_one (x q : ℝ) (hx : 0 ≤ x) (hx1 : x ≤ 1) (hq0 : 0 < q) (hq1 : q < 1) :
-    x ≤ x ^ q
+    This is because x ≤ 1 implies x^q ≥ x^1 = x when q < 1.
+
+    **PROVED 2026-05-30** (previously an axiom). Direct application of
+    Mathlib's `Real.self_le_rpow_of_le_one` (which requires `q ≤ 1`,
+    weaker than our `q < 1`). -/
+theorem self_le_rpow_of_le_one_of_lt_one (x q : ℝ) (hx : 0 ≤ x) (hx1 : x ≤ 1)
+    (hq0 : 0 < q) (hq1 : q < 1) :
+    x ≤ x ^ q :=
+  Real.self_le_rpow_of_le_one hx hx1 (le_of_lt hq1)
 
 /-- Tsallis entropy is non-negative for probability distributions when q > 0.
 
@@ -162,10 +173,14 @@ def TsallisDivergence (q : ℝ) (p ref : V → ℝ) : ℝ :=
 /-- **Young's Inequality** (weighted AM-GM): For a,b ≥ 0 and α,β > 0 with α + β = 1:
     a^α · b^β ≤ α·a + β·b
 
-    This is a fundamental convexity result. -/
-axiom young_inequality (a b α β : ℝ) (ha : 0 ≤ a) (hb : 0 ≤ b)
+    This is a fundamental convexity result.
+
+    **PROVED 2026-05-30** (previously an axiom). Direct application of
+    Mathlib's `Real.geom_mean_le_arith_mean2_weighted`. -/
+theorem young_inequality (a b α β : ℝ) (ha : 0 ≤ a) (hb : 0 ≤ b)
     (hα : 0 < α) (hβ : 0 < β) (hαβ : α + β = 1) :
-    a ^ α * b ^ β ≤ α * a + β * b
+    a ^ α * b ^ β ≤ α * a + β * b :=
+  Real.geom_mean_le_arith_mean2_weighted (le_of_lt hα) (le_of_lt hβ) ha hb hαβ
 
 /-- **Key Lemma**: For probability distributions and 1 < q < 2,
     the weighted sum Σ p^(2-q) · ref^(q-1) ≤ 1.

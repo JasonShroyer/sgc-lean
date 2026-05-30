@@ -358,23 +358,47 @@ namespace SGC.Foundations.AxiomAudit
 -- NCD slow defect: trivially-true existence of an upper bound.
 #print axioms SGC.Approximate.NCD_slow_defect_bound
 
+/-! ### Three TsallisStatistics Closures via Mathlib (Sprint 6, 2026-05-30)
+
+  Three classical real-analysis axioms in `TsallisStatistics.lean` are
+  directly available in Mathlib. Closed via 1-line `Real.*` invocations.
+  **PROVED 2026-05-30** (all previously axioms).
+
+  - `young_inequality` ← `Real.geom_mean_le_arith_mean2_weighted`
+  - `rpow_le_self_of_le_one_of_one_lt` ← `Real.rpow_le_self_of_le_one`
+  - `self_le_rpow_of_le_one_of_lt_one` ← `Real.self_le_rpow_of_le_one`
+
+  These are pure-analysis facts that should never have been axioms; the
+  axiomatization was likely a consequence of not knowing the exact
+  Mathlib name. Each closure is a single-expression proof.
+-/
+
+-- Young's weighted AM-GM inequality.
+#print axioms SGC.InformationGeometry.Tsallis.young_inequality
+
+-- For x ∈ [0,1] and q > 1, x^q ≤ x.
+#print axioms SGC.InformationGeometry.Tsallis.rpow_le_self_of_le_one_of_one_lt
+
+-- For x ∈ [0,1] and 0 < q < 1, x ≤ x^q.
+#print axioms SGC.InformationGeometry.Tsallis.self_le_rpow_of_le_one_of_lt_one
+
 /-! ## 3. Per-theorem proof-theoretic commentary — **CONFIRMED 2026-05-25**
 
-  **Sixty-three** flagship theorems are audited above (35 from the May 19
+  **Sixty-six** flagship theorems are audited above (35 from the May 19
   sprint baseline, 6 EntropyProduction additions including the newly
   closed `entropy_production_nonneg`, 9 FluxDecomposition theorems
   including the newly closed `zero_entropy_implies_zero_current`,
-  6 Complexity Relativity theorems in the `ComplexityRelativity`
-  module, 4 Constrained-Coarseness theorems (Sprint 4) covering
-  `optimal_kBounded_partition_exists` and three corollaries in the
-  `ComplexityRelativity` module, 1 Cauchy-Schwarz closure of
-  `l1_le_sqrt_card_l2` (Sprint 5, 2026-05-26), and **2 norm-equivalence
-  closures** (Sprint 6, 2026-05-30): `weighted_unweighted_norm_compare`
-  and `NCD_slow_defect_bound`). The audit also prints axioms for two
-  auxiliary Gibbs-term lemmas used to close the two new entropy theorems.
-  Of the 63 flagship theorems:
+  6 Complexity Relativity theorems, 4 Constrained-Coarseness theorems
+  (Sprint 4), 1 Cauchy-Schwarz closure of `l1_le_sqrt_card_l2`
+  (Sprint 5, 2026-05-26), 2 norm-equivalence closures (Sprint 6, AM:
+  `weighted_unweighted_norm_compare`, `NCD_slow_defect_bound`), and
+  **3 Mathlib-import closures** (Sprint 6, PM, 2026-05-30):
+  `young_inequality`, `rpow_le_self_of_le_one_of_one_lt`,
+  `self_le_rpow_of_le_one_of_lt_one`). The audit also prints axioms
+  for two auxiliary Gibbs-term lemmas used to close the two new entropy
+  theorems. Of the 66 flagship theorems:
 
-  - **Fifty-nine** depend on **exactly** the three Lean kernel axioms:
+  - **Sixty-two** depend on **exactly** the three Lean kernel axioms:
     `[propext, Classical.choice, Quot.sound]` — the **WKL₀-comfortable
     baseline**, empirically confirmed by the build output of this file.
   - **Four** additionally depend on **named, scoped, physically-motivated
