@@ -535,10 +535,52 @@ noncomputable def l2_norm (v : V → ℝ) : ℝ := Real.sqrt (∑ x, (v x)^2)
     The weighted norm ‖v‖_π and unweighted norm ‖v‖₂ are equivalent up to constants
     depending on min/max of π. C = 1/√(min π) works.
 
-    **Axiomatized**: Norm equivalence in finite dimensions. -/
-axiom weighted_unweighted_norm_compare [Nonempty V] (v : V → ℝ) (pi_dist : V → ℝ)
+    **PROVED 2026-05-30** (previously an axiom). Pure finite-dimensional norm
+    equivalence. Strategy:
+    1. `Finset.exists_min_image` gives `pi_min := min_x pi_dist x > 0` (since
+       `V` is nonempty and every `pi_dist x > 0`).
+    2. Pointwise `pi_min · (v x)² ≤ pi_dist x · (v x)²`, summing yields
+       `pi_min · Σ (v x)² ≤ Σ pi_dist x · (v x)² = ‖v‖_π²`.
+    3. Take square roots and divide by `√pi_min > 0`:
+       `‖v‖₂ ≤ (1/√pi_min) · ‖v‖_π`. -/
+theorem weighted_unweighted_norm_compare [Nonempty V] (v : V → ℝ) (pi_dist : V → ℝ)
     (hπ : ∀ x, 0 < pi_dist x) :
-    ∃ C : ℝ, C > 0 ∧ l2_norm v ≤ C * norm_pi pi_dist v
+    ∃ C : ℝ, C > 0 ∧ l2_norm v ≤ C * norm_pi pi_dist v := by
+  -- Step 1: Find pi_min := min over x of pi_dist x.
+  obtain ⟨x_min, _, hx_min⟩ :=
+    Finset.exists_min_image Finset.univ pi_dist
+      ⟨Classical.arbitrary V, Finset.mem_univ _⟩
+  set pi_min := pi_dist x_min with hpi_min_def
+  have hpi_min_pos : 0 < pi_min := hπ x_min
+  have hpi_min_le : ∀ x, pi_min ≤ pi_dist x :=
+    fun x => hx_min x (Finset.mem_univ x)
+  -- Step 2: C = 1 / sqrt(pi_min).
+  refine ⟨1 / Real.sqrt pi_min,
+          div_pos one_pos (Real.sqrt_pos.mpr hpi_min_pos), ?_⟩
+  -- Step 3: Pointwise bound pi_min·(v x)² ≤ pi_dist x · (v x)².
+  have h_pointwise : ∀ x, pi_min * (v x)^2 ≤ pi_dist x * (v x)^2 :=
+    fun x => mul_le_mul_of_nonneg_right (hpi_min_le x) (sq_nonneg (v x))
+  -- Step 4: Summed bound pi_min · Σ (v x)² ≤ Σ pi_dist x · (v x)².
+  have h_sum : pi_min * ∑ x, (v x)^2 ≤ ∑ x, pi_dist x * (v x)^2 := by
+    rw [Finset.mul_sum]
+    exact Finset.sum_le_sum (fun x _ => h_pointwise x)
+  -- Step 5: Square-root form: √pi_min · √(Σ (v x)²) ≤ √(Σ pi_dist x · (v x)²).
+  have h_pi_min_nn : 0 ≤ pi_min := le_of_lt hpi_min_pos
+  have h_sqrt :
+      Real.sqrt pi_min * Real.sqrt (∑ x, (v x)^2) ≤
+        Real.sqrt (∑ x, pi_dist x * (v x)^2) := by
+    rw [← Real.sqrt_mul h_pi_min_nn]
+    exact Real.sqrt_le_sqrt h_sum
+  -- Step 6: Rewrite norm_pi as √(Σ pi_dist x · (v x)²), divide by √pi_min > 0.
+  have h_norm_pi_eq :
+      norm_pi pi_dist v = Real.sqrt (∑ x, pi_dist x * (v x)^2) := by
+    unfold norm_pi
+    rw [norm_sq_pi_eq_sum]
+  unfold l2_norm
+  rw [h_norm_pi_eq]
+  have h_sqrt_pos : 0 < Real.sqrt pi_min := Real.sqrt_pos.mpr hpi_min_pos
+  rw [div_mul_eq_mul_div, le_div_iff₀ h_sqrt_pos, one_mul, mul_comm]
+  exact h_sqrt
 
 /-! ### 7. The Payoff Theorem: Prediction Error Implies Dissipation -/
 

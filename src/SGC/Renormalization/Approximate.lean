@@ -1145,10 +1145,19 @@ axiom NCD_defect_split (L L_fast L_slow : Matrix V V ℝ) (P : Partition V) (pi_
     DefectOperator L P pi_dist hπ = ε • DefectOperator L_slow P pi_dist hπ
 
 /-- **NCD Slow Defect Bound**: The defect operator of L_slow has bounded operator norm.
-    This is a finite-dimensional operator norm, hence bounded. -/
-axiom NCD_slow_defect_bound (L_slow : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    This is a finite-dimensional operator norm, hence bounded.
+
+    **PROVED 2026-05-30** (previously an axiom). The statement is trivially
+    true: take `K := opNorm_pi pi_dist hπ (DefectOperator L_slow P pi_dist hπ)`
+    itself. Then `K ≥ 0` follows from `opNorm_pi_nonneg`, and `opNorm ≤ K`
+    is `le_refl`. The axiomatization was likely a placeholder pending the
+    `opNorm_pi_nonneg` lemma being available. -/
+theorem NCD_slow_defect_bound (L_slow : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v) :
-    ∃ K : ℝ, K ≥ 0 ∧ opNorm_pi pi_dist hπ (DefectOperator L_slow P pi_dist hπ) ≤ K
+    ∃ K : ℝ, K ≥ 0 ∧ opNorm_pi pi_dist hπ (DefectOperator L_slow P pi_dist hπ) ≤ K :=
+  ⟨opNorm_pi pi_dist hπ (DefectOperator L_slow P pi_dist hπ),
+   opNorm_pi_nonneg pi_dist hπ _,
+   le_refl _⟩
 
 /-! ### 7c. NCD Uniform Error Bound -/
 
