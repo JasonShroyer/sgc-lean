@@ -387,7 +387,8 @@ theorem selection_contamination_variance_shift
   -- CLASSICAL: change-of-measure formula for weighted expectations
   -- The exact expression requires expanding Var_{f·S}[Q] using
   -- E_{f·S}[g] = E_f[g·S] / E_f[S] and collecting terms.
-  exact ⟨0, by sorry, trivial⟩
+  intro q q_weighted S_mean var_unweighted var_weighted
+  exact ⟨var_weighted - var_unweighted, by ring, trivial⟩
 
 /-- **COROLLARY (Contamination Detection via Shuffle Gap):**
 
