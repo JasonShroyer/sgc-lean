@@ -185,6 +185,24 @@ theorem variance_as_lifted_quadform
   refine Finset.sum_congr rfl (fun e _ => ?_)
   ring
 
+/-- **COROLLARY (lifted covariance is PSD):** the empirical lifted-covariance quadratic
+    form is nonnegative for every quadratic form `Q`, because Link 1 identifies it with an
+    empirical variance — a (1/N)-weighted mean of squares. This *structurally* supplies the
+    `hPSD` hypothesis of `min_variance_is_min_eigenvector`: it need not be assumed.
+
+    STATUS: PROVEN (lake build, no sorry). Weight-agnostic like its parent — no `[NeZero N]`
+    (for `N = 0` both sides are `0`). -/
+theorem lifted_quadform_nonneg
+    (N : ℕ) (X : Fin N → Fin d → ℝ) (Q : QuadraticForm d) :
+    0 ≤ ∑ a, ∑ b, ∑ c, ∑ e, Q.mat a b * Q.mat c e *
+        ((1 / N) * ∑ k, (X k a * X k b - (1/N) * ∑ l, X l a * X l b) *
+                         (X k c * X k e - (1/N) * ∑ l, X l c * X l e)) := by
+  have h := variance_as_lifted_quadform N X Q
+  simp only [QuadraticForm.eval] at h
+  rw [← h]
+  exact mul_nonneg (one_div_nonneg.mpr (Nat.cast_nonneg N))
+    (Finset.sum_nonneg fun k _ => sq_nonneg _)
+
 /-- **COROLLARY:** Minimizing Var[x^T C x] subject to ||C||_F = 1 is equivalent
     to finding the minimum eigenvector of the lifted covariance matrix.
 

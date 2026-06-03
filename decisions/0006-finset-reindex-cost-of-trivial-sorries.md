@@ -9,7 +9,7 @@ evidence:
   - logs/l105_nozero.txt
   - logs/lake_l105_build3.txt
   - src/SGC/InformationGeometry/FisherNoetherBridge.lean
-date: 2026-06-04
+date: 2026-06-03
 ---
 # Lake-gated discharge of Fisher–Noether Link 1 (variance_as_lifted_quadform)
 
@@ -20,9 +20,10 @@ the covariance of the lifted features `vec(x xᵀ)` — is now **machine-verifie
 `lake build` exits 0 with the `sorry` at `FisherNoetherBridge.lean:105` discharged
 (file sorry-count 4 → 3, no regressions). **ε = 0 reached for this theorem.** (τ⁺.)
 
-This took **two runs**. Run 1 (2026-06-03) failed (exit 1) on four tactic-structure
-errors and was honestly recorded τ⁻. Run 2 (2026-06-04) succeeded with the corrected
-scaffold below. The headline lesson stands and is now *paid for*: a `SORRY
+This took **two runs, same day (2026-06-03)**. Run 1 failed (exit 1) on four
+tactic-structure errors and was honestly recorded τ⁻. Run 2, a session ~2.5h later,
+succeeded with the corrected scaffold below. The headline lesson stands and is now
+*paid for*: a `SORRY
 CLASSIFICATION: TRIVIAL` banner says nothing about Lean cost — this "trivial" identity
 needed an ~80-line proof (centering lemma + double `sum_mul_sum` square expansion +
 five-fold sum transpose). **"math-trivial" ≠ "Lean-cheap".**
@@ -74,6 +75,12 @@ selection-contamination theorem (`f·S` reweighting) — the same algebra, diffe
   `mul_sum` (the head is a `Σ`, not a product); an associativity gap that needs `ring`,
   not `rw [mul_sub]`; and a stranded `AddCommMonoid ?m` metavariable from distributing
   `1/N` *before* `Finset.sum_comm`. `logs/lake_l105_build3.txt`.
+- Follow-on τ⁺ (same session): `lifted_quadform_nonneg` proves the lifted-covariance
+  quadratic form is PSD (`0 ≤ Σ_{a,b,c,e} C_ab C_ce Cov̂`) directly from this identity —
+  it is a `(1/N)`-weighted mean of squares (`rw [← variance_as_lifted_quadform]` then
+  `mul_nonneg (one_div_nonneg …) (Finset.sum_nonneg … sq_nonneg)`; `positivity` alone
+  failed on `1/↑N`). This DISCHARGES the `hPSD` hypothesis of
+  `min_variance_is_min_eigenvector` for free. `logs/l105_corollary2.txt`.
 
 ## Canonical implementation
 
