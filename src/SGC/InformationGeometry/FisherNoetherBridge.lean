@@ -99,20 +99,91 @@ def empiricalVariance (N : ℕ) [NeZero N] (vals : Fin N → ℝ) : ℝ :=
     of the covariance, but it is the foundational identity that connects
     the engine's optimization (minimize Var[x^T C x]) to Fisher information.
 
-    SORRY CLASSIFICATION: TRIVIAL — routine expansion of variance definition.
-    The proof is straightforward algebra that unfolds the definitions and
-    uses bilinearity of the covariance. -/
+    STATUS: PROVEN (lake build, no sorry) — kernel-verified, ε = 0.
+    Mathematically a one-line tautology, but NOT Lean-cheap: it requires a
+    centering lemma, a double `sum_mul_sum` square expansion, and a five-fold
+    sum transpose (sample index k moved past the four feature indices).
+    Weight-agnostic: the 1/N factor is an inert scalar that is never inverted,
+    so [NeZero N] is NOT required — the identity generalizes verbatim to any
+    real weight (weighted / importance-sampled / biased estimators). -/
 theorem variance_as_lifted_quadform
-    (N : ℕ) [NeZero N] (X : Fin N → Fin d → ℝ) (Q : QuadraticForm d) :
+    (N : ℕ) (X : Fin N → Fin d → ℝ) (Q : QuadraticForm d) :
     let q_vals := fun k => Q.eval (X k)
     let q_mean := (1 / N) * ∑ k, q_vals k
     (1 / N) * ∑ k, (q_vals k - q_mean)^2 =
       ∑ a, ∑ b, ∑ c, ∑ e, Q.mat a b * Q.mat c e *
         ((1 / N) * ∑ k, (X k a * X k b - (1/N) * ∑ l, X l a * X l b) *
                          (X k c * X k e - (1/N) * ∑ l, X l c * X l e)) := by
-  -- TRIVIAL: expand variance definition, use Q.eval = Σ C_{ij} x_i x_j,
-  -- distribute the square, exchange order of summation.
-  sorry
+  simp only [QuadraticForm.eval]
+  -- Centering: q_k - q̄ = Σ_{a,b} C_{ab} (x_{ka} x_{kb} - mean_{ab}). Weight 1/N is an
+  -- inert scalar (never inverted) — [NeZero N] is not used anywhere below.
+  have key : ∀ k : Fin N,
+      (∑ i, ∑ j, Q.mat i j * X k i * X k j)
+        - (1 / (N : ℝ)) * ∑ k', ∑ i, ∑ j, Q.mat i j * X k' i * X k' j
+      = ∑ a, ∑ b, Q.mat a b * (X k a * X k b - (1 / (N : ℝ)) * ∑ l, X l a * X l b) := by
+    intro k
+    have hmean : (1 / (N : ℝ)) * ∑ k', ∑ i, ∑ j, Q.mat i j * X k' i * X k' j
+        = ∑ i, ∑ j, Q.mat i j * ((1 / (N : ℝ)) * ∑ l, X l i * X l j) := by
+      rw [Finset.sum_comm, Finset.mul_sum]
+      refine Finset.sum_congr rfl (fun i _ => ?_)
+      rw [Finset.sum_comm, Finset.mul_sum]
+      refine Finset.sum_congr rfl (fun j _ => ?_)
+      simp only [mul_assoc]
+      rw [← Finset.mul_sum]
+      ring
+    rw [hmean, ← Finset.sum_sub_distrib]
+    refine Finset.sum_congr rfl (fun a _ => ?_)
+    rw [← Finset.sum_sub_distrib]
+    refine Finset.sum_congr rfl (fun b _ => ?_)
+    ring
+  -- Rewrite each centered square via `key`, then expand and reorder the sums.
+  simp only [key]
+  -- Per-sample square expansion: (∑_{a,b} M_ab c_ab)^2 = ∑_{a,b,c,e} M_ab M_ce c_ab c_ce.
+  have sq : ∀ k : Fin N,
+      (∑ a, ∑ b, Q.mat a b * (X k a * X k b - (1 / (N : ℝ)) * ∑ l, X l a * X l b)) ^ 2
+        = ∑ a, ∑ b, ∑ c, ∑ e, Q.mat a b * Q.mat c e *
+            ((X k a * X k b - (1 / (N : ℝ)) * ∑ l, X l a * X l b) *
+             (X k c * X k e - (1 / (N : ℝ)) * ∑ l, X l c * X l e)) := by
+    intro k
+    rw [pow_two, Fintype.sum_mul_sum]
+    refine Finset.sum_congr rfl (fun a _ => ?_)
+    rw [Finset.sum_comm]
+    refine Finset.sum_congr rfl (fun c _ => ?_)
+    rw [Finset.sum_mul_sum]
+    refine Finset.sum_congr rfl (fun b _ => ?_)
+    refine Finset.sum_congr rfl (fun e _ => ?_)
+    ring
+  simp only [sq]
+  -- Generic transpose: move the sample index k from innermost to outermost past the
+  -- four feature indices. Each step fixes the outer binders with `ext` then swaps the
+  -- now-adjacent pair with `Finset.sum_comm`.
+  have reorder : ∀ f : Fin N → Fin d → Fin d → Fin d → Fin d → ℝ,
+      (∑ a, ∑ b, ∑ c, ∑ e, ∑ k, f k a b c e)
+        = ∑ k, ∑ a, ∑ b, ∑ c, ∑ e, f k a b c e := by
+    intro f
+    conv_lhs => enter [2, a, 2, b, 2, c]; rw [Finset.sum_comm]
+    conv_lhs => enter [2, a, 2, b]; rw [Finset.sum_comm]
+    conv_lhs => enter [2, a]; rw [Finset.sum_comm]
+    rw [Finset.sum_comm]
+  -- LHS: distribute the outer (1/N) onto the k-sum.  RHS: pull each (1/N)∑_k outward
+  -- (reassociate so the k-sum is the right factor, then `mul_sum`), WITHOUT touching the
+  -- internal mean-sums ∑_l inside the centred factors.
+  rw [Finset.mul_sum]
+  conv_rhs =>
+    enter [2, a, 2, b, 2, c, 2, e]
+    rw [← mul_assoc, Finset.mul_sum]
+  rw [reorder]
+  refine Finset.sum_congr rfl (fun k _ => ?_)
+  -- Per-sample: (1/N)·∑_{a,b,c,e} M_ab M_ce cc = ∑_{a,b,c,e} (M_ab M_ce (1/N)) cc.
+  rw [Finset.mul_sum]
+  refine Finset.sum_congr rfl (fun a _ => ?_)
+  rw [Finset.mul_sum]
+  refine Finset.sum_congr rfl (fun b _ => ?_)
+  rw [Finset.mul_sum]
+  refine Finset.sum_congr rfl (fun c _ => ?_)
+  rw [Finset.mul_sum]
+  refine Finset.sum_congr rfl (fun e _ => ?_)
+  ring
 
 /-- **COROLLARY:** Minimizing Var[x^T C x] subject to ||C||_F = 1 is equivalent
     to finding the minimum eigenvector of the lifted covariance matrix.
