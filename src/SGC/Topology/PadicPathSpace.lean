@@ -16,15 +16,16 @@ Discipline (CANTOR_LAYER_SPEC §0): every open result is a `theorem … := by so
 (a kernel-tracked debt). We add **no new `axiom`s** (the tree already has 229).
 
 What is and isn't here:
-- PROVEN: the symbolic path space, depth-`n` truncation + its defining equation, and the
-  depth-`n` quotient cardinality `|Fin n → Fin p| = pⁿ` (`card_truncations`).
-- `sorry`-GATED (real debts): the homeomorphism to `ℤ_[p]` under uniform p-ary branching,
-  and the canonical base-p digit encoding `(Fin n → Fin p) ≃ ZMod (p^n)`.
+- PROVEN: the symbolic path space, depth-`n` truncation + its defining equation, the
+  depth-`n` quotient cardinality `|Fin n → Fin p| = pⁿ` (`card_truncations`), and the
+  canonical base-`p` digit encoding `(Fin n → Fin p) ≃ ZMod (p^n)` (`digitEncoding`).
+- `sorry`-GATED (one real debt): the homeomorphism to `ℤ_[p]` under uniform p-ary branching.
 - NOT here (deliberately): any `q(n) = 1 + 1/n` claim (refuted — see spec §6),
   `MirandaBridge` (no discrete current exists yet), `validity_horizon_from_depth`.
 -/
 import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.Data.ZMod.Basic
+import Mathlib.Algebra.BigOperators.Fin
 
 noncomputable section
 
@@ -83,13 +84,26 @@ theorem pathSpace_homeo_padicInt (p : ℕ) [Fact p.Prime]
 
 /-! ## 3. The finite p-adic quotient -/
 
-/-- **Base-`p` digit encoding** `(Fin n → Fin p) ≃ ZMod (p^n)`: the bijection that turns a
-    finite symbolic truncation into the arithmetic quotient `ZMod (p^n) ≅ ℤ_[p] / p^n ℤ_[p]`.
+/-- Identify `Fin m` with `ZMod m` for `m > 0` via `i ↦ (i : ZMod m)`, inverse `ZMod.val`.
+    This is the canonical, structure-respecting identification (not a bare cardinality
+    bijection). -/
+def finEquivZMod (m : ℕ) [NeZero m] : Fin m ≃ ZMod m where
+  toFun i := ((i : ℕ) : ZMod m)
+  invFun a := ⟨a.val, ZMod.val_lt a⟩
+  left_inv i := by ext; exact ZMod.val_natCast_of_lt i.isLt
+  right_inv a := ZMod.natCast_rightInverse a
 
-    `sorry`-gated: the explicit Horner / base-`p` encoding. Cardinalities match
-    (`|Fin n → Fin p| = pⁿ = |ZMod (p^n)|` for `p ≥ 1`), so the equivalence exists. -/
+/-- **Base-`p` digit encoding** `(Fin n → Fin p) ≃ ZMod (p^n)`, PROVEN.
+
+    This is the *canonical* Horner map `x ↦ ∑ i, x i · pⁱ` read into the arithmetic quotient
+    `ZMod (p^n) ≅ ℤ_[p] / pⁿ ℤ_[p]`. It is built as Mathlib's explicit base-`p` encoding
+    `finFunctionFinEquiv : (Fin n → Fin p) ≃ Fin (pⁿ)` (whose `finFunctionFinEquiv_apply`
+    gives `(·).val = ∑ i, x i · pⁱ`) composed with `finEquivZMod`. Because it is the genuine
+    Horner map — not a `Fintype.equivOfCardEq` cardinality bijection — it is the correct object
+    to later show **intertwines** `truncate` with `PadicInt.toZModPow` (the open keystone). -/
 def digitEncoding (p n : ℕ) [NeZero p] : (Fin n → Fin p) ≃ ZMod (p ^ n) :=
-  sorry
+  haveI : NeZero (p ^ n) := ⟨pow_ne_zero n (NeZero.ne p)⟩
+  finFunctionFinEquiv.trans (finEquivZMod (p ^ n))
 
 /-! ## 4. TODO — wiring to existing SGC modules (next increment)
 
