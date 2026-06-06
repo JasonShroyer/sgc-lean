@@ -16,9 +16,10 @@ Discipline (CANTOR_LAYER_SPEC §0): every open result is a `theorem … := by so
 (a kernel-tracked debt). We add **no new `axiom`s** (the tree already has 229).
 
 What is and isn't here:
-- PROVEN: the symbolic path space, depth-`n` truncation, its defining equation.
+- PROVEN: the symbolic path space, depth-`n` truncation + its defining equation, and the
+  depth-`n` quotient cardinality `|Fin n → Fin p| = pⁿ` (`card_truncations`).
 - `sorry`-GATED (real debts): the homeomorphism to `ℤ_[p]` under uniform p-ary branching,
-  and the base-p digit encoding `(Fin n → Fin p) ≃ ZMod (p^n)`.
+  and the canonical base-p digit encoding `(Fin n → Fin p) ≃ ZMod (p^n)`.
 - NOT here (deliberately): any `q(n) = 1 + 1/n` claim (refuted — see spec §6),
   `MirandaBridge` (no discrete current exists yet), `validity_horizon_from_depth`.
 -/
@@ -37,7 +38,7 @@ With `A = Fin p` this is the uniformly p-ary path space — the explicit branchi
 hypothesis of `CANTOR_LAYER_SPEC §4`. Keeping the alphabet abstract avoids committing to a
 particular `TopologicalSpace (Fin p)` instance here. -/
 
-variable (A : Type*) [TopologicalSpace A] [DiscreteTopology A]
+variable (A : Type*)
 
 /-- Infinite symbolic trajectories over alphabet `A`. `abbrev` so the product topology
 instance transfers automatically. -/
@@ -54,11 +55,12 @@ def truncate (n : ℕ) (x : PathSpace A) : Fin n → A := fun i => x i.val
 @[simp] theorem truncate_apply (n : ℕ) (x : PathSpace A) (i : Fin n) :
     truncate A n x i = x i.val := rfl
 
-/-- Compatibility of the truncation tower: the shallow truncation is the deep one,
-    forgotten past depth `m`. This is the inverse-system structure whose limit is the
-    full path space. -/
-@[simp] theorem truncate_comp (m : ℕ) (x : PathSpace A) (i : Fin m) :
-    truncate A m x i = x i.val := rfl
+/-- **First proven Cantor-layer fact.** The depth-`n` symbolic quotient over a `p`-letter
+    alphabet has exactly `pⁿ` values — matching `|ZMod (p^n)| = |ℤ_[p] / pⁿ ℤ_[p]|`. This is
+    the cardinality that licenses reading depth-`n` truncation as the p-adic quotient. -/
+theorem card_truncations (p n : ℕ) :
+    Fintype.card (Fin n → Fin p) = p ^ n := by
+  simp [Fintype.card_pi]
 
 /-! ## 2. Identification with the p-adic integers (the keystone) -/
 
