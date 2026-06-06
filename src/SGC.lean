@@ -27,6 +27,10 @@ import SGC.Renormalization.Approximate
 -- Topology Pillar: Geometric Markov Blankets
 import SGC.Topology.Blanket
 
+-- Symbolic / p-adic Layer (Cantor tier): uniformly p-ary path space, the base-p digit
+-- encoding (Fin n → Fin p) ≃ ZMod (pⁿ), and (TODO) the homeomorphism to ℤ_[p]
+import SGC.Topology.PadicPathSpace
+
 -- Thermodynamics Pillar: Stochastic Thermodynamics of Surprise
 import SGC.Thermodynamics.DoobMeyer
 import SGC.Thermodynamics.EntropyProduction
