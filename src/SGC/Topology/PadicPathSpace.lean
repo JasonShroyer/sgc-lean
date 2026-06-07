@@ -105,6 +105,25 @@ def digitEncoding (p n : ℕ) [NeZero p] : (Fin n → Fin p) ≃ ZMod (p ^ n) :=
   haveI : NeZero (p ^ n) := ⟨pow_ne_zero n (NeZero.ne p)⟩
   finFunctionFinEquiv.trans (finEquivZMod (p ^ n))
 
+/-! ## 3½. The inverse-system law (PROVEN): truncation = p-adic quotient projection -/
+
+/-- **Arithmetic tower bridge.** `digitEncoding` *intertwines* the depth restriction
+    `f ↦ f ∘ castSucc` (drop the top digit) with the p-adic quotient map
+    `ZMod.castHom : ZMod (pⁿ⁺¹) → ZMod (pⁿ)` (reduce mod `pⁿ`). This is the finite-level,
+    Mathlib-only content of "symbolic depth-`n` truncation = `PadicInt.toZModPow n`": the
+    commuting square that makes the `digitEncoding`s an **iso of inverse systems**, which is
+    the real content behind the open homeomorphism keystone (`pathSpace_homeo_padicInt`). -/
+theorem castHom_digitEncoding (p n : ℕ) [NeZero p] (f : Fin (n + 1) → Fin p) :
+    ZMod.castHom (pow_dvd_pow p n.le_succ) (ZMod (p ^ n)) (digitEncoding p (n + 1) f)
+      = digitEncoding p n (fun i => f i.castSucc) := by
+  haveI : NeZero (p ^ (n + 1)) := ⟨pow_ne_zero _ (NeZero.ne p)⟩
+  haveI : NeZero (p ^ n) := ⟨pow_ne_zero _ (NeZero.ne p)⟩
+  simp only [digitEncoding, finEquivZMod, Equiv.trans_apply, Equiv.coe_fn_mk]
+  rw [map_natCast, finFunctionFinEquiv_apply, finFunctionFinEquiv_apply,
+    Fin.sum_univ_castSucc, Fin.val_last, Nat.cast_add, Nat.cast_mul, ZMod.natCast_self,
+    mul_zero, add_zero]
+  simp [Fin.coe_castSucc]
+
 /-! ## 4. TODO — wiring to existing SGC modules (next increment)
 
 * `coarseGraining_is_truncation`: identify `Renormalization.OptimalPartition`'s
