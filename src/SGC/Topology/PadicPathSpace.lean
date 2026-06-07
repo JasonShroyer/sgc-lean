@@ -24,6 +24,7 @@ What is and isn't here:
   `MirandaBridge` (no discrete current exists yet), `validity_horizon_from_depth`.
 -/
 import Mathlib.NumberTheory.Padics.PadicIntegers
+import Mathlib.NumberTheory.Padics.RingHoms
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Algebra.BigOperators.Fin
 
@@ -123,6 +124,64 @@ theorem castHom_digitEncoding (p n : ℕ) [NeZero p] (f : Fin (n + 1) → Fin p)
     Fin.sum_univ_castSucc, Fin.val_last, Nat.cast_add, Nat.cast_mul, ZMod.natCast_self,
     mul_zero, add_zero]
   simp [Fin.coe_castSucc]
+
+/-! ## 3¾. Toward the keystone: the algebraic comparison tower (in progress) -/
+
+/-- Depth-`n` Horner value of a symbolic path `s`, as a `ZMod (p^n)` element. -/
+def digitVal (p n : ℕ) [NeZero p] (s : ℕ → Fin p) : ZMod (p ^ n) :=
+  digitEncoding p n (truncate (Fin p) n s)
+
+/-- The whole-path tower is compatible: reducing the depth-`(n+1)` value mod `pⁿ` gives the
+    depth-`n` value. This packages `castHom_digitEncoding` into the exact shape of the
+    `PadicInt.lift` / `ofIntSeq` compatibility hypothesis. -/
+theorem castHom_digitVal (p n : ℕ) [NeZero p] (s : ℕ → Fin p) :
+    ZMod.castHom (pow_dvd_pow p n.le_succ) (ZMod (p ^ n)) (digitVal p (n + 1) s)
+      = digitVal p n s := by
+  rw [digitVal, digitVal, castHom_digitEncoding]
+  congr 1
+
+/-- Reducing the depth-`(n+1)` value's `ℕ`-representative mod `pⁿ` recovers the depth-`n`
+    value. The bridge from `castHom_digitVal` to the integer-sequence divisibility that
+    `PadicInt.ofIntSeq` consumes. -/
+theorem natCast_digitVal_succ (p n : ℕ) [NeZero p] (s : ℕ → Fin p) :
+    (((digitVal p (n + 1) s).val : ℕ) : ZMod (p ^ n)) = digitVal p n s := by
+  haveI : NeZero (p ^ n) := ⟨pow_ne_zero _ (NeZero.ne p)⟩
+  haveI : NeZero (p ^ (n + 1)) := ⟨pow_ne_zero _ (NeZero.ne p)⟩
+  rw [ZMod.natCast_val, ← castHom_digitVal p n s, ZMod.castHom_apply]
+
+/-- Consecutive depth values differ by a multiple of `pⁿ` — the integer-sequence Cauchy
+    condition that `PadicInt.ofIntSeq` (via `isCauSeq_padicNorm_of_pow_dvd_sub`) consumes. -/
+theorem dvd_digitVal_succ_sub (p n : ℕ) [NeZero p] (s : ℕ → Fin p) :
+    (p : ℤ) ^ n ∣ ((digitVal p (n + 1) s).val : ℤ) - ((digitVal p n s).val : ℤ) := by
+  haveI : NeZero (p ^ n) := ⟨pow_ne_zero _ (NeZero.ne p)⟩
+  rw [← Nat.cast_pow, ← ZMod.intCast_zmod_eq_zero_iff_dvd]
+  push_cast
+  rw [sub_eq_zero, natCast_digitVal_succ, ZMod.natCast_val, ZMod.cast_id]
+
+/-- `Fact p.Prime` supplies `NeZero p` (low priority; defers to Mathlib if it ships one). -/
+instance (priority := 50) instNeZeroOfFactPrime (p : ℕ) [hp : Fact p.Prime] : NeZero p :=
+  ⟨hp.out.pos.ne'⟩
+
+/-- **The comparison map** `PathSpace (Fin p) → ℤ_[p]`. A symbolic path is sent to the p-adic
+    integer whose depth-`n` residue is the path's depth-`n` Horner value, assembled by
+    `PadicInt.ofIntSeq` from the (Cauchy) tower of partial values. -/
+def digitSeq_to_padicInt (p : ℕ) [Fact p.Prime] (s : ℕ → Fin p) : ℤ_[p] :=
+  PadicInt.ofIntSeq (fun n => ((digitVal p n s).val : ℤ))
+    (PadicInt.isCauSeq_padicNorm_of_pow_dvd_sub _ p (fun i => dvd_digitVal_succ_sub p i s))
+
+/-- **Defining property (algebraic core).** The comparison map intertwines `truncate` with
+    `PadicInt.toZModPow`: the depth-`n` p-adic residue of `digitSeq_to_padicInt s` is exactly
+    the depth-`n` symbolic value `digitVal n s`. This is the iso-of-inverse-systems law lifted
+    to the actual p-adic integers — the algebraic heart of the homeomorphism keystone. -/
+theorem digitSeq_toZModPow (p : ℕ) [Fact p.Prime] (s : ℕ → Fin p) (n : ℕ) :
+    PadicInt.toZModPow n (digitSeq_to_padicInt p s) = digitVal p n s := by
+  haveI : NeZero (p ^ n) := ⟨pow_ne_zero _ (NeZero.ne p)⟩
+  unfold digitSeq_to_padicInt
+  rw [PadicInt.toZModPow_ofIntSeq_of_pow_dvd_sub]
+  · push_cast
+    rw [ZMod.natCast_val, ZMod.cast_id]
+  · intro i
+    exact dvd_digitVal_succ_sub p i s
 
 /-! ## 4. TODO — wiring to existing SGC modules (next increment)
 
