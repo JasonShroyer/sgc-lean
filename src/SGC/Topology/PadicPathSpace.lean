@@ -183,6 +183,21 @@ theorem digitSeq_toZModPow (p : ℕ) [Fact p.Prime] (s : ℕ → Fin p) (n : ℕ
   · intro i
     exact dvd_digitVal_succ_sub p i s
 
+/-- **Injectivity of the comparison map.** Distinct symbolic paths give distinct p-adic
+    integers: if two paths share every depth-`n` residue they share every digit. Uses
+    `digitSeq_toZModPow` to pull equality back to the finite quotients, then injectivity of
+    the `digitEncoding` equivalence. -/
+theorem digitSeq_to_padicInt_injective (p : ℕ) [Fact p.Prime] :
+    Function.Injective (digitSeq_to_padicInt p) := by
+  intro s t h
+  funext k
+  have hk : digitVal p (k + 1) s = digitVal p (k + 1) t := by
+    rw [← digitSeq_toZModPow p s, ← digitSeq_toZModPow p t, h]
+  rw [digitVal, digitVal] at hk
+  have he := (digitEncoding p (k + 1)).injective hk
+  have := congrFun he (Fin.last k)
+  simpa [truncate, Fin.val_last] using this
+
 /-! ## 4. TODO — wiring to existing SGC modules (next increment)
 
 * `coarseGraining_is_truncation`: identify `Renormalization.OptimalPartition`'s
