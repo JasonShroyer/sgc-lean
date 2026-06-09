@@ -16,10 +16,14 @@ Discipline (CANTOR_LAYER_SPEC §0): every open result is a `theorem … := by so
 (a kernel-tracked debt). We add **no new `axiom`s** (the tree already has 229).
 
 What is and isn't here:
-- PROVEN: the symbolic path space, depth-`n` truncation + its defining equation, the
-  depth-`n` quotient cardinality `|Fin n → Fin p| = pⁿ` (`card_truncations`), and the
-  canonical base-`p` digit encoding `(Fin n → Fin p) ≃ ZMod (p^n)` (`digitEncoding`).
-- `sorry`-GATED (one real debt): the homeomorphism to `ℤ_[p]` under uniform p-ary branching.
+- PROVEN (Mathlib-checked, **no `sorry`**; `#print axioms` = {propext, Classical.choice,
+  Quot.sound}): the symbolic path space, depth-`n` truncation + its defining equation, the
+  depth-`n` quotient cardinality `|Fin n → Fin p| = pⁿ` (`card_truncations`), the canonical
+  base-`p` digit encoding (`digitEncoding`), the finite inverse-system law
+  (`castHom_digitEncoding`), the comparison map `digitSeq_to_padicInt` with its intertwining
+  law (`digitSeq_toZModPow`), injectivity and surjectivity, and the **keystone**
+  homeomorphism `PathSpace (Fin p) ≃ₜ ℤ_[p]` (`pathSpace_homeo_padicInt`).
+- NO open `sorry`s remain in this file (the Tier-1 debt is discharged).
 - NOT here (deliberately): any `q(n) = 1 + 1/n` claim (refuted — see spec §6),
   `MirandaBridge` (no discrete current exists yet), `validity_horizon_from_depth`.
 -/
@@ -32,7 +36,7 @@ noncomputable section
 
 namespace SGC.Topology.PadicPathSpace
 
-open Topology
+open Topology Filter
 
 /-! ## 1. Symbolic trajectory space over a finite discrete alphabet
 
@@ -64,24 +68,13 @@ theorem card_truncations (p n : ℕ) :
     Fintype.card (Fin n → Fin p) = p ^ n := by
   simp [Fintype.card_pi]
 
-/-! ## 2. Identification with the p-adic integers (the keystone) -/
+/-! ## 2. Identification with the p-adic integers (the keystone)
 
-/-- **Keystone (Tier 1), `sorry`-gated.** Under uniform p-ary branching, the symbolic
-    trajectory space is homeomorphic to the p-adic integers `ℤ_[p]`.
-
-    Stated as `Nonempty (… ≃ₜ …)`: a homeomorphism exists. The *content* we ultimately
-    want is the stronger statement that some such homeomorphism **intertwines** `truncate`
-    with `PadicInt.toZModPow` (an iso of inverse systems) — recorded as a TODO below, since
-    it first needs `digitEncoding` (§3) to align the finite quotients.
-
-    NOTE (spec §4.2): the bare homeomorphism is content-light (all Cantor spaces are
-    homeomorphic), and Mathlib likely does **not** ship Brouwer's Cantor characterisation
-    as a ready lemma — discharging this honestly probably needs the explicit digit-wise
-    construction, mirroring `PadicInt`'s own. The kernel will tell us. -/
-theorem pathSpace_homeo_padicInt (p : ℕ) [Fact p.Prime]
-    [TopologicalSpace (Fin p)] [DiscreteTopology (Fin p)] :
-    Nonempty (PathSpace (Fin p) ≃ₜ ℤ_[p]) := by
-  sorry
+The keystone homeomorphism `pathSpace_homeo_padicInt` is **proven at the end of this file**.
+It is built on the explicit comparison map `digitSeq_to_padicInt` (§3¾), which by construction
+**intertwines** `truncate` with `PadicInt.toZModPow` (an iso of inverse systems). So the
+existence witness is the canonical digit-wise identification — *not* the content-light
+"all Cantor spaces are homeomorphic" appeal (spec §4.2): no Brouwer characterisation is used. -/
 
 /-! ## 3. The finite p-adic quotient -/
 
@@ -197,6 +190,112 @@ theorem digitSeq_to_padicInt_injective (p : ℕ) [Fact p.Prime] :
   have he := (digitEncoding p (k + 1)).injective hk
   have := congrFun he (Fin.last k)
   simpa [truncate, Fin.val_last] using this
+
+/-! ## 3⅞. The inverse digit tower of a p-adic integer (PROVEN) -/
+
+/-- The depth-`n` digit block of `y : ℤ_[p]`: the `digitEncoding`-preimage of its residue. -/
+def gtower (p : ℕ) [Fact p.Prime] (y : ℤ_[p]) (n : ℕ) : Fin n → Fin p :=
+  (digitEncoding p n).symm (PadicInt.toZModPow n y)
+
+/-- The digit tower is consistent: dropping the top digit at depth `n+1` recovers depth `n`. -/
+theorem gtower_castSucc (p : ℕ) [Fact p.Prime] (y : ℤ_[p]) (n : ℕ) (i : Fin n) :
+    gtower p y (n + 1) i.castSucc = gtower p y n i := by
+  unfold gtower
+  have h1 : digitEncoding p (n + 1)
+      ((digitEncoding p (n + 1)).symm (PadicInt.toZModPow (n + 1) y))
+      = PadicInt.toZModPow (n + 1) y := (digitEncoding p (n + 1)).apply_symm_apply _
+  have key := castHom_digitEncoding p n
+    ((digitEncoding p (n + 1)).symm (PadicInt.toZModPow (n + 1) y))
+  rw [h1] at key
+  have hcast : ZMod.castHom (pow_dvd_pow p n.le_succ) (ZMod (p ^ n))
+      (PadicInt.toZModPow (n + 1) y) = PadicInt.toZModPow n y := by
+    rw [ZMod.castHom_apply]; exact PadicInt.cast_toZModPow n (n + 1) n.le_succ y
+  rw [hcast] at key
+  have hsymm : (digitEncoding p n).symm (PadicInt.toZModPow n y)
+      = fun i => (digitEncoding p (n + 1)).symm (PadicInt.toZModPow (n + 1) y) i.castSucc :=
+    (digitEncoding p n).symm_apply_eq.mpr key
+  exact (congrFun hsymm i).symm
+
+/-- Climbing law: the digit tower at any depth `N > k` agrees with the depth-`(k+1)` block at
+    position `k`. The consistency that lets a single path realise every truncation. -/
+theorem gtower_top (p : ℕ) [Fact p.Prime] (y : ℤ_[p]) :
+    ∀ N k (hk : k < N), gtower p y N ⟨k, hk⟩ = gtower p y (k + 1) (Fin.last k) := by
+  intro N
+  induction N with
+  | zero => intro k hk; exact absurd hk (Nat.not_lt_zero k)
+  | succ N ih =>
+    intro k hk
+    rcases Nat.lt_succ_iff_lt_or_eq.mp hk with h | h
+    · have hcoe : (⟨k, hk⟩ : Fin (N + 1)) = (⟨k, h⟩ : Fin N).castSucc := Fin.ext rfl
+      rw [hcoe, gtower_castSucc p y N ⟨k, h⟩, ih k h]
+    · subst h; rfl
+
+/-! ## 3⁹⁄₁₀. Surjectivity, and the keystone homeomorphism (PROVEN) -/
+
+/-- **Surjectivity of the comparison map.** Every p-adic integer is realised by a symbolic
+    path — its own digit tower. With injectivity, `digitSeq_to_padicInt` is a bijection. -/
+theorem digitSeq_to_padicInt_surjective (p : ℕ) [Fact p.Prime] :
+    Function.Surjective (digitSeq_to_padicInt p) := by
+  intro y
+  refine ⟨fun k => gtower p y (k + 1) (Fin.last k), ?_⟩
+  have htr : ∀ n, truncate (Fin p) n (fun k => gtower p y (k + 1) (Fin.last k)) = gtower p y n := by
+    intro n
+    funext i
+    have hi : (⟨i.val, i.isLt⟩ : Fin n) = i := Fin.ext rfl
+    calc truncate (Fin p) n (fun k => gtower p y (k + 1) (Fin.last k)) i
+        = gtower p y (i.val + 1) (Fin.last i.val) := rfl
+      _ = gtower p y n ⟨i.val, i.isLt⟩ := (gtower_top p y n i.val i.isLt).symm
+      _ = gtower p y n i := by rw [hi]
+  refine PadicInt.ext_of_toZModPow.mp fun n => ?_
+  rw [digitSeq_toZModPow]
+  show digitEncoding p n (truncate (Fin p) n (fun k => gtower p y (k + 1) (Fin.last k)))
+      = PadicInt.toZModPow n y
+  rw [htr n]
+  exact (digitEncoding p n).apply_symm_apply _
+
+/-- The symbolic path space and `ℤ_[p]` are in canonical bijection via `digitSeq_to_padicInt`. -/
+def pathSpaceEquivPadicInt (p : ℕ) [Fact p.Prime] : PathSpace (Fin p) ≃ ℤ_[p] :=
+  Equiv.ofBijective (digitSeq_to_padicInt p)
+    ⟨digitSeq_to_padicInt_injective p, digitSeq_to_padicInt_surjective p⟩
+
+/-- **Continuity of the comparison map.** Depth-`n` truncation is locally constant (it factors
+    through the discrete finite quotient), and depth-`n` agreement forces the p-adic distance
+    below `p^{-n}`; hence `digitSeq_to_padicInt` is continuous. -/
+theorem continuous_digitSeq_to_padicInt (p : ℕ) [Fact p.Prime]
+    [TopologicalSpace (Fin p)] [DiscreteTopology (Fin p)] :
+    Continuous (digitSeq_to_padicInt p) := by
+  have hp0 : (0 : ℝ) < p := by exact_mod_cast (Fact.out : p.Prime).pos
+  have hp1 : (1 : ℝ) < p := by exact_mod_cast (Fact.out : p.Prime).one_lt
+  have hr : (p : ℝ)⁻¹ < 1 := by rw [inv_eq_one_div, div_lt_one hp0]; exact hp1
+  refine continuous_iff_continuousAt.2 fun s => ?_
+  have htend : Tendsto (digitSeq_to_padicInt p) (nhds s) (nhds (digitSeq_to_padicInt p s)) := by
+    refine Metric.tendsto_nhds.2 fun ε hε => ?_
+    obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one hε hr
+    have hpow : (p : ℝ) ^ (-(n : ℤ)) = ((p : ℝ)⁻¹) ^ n := by
+      rw [zpow_neg, zpow_natCast, inv_pow]
+    have hcont_tr : Continuous (truncate (Fin p) n) := continuous_pi fun i => continuous_apply _
+    have hopen : IsOpen (truncate (Fin p) n ⁻¹' {truncate (Fin p) n s}) :=
+      hcont_tr.isOpen_preimage _ (isOpen_discrete _)
+    filter_upwards [hopen.mem_nhds rfl] with t ht
+    have hteq : truncate (Fin p) n t = truncate (Fin p) n s := ht
+    calc dist (digitSeq_to_padicInt p t) (digitSeq_to_padicInt p s)
+        ≤ (p : ℝ) ^ (-(n : ℤ)) := by
+          rw [dist_eq_norm, PadicInt.norm_le_pow_iff_mem_span_pow, ← PadicInt.ker_toZModPow,
+            RingHom.mem_ker, map_sub, sub_eq_zero, digitSeq_toZModPow, digitSeq_toZModPow]
+          simp only [digitVal, hteq]
+      _ < ε := by rw [hpow]; exact hn
+  exact htend
+
+/-- **Keystone (Tier 1), PROVEN.** Under uniform p-ary branching, the symbolic trajectory
+    space is homeomorphic to `ℤ_[p]`. The witness is the canonical comparison map
+    `digitSeq_to_padicInt` (a continuous bijection from a compact space to a Hausdorff space),
+    which by construction intertwines `truncate` with `PadicInt.toZModPow` — so this is the
+    content-rich identification, not a bare "all Cantor spaces are homeomorphic" appeal. -/
+theorem pathSpace_homeo_padicInt (p : ℕ) [Fact p.Prime]
+    [TopologicalSpace (Fin p)] [DiscreteTopology (Fin p)] :
+    Nonempty (PathSpace (Fin p) ≃ₜ ℤ_[p]) :=
+  ⟨Continuous.homeoOfEquivCompactToT2 (f := pathSpaceEquivPadicInt p)
+    (continuous_digitSeq_to_padicInt p)⟩
 
 /-! ## 4. TODO — wiring to existing SGC modules (next increment)
 
