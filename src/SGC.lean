@@ -152,6 +152,12 @@ import SGC.EmergenceEquivalence
 -- the discrete top-down constraint structure (compositional gluing)
 import SGC.Structure.CellularSheaf
 
+-- Fisher-Noether Bridge: min-variance quadratic forms = null Fisher directions
+-- (Link 1 proven 2026-06; Bridge composed 2026-06-10 after deleting the
+-- inconsistent expfam axiom). 2 sorries visible by design:
+-- 1 deferred-standard (Rayleigh) + 1 open research (Davis-Kahan).
+import SGC.InformationGeometry.FisherNoetherBridge
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════

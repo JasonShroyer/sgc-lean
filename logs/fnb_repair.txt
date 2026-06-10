@@ -1,0 +1,5 @@
+﻿ΓÜá [2274/2274] Built SGC.InformationGeometry.FisherNoetherBridge (7.9s)
+warning: src/SGC/InformationGeometry/FisherNoetherBridge.lean:219:8: declaration uses 'sorry'
+warning: src/SGC/InformationGeometry/FisherNoetherBridge.lean:409:8: declaration uses 'sorry'
+Build completed successfully (2274 jobs).
+

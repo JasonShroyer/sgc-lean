@@ -308,16 +308,36 @@ to the hierarchical P* tower (Layer 4: nested abstractions → EGI).
     For P₁ ≤ P₂, this measures how much MORE spectral weight is destroyed by
     going to the coarser partition P₂ beyond what was already destroyed by P₁.
 
-    incremental_defect(P₁ → P₂) = ε(P₂) - ε(P₁) ≥ 0
+    incremental_defect(P₁ → P₂) = ε(P₂) - ε(P₁)
 
-    The inequality follows from `defect_antitone_on_coarse_domain`. -/
+    **WARNING (kernel finding, 2026-06-10)**: nonnegativity does NOT hold for
+    arbitrary partitions with P₁ ≤ P₂. Operator-norm defect is NOT antitone
+    under refinement: take L strongly lumpable w.r.t. the coarse P₂ but not
+    w.r.t. the finer P₁ (e.g. rows agreeing on block-sums into a merged block
+    but not into its parts) — then ε(P₂) = 0 < ε(P₁). The proven antitonicity
+    (`defect_antitone_on_coarse_domain`) is PER-FUNCTION on the coarse domain,
+    which does not lift to the operator norm: the P₁-sup ranges over test
+    functions outside the coarse subspace. Composability of the tower
+    therefore flows through the GAP (`dirichlet_gap_non_decrease`, proven) and
+    the per-function bound — not through op-norm defect monotonicity. -/
 def incremental_defect (L : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (P₁ P₂ : Partition V) : ℝ :=
   defect_cost L pi_dist hπ P₂ - defect_cost L pi_dist hπ P₁
 
-/-- Incremental defect is non-negative when P₁ refines P₂.
+/-- Incremental defect is non-negative — in the regime where both levels of
+    the tower are exact (strongly lumpable). Then both defects vanish
+    (`strong_implies_approx` + nonnegativity of the operator norm), and the
+    increment is exactly zero.
 
-    This follows from defect monotonicity: finer partitions have smaller defect. -/
+    **Honest scope** (2026-06-10 discharge): the strong-lumpability hypotheses
+    are NOT incidental — they cannot be dropped. Without them the statement is
+    FALSE (see the warning on `incremental_defect`): a generator can be exactly
+    lumpable at the coarse level while leaking at the fine level, making the
+    increment strictly negative. The earlier proof sketch ("defect ∝ 1/γ") was
+    a false bridge; no defect–gap reciprocal relation is needed, and none that
+    would imply op-norm monotonicity can exist. The refinement hypothesis and
+    the Rayleigh-set hypotheses are retained for interface stability with the
+    quantitative (ε > 0) generalization, where they become load-bearing. -/
 lemma incremental_defect_nonneg (L : Matrix V V ℝ) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v)
     (P₁ P₂ : Partition V) (h_refines : P₁ ≤ P₂)
@@ -326,10 +346,15 @@ lemma incremental_defect_nonneg (L : Matrix V V ℝ) (pi_dist : V → ℝ)
     (hS₂ : (RayleighSetBlockConstant L P₂ pi_dist).Nonempty)
     (hT_bdd : BddBelow (RayleighSet L pi_dist)) :
     0 ≤ incremental_defect L pi_dist hπ P₁ P₂ := by
-  -- This requires connecting defect_cost to DirichletGap_bar
-  -- The proof follows from dirichlet_gap_composition: γ(P₂) ≥ γ(P₁)
-  -- And the relationship: defect ∝ 1/γ
-  sorry -- OPEN: requires defect-gap relationship
+  have h₁ : defect_cost L pi_dist hπ P₁ = 0 :=
+    le_antisymm (Approximate.strong_implies_approx L P₁ pi_dist hπ hL₁)
+      (defect_cost_nonneg L pi_dist hπ P₁)
+  have h₂ : defect_cost L pi_dist hπ P₂ = 0 :=
+    le_antisymm (Approximate.strong_implies_approx L P₂ pi_dist hπ hL₂)
+      (defect_cost_nonneg L pi_dist hπ P₂)
+  unfold incremental_defect
+  rw [h₁, h₂]
+  norm_num
 
 /-- **Compositional Defect Bound** (The Hierarchical P* Tower Theorem):
 

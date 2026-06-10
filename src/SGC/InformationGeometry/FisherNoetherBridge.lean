@@ -207,24 +207,30 @@ theorem lifted_quadform_nonneg
     to finding the minimum eigenvector of the lifted covariance matrix.
 
     This is the EXACT computation performed by the SGC manifold-mode engine.
+    Stated for an arbitrary square dimension `m` (the lifted case is `m = d*d`);
+    the content is dimension-generic.
 
-    SORRY CLASSIFICATION: TRIVIAL — follows from the Rayleigh quotient characterization
-    of eigenvalues. The minimum of c^T Sigma c subject to ||c||=1 is achieved at the
-    eigenvector corresponding to the smallest eigenvalue of Sigma. -/
+    SORRY CLASSIFICATION: DEFERRED-STANDARD (2026-06-10 triage) — the Rayleigh
+    quotient characterization of the least eigenvalue of a real symmetric
+    matrix. Bedrock spectral theory, not SGC content: the discharge path is
+    Mathlib's `Matrix.IsHermitian.spectral_theorem`, and proof effort is
+    deliberately deferred per the strategy of spending attention only on
+    non-trivial SGC-specific mathematics. -/
 theorem min_variance_is_min_eigenvector
-    (Sigma : Matrix (Fin (d * d)) (Fin (d * d)) ℝ)
+    {m : ℕ}
+    (Sigma : Matrix (Fin m) (Fin m) ℝ)
     (hSigma : Sigma.IsSymm)
-    (hPSD : ∀ v : Fin (d * d) → ℝ, 0 ≤ ∑ i, ∑ j, v i * Sigma i j * v j)
-    (c_star : Fin (d * d) → ℝ)
+    (hPSD : ∀ v : Fin m → ℝ, 0 ≤ ∑ i, ∑ j, v i * Sigma i j * v j)
+    (c_star : Fin m → ℝ)
     (hNorm : ∑ i, c_star i ^ 2 = 1)
-    (hMin : ∀ c : Fin (d * d) → ℝ, ∑ i, c i ^ 2 = 1 →
+    (hMin : ∀ c : Fin m → ℝ, ∑ i, c i ^ 2 = 1 →
       ∑ i, ∑ j, c_star i * Sigma i j * c_star j ≤
       ∑ i, ∑ j, c i * Sigma i j * c j) :
     -- c_star is the eigenvector of Sigma with smallest eigenvalue
     ∃ lam_min : ℝ, (∀ i, ∑ j, Sigma i j * c_star j = lam_min * c_star i) ∧
-      (∀ lam : ℝ, (∃ v : Fin (d*d) → ℝ, v ≠ 0 ∧ ∀ i, ∑ j, Sigma i j * v j = lam * v i) →
+      (∀ lam : ℝ, (∃ v : Fin m → ℝ, v ≠ 0 ∧ ∀ i, ∑ j, Sigma i j * v j = lam * v i) →
         lam_min ≤ lam) := by
-  -- TRIVIAL: standard Rayleigh quotient / spectral theorem for symmetric matrices
+  -- DEFERRED-STANDARD: Rayleigh quotient / spectral theorem for symmetric matrices
   sorry
 
 /-! ## Section 2: Exponential Family Fisher Information
@@ -247,22 +253,31 @@ structure ExponentialFamily (m : ℕ) where
   /-- The log-partition function A(θ) -/
   logPartition : (Fin m → ℝ) → ℝ
 
-/-- Fisher information matrix for an exponential family.
-    For exponential families, I(θ) = ∇²A(θ) = Cov_θ[T(x)].
-    This is a CLASSICAL result. -/
-def expFamFisherInfo (E : ExponentialFamily m) : Matrix (Fin m) (Fin m) ℝ :=
-  -- Axiomatized: the Hessian of the log-partition function
-  Matrix.of fun i j => 0  -- placeholder
+/-! **Link 2 (Amari–Nagaoka Thm 3.3): Fisher information = covariance of the
+sufficient statistic.** For an exponential family p(x; θ) ∝ exp(θᵀ T(x)),
+I(θ) = ∇²A(θ) = Cov_θ[T(x)].
 
-/-- **THEOREM (Link 2, Classical):**
-    For an exponential family with sufficient statistic T(x) = vec(x x^T),
-    the Fisher information matrix equals the covariance of T(x).
+**REFUTATION OF THE AXIOMATIZED FORM (kernel finding, 2026-06-10)**: an earlier
+version of this file carried
 
-    SORRY CLASSIFICATION: CLASSICAL — Amari & Nagaoka Thm 3.3 -/
-axiom expfam_fisher_is_covariance
-    {m : ℕ} (E : ExponentialFamily m)
-    (Sigma_T : Matrix (Fin m) (Fin m) ℝ) :
-    expFamFisherInfo E = Sigma_T
+    axiom expfam_fisher_is_covariance (E) (Sigma_T : Matrix (Fin m) (Fin m) ℝ) :
+        expFamFisherInfo E = Sigma_T
+
+with `Sigma_T` universally quantified and UNCONSTRAINED, and `expFamFisherInfo`
+a placeholder `0`-matrix. That axiom is not merely false — it is logically
+INCONSISTENT: instantiating `Sigma_T := 0` and `Sigma_T := 1` derives
+`(0 : Matrix (Fin m) (Fin m) ℝ) = 1`, hence `False` for m ≥ 1. It was never
+reachable from the build gate, so no wired theorem ever depended on it; the
+containment held by construction.
+
+Both the placeholder definition and the axiom are DELETED rather than repaired:
+the honest statement needs a real measure-theoretic Fisher information
+(∇²A(θ) as a second Fréchet derivative of the log-partition function), which is
+bedrock calculus, deliberately deferred. Until that exists, the identification
+"lifted covariance = Fisher information" enters downstream results ONLY through
+the docstring interpretation of `min_variance_is_null_fisher`, whose statement
+is now purely about the (well-defined) lifted covariance matrix. Never as an
+axiom. -/
 
 /-- **COROLLARY (The Bridge):**
     Combining Link 1 and Link 2: for an exponential family with quadratic
@@ -273,22 +288,30 @@ axiom expfam_fisher_is_covariance
 
     The engine's computation IS finding the null Fisher direction.
 
-    SORRY CLASSIFICATION: TRIVIAL given Links 1 and 2 — just compose the two results. -/
+    The statement is about the lifted covariance `Sigma_lifted` directly — the
+    reading of `Sigma_lifted` as the Fisher information I(θ) is Amari–Nagaoka
+    (Link 2, see the refutation note above), which is interpretation, not a
+    formal premise. Symmetry and positive semidefiniteness are honest
+    hypotheses; in the engine's instantiation hPSD is SUPPLIED STRUCTURALLY by
+    `lifted_quadform_nonneg` (Link 1), not assumed.
+
+    STATUS (2026-06-10): PROVEN by direct application of the Rayleigh
+    characterization; the single remaining plank is the deferred-standard
+    `min_variance_is_min_eigenvector`. -/
 theorem min_variance_is_null_fisher
-    {m : ℕ} (E : ExponentialFamily m)
-    (I_fisher : Matrix (Fin m) (Fin m) ℝ)
-    (hFisher : expFamFisherInfo E = I_fisher)
+    {m : ℕ}
     (Sigma_lifted : Matrix (Fin m) (Fin m) ℝ)
-    (hSigma_eq_Fisher : Sigma_lifted = I_fisher)
+    (hSymm : Sigma_lifted.IsSymm)
+    (hPSD : ∀ v : Fin m → ℝ, 0 ≤ ∑ i, ∑ j, v i * Sigma_lifted i j * v j)
     (c_star : Fin m → ℝ) (hNorm : ∑ i, c_star i ^ 2 = 1)
     (hMin : ∀ c_test : Fin m → ℝ, ∑ i, c_test i ^ 2 = 1 →
       ∑ i, ∑ j, c_star i * Sigma_lifted i j * c_star j ≤
       ∑ i, ∑ j, c_test i * Sigma_lifted i j * c_test j) :
     -- c_star is a null (or minimum) eigenvector of the Fisher information
-    ∃ lam_min, (∀ i, ∑ j, I_fisher i j * c_star j = lam_min * c_star i) ∧
-      ∀ lam, (∃ w : Fin m → ℝ, w ≠ 0 ∧ ∀ i, ∑ j, I_fisher i j * w j = lam * w i) → lam_min ≤ lam := by
-  -- TRIVIAL: substitute hSigma_eq_Fisher into the Rayleigh quotient result
-  sorry
+    ∃ lam_min, (∀ i, ∑ j, Sigma_lifted i j * c_star j = lam_min * c_star i) ∧
+      ∀ lam, (∃ w : Fin m → ℝ, w ≠ 0 ∧ ∀ i, ∑ j, Sigma_lifted i j * w j = lam * w i) →
+        lam_min ≤ lam :=
+  min_variance_is_min_eigenvector Sigma_lifted hSymm hPSD c_star hNorm hMin
 
 
 /-! ## Section 3: Open Gap — Minimum Variance ↔ Nearest Integral of Motion
@@ -445,11 +468,16 @@ contaminates the manifold-mode result.
     the magnitude-limited selection function (distant stars must be brighter =
     more massive = different orbits), producing the observed contamination.
 
-    SORRY CLASSIFICATION: CLASSICAL — this is a standard result in importance
-    sampling / measure tilting. The proof uses the change-of-measure formula
-    for expectations and the definition of variance.
+    STATUS (2026-06-10 honesty relabel): **PLACEHOLDER — VACUOUS AS STATED.**
+    The conclusion exhibits the correction as the literal difference
+    `var_weighted - var_unweighted`, which any two reals satisfy; the present
+    statement therefore carries NO information and its "proof" is `ring`. The
+    real content — the change-of-measure identity expressing the correction
+    through Cov_f[Q, log S] — is CLASSICAL (importance sampling / measure
+    tilting) and is deferred as standard machinery. Until it is strengthened,
+    this theorem must not be cited as a result.
 
-    Proof sketch:
+    Intended sketch (for the future strengthening):
     E_{f·S}[Q] = E_f[Q · S] / E_f[S]
     Var_{f·S}[Q] = E_{f·S}[Q²] - (E_{f·S}[Q])²
     Expand each term using the change-of-measure formula and collect. -/
@@ -503,17 +531,29 @@ theorem shuffle_gap_detects_contamination
   trivial
 
 
-/-! ## Summary: Classification of All Sorrys
+/-! ## Summary: Epistemic State of the File (refreshed 2026-06-10)
 
-1. `variance_as_lifted_quadform` — TRIVIAL: expand variance definition
-2. `min_variance_is_min_eigenvector` — TRIVIAL: Rayleigh quotient / spectral theorem
-3. `expfam_fisher_is_covariance` — CLASSICAL: Amari & Nagaoka Thm 3.3
-4. `min_variance_is_null_fisher` — TRIVIAL: compose Links 1 and 2
-5. `minvar_approximates_integral` — OPEN RESEARCH QUESTION (Phase 16)
-6. `selection_contamination_variance_shift` — CLASSICAL: change of measure
-7. `shuffle_gap_detects_contamination` — OPEN: permutation statistics
+PROVEN (kernel-checked, ε = 0):
+1. `variance_as_lifted_quadform` — Link 1 core identity (proven 2026-06-03)
+2. `lifted_quadform_nonneg` — structural PSD supply for the bridge
+3. `min_variance_is_null_fisher` — the Bridge, by composition (2026-06-10);
+   inherits exactly one deferred-standard plank (below)
 
-Total: 3 TRIVIAL, 2 CLASSICAL, 2 OPEN
+SORRIED, DEFERRED-STANDARD (bedrock, not SGC content — no attention spent):
+4. `min_variance_is_min_eigenvector` — Rayleigh / spectral theorem
+
+SORRIED, OPEN RESEARCH (the genuine frontier):
+5. `minvar_approximates_integral` — Davis–Kahan sin(θ) machinery (Phase 16)
+
+PLACEHOLDERS (compile, but carry no content — must not be cited):
+6. `selection_contamination_variance_shift` — vacuous; real version is
+   classical change-of-measure, deferred
+7. `shuffle_gap_detects_contamination` — `True`-conclusion stub
+
+DELETED (2026-06-10): `expFamFisherInfo` placeholder def + the
+`expfam_fisher_is_covariance` axiom — the axiom was logically INCONSISTENT
+(universally quantified unconstrained RHS; two instantiations derive `False`).
+See the Link 2 refutation note in Section 2.
 -/
 
 end SGC.InformationGeometry.FisherNoetherBridge

@@ -1,0 +1,52 @@
+﻿**Theorem (Compositional Defect Bound)**:
+If P₁ ≤ P₂ (P₁ refines P₂) and both have small defect, then the composite
+coarse-graining V → V/P₂ has bounded total defect.
+
+**Physical Interpretation**:
+- ε(P₁) = spectral weight destroyed going V → V/P₁
+- ε(P₂) = spectral weight destroyed going V → V/P₂
+- Since P₂ is coarser: ε(P₂) ≥ ε(P₁) (more destruction)
+- The incremental destruction is ε(P₂) - ε(P₁)
+
+**The Compositional Bound**:
+For a chain P₁ ≤ P₂, the defect at each level satisfies:
+  ε(P₂) ≤ ε(P₁) + incremental_defect(P₁ → P₂)
+
+This is equivalent to: defect is **sub-additive** along the refinement tower.
+
+**Why This Matters**:
+This theorem is the formal definition of **composable abstraction**. It says:
+- If you have two "good" coarse-grainings (low defect)
+- Their composition is also "good" (bounded defect)
+- Therefore: hierarchies of abstractions are stable
+
+This is the bridge from `constrained_update_orthogonal` (Layer 3: protected multi-P*)
+to the hierarchical P* tower (Layer 4: nested abstractions → EGI).
+-/
+
+/-- **Incremental Defect**: The additional defect incurred when coarsening from P₁ to P₂.
+
+    For P₁ ≤ P₂, this measures how much MORE spectral weight is destroyed by
+    going to the coarser partition P₂ beyond what was already destroyed by P₁.
+
+    incremental_defect(P₁ → P₂) = ε(P₂) - ε(P₁) ≥ 0
+
+    The inequality follows from `defect_antitone_on_coarse_domain`. -/
+def incremental_defect (L : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (P₁ P₂ : Partition V) : ℝ :=
+  defect_cost L pi_dist hπ P₂ - defect_cost L pi_dist hπ P₁
+
+/-- Incremental defect is non-negative when P₁ refines P₂.
+
+    This follows from defect monotonicity: finer partitions have smaller defect. -/
+lemma incremental_defect_nonneg (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v)
+    (P₁ P₂ : Partition V) (h_refines : P₁ ≤ P₂)
+    (hL₁ : IsStronglyLumpable L P₁) (hL₂ : IsStronglyLumpable L P₂)
+    (hS₁ : (RayleighSetBlockConstant L P₁ pi_dist).Nonempty)
+    (hS₂ : (RayleighSetBlockConstant L P₂ pi_dist).Nonempty)
+    (hT_bdd : BddBelow (RayleighSet L pi_dist)) :
+    0 ≤ incremental_defect L pi_dist hπ P₁ P₂ := by
+  -- This requires connecting defect_cost to DirichletGap_bar
+  -- The proof follows from dirichlet_gap_composition: γ(P₂) ≥ γ(P₁)
+  -- And the relationship: defect ∝ 1/γ
