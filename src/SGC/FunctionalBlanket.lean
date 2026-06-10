@@ -150,6 +150,79 @@ def grokkingThreshold : ℝ := 0.15
 def grokkingDetected (h : HiddenStates V) (pi_dist : V → ℝ) (numClasses : ℕ) : Prop :=
   FunctionalDefect h pi_dist numClasses < grokkingThreshold
 
+/-! ### 5b. The Separation–Defect Duality (kernel adjudication, 2026-06-09)
+
+A causal-structure question was raised about the "master cascade": is
+*defect collapse ⟺ separation explosion* a genuine equivalence, or only a
+one-way implication with a possible counterexample ("clusters widely separated
+in space but within-class variance still large")?
+
+The kernel's answer: **for SGC's metrics it is an exact algebraic identity,
+not a contingent equivalence.** `ClassSeparation` is Fisher's criterion —
+between-scatter measured RELATIVE to within-scatter — so the proposed
+counterexample is impossible by construction: inflating within-class scatter
+deflates the separation by definition. The two observables are images of one
+quantity under the Möbius transform `S = 1/D - 1`; collapse and explosion are
+the SAME event in two coordinate systems, and no causal link between them is
+needed (or possible). The genuinely one-way arrow in the cascade is elsewhere:
+protection ⇏ collapse (see `adiabatic_freeze` in
+`SGC.ContinualLearning.AdiabaticInvariant`). -/
+
+/-- **Separation–Defect Duality**: `S = 1/D - 1` wherever both ratios are
+    nondegenerate. Separation and defect are one observable in two charts. -/
+theorem separation_defect_duality
+    (h : HiddenStates V) (pi_dist : V → ℝ) (numClasses : ℕ)
+    (h_within : withinClassVariance h pi_dist numClasses ≠ 0)
+    (h_total : totalVariance h pi_dist ≠ 0) :
+    ClassSeparation h pi_dist numClasses =
+      1 / FunctionalDefect h pi_dist numClasses - 1 := by
+  unfold ClassSeparation FunctionalDefect
+  field_simp
+
+/-- Inverse chart: `D = 1/(S + 1)`. -/
+theorem defect_from_separation
+    (h : HiddenStates V) (pi_dist : V → ℝ) (numClasses : ℕ)
+    (h_within : withinClassVariance h pi_dist numClasses ≠ 0) :
+    FunctionalDefect h pi_dist numClasses =
+      1 / (ClassSeparation h pi_dist numClasses + 1) := by
+  unfold ClassSeparation FunctionalDefect
+  have hsum : (totalVariance h pi_dist - withinClassVariance h pi_dist numClasses) /
+        withinClassVariance h pi_dist numClasses + 1 =
+      totalVariance h pi_dist / withinClassVariance h pi_dist numClasses := by
+    field_simp
+  rw [hsum, one_div_div]
+
+/-- **Separation explosion ⟺ defect collapse**, in threshold form: the
+    separation exceeds `S` exactly when the defect drops below `1/(S+1)`
+    (stated multiplicatively to avoid division). The equivalence holds for
+    EVERY threshold simultaneously — there is no regime where one explodes
+    without the other collapsing. Arrow 2 of the master cascade is therefore
+    an identity, not a causal hypothesis. -/
+theorem separation_explosion_iff_defect_collapse
+    (h : HiddenStates V) (pi_dist : V → ℝ) (numClasses : ℕ)
+    (h_within : 0 < withinClassVariance h pi_dist numClasses)
+    (h_total : 0 < totalVariance h pi_dist)
+    (S : ℝ) :
+    S < ClassSeparation h pi_dist numClasses ↔
+      (S + 1) * FunctionalDefect h pi_dist numClasses < 1 := by
+  unfold ClassSeparation FunctionalDefect
+  set w := withinClassVariance h pi_dist numClasses with hw_def
+  set t := totalVariance h pi_dist with ht_def
+  constructor
+  · intro hgt
+    have h1 : S * w < t - w := by
+      have h2 := mul_lt_mul_of_pos_right hgt h_within
+      rwa [div_mul_cancel₀ _ (ne_of_gt h_within)] at h2
+    rw [show (S + 1) * (w / t) = ((S + 1) * w) / t by ring, div_lt_one h_total]
+    linarith
+  · intro hlt
+    rw [show (S + 1) * (w / t) = ((S + 1) * w) / t by ring, div_lt_one h_total] at hlt
+    by_contra hcon
+    push_neg at hcon
+    have h4 := mul_le_mul_of_nonneg_right hcon h_within.le
+    rw [div_mul_cancel₀ _ (ne_of_gt h_within)] at h4
+    linarith
+
 /-! ### 6. Variance Infrastructure
 
 The ANOVA backbone: with nonnegative weights, the class mean minimizes the

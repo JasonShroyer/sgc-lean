@@ -142,6 +142,16 @@ import SGC.Renormalization.QuotientGenerator
 -- The Grokking Rosetta Stone: unified consolidation exports
 import SGC.Grokking
 
+-- Emergence Equivalence: the four-way characterization of emergence (P* is
+-- simultaneously information-optimal, thermodynamically efficient, and
+-- variationally stable) + the Persistence Theorem (to_persist_is_to_predict).
+-- Proven sorry-free 2026-06; wired 2026-06-09 (was invisible to the gate).
+import SGC.EmergenceEquivalence
+
+-- Cellular Sheaves: local stalks, restriction maps, sheaf consistency —
+-- the discrete top-down constraint structure (compositional gluing)
+import SGC.Structure.CellularSheaf
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════

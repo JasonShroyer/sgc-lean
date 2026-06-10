@@ -6,6 +6,7 @@ Authors: SGC Formalization Team
 import SGC.Thermodynamics.EntropyProduction
 import SGC.FunctionalBlanket
 import SGC.ContinualLearning.AdiabaticInvariant
+import SGC.Renormalization.OptimalPartition
 
 /-!
 # The Renner-SGC Bridge Theorem
@@ -254,6 +255,65 @@ theorem collapsed_states_imply_exact_lumpability
         exact hb hz.symm
       rw [h_L_kernel x z (Ne.symm hzx), h_L_kernel y z (Ne.symm hzy), hs]
     · rfl
+
+/-! ### 2b. The Alignment Theorem: imposed classes are discovered optima -/
+
+/-- **The Alignment Theorem** (imposed = discovered, at ε = 0, given autonomy).
+
+    This answers the question *"who assigns the equivalence classes?"* at the
+    ground case. The `targets` labelling in `HiddenStates` is observer-imposed,
+    with no a-priori tie to the dynamics. But when
+    (i)  the representation has fully collapsed (within-class variance = 0),
+    (ii) the generator is autonomous — produced from the system's own states
+         through a transition kernel (`h_L_kernel`), and
+    (iii) the partition is the one induced by the labels (`h_class`),
+    then the imposed partition achieves `defect_cost = 0`: it is a GLOBAL
+    MINIMIZER of the leakage defect over ALL partitions of the state space.
+    The labels the observer imposed turn out to be classes the dynamics itself
+    certifies — the imposed equivalence IS a discovered optimal partition.
+
+    Mechanism: `collapsed_states_imply_exact_lumpability` + the operator-norm
+    characterization `defect_cost = opNorm(D_P)` + nonnegativity of the norm. -/
+theorem alignment_theorem
+    (h : HiddenStates V) (pi_dist : V → ℝ) (numClasses : ℕ)
+    (P : Partition V) (L : Matrix V V ℝ) (kernelFn : ℝ → ℝ → ℝ)
+    (hπ : ∀ x, 0 < pi_dist x)
+    (h_class : ∀ x y, P.quot_map x = P.quot_map y ↔ h.targets x = h.targets y)
+    (h_L_kernel : ∀ x y, x ≠ y → L x y = kernelFn (h.states x) (h.states y))
+    (h_rowsum : ∀ x, ∑ y, L x y = 0)
+    (h_targets : ∀ x, h.targets x < numClasses)
+    (h_collapse : withinClassVariance h pi_dist numClasses = 0) :
+    Renormalization.defect_cost L pi_dist hπ P = 0 ∧
+    ∀ Q : Partition V,
+      Renormalization.defect_cost L pi_dist hπ P ≤ Renormalization.defect_cost L pi_dist hπ Q := by
+  have h_lump := collapsed_states_imply_exact_lumpability h pi_dist numClasses
+    P L kernelFn hπ h_class h_L_kernel h_rowsum h_targets h_collapse
+  have h_le : Renormalization.defect_cost L pi_dist hπ P ≤ 0 := h_lump
+  have h_zero : Renormalization.defect_cost L pi_dist hπ P = 0 :=
+    le_antisymm h_le (Renormalization.defect_cost_nonneg L pi_dist hπ P)
+  exact ⟨h_zero, Renormalization.zero_defect_is_global_min L pi_dist hπ P h_zero⟩
+
+/-- **Discovery requires a bottleneck** (the degeneracy caveat to the Alignment
+    Theorem). Zero defect does NOT single out the class partition: the trivial
+    (discrete) partition — every state its own block — also achieves
+    `defect_cost = 0`, unconditionally, for every generator. So "the dynamics
+    discovers its classes" is ill-posed as an unconstrained minimization: the
+    argmin of `defect_cost` is degenerate. Discovery is only meaningful under
+    a capacity constraint (a bounded number of blocks / `numClasses`), which is
+    exactly the resource bottleneck of a finite learning system. The constraint
+    is not a technicality — it is where the physics of abstraction lives
+    (cf. `SGC.ComplexityRelativity`: complexity is observer-relative). -/
+theorem discovery_requires_bottleneck
+    (L : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x) :
+    Renormalization.defect_cost L pi_dist hπ (Renormalization.trivialPartition V) = 0 := by
+  have h_op : Approximate.DefectOperator L (Renormalization.trivialPartition V) pi_dist hπ = 0 := by
+    apply LinearMap.ext
+    intro f
+    rw [Renormalization.trivial_partition_zero_defect L pi_dist hπ f]
+    rfl
+  unfold Renormalization.defect_cost
+  rw [h_op]
+  exact Renormalization.opNorm_pi_zero pi_dist hπ
 
 /-! ### 3. The Renner-SGC Bridge Theorem -/
 

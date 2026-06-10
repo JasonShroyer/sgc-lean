@@ -1,0 +1,209 @@
+﻿ΓÜá [3017/3042] Replayed SGC.Axioms.Geometry
+warning: src/SGC/Axioms/Geometry.lean:279:48: This simp argument is unused:
+  mul_left_comm
+
+Hint: Omit it from the simp argument list.
+  simp only [mul_assoc, mul_comm (pi_dist _), mul_l╠╡e╠╡f╠╡t╠╡_╠╡c╠╡o╠╡m╠╡m╠╡,╠╡ ╠╡m╠╡u╠╡l╠╡_╠╡sum]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: src/SGC/Axioms/Geometry.lean:402:8: 'change
+  toE (iso (A (iso.symm (fromE (x + y))))) =
+    toE (iso (A (iso.symm (fromE x)))) + toE (iso (A (iso.symm (fromE y))))' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+ΓÜá [3021/3042] Replayed SGC.Renormalization.Lumpability
+warning: src/SGC/Renormalization/Lumpability.lean:335:0: automatically included section variable(s) unused in theorem `SGC.lift_is_block_constant`:
+  [Fintype V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Renormalization/Lumpability.lean:545:31: This simp argument is unused:
+  DirichletForm_bar
+
+Hint: Omit it from the simp argument list.
+  s╠╡i╠╡m╠╡p╠╡ ╠╡o╠╡n╠╡l╠╡y╠╡ ╠╡[╠╡R╠╡a╠╡y╠╡l╠╡e╠╡i╠╡g╠╡h╠╡Q╠╡u╠╡o╠╡t╠╡i╠╡e╠╡n╠╡t╠╡,╠╡ ╠╡D╠╡i╠╡r╠╡i╠╡c╠╡h╠╡l╠╡e╠╡t╠╡F╠╡o╠╡r╠╡m╠╡_╠╡b╠╡a╠╡r╠╡]╠╡ ╠╡a╠╡t╠╡ ╠╡*╠╡s╠▓i╠▓m╠▓p╠▓ ╠▓o╠▓n╠▓l╠▓y╠▓ ╠▓[╠▓R╠▓a╠▓y╠▓l╠▓e╠▓i╠▓g╠▓h╠▓Q╠▓u╠▓o╠▓t╠▓i╠▓e╠▓n╠▓t╠▓]╠▓ ╠▓a╠▓t╠▓ ╠▓*╠▓
+  ╠▓ ╠▓ ╠▓ ╠▓ ╠▓ ╠▓ ╠▓-╠▓-╠▓ ╠▓N╠▓u╠▓m╠▓e╠▓r╠▓a╠▓t╠▓o╠▓r╠▓:╠▓ ╠▓Γä░╠▓(╠▓l╠▓i╠▓f╠▓t╠▓(╠▓f╠▓)╠▓)╠▓ ╠▓=╠▓ ╠▓Γä░╠▓╠ä╠▓(╠▓f╠▓)╠▓ ╠▓b╠▓y╠▓ ╠▓d╠▓i╠▓r╠▓i╠▓c╠▓h╠▓l╠▓e╠▓t╠▓_╠▓f╠▓o╠▓r╠▓m╠▓_╠▓l╠▓i╠▓f╠▓t╠▓_╠▓e╠▓q╠▓
+  ╠▓ ╠▓ ╠▓ ╠▓ ╠▓ ╠▓ ╠▓
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: src/SGC/Renormalization/Lumpability.lean:641:0: automatically included section variable(s) unused in theorem `SGC.lift_fun_is_block_constant`:
+  [Fintype V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+ΓÜá [3028/3042] Replayed SGC.Renormalization.Approximate
+warning: src/SGC/Renormalization/Approximate.lean:106:5: unused variable `h╧Ç`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: src/SGC/Renormalization/Approximate.lean:860:0: automatically included section variable(s) unused in theorem `SGC.Approximate.duhamel_forcing_identity`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+ΓÜá [3037/3042] Replayed SGC.Thermodynamics.EntropyProduction
+warning: src/SGC/Thermodynamics/EntropyProduction.lean:87:0: automatically included section variable(s) unused in theorem `SGC.Thermodynamics.KLDiv_nonneg`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Thermodynamics/EntropyProduction.lean:143:0: automatically included section variable(s) unused in theorem `SGC.Thermodynamics.KLDiv_eq_zero_iff`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Thermodynamics/EntropyProduction.lean:233:0: automatically included section variable(s) unused in theorem `SGC.Thermodynamics.pushforward_sum`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Thermodynamics/EntropyProduction.lean:267:0: automatically included section variable(s) unused in theorem `SGC.Thermodynamics.current_antisymm`:
+  [Fintype V]
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Thermodynamics/EntropyProduction.lean:273:0: automatically included section variable(s) unused in theorem `SGC.Thermodynamics.current_zero_of_detailed_balance`:
+  [Fintype V]
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Thermodynamics/EntropyProduction.lean:501:0: automatically included section variable(s) unused in theorem `SGC.Thermodynamics.l1_le_sqrt_card_l2`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+ΓÜá [3038/3042] Replayed SGC.Spectral.NormedBridge
+warning: src/SGC/Spectral/NormedBridge.lean:45:37: unused variable `h╧Ç`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: src/SGC/Spectral/NormedBridge.lean:51:37: unused variable `h╧Ç`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: src/SGC/Spectral/NormedBridge.lean:72:0: automatically included section variable(s) unused in theorem `SGC.Spectral.NormedBridge.weightedToStd_inner`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Spectral/NormedBridge.lean:88:0: automatically included section variable(s) unused in theorem `SGC.Spectral.NormedBridge.stdToWeighted_comp_weightedToStd`:
+  [Fintype V]
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Spectral/NormedBridge.lean:96:0: automatically included section variable(s) unused in theorem `SGC.Spectral.NormedBridge.weightedToStd_comp_stdToWeighted`:
+  [Fintype V]
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Spectral/NormedBridge.lean:174:0: automatically included section variable(s) unused in theorem `SGC.Spectral.NormedBridge.norm_sq_pi_continuous`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Spectral/NormedBridge.lean:181:0: automatically included section variable(s) unused in theorem `SGC.Spectral.NormedBridge.inner_pi_const_one_continuous`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Γ£û [3040/3042] Building SGC.FunctionalBlanket (8.6s)
+trace: .> LEAN_PATH=C:\Lean4 Projects\.lake\packages\Cli\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\batteries\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\Qq\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\aesop\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\proofwidgets\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\importGraph\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\LeanSearchClient\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\plausible\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\mathlib\.lake\build\lib\lean;C:\Lean4 Projects\.lake\build\lib\lean c:\Users\Jason\.elan\toolchains\leanprover--lean4---v4.25.2\bin\lean.exe C:\Lean4 Projects\src\SGC\FunctionalBlanket.lean -o C:\Lean4 Projects\.lake\build\lib\lean\SGC\FunctionalBlanket.olean -i C:\Lean4 Projects\.lake\build\lib\lean\SGC\FunctionalBlanket.ilean -c C:\Lean4 Projects\.lake\build\ir\SGC\FunctionalBlanket.c --setup C:\Lean4 Projects\.lake\build\ir\SGC\FunctionalBlanket.setup.json --json
+warning: src/SGC/FunctionalBlanket.lean:173:0: automatically included section variable(s) unused in theorem `SGC.FunctionalBlanket.separation_defect_duality`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/FunctionalBlanket.lean:176:5: unused variable `h_total`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+error: src/SGC/FunctionalBlanket.lean:191:76: unsolved goals
+V : Type u_1
+instΓ£¥┬╣ : Fintype V
+instΓ£¥ : DecidableEq V
+h : HiddenStates V
+pi_dist : V ΓåÆ Γä¥
+numClasses : Γäò
+h_within : withinClassVariance h pi_dist numClasses Γëá 0
+Γèó totalVariance h pi_dist - withinClassVariance h pi_dist numClasses + withinClassVariance h pi_dist numClasses =
+    totalVariance h pi_dist
+warning: src/SGC/FunctionalBlanket.lean:201:0: automatically included section variable(s) unused in theorem `SGC.FunctionalBlanket.separation_explosion_iff_defect_collapse`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/FunctionalBlanket.lean:233:0: automatically included section variable(s) unused in theorem `SGC.FunctionalBlanket.classWeight_nonneg`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/FunctionalBlanket.lean:240:0: automatically included section variable(s) unused in theorem `SGC.FunctionalBlanket.totalVariance_nonneg`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/FunctionalBlanket.lean:244:0: automatically included section variable(s) unused in theorem `SGC.FunctionalBlanket.withinClassVariance_nonneg`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/FunctionalBlanket.lean:280:24: This simp argument is unused:
+  ΓåÉ hWdef
+
+Hint: Omit it from the simp argument list.
+  simp only [ΓåÉ hSdef, ΓåÉ╠╡ ╠╡h╠╡W╠╡d╠╡e╠╡f╠╡,╠╡ ╠╡h╬╝def]
+
+Note: Simp arguments with `ΓåÉ` have the additional effect of removing the other direction from the simp set, even if the simp argument itself is unused. If the hint above does not work, try replacing `ΓåÉ` with `-` to only get that effect and silence this warning.
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: src/SGC/FunctionalBlanket.lean:314:0: automatically included section variable(s) unused in theorem `SGC.FunctionalBlanket.sum_class_scatter_le_total`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/FunctionalBlanket.lean:386:0: automatically included section variable(s) unused in theorem `SGC.FunctionalBlanket.func_defect_collapse_implies_separation`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/FunctionalBlanket.lean:391:18: unused variable `h╬╡1`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: src/SGC/FunctionalBlanket.lean:460:0: automatically included section variable(s) unused in theorem `SGC.FunctionalBlanket.grokking_is_lifshitz`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+error: Lean exited with code 1
+Some required targets logged failures:
+- SGC.FunctionalBlanket
+lake.exe : error: build failed
+At line:1 char:1
++ & "$env:USERPROFILE\.elan\bin\lake.exe" build SGC.FunctionalBlanket S ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (error: build failed:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+

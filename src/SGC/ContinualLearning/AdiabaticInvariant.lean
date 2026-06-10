@@ -298,6 +298,40 @@ theorem catastrophic_forgetting_prevention
         rw [Finset.sum_const, Finset.card_range, nsmul_eq_mul, mul_comm,
             div_mul_cancel₀ _ hNne]
 
+/-- **The Freeze Corollary** (adiabatic protection is direction-agnostic).
+
+    The accumulation bound conserves WHATEVER defect level the trajectory
+    starts from — including a high, unconsolidated one. If protection is
+    enforced *before* collapse (`d₀ ≤ ε_func` at step 0), the defect remains
+    pinned above `d₀ - tolerance` forever: the system is frozen in its
+    unconsolidated state and can never grok under the constraint.
+
+    Kernel adjudication of the 2026-06-09 causal-structure question:
+    **(adiabatic protection) ⇏ (defect collapse)**. Conservation is not
+    collapse — protection preserves the state you are in, good or bad. The
+    arrow "collapse triggers protection" is therefore genuinely one-way; the
+    converse fails by this theorem. Contrast with Arrow 2 of the cascade,
+    which is an exact identity (`separation_explosion_iff_defect_collapse`
+    in `SGC.FunctionalBlanket`). -/
+theorem adiabatic_freeze
+    (taskA : Task V)
+    (traj : ℕ → (V → ℝ))
+    (N : ℕ) (hN : 0 < N)
+    (tolerance : ℝ)
+    (htol : 0 < tolerance)
+    (h_step : ∀ k < N,
+      |FunctionalDefect (taskA.computeHiddenStates (traj (k+1))) taskA.pi_dist taskA.numClasses
+        - FunctionalDefect (taskA.computeHiddenStates (traj k)) taskA.pi_dist taskA.numClasses|
+        < tolerance / N)
+    (d₀ : ℝ)
+    (h_high : d₀ ≤ FunctionalDefect (taskA.computeHiddenStates (traj 0))
+        taskA.pi_dist taskA.numClasses) :
+    d₀ - tolerance <
+      FunctionalDefect (taskA.computeHiddenStates (traj N)) taskA.pi_dist taskA.numClasses := by
+  have hacc := catastrophic_forgetting_prevention taskA traj N hN tolerance htol h_step
+  have hpair := abs_lt.mp hacc
+  linarith [hpair.1]
+
 /-! ### 6. The Adiabatic Limit -/
 
 /-- **Adiabatic Limit**: As the learning rate → 0 (infinitely slow changes),
