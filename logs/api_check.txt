@@ -1,0 +1,86 @@
+﻿=== IsStronglyLumpable (Lumpability L90-105) ===
+
+/-- **Strong Lumpability**: L is strongly lumpable w.r.t. partition P if
+    for all x, y in the same block, and all blocks bÌ„:
+    Î£_{zâˆˆbÌ„} L_{xz} = Î£_{zâˆˆbÌ„} L_{yz}
+
+    This ensures the quotient generator is well-defined. -/
+def IsStronglyLumpable (L : Matrix V V â„) (P : Partition V) : Prop :=
+  âˆ€ x y : V, P.rel.r x y â†’ âˆ€ b_bar : P.Quot,
+    (âˆ‘ z : V, if P.quot_map z = b_bar then L x z else 0) =
+    (âˆ‘ z : V, if P.quot_map z = b_bar then L y z else 0)
+
+/-! ### 2b. Approximate Lumpability (Engineering Tolerance)
+
+In physical systems, exact symmetries never hold. A "chair" has scratches; atoms vibrate.
+Approximate lumpability captures the engineering reality that coarse-graining works
+even when partition symmetries hold only up to tolerance Îµ.
+=== defect_cost_nonneg ===
+OptimalPartition.lean:L542: lemma defect_cost_nonneg (L : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+OptimalPartition.lean:L554: exact defect_cost_nonneg L pi_dist hπ P'
+OptimalPartition.lean:L642: have h_nonneg := defect_cost_nonneg L pi_dist hπ P_local
+OptimalPartition.lean:L647: exact defect_cost_nonneg L pi_dist hπ P
+QuotientGenerator.lean:L351: (defect_cost_nonneg L pi_dist hπ P₁)
+QuotientGenerator.lean:L354: (defect_cost_nonneg L pi_dist hπ P₂)
+QuotientGenerator.lean:L661: have h_nonneg := defect_cost_nonneg L pi_dist hπ P
+QuotientGenerator.lean:L793: have h_nonneg := defect_cost_nonneg L pi_dist hπ P_opt
+=== OptimalPartition L30-54 ===
+
+  ## Main Theorems
+  - `optimal_partition_exists` â€” Existence of a defect-minimizing partition (PROVED)
+  - `defect_antitone_refinement` â€” Defect decreases under refinement (OPEN)
+  - `composition_monotone` â€” Multi-level RG monotonicity (OPEN)
+-/
+
+import SGC.Renormalization.Approximate
+import SGC.Spectral.NormedBridge
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Setoid.Partition
+import Mathlib.Order.WellFounded
+
+noncomputable section
+
+namespace SGC.Renormalization
+
+open Finset Matrix Real NormedSpace SGC.Approximate SGC
+
+set_option linter.unusedSectionVars false
+set_option linter.unusedVariables false
+
+variable {V : Type*} [Fintype V] [DecidableEq V]
+
+/-! ## Section 1: The Defect Cost Functional -/
+=== QuotientGenerator L20-52 ===
+
+  This file fills the gap identified in `OptimalPartition.lean`:
+  > "The missing Lean infrastructure is QuotientGenerator.lean â€” a file that
+  >  constructs the induced generator on a quotient type."
+
+  Once this is proved, `composition_monotone` follows from applying
+  `dirichlet_gap_non_decrease` to the quotient generators.
+
+  **NOTE**: Uses the **Explicit Weight Pattern** (`pi_dist` as an argument).
+-/
+
+import SGC.Renormalization.Lumpability
+import SGC.Renormalization.OptimalPartition
+
+noncomputable section
+
+namespace SGC
+namespace Renormalization
+
+open Finset Matrix Real NormedSpace
+
+variable {V : Type*} [Fintype V] [DecidableEq V]
+
+/-! ## Section 1: The Quotient Generator -/
+
+/-- The **quotient generator** LÌ„ induced on VÌ„ = V/P.
+
+    For a lumpable partition P, the dynamics on the quotient space is given by:
+    (LÌ„ f)(A) = Î£_{B} LÌ„_{AB} f(B)
+
+    where LÌ„_{AB} = (1/Ï€Ì„(A)) Î£_{xâˆˆA, yâˆˆB} Ï€(x) L_{xy}
+
+    This is the Ï€Ì„-weighted average of transition rates from block A to block B.

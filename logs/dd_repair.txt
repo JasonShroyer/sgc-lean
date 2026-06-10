@@ -1,0 +1,23 @@
+﻿Γ£û [2270/2276] Running SGC.RenormalizationDynamics
+error: no such file or directory (error code: 2)
+  file: C:\Lean4 Projects\src\SGC\RenormalizationDynamics.lean
+ΓÜá [2276/2276] Built SGC.InformationGeometry.DefectDynamics (39s)
+warning: src/SGC/InformationGeometry/DefectDynamics.lean:76:6: unused variable `S_mat`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: src/SGC/InformationGeometry/DefectDynamics.lean:341:56: unused variable `h╬╡`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: src/SGC/InformationGeometry/DefectDynamics.lean:341:69: unused variable `h╧ä`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+Some required targets logged failures:
+- SGC.RenormalizationDynamics
+lake.exe : error: build failed
+At line:1 char:369
++ ... build ==="; & "$env:USERPROFILE\.elan\bin\lake.exe" build SGC.Informa ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (error: build failed:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+

@@ -356,6 +356,126 @@ lemma incremental_defect_nonneg (L : Matrix V V ℝ) (pi_dist : V → ℝ)
   rw [h₁, h₂]
   norm_num
 
+/-! ## Refutation Certificate: defect is NOT antitone under refinement
+
+The WARNING on `incremental_defect` is here SEALED by an executable 3-state
+counterexample (kernel-checked ∃-refutation, 2026-06-10):
+
+- V = Fin 3, π ≡ 1, generator L with rows (-1,1,0), (1,-1,0), (0,0,0):
+  zero row sums, but rates INTO state 0 differ between states 1 and 2.
+- P₁ = {{0},{1,2}} (fine), P₂ = {{0,1,2}} (indiscrete coarse), P₁ ≤ P₂.
+- ε(P₂) = 0: one block ⇒ block-sums are full row sums ⇒ strongly lumpable.
+- ε(P₁) > 0: were it 0, zero-defect rigidity
+  (`zero_defect_implies_strong_lumpability`) would force L 1 0 = L 2 0,
+  i.e. 1 = 0.
+
+Hence ε(P₂) < ε(P₁) with P₁ ≤ P₂: operator-norm defect can strictly DECREASE
+under coarsening. Coarse-graining does not merely destroy information — it can
+average away microscopic non-lumpability. This permanently closes the door on
+any defect-monotonicity composability argument for the RG tower; composability
+flows through the Dirichlet gap (`dirichlet_gap_non_decrease`). -/
+
+namespace DefectNotAntitone
+
+/-- 3-state generator: zero row sums; L 1 0 = 1 ≠ 0 = L 2 0. -/
+def L3 : Matrix (Fin 3) (Fin 3) ℝ := fun x y =>
+  if x = 0 then (if y = 0 then -1 else if y = 1 then 1 else 0)
+  else if x = 1 then (if y = 0 then 1 else if y = 1 then -1 else 0)
+  else 0
+
+/-- The fine partition {{0},{1,2}}: equal, or both nonzero. -/
+def fineP : Partition (Fin 3) where
+  rel := ⟨fun x y => x = y ∨ (x ≠ 0 ∧ y ≠ 0),
+    ⟨fun _ => Or.inl rfl,
+     fun h => h.elim (fun e => Or.inl e.symm) (fun a => Or.inr ⟨a.2, a.1⟩),
+     fun h₁ h₂ => by
+       rcases h₁ with e₁ | a₁
+       · rwa [e₁]
+       · rcases h₂ with e₂ | a₂
+         · exact Or.inr ⟨a₁.1, e₂ ▸ a₁.2⟩
+         · exact Or.inr ⟨a₁.1, a₂.2⟩⟩⟩
+  decRel := fun _ _ => inferInstance
+
+/-- The indiscrete one-block partition. -/
+def coarseP : Partition (Fin 3) where
+  rel := ⟨fun _ _ => True, ⟨fun _ => trivial, fun _ => trivial, fun _ _ => trivial⟩⟩
+  decRel := fun _ _ => inferInstance
+
+lemma fine_le_coarse : fineP ≤ coarseP := fun _ _ _ => trivial
+
+/-- One block ⇒ block sums are full row sums ⇒ strongly lumpable (rows sum to 0). -/
+lemma coarse_lumpable : IsStronglyLumpable L3 coarseP := by
+  intro x y _ b_bar
+  obtain ⟨w, rfl⟩ := Quotient.exists_rep b_bar
+  have hall : ∀ z : Fin 3, coarseP.quot_map z = Quotient.mk coarseP.rel w :=
+    fun z => Quotient.sound trivial
+  have hrow : ∀ u : Fin 3,
+      (∑ z, if coarseP.quot_map z = Quotient.mk coarseP.rel w then L3 u z else 0)
+        = ∑ z, L3 u z := by
+    intro u
+    refine Finset.sum_congr rfl fun z _ => ?_
+    rw [if_pos (hall z)]
+  rw [hrow x, hrow y]
+  have hsum : ∀ u : Fin 3, ∑ z, L3 u z = 0 := by
+    intro u
+    fin_cases u <;> simp [L3, Fin.sum_univ_three] <;> norm_num
+  rw [hsum x, hsum y]
+
+/-- The fine partition is NOT strongly lumpable: states 1 and 2 are blockmates
+    but their rates into the block {0} differ (1 vs 0). -/
+lemma fine_not_lumpable : ¬ IsStronglyLumpable L3 fineP := by
+  intro h
+  have h12 : fineP.rel.r 1 2 := Or.inr ⟨by decide, by decide⟩
+  have hthis := h 1 2 h12 (fineP.quot_map 0)
+  have h00 : fineP.quot_map 0 = fineP.quot_map 0 := rfl
+  have h10 : fineP.quot_map 1 ≠ fineP.quot_map 0 := by
+    intro hc
+    have hr : fineP.rel.r 1 0 := Quotient.exact hc
+    rcases hr with e | a
+    · exact absurd e (by decide)
+    · exact absurd rfl a.2
+  have h20 : fineP.quot_map 2 ≠ fineP.quot_map 0 := by
+    intro hc
+    have hr : fineP.rel.r 2 0 := Quotient.exact hc
+    rcases hr with e | a
+    · exact absurd e (by decide)
+    · exact absurd rfl a.2
+  have hsum : ∀ u : Fin 3,
+      (∑ z, if fineP.quot_map z = fineP.quot_map 0 then L3 u z else 0) = L3 u 0 := by
+    intro u
+    rw [Fin.sum_univ_three, if_pos h00, if_neg h10, if_neg h20]
+    ring
+  rw [hsum 1, hsum 2] at hthis
+  have hval : (1 : ℝ) = 0 := by simpa [L3] using hthis
+  exact one_ne_zero hval
+
+/-- **REFUTATION CERTIFICATE (kernel-sealed, 2026-06-10)**: operator-norm
+    defect is NOT antitone under refinement. There exist P₁ ≤ P₂ with
+    ε(P₂) < ε(P₁): the coarse level is perfectly sealed while the fine
+    level leaks. -/
+theorem defect_not_antitone_under_refinement :
+    ∃ (L : Matrix (Fin 3) (Fin 3) ℝ) (pi_dist : Fin 3 → ℝ)
+      (hπ : ∀ v, 0 < pi_dist v) (P₁ P₂ : Partition (Fin 3)),
+      P₁ ≤ P₂ ∧
+      defect_cost L pi_dist hπ P₂ < defect_cost L pi_dist hπ P₁ := by
+  refine ⟨L3, fun _ => 1, fun _ => one_pos, fineP, coarseP, fine_le_coarse, ?_⟩
+  have hcoarse : defect_cost L3 (fun _ => 1) (fun _ => one_pos) coarseP = 0 := by
+    have h := Approximate.strong_implies_approx L3 coarseP (fun _ => 1)
+      (fun _ => one_pos) coarse_lumpable
+    exact le_antisymm h (defect_cost_nonneg _ _ _ _)
+  have hfine_pos : 0 < defect_cost L3 (fun _ => 1) (fun _ => one_pos) fineP := by
+    rcases lt_or_eq_of_le (defect_cost_nonneg L3 (fun _ => 1) (fun _ => one_pos) fineP)
+      with hlt | heq
+    · exact hlt
+    · exact absurd
+        (zero_defect_implies_strong_lumpability L3 (fun _ => 1) (fun _ => one_pos)
+          fineP heq.symm)
+        fine_not_lumpable
+  rw [hcoarse]
+  exact hfine_pos
+
+end DefectNotAntitone
+
 /-- **Compositional Defect Bound** (The Hierarchical P* Tower Theorem):
 
     For a chain of refinements P₁ ≤ P₂ ≤ P₃, the defects satisfy:

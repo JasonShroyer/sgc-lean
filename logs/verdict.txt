@@ -1,0 +1,12 @@
+﻿errors: 0
+sorry warnings: 9
+
+src/SGC/InformationGeometry/KramersEscape.lean:76:4: declaration uses 'sorry'
+src/SGC/InformationGeometry/KramersEscape.lean:81:4: declaration uses 'sorry'
+src/SGC/InformationGeometry/KramersEscape.lean:119:6: declaration uses 'sorry'
+src/SGC/InformationGeometry/KramersEscape.lean:126:8: declaration uses 'sorry'
+src/SGC/InformationGeometry/KramersEscape.lean:139:4: declaration uses 'sorry'
+src/SGC/InformationGeometry/KramersEscape.lean:154:8: declaration uses 'sorry'
+src/SGC/InformationGeometry/KramersEscape.lean:181:4: declaration uses 'sorry'
+src/SGC/InformationGeometry/FisherNoetherBridge.lean:219:8: declaration uses 'sorry'
+src/SGC/InformationGeometry/FisherNoetherBridge.lean:409:8: declaration uses 'sorry'

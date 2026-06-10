@@ -602,6 +602,62 @@ lemma trivialPartition_defect_cost_zero (L : Matrix V V ℝ) (pi_dist : V → �
   rw [h_zero_op]
   exact opNorm_pi_zero pi_dist hπ
 
+/-! ## Section 10b: Zero-Defect Rigidity -/
+
+/-- **Zero-defect rigidity (converse of `strong_implies_approx`)**: zero
+    operator-norm defect forces strong lumpability.
+
+    Together with `strong_implies_approx` this closes the iff:
+    `defect_cost L π hπ P = 0 ↔ IsStronglyLumpable L P`.
+
+    Proof: zero operator norm annihilates the defect operator on every input
+    (`opNorm_pi_bound` + faithfulness of ‖·‖_π). Applying D = 0 to the
+    indicator of an arbitrary block b̄ — which is block-constant, hence fixed
+    by Π — shows L maps block indicators to block-constant functions. Reading
+    that off at two blockmates x ~ y is exactly the strong-lumpability row-sum
+    condition. (2026-06-10; the load-bearing half of the refutation
+    certificate `defect_not_antitone_under_refinement`.) -/
+theorem zero_defect_implies_strong_lumpability
+    (L : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (P : Partition V) (h0 : defect_cost L pi_dist hπ P = 0) :
+    IsStronglyLumpable L P := by
+  -- Step 1: the defect operator annihilates every function.
+  have hD : ∀ f, DefectOperator L P pi_dist hπ f = 0 := by
+    intro f
+    have hb := opNorm_pi_bound pi_dist hπ (DefectOperator L P pi_dist hπ) f
+    have h0' : opNorm_pi pi_dist hπ (DefectOperator L P pi_dist hπ) = 0 := h0
+    rw [h0', zero_mul] at hb
+    have hge : 0 ≤ norm_pi pi_dist (DefectOperator L P pi_dist hπ f) := by
+      unfold norm_pi
+      exact Real.sqrt_nonneg _
+    exact (norm_pi_eq_zero_iff pi_dist hπ _).mp (le_antisymm hb hge)
+  -- Step 2: block indicators are block-constant and fixed by Π.
+  intro x y hxy b_bar
+  set f : V → ℝ := fun z => if P.quot_map z = b_bar then 1 else 0 with hf
+  have hf_block : IsBlockConstant P f := by
+    intro u w huw
+    have hq : P.quot_map u = P.quot_map w := Quotient.eq'.mpr huw
+    simp only [hf, hq]
+  have hfix : CoarseProjector P pi_dist hπ f = f :=
+    CoarseProjector_fixes_block_constant P pi_dist hπ f hf_block
+  -- Step 3: D f = 0 says L f equals its own block average, hence block-constant.
+  have hDf := hD f
+  rw [DefectOperator_apply, hfix] at hDf
+  have hLf_eq : L *ᵥ f = CoarseProjector P pi_dist hπ (L *ᵥ f) :=
+    sub_eq_zero.mp hDf
+  have hLf_block : IsBlockConstant P (L *ᵥ f) := by
+    rw [hLf_eq]
+    exact CoarseProjector_block_constant P pi_dist hπ _
+  -- Step 4: read the block-constancy off at the blockmates x ~ y.
+  have hxy_eq := hLf_block x y hxy
+  have hmv : ∀ u : V, (L *ᵥ f) u = ∑ z, if P.quot_map z = b_bar then L u z else 0 := by
+    intro u
+    simp only [Matrix.mulVec, dotProduct, hf]
+    refine Finset.sum_congr rfl fun z _ => ?_
+    split_ifs <;> ring
+  rw [hmv x, hmv y] at hxy_eq
+  exact hxy_eq
+
 /-- **Reversible partition uniqueness**: For reversible generators,
     local optimality (in the sense of sgc_spec_local) implies global optimality.
 

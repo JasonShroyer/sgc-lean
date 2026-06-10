@@ -158,6 +158,13 @@ import SGC.Structure.CellularSheaf
 -- 1 deferred-standard (Rayleigh) + 1 open research (Davis-Kahan).
 import SGC.InformationGeometry.FisherNoetherBridge
 
+-- Defect Dynamics: Lyapunov staging for the learning-side defect.
+-- 2026-06-10 hygiene pass: projected_update_zero_defect un-axiomatized,
+-- two vacuous tautology-axioms + one false Pythagorean axiom DELETED,
+-- honest IsLyapunovStable/IsExponentiallyAttracting vocabulary added.
+-- Now axiom-free and sorry-free.
+import SGC.InformationGeometry.DefectDynamics
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════

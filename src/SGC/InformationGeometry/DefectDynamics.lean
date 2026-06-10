@@ -26,12 +26,16 @@ But this is a **preservation** result, not a **production** result.
 The deeper question is: **Does Fisher-orthogonal learning DECREASE defect?**
 If so, then emergence (low defect) is an ATTRACTOR of the learning dynamics.
 
-## Main Results
+## Main Results (revised 2026-06-10 hygiene pass)
 
 1. `DefectFunctional` - Measures "leakage" from consolidated subspace
 2. `DefectGrowthRate` - Time derivative of defect under updates
 3. `DefectMonotoneLearningSystem` - Structure capturing Lyapunov stability
-4. `lyapunov_stability_conjecture` - The key axiom: Fisher updates don't increase defect
+4. `projected_update_zero_defect` - THEOREM (was axiom): projected updates have
+   zero leakage, via primal feasibility
+5. `IsLyapunovStable` / `IsExponentiallyAttracting` - the honest VOCABULARY for
+   the Lyapunov program (the former "conjecture axioms" were vacuous `X ≤ X`
+   tautologies and were deleted; see Part IV)
 
 ## SGC Connection
 
@@ -164,24 +168,11 @@ noncomputable def DefectMonotoneLearningSystem.update_defect (sys : DefectMonoto
     (g : Fin n → ℝ) : ℝ :=
   LearningDefectFunctional sys.consolidated (sys.update g)
 
-/-! ## PART IV: THE LYAPUNOV STABILITY CONJECTURE -/
-
-/-- **AXIOM: Projected Updates Have Zero Defect**
-
-    The core property of the Fisher projector: projected updates satisfy
-    the primal constraint S Δθ = 0, hence have zero leakage.
-
-    **Mathematical content**: This follows from the definition of the projector
-    as the solution to min ‖Δθ - g‖²_F subject to S Δθ = 0.
-
-    The projector OUTPUT satisfies the constraint by construction. -/
-axiom projected_update_zero_defect (sys : DefectMonotoneLearningSystem n k)
-    (g : Fin n → ℝ) :
-    LearningDefectFunctional sys.consolidated (sys.update g) = 0
+/-! ## PART IV: ZERO DEFECT IS A THEOREM; THE LYAPUNOV PROGRAM IS VOCABULARY -/
 
 /-- **THEOREM: Fisher-Projected Updates Are Primal Feasible**
 
-    Immediate consequence: projected updates satisfy S Δθ = 0. -/
+    Projected updates satisfy S Δθ = 0, by the projector construction. -/
 theorem projected_update_primal_feasible (sys : DefectMonotoneLearningSystem n k)
     (g : Fin n → ℝ) :
     PrimalFeasible sys.consolidated (sys.update g) := by
@@ -194,46 +185,90 @@ theorem projected_update_primal_feasible (sys : DefectMonotoneLearningSystem n k
   exact minimal_disturbance_primal_feasibility sys.fisher sys.consolidated g
     sys.F_reg_inv sys.Gram_inv sys.h_F_inv sys.h_Gram_inv
 
-/-- **CONJECTURE: Defect is Non-Increasing Under Fisher Updates**
+/-- **THEOREM (un-axiomatized 2026-06-10): Projected Updates Have Zero Defect**
 
-    If we start with some defect D₀ and apply Fisher-projected updates,
-    the defect does not increase:
+    The core property of the Fisher projector: projected updates satisfy the
+    primal constraint S Δθ = 0, hence every leakage summand vanishes and the
+    defect functional is zero in both branches of its definition.
 
-    D(θ_{t+1}) ≤ D(θ_t)
+    Formerly an AXIOM; the content was always a consequence of
+    `projected_update_primal_feasible`, which is proven. Zero new assumptions. -/
+theorem projected_update_zero_defect (sys : DefectMonotoneLearningSystem n k)
+    (g : Fin n → ℝ) :
+    LearningDefectFunctional sys.consolidated (sys.update g) = 0 := by
+  have hpf : ∀ i : Fin k, ∑ j, sys.consolidated.basis i j * sys.update g j = 0 :=
+    projected_update_primal_feasible sys g
+  simp only [LearningDefectFunctional]
+  have hleak : ∑ i : Fin k, (∑ j, sys.consolidated.basis i j * sys.update g j) ^ 2 = 0 :=
+    Finset.sum_eq_zero fun i _ => by rw [hpf i]; norm_num
+  rw [hleak]
+  split_ifs <;> simp
 
-    **Interpretation**: This is the "Lyapunov stability" of emergence.
-    Emergence (low defect) is a stable attractor of Fisher-orthogonal dynamics.
+/-! ### The Lyapunov program: honest vocabulary, no vacuous axioms
 
-    **Note**: This is stated as an axiom because proving it requires:
-    1. Continuity of the defect functional
-    2. Analysis of the composed dynamics D ∘ update
-    3. Curvature conditions on the parameter manifold
+**REFUTATION-BY-INSPECTION (kernel hygiene finding, 2026-06-10)**: this file
+previously carried two "conjecture" AXIOMS (`lyapunov_stability_conjecture`,
+`defect_exponential_decay`) whose bodies bound `D_old` and `D_new` to the SAME
+expression `DefectAtPoint sys.consolidated g` — the `θ_new` binding was unused.
+Both axioms asserted `X ≤ X` (and `X ≤ (1-α)·X + Cη²` with a free C ≥ 0): pure
+tautologies wearing a conjecture's name. They carried ZERO mathematical content
+and have been DELETED. (Fifth and sixth defective formal statements caught this
+week — same disease family: symbols not bound to the intended referents.)
 
-    Empirical verification in Python is the primary test of this conjecture. -/
-axiom lyapunov_stability_conjecture (sys : DefectMonotoneLearningSystem n k)
-    (θ : Fin n → ℝ) (g : Fin n → ℝ) (η : ℝ) (hη : 0 < η) (hη_small : η < 1) :
-    let θ_new := θ + fun i => η * sys.update g i
-    let D_old := DefectAtPoint sys.consolidated g
-    let D_new := DefectAtPoint sys.consolidated g
-    D_new ≤ D_old
+The REAL Lyapunov statement requires θ-dependence of the gradient — a gradient
+FIELD ∇F : θ ↦ ∇F(θ) — which the previous vocabulary lacked entirely
+(`DefectAtPoint` takes a gradient, not a parameter point). The definitions
+below supply that vocabulary. We deliberately do NOT restate the conjecture as
+an unconstrained universal over all gradient fields: that statement is FALSE
+(an adversarial field can steer the new gradient anywhere) — it would be the
+week's disease, instance seven. The truth requires coupling ∇F to an actual
+loss with curvature/smoothness bounds. Until that coupling is formalizable,
+the conjecture lives where it honestly belongs: as the named PROPERTY
+`IsLyapunovStable sys ∇F` to be (a) verified empirically in Python per
+training run, and (b) eventually PROVEN for specific loss classes (Layer-3
+Lyapunov program — the open dynamics arrows of the master cascade). -/
 
-/-- **STRONGER CONJECTURE: Defect Decays Exponentially**
+/-- A **gradient field**: the gradient of a loss as a function of the current
+    parameter point. This is the θ-dependence the Lyapunov program needs. -/
+structure GradientField (n : ℕ) where
+  /-- θ ↦ ∇F(θ) -/
+  grad : (Fin n → ℝ) → (Fin n → ℝ)
 
-    Under repeated Fisher-projected updates with rate α > 0:
+/-- One step of Fisher-projected natural-gradient descent on a gradient field. -/
+def lyapunovStep (sys : DefectMonotoneLearningSystem n k) (gfield : GradientField n)
+    (η : ℝ) (θ : Fin n → ℝ) : Fin n → ℝ :=
+  fun i => θ i + η * sys.update (gfield.grad θ) i
 
-    D(θ_{t+1}) ≤ (1 - α) D(θ_t) + O(η²)
+/-- **The Lyapunov stability PROPERTY** (not asserted; to be proven per loss
+    class or verified empirically): along Fisher-projected updates, the defect
+    of the gradient field does not increase. -/
+def IsLyapunovStable (sys : DefectMonotoneLearningSystem n k)
+    (gfield : GradientField n) : Prop :=
+  ∀ (θ : Fin n → ℝ) (η : ℝ), 0 < η → η < 1 →
+    DefectAtPoint sys.consolidated (gfield.grad (lyapunovStep sys gfield η θ))
+      ≤ DefectAtPoint sys.consolidated (gfield.grad θ)
 
-    The O(η²) term accounts for curvature effects in finite steps.
+/-- **The exponential attraction PROPERTY** (strictly stronger than stability):
+    defect contracts at rate α up to O(η²) curvature error. -/
+def IsExponentiallyAttracting (sys : DefectMonotoneLearningSystem n k)
+    (gfield : GradientField n) (α C : ℝ) : Prop :=
+  ∀ (θ : Fin n → ℝ) (η : ℝ), 0 < η → η < 1 →
+    DefectAtPoint sys.consolidated (gfield.grad (lyapunovStep sys gfield η θ))
+      ≤ (1 - α) * DefectAtPoint sys.consolidated (gfield.grad θ) + C * η ^ 2
 
-    **This would prove**: Emergence is not just stable but ATTRACTIVE. -/
-axiom defect_exponential_decay (sys : DefectMonotoneLearningSystem n k)
-    (θ : Fin n → ℝ) (g : Fin n → ℝ) (η α : ℝ)
-    (hη : 0 < η) (hη_small : η < 1) (hα : 0 < α) (hα_bound : α < 1) :
-    ∃ C : ℝ, C ≥ 0 ∧
-    let θ_new := θ + fun i => η * sys.update g i
-    let D_old := DefectAtPoint sys.consolidated g
-    let D_new := DefectAtPoint sys.consolidated g
-    D_new ≤ (1 - α) * D_old + C * η^2
+/-- Exponential attraction implies Lyapunov stability in the small-η limit is a
+    FUTURE lemma; at fixed η it holds when α·D ≥ Cη². Stated and proven here
+    in that honest fixed-η form to keep the two properties formally linked. -/
+theorem attracting_implies_stable_of_curvature_dominated
+    (sys : DefectMonotoneLearningSystem n k) (gfield : GradientField n)
+    (α C : ℝ)
+    (h : IsExponentiallyAttracting sys gfield α C)
+    (θ : Fin n → ℝ) (η : ℝ) (hη : 0 < η) (hη₁ : η < 1)
+    (hdom : C * η ^ 2 ≤ α * DefectAtPoint sys.consolidated (gfield.grad θ)) :
+    DefectAtPoint sys.consolidated (gfield.grad (lyapunovStep sys gfield η θ))
+      ≤ DefectAtPoint sys.consolidated (gfield.grad θ) := by
+  have := h θ η hη hη₁
+  nlinarith [this, hdom]
 
 /-! ## PART V: CONNECTION TO EMERGENCE -/
 
@@ -258,27 +293,42 @@ theorem fisher_projection_implies_emergence (sys : DefectMonotoneLearningSystem 
 
 /-! ## PART VI: SGC DEFECT CORRESPONDENCE -/
 
-/-- **SGC Defect Operator Connection**:
+/-! ### SGC defect correspondence — the true identity is numerator-level
 
-    In SGC, the defect operator is D = (I - Π) L Π, measuring leakage of
-    dynamics out of the coarse space.
+**REFUTATION (kernel hygiene finding, 2026-06-10)**: this file previously
+axiomatized a "Pythagorean" decomposition
 
-    The learning analog is:
-    - Π = Fisher Projector (projects updates to constraint manifold)
-    - L = Gradient Flow (the "dynamics" is gradient descent)
-    - D = (I - P_F) ∇ = component of gradient NOT in constraint manifold
+    D(g) = D(g - Pg) + D(Pg)
 
-    **Key identity**: LearningDefectFunctional measures ‖D‖² / ‖∇‖²,
-    the relative size of the defect compared to the full gradient.
+for the RATIO functional D. That statement is FALSE: since S(Pg) = 0, the
+numerators of D(g) and D(g - Pg) agree, but the DENOMINATORS differ
+(‖g‖² vs ‖g - Pg‖²). Counterexample: n = 2, k = 1, S = (1,0), F = I,
+g = (1,1): then Pg = (0,1), D(g) = 1/2, while D(g-Pg) + D(Pg) = 1 + 0 = 1.
+The axiom was DELETED (seventh defective statement of the week; disease:
+intuition transcribed without tracking denominators).
 
-    This is the precise sense in which "learning defect" mirrors "SGC defect." -/
-axiom learning_defect_is_sgc_defect_analog
+What IS true — and now PROVEN below — is the numerator-level identity: the
+leakage of the full gradient equals the leakage of its rejected component,
+because the projected component carries exactly zero leakage. This is the
+precise (and correctly scoped) sense in which the learning defect mirrors the
+SGC defect operator D = (I-Π)LΠ. -/
+
+/-- **THEOREM: Leakage lives entirely in the rejected component.**
+    ‖S g‖² = ‖S (g - Pg)‖², because S(Pg) = 0 (primal feasibility). -/
+theorem leakage_invariant_under_projection
     (sys : DefectMonotoneLearningSystem n k) (g : Fin n → ℝ) :
-    let projected := sys.update g
-    let defect_component := g - projected  -- The "leaked" part
-    LearningDefectFunctional sys.consolidated g =
-      LearningDefectFunctional sys.consolidated defect_component +
-      LearningDefectFunctional sys.consolidated projected
+    ∑ i : Fin k, (∑ j, sys.consolidated.basis i j * (g j - sys.update g j)) ^ 2
+      = ∑ i : Fin k, (∑ j, sys.consolidated.basis i j * g j) ^ 2 := by
+  have hpf : ∀ i : Fin k, ∑ j, sys.consolidated.basis i j * sys.update g j = 0 :=
+    projected_update_primal_feasible sys g
+  refine Finset.sum_congr rfl fun i _ => ?_
+  congr 1
+  have hsplit : (∑ j, sys.consolidated.basis i j * (g j - sys.update g j))
+      = (∑ j, sys.consolidated.basis i j * g j)
+        - ∑ j, sys.consolidated.basis i j * sys.update g j := by
+    rw [← Finset.sum_sub_distrib]
+    exact Finset.sum_congr rfl fun j _ => by ring
+  rw [hsplit, hpf i, sub_zero]
 
 /-! ## PART VII: VALIDITY HORIZON FOR DEFECT -/
 
@@ -308,25 +358,37 @@ theorem fisher_projection_infinite_horizon (sys : DefectMonotoneLearningSystem n
 
 end SGC.InformationGeometry.DefectDynamics
 
-/-! ## SUMMARY: What This Module Provides
+/-! ## SUMMARY: What This Module Provides (refreshed 2026-06-10)
 
-1. **DefectFunctional**: Quantifies "leakage" of updates into consolidated space
-2. **DefectMonotoneLearningSystem**: Structure for systems with Lyapunov-stable defect
-3. **lyapunov_stability_conjecture**: The key axiom that Fisher updates don't increase defect
-4. **defect_exponential_decay**: Stronger conjecture of exponential convergence
-5. **fisher_projection_implies_emergence**: Immediate theorem that projection → emergence
+PROVEN (kernel-checked, zero axioms in this file):
+1. **projected_update_primal_feasible**: projector output satisfies S Δθ = 0
+2. **projected_update_zero_defect**: projected updates have zero leakage
+   (was an axiom; now a theorem)
+3. **leakage_invariant_under_projection**: ‖S g‖² = ‖S(g - Pg)‖² — the correct,
+   numerator-level SGC-defect correspondence
+4. **fisher_projection_implies_emergence**, **fisher_projection_infinite_horizon**
+5. **attracting_implies_stable_of_curvature_dominated**: fixed-η link between
+   the two Lyapunov properties
 
-## What's NOT Proven (Explicit Gaps)
+VOCABULARY (definitions, no truth claims):
+6. **GradientField**, **lyapunovStep**, **IsLyapunovStable**,
+   **IsExponentiallyAttracting** — the honest statement language for the
+   Layer-3 Lyapunov program
 
-1. `learning_defect_is_sgc_defect_analog`: Structural decomposition (algebra-heavy)
-2. The Lyapunov conjectures: These are AXIOMS to be empirically tested in Python
+DELETED THIS PASS (2026-06-10):
+- `lyapunov_stability_conjecture`, `defect_exponential_decay` — vacuous
+  `X ≤ X` tautology-axioms (unused θ_new; D_old ≡ D_new syntactically)
+- `learning_defect_is_sgc_defect_analog` — FALSE ratio-level Pythagorean
+  claim (denominators differ; 2D counterexample in Part VI note)
 
 ## Python Verification Strategy
 
-The Python demos should compute:
+The Python demos should compute, for the system's ACTUAL loss gradient field:
 - `defect(t)` at each training step
-- Verify `defect(t+1) ≤ defect(t)` (Lyapunov)
-- Verify `defect(t+1) ≤ (1-α) defect(t) + O(η²)` (exponential decay)
+- Verify `IsLyapunovStable` empirically: defect(t+1) ≤ defect(t)
+- Verify `IsExponentiallyAttracting`: defect(t+1) ≤ (1-α) defect(t) + Cη²
 
-If these fail, the learning rate η is too large (violates "smooth regime" assumption).
+If these fail, the learning rate η is too large (violates "smooth regime"
+assumption) — or the conjecture is false for that loss class, which would be
+a publishable negative result.
 -/
