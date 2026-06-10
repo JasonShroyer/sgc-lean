@@ -6,6 +6,7 @@ Authors: SGC Formalization Team
 import SGC.Axioms.Geometry
 import SGC.InformationGeometry.FisherKL
 import SGC.FunctionalBlanket
+import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 /-!
 # The Information Gradient Law
@@ -103,30 +104,43 @@ def FisherInnerProduct (metric : FisherMetricTensor V) (u v : V → ℝ) : ℝ :
 
 /-- **Inverse Fisher Metric**: G^{-1}, used for natural gradient computation.
 
-    The natural gradient is: ∇̃f = G^{-1} ∇f -/
+    The natural gradient is: ∇̃f = G^{-1} ∇f
+
+    Defined via Mathlib's `Matrix.inv` (`Ring.inverse (det G) • adjugate G`),
+    which is total: it returns `0` when `G` is singular. Theorems requiring a
+    genuine inverse must hypothesize `IsUnit metric.G.det`. -/
 def InverseFisherMetric (metric : FisherMetricTensor V) : Matrix V V ℝ :=
-  sorry -- Matrix inverse of metric.G
+  metric.G⁻¹
 
 /-! ### 2. Energy Gradient (Standard Loss Gradient) -/
 
-/-- **Energy Gradient**: The standard gradient of the loss function.
-    This is what vanilla SGD follows.
+/-- **Energy Gradient**: The standard gradient of the loss function at the
+    weight configuration `w`. This is what vanilla SGD follows.
 
     ∇E = ∂L/∂w
 
-    This gradient drives the system toward local minima (memorization). -/
-def EnergyGradient (loss : V → ℝ) : V → ℝ :=
-  sorry -- Gradient of loss
+    Defined componentwise via the Fréchet derivative of the scalar map
+    `loss : (V → ℝ) → ℝ`: the `v`-th component is the directional derivative
+    along the coordinate direction `Pi.single v 1` — the same convention as
+    `FunctionalDefectGradient` in `SGC.ContinualLearning.AdiabaticInvariant`.
+    By Mathlib's convention `fderiv` is `0` where the map is not differentiable,
+    so the definition is total; theorems requiring genuine differentiability
+    must hypothesize it.
 
-/-- **Energy Gradient Norm**: The magnitude of the energy gradient.
+    This gradient drives the system toward local minima (memorization). -/
+def EnergyGradient (loss : (V → ℝ) → ℝ) (w : V → ℝ) : V → ℝ :=
+  fun v => fderiv ℝ loss w (Pi.single v 1)
+
+/-- **Energy Gradient Norm**: The magnitude of the energy gradient at `w`.
     This measures the "strength" of the drive toward local minima. -/
-def EnergyGradientNorm (loss : V → ℝ) (pi_dist : V → ℝ) : ℝ :=
-  Real.sqrt (inner_pi pi_dist (EnergyGradient loss) (EnergyGradient loss))
+def EnergyGradientNorm (loss : (V → ℝ) → ℝ) (w : V → ℝ) (pi_dist : V → ℝ) : ℝ :=
+  Real.sqrt (inner_pi pi_dist (EnergyGradient loss w) (EnergyGradient loss w))
 
 /-- **Energy Gradient Norm (Fisher)**: Norm with respect to Fisher metric.
     This is the geometrically correct measure of gradient magnitude. -/
-def EnergyGradientNormFisher (loss : V → ℝ) (metric : FisherMetricTensor V) : ℝ :=
-  FisherMetricNorm metric (EnergyGradient loss)
+def EnergyGradientNormFisher (loss : (V → ℝ) → ℝ) (w : V → ℝ)
+    (metric : FisherMetricTensor V) : ℝ :=
+  FisherMetricNorm metric (EnergyGradient loss w)
 
 /-! ### 3. Information Gradient (Natural Gradient) -/
 
@@ -153,8 +167,9 @@ def InformationGradientNorm (kl_div : V → ℝ) (fisher_inv : Matrix V V ℝ) (
     R = ||∇I|| / ||∇E||
 
     When R > 1, the information gradient dominates and topological transition occurs. -/
-def GradientRatio (loss kl_div : V → ℝ) (fisher_inv : Matrix V V ℝ) (pi_dist : V → ℝ) : ℝ :=
-  let energy_norm := EnergyGradientNorm loss pi_dist
+def GradientRatio (loss : (V → ℝ) → ℝ) (w : V → ℝ) (kl_div : V → ℝ)
+    (fisher_inv : Matrix V V ℝ) (pi_dist : V → ℝ) : ℝ :=
+  let energy_norm := EnergyGradientNorm loss w pi_dist
   let info_norm := InformationGradientNorm kl_div fisher_inv pi_dist
   if energy_norm > 0 then info_norm / energy_norm else 0
 
@@ -172,8 +187,9 @@ def GradientRatio (loss kl_div : V → ℝ) (fisher_inv : Matrix V V ℝ) (pi_di
     - At transition: Information gradient builds up (pressure to symmetrize)
     - Post-transition: System snaps to new topology (generalization) -/
 def TopologicalTransitionCondition
-    (loss kl_div : V → ℝ) (fisher_inv : Matrix V V ℝ) (pi_dist : V → ℝ) : Prop :=
-  GradientRatio loss kl_div fisher_inv pi_dist > 1
+    (loss : (V → ℝ) → ℝ) (w : V → ℝ) (kl_div : V → ℝ)
+    (fisher_inv : Matrix V V ℝ) (pi_dist : V → ℝ) : Prop :=
+  GradientRatio loss w kl_div fisher_inv pi_dist > 1
 
 /-- **The Information Gradient Law**: Topological transitions occur exactly when
     the information gradient exceeds the energy gradient.
@@ -185,8 +201,9 @@ def TopologicalTransitionCondition
 
     All of these are manifestations of ||∇I|| > ||∇E||. -/
 theorem information_gradient_law
-    (loss kl_div : V → ℝ) (fisher_inv : Matrix V V ℝ) (pi_dist : V → ℝ)
-    (h_transition : TopologicalTransitionCondition loss kl_div fisher_inv pi_dist) :
+    (loss : (V → ℝ) → ℝ) (w : V → ℝ) (kl_div : V → ℝ)
+    (fisher_inv : Matrix V V ℝ) (pi_dist : V → ℝ)
+    (h_transition : TopologicalTransitionCondition loss w kl_div fisher_inv pi_dist) :
     -- When the transition condition holds, functional defect decreases
     True := by  -- Placeholder: connect to FunctionalBlanket.FunctionalDefect
   trivial
@@ -206,8 +223,9 @@ deriving DecidableEq
 
 /-- **Determine Learning Phase** from gradient ratio. -/
 def determineLearningPhase
-    (loss kl_div : V → ℝ) (fisher_inv : Matrix V V ℝ) (pi_dist : V → ℝ) : LearningPhase :=
-  let ratio := GradientRatio loss kl_div fisher_inv pi_dist
+    (loss : (V → ℝ) → ℝ) (w : V → ℝ) (kl_div : V → ℝ)
+    (fisher_inv : Matrix V V ℝ) (pi_dist : V → ℝ) : LearningPhase :=
+  let ratio := GradientRatio loss w kl_div fisher_inv pi_dist
   if ratio < 0.5 then LearningPhase.Memorization
   else if ratio > 2.0 then LearningPhase.Generalization
   else LearningPhase.Transition
@@ -235,7 +253,8 @@ def FunctionalDefectAsInfoAccumulator
 
     Prediction: GradientRatio > 1 ⟺ FunctionalDefect < threshold -/
 theorem gradient_ratio_functional_defect_correspondence
-    (loss kl_div : V → ℝ) (fisher_inv : Matrix V V ℝ) (pi_dist : V → ℝ)
+    (loss : (V → ℝ) → ℝ) (w : V → ℝ) (kl_div : V → ℝ)
+    (fisher_inv : Matrix V V ℝ) (pi_dist : V → ℝ)
     (h : SGC.FunctionalBlanket.HiddenStates V) (numClasses : ℕ) :
     -- The gradient ratio and functional defect are anti-correlated
     True := by  -- Placeholder for the precise statement
@@ -249,21 +268,29 @@ theorem gradient_ratio_functional_defect_correspondence
 
     This follows the information gradient, not just the energy gradient.
     It naturally leads to grokking faster than vanilla SGD. -/
-def NaturalGradientUpdate (w : V → ℝ) (loss : V → ℝ) (fisher_inv : Matrix V V ℝ) (lr : ℝ) : V → ℝ :=
-  fun v => w v - lr * ∑ u, fisher_inv v u * EnergyGradient loss u
+def NaturalGradientUpdate (w : V → ℝ) (loss : (V → ℝ) → ℝ)
+    (fisher_inv : Matrix V V ℝ) (lr : ℝ) : V → ℝ :=
+  fun v => w v - lr * ∑ u, fisher_inv v u * EnergyGradient loss w u
 
 /-- **Functional Blanket Constrained Update**: Move in the null space of the
     functional blanket to preserve learned structure.
 
     Δw ⊥ ∇ε_func
 
-    This allows maximum plasticity while protecting algebraic structure. -/
+    This allows maximum plasticity while protecting algebraic structure.
+
+    Exact projection (no numerical regularizer): when the defect gradient
+    vanishes, the coefficient is `x / 0 = 0` by Lean's division convention,
+    so the update degenerates gracefully to plain gradient descent — which is
+    the mathematically correct behavior (nothing to protect). This matches
+    the exact form proven orthogonal in `constrained_update_orthogonal`. -/
 def FunctionalBlanketConstrainedUpdate
-    (w : V → ℝ) (loss : V → ℝ) (func_defect_grad : V → ℝ) (pi_dist : V → ℝ) (lr : ℝ) : V → ℝ :=
-  let energy_grad := EnergyGradient loss
+    (w : V → ℝ) (loss : (V → ℝ) → ℝ) (func_defect_grad : V → ℝ)
+    (pi_dist : V → ℝ) (lr : ℝ) : V → ℝ :=
+  let energy_grad := EnergyGradient loss w
   -- Project out the component along functional defect gradient
   let projection_coeff := inner_pi pi_dist energy_grad func_defect_grad /
-                          (inner_pi pi_dist func_defect_grad func_defect_grad + 1e-10)
+                          inner_pi pi_dist func_defect_grad func_defect_grad
   let projected_grad := fun v => energy_grad v - projection_coeff * func_defect_grad v
   fun v => w v - lr * projected_grad v
 

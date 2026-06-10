@@ -152,14 +152,12 @@ lemma inner_pi_eq_factor_inner (P : Partition V) (pi_dist : V → ℝ)
     (f : V → ℝ) (hf : IsBlockConstant P f) :
     inner_pi pi_dist f f =
     inner_pi (pi_bar P pi_dist) (factor_block_fun P f hf) (factor_block_fun P f hf) := by
-  -- LHS: Σ_v π(v) f(v)²
-  -- RHS: Σ_A π̄(A) (factor f)(A)² = Σ_A (Σ_{v∈A} π(v)) f(v_A)²
-  -- Both aggregate the same terms grouped differently. By factor_block_fun_spec,
-  -- (factor f)([v]) = f(v), so the sums are equal after reindexing.
-  simp only [inner_pi, pi_bar]
-  -- After simp: both sides reduce to sums over v with f(v)² terms
-  -- The reindexing from A to v is mechanical but requires sum manipulation
-  sorry
+  -- f = lift (factor f), so this is exactly the lift isometry `lift_inner_pi_eq`.
+  have h_lift := lift_inner_pi_eq P pi_dist (factor_block_fun P f hf)
+  have h_eq : (fun x => factor_block_fun P f hf (P.quot_map x)) = f :=
+    funext (factor_block_fun_spec P f hf)
+  rw [h_eq] at h_lift
+  exact h_lift
 
 /-- **Orthogonality lifts through factorization.**
 
@@ -168,9 +166,17 @@ lemma factor_preserves_orthogonality (P : Partition V) (pi_dist : V → ℝ)
     (f : V → ℝ) (hf : IsBlockConstant P f)
     (h_orth : inner_pi pi_dist f constant_vec_one = 0) :
     inner_pi (pi_bar P pi_dist) (factor_block_fun P f hf) constant_vec_one = 0 := by
-  -- Same reindexing argument: Σ_A π̄(A) · 1 = Σ_v π(v) · 1
-  simp only [inner_pi, constant_vec_one, mul_one, pi_bar] at h_orth ⊢
-  sorry
+  -- constant_vec_one on V is the lift of constant_vec_one on V̄, so the
+  -- two-argument lift isometry `lift_inner_pi_eq'` transports orthogonality.
+  have h_lift := lift_inner_pi_eq' P pi_dist (factor_block_fun P f hf)
+      (constant_vec_one : Quotient P.rel → ℝ)
+  have h_eq : (fun x => factor_block_fun P f hf (P.quot_map x)) = f :=
+    funext (factor_block_fun_spec P f hf)
+  have h_one : (fun x => (constant_vec_one : Quotient P.rel → ℝ) (P.quot_map x))
+      = (constant_vec_one : V → ℝ) := rfl
+  rw [h_eq, h_one] at h_lift
+  rw [← h_lift]
+  exact h_orth
 
 /-! ## Section 4: Rayleigh Quotient Equivalence -/
 

@@ -115,6 +115,34 @@ import SGC.Geometry.Conformal
 import SGC.Geometry.Yamabe
 
 -- ═══════════════════════════════════════════════════════════════════════════
+-- Phase 8: The Consolidation Layer (Functional Blankets, Grokking, Renner Bridge)
+-- Wired into the gate 2026-06-09: the default build must SEE this layer's
+-- theorems and its remaining debt (sorry warnings are visible by design).
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- Functional Blanket: π-weighted ANOVA, functional defect, class separation
+import SGC.FunctionalBlanket
+
+-- Adiabatic Invariants: constrained updates, catastrophic forgetting prevention
+import SGC.ContinualLearning.AdiabaticInvariant
+
+-- Renner Bridge: prediction error ↔ dissipation (kernel-coupled axioms +
+-- kernel-proven ground case collapsed_states_imply_exact_lumpability)
+import SGC.Bridge.RennerSGC
+
+-- Information Gradient Law: Fisher metric, natural gradient, transition condition
+import SGC.InformationGeometry.InformationGradientLaw
+
+-- Kramers Escape: barrier crossing for grokking dynamics (open sorries, exposed)
+import SGC.InformationGeometry.KramersEscape
+
+-- Multi-level RG: quotient generators, Dirichlet gap composition
+import SGC.Renormalization.QuotientGenerator
+
+-- The Grokking Rosetta Stone: unified consolidation exports
+import SGC.Grokking
+
+-- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Runtime implementations (Interfaces, Wavelets, Impulse) are now in the
