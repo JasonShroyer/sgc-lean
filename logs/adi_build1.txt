@@ -1,0 +1,142 @@
+﻿ΓÜá [3017/3038] Replayed SGC.Axioms.Geometry
+warning: src/SGC/Axioms/Geometry.lean:279:48: This simp argument is unused:
+  mul_left_comm
+
+Hint: Omit it from the simp argument list.
+  simp only [mul_assoc, mul_comm (pi_dist _), mul_l╠╡e╠╡f╠╡t╠╡_╠╡c╠╡o╠╡m╠╡m╠╡,╠╡ ╠╡m╠╡u╠╡l╠╡_╠╡sum]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: src/SGC/Axioms/Geometry.lean:402:8: 'change
+  toE (iso (A (iso.symm (fromE (x + y))))) =
+    toE (iso (A (iso.symm (fromE x)))) + toE (iso (A (iso.symm (fromE y))))' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+ΓÜá [3021/3038] Replayed SGC.Renormalization.Lumpability
+warning: src/SGC/Renormalization/Lumpability.lean:335:0: automatically included section variable(s) unused in theorem `SGC.lift_is_block_constant`:
+  [Fintype V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Renormalization/Lumpability.lean:545:31: This simp argument is unused:
+  DirichletForm_bar
+
+Hint: Omit it from the simp argument list.
+  s╠╡i╠╡m╠╡p╠╡ ╠╡o╠╡n╠╡l╠╡y╠╡ ╠╡[╠╡R╠╡a╠╡y╠╡l╠╡e╠╡i╠╡g╠╡h╠╡Q╠╡u╠╡o╠╡t╠╡i╠╡e╠╡n╠╡t╠╡,╠╡ ╠╡D╠╡i╠╡r╠╡i╠╡c╠╡h╠╡l╠╡e╠╡t╠╡F╠╡o╠╡r╠╡m╠╡_╠╡b╠╡a╠╡r╠╡]╠╡ ╠╡a╠╡t╠╡ ╠╡*╠╡s╠▓i╠▓m╠▓p╠▓ ╠▓o╠▓n╠▓l╠▓y╠▓ ╠▓[╠▓R╠▓a╠▓y╠▓l╠▓e╠▓i╠▓g╠▓h╠▓Q╠▓u╠▓o╠▓t╠▓i╠▓e╠▓n╠▓t╠▓]╠▓ ╠▓a╠▓t╠▓ ╠▓*╠▓
+  ╠▓ ╠▓ ╠▓ ╠▓ ╠▓ ╠▓ ╠▓-╠▓-╠▓ ╠▓N╠▓u╠▓m╠▓e╠▓r╠▓a╠▓t╠▓o╠▓r╠▓:╠▓ ╠▓Γä░╠▓(╠▓l╠▓i╠▓f╠▓t╠▓(╠▓f╠▓)╠▓)╠▓ ╠▓=╠▓ ╠▓Γä░╠▓╠ä╠▓(╠▓f╠▓)╠▓ ╠▓b╠▓y╠▓ ╠▓d╠▓i╠▓r╠▓i╠▓c╠▓h╠▓l╠▓e╠▓t╠▓_╠▓f╠▓o╠▓r╠▓m╠▓_╠▓l╠▓i╠▓f╠▓t╠▓_╠▓e╠▓q╠▓
+  ╠▓ ╠▓ ╠▓ ╠▓ ╠▓ ╠▓ ╠▓
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: src/SGC/Renormalization/Lumpability.lean:641:0: automatically included section variable(s) unused in theorem `SGC.lift_fun_is_block_constant`:
+  [Fintype V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+ΓÜá [3028/3038] Replayed SGC.Renormalization.Approximate
+warning: src/SGC/Renormalization/Approximate.lean:106:5: unused variable `h╧Ç`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: src/SGC/Renormalization/Approximate.lean:860:0: automatically included section variable(s) unused in theorem `SGC.Approximate.duhamel_forcing_identity`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+ΓÜá [3030/3038] Replayed SGC.FunctionalBlanket
+warning: src/SGC/FunctionalBlanket.lean:160:0: automatically included section variable(s) unused in theorem `SGC.FunctionalBlanket.classWeight_nonneg`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/FunctionalBlanket.lean:167:0: automatically included section variable(s) unused in theorem `SGC.FunctionalBlanket.totalVariance_nonneg`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/FunctionalBlanket.lean:171:0: automatically included section variable(s) unused in theorem `SGC.FunctionalBlanket.withinClassVariance_nonneg`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/FunctionalBlanket.lean:207:24: This simp argument is unused:
+  ΓåÉ hWdef
+
+Hint: Omit it from the simp argument list.
+  simp only [ΓåÉ hSdef, ΓåÉ╠╡ ╠╡h╠╡W╠╡d╠╡e╠╡f╠╡,╠╡ ╠╡h╬╝def]
+
+Note: Simp arguments with `ΓåÉ` have the additional effect of removing the other direction from the simp set, even if the simp argument itself is unused. If the hint above does not work, try replacing `ΓåÉ` with `-` to only get that effect and silence this warning.
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: src/SGC/FunctionalBlanket.lean:241:0: automatically included section variable(s) unused in theorem `SGC.FunctionalBlanket.sum_class_scatter_le_total`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/FunctionalBlanket.lean:313:0: automatically included section variable(s) unused in theorem `SGC.FunctionalBlanket.func_defect_collapse_implies_separation`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/FunctionalBlanket.lean:318:18: unused variable `h╬╡1`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: src/SGC/FunctionalBlanket.lean:387:0: automatically included section variable(s) unused in theorem `SGC.FunctionalBlanket.grokking_is_lifshitz`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+ΓÜá [3038/3038] Built SGC.ContinualLearning.AdiabaticInvariant (7.0s)
+warning: src/SGC/ContinualLearning/AdiabaticInvariant.lean:85:10: The namespace 'AdiabaticInvariant' is duplicated in the declaration 'SGC.ContinualLearning.AdiabaticInvariant.AdiabaticInvariant.mk'
+
+Note: This linter can be disabled with `set_option linter.dupNamespace false`
+warning: src/SGC/ContinualLearning/AdiabaticInvariant.lean:85:10: The namespace 'AdiabaticInvariant' is duplicated in the declaration 'SGC.ContinualLearning.AdiabaticInvariant.AdiabaticInvariant'
+
+Note: This linter can be disabled with `set_option linter.dupNamespace false`
+warning: src/SGC/ContinualLearning/AdiabaticInvariant.lean:88:2: The namespace 'AdiabaticInvariant' is duplicated in the declaration 'SGC.ContinualLearning.AdiabaticInvariant.AdiabaticInvariant.tolerance_pos'
+
+Note: This linter can be disabled with `set_option linter.dupNamespace false`
+warning: src/SGC/ContinualLearning/AdiabaticInvariant.lean:87:2: The namespace 'AdiabaticInvariant' is duplicated in the declaration 'SGC.ContinualLearning.AdiabaticInvariant.AdiabaticInvariant.tolerance'
+
+Note: This linter can be disabled with `set_option linter.dupNamespace false`
+warning: src/SGC/ContinualLearning/AdiabaticInvariant.lean:86:2: The namespace 'AdiabaticInvariant' is duplicated in the declaration 'SGC.ContinualLearning.AdiabaticInvariant.AdiabaticInvariant.observable'
+
+Note: This linter can be disabled with `set_option linter.dupNamespace false`
+warning: src/SGC/ContinualLearning/AdiabaticInvariant.lean:168:5: unused variable `h╧Ç`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: src/SGC/ContinualLearning/AdiabaticInvariant.lean:269:0: automatically included section variable(s) unused in theorem `SGC.ContinualLearning.AdiabaticInvariant.catastrophic_forgetting_prevention`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/ContinualLearning/AdiabaticInvariant.lean:274:5: unused variable `htol`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: src/SGC/ContinualLearning/AdiabaticInvariant.lean:309:0: automatically included section variable(s) unused in theorem `SGC.ContinualLearning.AdiabaticInvariant.adiabatic_limit`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/ContinualLearning/AdiabaticInvariant.lean:310:5: unused variable `computeHiddenStates`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: src/SGC/ContinualLearning/AdiabaticInvariant.lean:312:5: unused variable `numClasses`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: src/SGC/ContinualLearning/AdiabaticInvariant.lean:313:5: unused variable `w`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: src/SGC/ContinualLearning/AdiabaticInvariant.lean:317:5: unused variable `h_orthog`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+Build completed successfully (3038 jobs).
+
