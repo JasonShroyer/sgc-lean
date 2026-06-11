@@ -437,75 +437,126 @@ theorem minvar_approximates_integral
   sorry
 
 
-/-! ## Section 4: Selection Contamination Theorem
+/-! ## Section 4: Selection Contamination — the Exact Variance-Shift Identity
 
-This IS provable cleanly. When observing from f*S instead of f,
-the variance shifts by a term proportional to Cov_f[Q, log S].
+When the observed distribution is the tilted measure f·S/E_f[S] (true
+distribution f reweighted by a selection function S), the variance of any
+observable q shifts by an EXACT amount. With μ := E_f[q] and Z := E_f[S]:
 
-This is the formal statement of why Gaia's selection function
-contaminates the manifold-mode result.
--/
+  E_{f·S}[q]        = μ + Cov_f[S, q]/Z
+  E_{f·S}[(q−μ)²]   = Var_f[q] + Cov_f[S, (q−μ)²]/Z
+  Var_{f·S}[q]      = E_{f·S}[(q−μ)²] − (E_{f·S}[q] − μ)²
 
-/-- **THEOREM (Selection Contamination):**
+  ⟹  Var_{f·S}[q] − Var_f[q] = Cov_f[S, (q−μ)²]/Z − (Cov_f[S, q]/Z)²
 
-    When the observed distribution is f_obs = f · S (true distribution
-    weighted by a selection function S), the variance of a quadratic
-    form Q shifts:
+This is the formal statement of why Gaia's magnitude-limited selection
+function contaminates the manifold-mode result: the shift vanishes exactly
+when S is uncorrelated with both q and its squared deviation. Derivation
+re-verified by hand 2026-06-10 before formalization; proven below at ε = 0
+for the empirical (uniform-base) measure — finite-sum algebra only.
 
-    Var_{f·S}[Q] = Var_f[Q] + Correction(Q, S)
+This section REPLACES the former `selection_contamination_variance_shift`
+placeholder (vacuous ∃-statement, deleted 2026-06-10). -/
 
-    where the correction depends on the covariance between Q and log S
-    under the true distribution f.
+/-- Uniform empirical mean of a vector of values: `E[v] = (1/N) Σ v`. -/
+def uniformMean (N : ℕ) (v : Fin N → ℝ) : ℝ := (1 / N) * ∑ i, v i
 
-    For small selection effects (S ≈ 1):
-    Correction ≈ 2 · Cov_f[Q, Q · log S] - (E_f[Q · log S])² + O(||S-1||²)
+/-- Uniform empirical covariance: `Cov[a,b] = E[ab] − E[a]E[b]`. -/
+def uniformCov (N : ℕ) (a b : Fin N → ℝ) : ℝ :=
+  uniformMean N (fun i => a i * b i) - uniformMean N a * uniformMean N b
 
-    This predicts exactly when manifold mode conflates dynamics with selection:
-    - If Cov_f[Q, log S] = 0 (Q independent of selection): no contamination
-    - If Cov_f[Q, log S] ≠ 0 (Q correlated with selection): contamination
+/-- Selection-tilted mean: `E_{f·S}[q] = (Σ S q)/(Σ S)` (uniform base f). -/
+def selectionMean (N : ℕ) (S q : Fin N → ℝ) : ℝ :=
+  (∑ i, S i * q i) / (∑ i, S i)
 
-    The Gaia benchmark confirmed this: angular momentum L_z is correlated with
-    the magnitude-limited selection function (distant stars must be brighter =
-    more massive = different orbits), producing the observed contamination.
+/-- Selection-tilted variance: the variance of `q` under the tilted measure
+    `f·S/E_f[S]`, i.e. `(Σ S (q − m_S)²)/(Σ S)` with `m_S` the tilted mean.
+    NOTE: this reweights the MEASURE, not the values — the former placeholder
+    took the variance of the rescaled values `q·S/S̄`, which is a different
+    (and physically wrong) object. -/
+def selectionVariance (N : ℕ) (S q : Fin N → ℝ) : ℝ :=
+  (∑ i, S i * (q i - selectionMean N S q)^2) / (∑ i, S i)
 
-    STATUS (2026-06-10 honesty relabel): **PLACEHOLDER — VACUOUS AS STATED.**
-    The conclusion exhibits the correction as the literal difference
-    `var_weighted - var_unweighted`, which any two reals satisfy; the present
-    statement therefore carries NO information and its "proof" is `ring`. The
-    real content — the change-of-measure identity expressing the correction
-    through Cov_f[Q, log S] — is CLASSICAL (importance sampling / measure
-    tilting) and is deferred as standard machinery. Until it is strengthened,
-    this theorem must not be cited as a result.
+/-- Weighted sum-of-squared-deviations expansion (the workhorse):
+    `Σ w (q − m)² = Σ w q² − 2m Σ w q + m² Σ w`. -/
+private lemma sum_mul_sq_dev (N : ℕ) (w q : Fin N → ℝ) (m : ℝ) :
+    ∑ k, w k * (q k - m)^2
+      = (∑ k, w k * (q k)^2) - 2*m*(∑ k, w k * q k) + m^2 * (∑ k, w k) := by
+  have h : ∀ k : Fin N, w k * (q k - m)^2
+      = w k * (q k)^2 - 2*m*(w k * q k) + m^2 * w k := fun k => by ring
+  simp_rw [h]
+  rw [Finset.sum_add_distrib, Finset.sum_sub_distrib,
+      ← Finset.mul_sum, ← Finset.mul_sum]
 
-    Intended sketch (for the future strengthening):
-    E_{f·S}[Q] = E_f[Q · S] / E_f[S]
-    Var_{f·S}[Q] = E_{f·S}[Q²] - (E_{f·S}[Q])²
-    Expand each term using the change-of-measure formula and collect. -/
-theorem selection_contamination_variance_shift
-    (N : ℕ) [NeZero N]
-    (X : Fin N → Fin d → ℝ)  -- samples from true distribution f
-    (Q : QuadraticForm d)     -- the quadratic form
-    (S : Fin N → ℝ)           -- selection weights (S_i ≥ 0, representing f_obs/f)
-    (hS_pos : ∀ i, 0 < S i)  -- positive selection weights
-    :
-    let q := fun i => Q.eval (X i)
-    let q_weighted := fun i => S i * q i
-    let S_mean := (1 / N) * ∑ i, S i
-    -- The weighted variance differs from the unweighted variance
-    -- by a term involving the covariance of Q with S
-    let var_unweighted := empiricalVariance N q
-    let var_weighted := empiricalVariance N (fun i => q i * S i / S_mean)
-    -- The shift is expressible in terms of Cov[Q, S]:
-    ∃ correction : ℝ,
-      var_weighted = var_unweighted + correction ∧
-      -- The correction involves Cov_f[Q, log S] and higher-order terms
-      -- For S ≈ 1: correction ≈ 2 · Cov_f[Q, Q · log S]
-      True := by
-  -- CLASSICAL: change-of-measure formula for weighted expectations
-  -- The exact expression requires expanding Var_{f·S}[Q] using
-  -- E_{f·S}[g] = E_f[g·S] / E_f[S] and collecting terms.
-  intro q q_weighted S_mean var_unweighted var_weighted
-  exact ⟨var_weighted - var_unweighted, by ring, trivial⟩
+/-- Unweighted specialization: `Σ (q − m)² = Σ q² − 2m Σ q + m² N`. -/
+private lemma sum_sq_dev (N : ℕ) (q : Fin N → ℝ) (m : ℝ) :
+    ∑ k, (q k - m)^2 = (∑ k, (q k)^2) - 2*m*(∑ k, q k) + m^2 * N := by
+  have h := sum_mul_sq_dev N (fun _ => 1) q m
+  simp only [one_mul] at h
+  rw [Finset.sum_const, Finset.card_univ, Fintype.card_fin,
+      nsmul_eq_mul, mul_one] at h
+  exact h
+
+/-- **THEOREM (Exact Empirical Selection-Variance Identity):**
+
+    `Var_{f·S}[q] − Var_f[q] = Cov_f[S,(q−μ)²]/Z − (Cov_f[S,q]/Z)²`
+
+    with `μ = E_f[q]`, `Z = E_f[S]`, `f` the uniform empirical measure.
+    EXACT at ε = 0 — no small-S expansion, no measure theory, pure
+    finite-sum algebra. The two covariance terms are the complete
+    decomposition of selection contamination:
+    - `Cov_f[S,(q−μ)²]/Z`: selection inflates/deflates the spread directly;
+    - `(Cov_f[S,q]/Z)²`: selection shifts the mean, which always REDUCES
+      the apparent variance about the new center (the term enters with a
+      minus sign — Galtonian regression toward the selected mean).
+
+    STATUS: PROVEN (kernel-checked). Replaces the vacuous placeholder. -/
+theorem selection_variance_shift_exact
+    (N : ℕ) [NeZero N] (q S : Fin N → ℝ) (hS_pos : ∀ i, 0 < S i) :
+    selectionVariance N S q - empiricalVariance N q =
+      uniformCov N S (fun i => (q i - uniformMean N q)^2) / uniformMean N S
+        - (uniformCov N S q / uniformMean N S)^2 := by
+  have hN : (N : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (NeZero.ne N)
+  have hc : 0 < ∑ i, S i := Finset.sum_pos (fun i _ => hS_pos i) Finset.univ_nonempty
+  have hcne : (∑ i, S i) ≠ 0 := ne_of_gt hc
+  simp only [selectionVariance, selectionMean, empiricalVariance,
+             uniformCov, uniformMean]
+  rw [sum_mul_sq_dev N S q ((∑ i, S i * q i) / (∑ i, S i)),
+      sum_sq_dev N q ((1 / N) * ∑ i, q i),
+      sum_mul_sq_dev N S q ((1 / N) * ∑ i, q i)]
+  field_simp
+  ring
+
+/-- **COROLLARY (No correlation ⟹ no contamination):** if the selection
+    function is uncorrelated with both the observable and its squared
+    deviation, the tilted variance equals the true variance. This is the
+    precise condition under which manifold mode is selection-safe. -/
+theorem selection_uncorrelated_no_contamination
+    (N : ℕ) [NeZero N] (q S : Fin N → ℝ) (hS_pos : ∀ i, 0 < S i)
+    (hcov_q : uniformCov N S q = 0)
+    (hcov_sq : uniformCov N S (fun i => (q i - uniformMean N q)^2) = 0) :
+    selectionVariance N S q = empiricalVariance N q := by
+  have h := selection_variance_shift_exact N q S hS_pos
+  rw [hcov_q, hcov_sq] at h
+  simp only [zero_div, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
+             zero_pow, sub_zero] at h
+  linarith
+
+/-- **COROLLARY (Gaia reading):** the identity instantiated for a quadratic
+    form `Q` evaluated on samples `X` — the exact contamination law for the
+    manifold-mode variance functional under a selection function `S`.
+    Cited by the Gaia benchmark analysis: `L_z` correlates with the
+    magnitude-limited `S`, so both covariance terms are nonzero. -/
+theorem selection_contamination_quadform
+    (N : ℕ) [NeZero N] (X : Fin N → Fin d → ℝ) (Q : QuadraticForm d)
+    (S : Fin N → ℝ) (hS_pos : ∀ i, 0 < S i) :
+    selectionVariance N S (fun i => Q.eval (X i))
+      - empiricalVariance N (fun i => Q.eval (X i)) =
+      uniformCov N S
+          (fun i => (Q.eval (X i) - uniformMean N (fun j => Q.eval (X j)))^2)
+        / uniformMean N S
+        - (uniformCov N S (fun i => Q.eval (X i)) / uniformMean N S)^2 :=
+  selection_variance_shift_exact N (fun i => Q.eval (X i)) S hS_pos
 
 /-- **COROLLARY (Contamination Detection via Shuffle Gap):**
 
@@ -538,17 +589,23 @@ PROVEN (kernel-checked, ε = 0):
 2. `lifted_quadform_nonneg` — structural PSD supply for the bridge
 3. `min_variance_is_null_fisher` — the Bridge, by composition (2026-06-10);
    inherits exactly one deferred-standard plank (below)
+4. `selection_variance_shift_exact` — the exact empirical selection-variance
+   identity (2026-06-10; replaced the vacuous placeholder), with corollaries
+   `selection_uncorrelated_no_contamination` + `selection_contamination_quadform`
 
 SORRIED, DEFERRED-STANDARD (bedrock, not SGC content — no attention spent):
-4. `min_variance_is_min_eigenvector` — Rayleigh / spectral theorem
+5. `min_variance_is_min_eigenvector` — Rayleigh / spectral theorem
 
 SORRIED, OPEN RESEARCH (the genuine frontier):
-5. `minvar_approximates_integral` — Davis–Kahan sin(θ) machinery (Phase 16)
+6. `minvar_approximates_integral` — Davis–Kahan sin(θ) machinery (Phase 16)
 
 PLACEHOLDERS (compile, but carry no content — must not be cited):
-6. `selection_contamination_variance_shift` — vacuous; real version is
-   classical change-of-measure, deferred
 7. `shuffle_gap_detects_contamination` — `True`-conclusion stub
+
+DELETED (2026-06-10, second pass): `selection_contamination_variance_shift`
+— the vacuous ∃-statement; superseded by `selection_variance_shift_exact`
+above. Note its `var_weighted` also measured the WRONG object (variance of
+rescaled values rather than variance under the tilted measure).
 
 DELETED (2026-06-10): `expFamFisherInfo` placeholder def + the
 `expfam_fisher_is_covariance` axiom — the axiom was logically INCONSISTENT

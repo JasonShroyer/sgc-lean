@@ -71,6 +71,7 @@ import SGC.Thermodynamics.EntropyProduction
 import SGC.Thermodynamics.FluxDecomposition
 import SGC.ComplexityRelativity
 import SGC.Bridge.DiscreteFluidDynamics
+import SGC.InformationGeometry.FisherNoetherBridge
 
 noncomputable section
 
@@ -554,5 +555,24 @@ else is finite-sum algebra plus one Mathlib improper integral. -/
 
 -- B5: the viscous time budget ∫₀^∞ e^{-νt} dt = 1/ν.
 #print axioms SGC.Bridge.DiscreteFluidDynamics.viscous_time_budget
+
+/-! ## 6. Second sprint additions (2026-06-10 evening)
+
+B7 base (Chern–Hamilton energy defect) and the exact selection-variance
+identity. Expected profile: `[propext, Classical.choice, Quot.sound]`.
+NOTE `selection_variance_shift_exact` lives in a file with two by-design
+sorried declarations — the audit confirms it does NOT inherit them. -/
+
+-- B7a: Killing defect vanishes iff detailed balance (criticality = crystal).
+#print axioms SGC.Bridge.DiscreteFluidDynamics.killingDefect_eq_zero_iff_reversible
+
+-- B7b: positive defect ⇔ positive-current cycle (energy defect = cycle obstruction).
+#print axioms SGC.Bridge.DiscreteFluidDynamics.killingDefect_pos_iff_positive_current_cycle
+
+-- Exact empirical selection-variance identity (replaces the vacuous placeholder).
+#print axioms SGC.InformationGeometry.FisherNoetherBridge.selection_variance_shift_exact
+
+-- Selection-safety corollary: zero covariances ⇒ no contamination.
+#print axioms SGC.InformationGeometry.FisherNoetherBridge.selection_uncorrelated_no_contamination
 
 end SGC.Foundations.AxiomAudit

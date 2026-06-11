@@ -441,4 +441,87 @@ theorem damped_validity_budget {ν ε : ℝ} (hν : 0 < ν) (_hε : 0 < ε) :
 
 end ViscousHorizon
 
+/-! ## §7. The discrete Chern–Hamilton energy defect (B7 base)
+
+arXiv:2311.15833 (Mitsumatsu–Peralta-Salas–Slobodeanu) resolves the Chern–Hamilton
+question: a critical compatible metric exists iff the structure is Sasakian (rigid
+crystal) or the Reeb flow is algebraic Anosov (structured chaos). The discrete
+shadow of the Chern–Hamilton energy-criticality defect is defined here, and a
+structural identification falls out of B6:
+
+  **the energy defect IS the total vorticity mass** — `E_d(L,π) = ‖J‖²_F`,
+
+so distance-from-criticality and the cycle obstruction of §3 are the same scalar.
+This seals the crystal leg of the three-phase classifier (crystal / Anosov-mixing /
+cycle-carrying universal). The middle (Anosov) leg needs spectral-gap vocabulary
+and remains OPEN — only the base dictionary is formalized below. -/
+
+section KillingDefect
+
+/-- **Discrete Killing / Chern–Hamilton defect**: the squared Frobenius mass of
+    the probability current, `E_d(L,π) := Σ_{x,y} J(x,y)²` — the discrete analog
+    of the Chern–Hamilton energy distance from criticality `‖L_X g‖²`. -/
+def KillingDefect (L : Matrix V V ℝ) (pi_dist : V → ℝ) : ℝ :=
+  ∑ x, ∑ y, (ProbabilityCurrent L pi_dist x y)^2
+
+lemma killingDefect_nonneg (L : Matrix V V ℝ) (pi_dist : V → ℝ) :
+    0 ≤ KillingDefect L pi_dist :=
+  Finset.sum_nonneg fun _ _ => Finset.sum_nonneg fun _ _ => sq_nonneg _
+
+/-- **B7a (criticality = crystal)**: the defect vanishes iff detailed balance —
+    the discrete Sasakian/critical leg of the Chern–Hamilton classification. -/
+theorem killingDefect_eq_zero_iff_reversible (L : Matrix V V ℝ) (pi_dist : V → ℝ) :
+    KillingDefect L pi_dist = 0 ↔ DetailedBalance L pi_dist := by
+  rw [← current_zero_iff_reversible]
+  constructor
+  · intro h x y
+    have hx := (Finset.sum_eq_zero_iff_of_nonneg
+      (fun x _ => Finset.sum_nonneg fun y _ => sq_nonneg
+        (ProbabilityCurrent L pi_dist x y))).mp h x (Finset.mem_univ x)
+    have hy := (Finset.sum_eq_zero_iff_of_nonneg
+      (fun y _ => sq_nonneg (ProbabilityCurrent L pi_dist x y))).mp hx y
+        (Finset.mem_univ y)
+    exact sq_eq_zero_iff.mp hy
+  · intro h
+    simp [KillingDefect, h]
+
+/-- The defect in FluxDecomposition vocabulary: four times the π-weighted mass of
+    the antisymmetric (flux-generating) part of the generator — the literal
+    discrete `‖L_X g‖²` with `(L − L^{*π})/2` playing the Killing operator. -/
+theorem killingDefect_eq_four_antisym (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) :
+    KillingDefect L pi_dist
+      = 4 * ∑ x, ∑ y, (pi_dist x * AntisymmetricPart L pi_dist x y)^2 := by
+  unfold KillingDefect
+  rw [Finset.mul_sum]
+  refine Finset.sum_congr rfl fun x _ => ?_
+  rw [Finset.mul_sum]
+  refine Finset.sum_congr rfl fun y _ => ?_
+  rw [antisymmetric_part_eq_half_current L pi_dist hπ x y]
+  ring
+
+/-- **B7b (energy defect = cycle obstruction)**: at stationarity, the defect is
+    strictly positive iff the chain supports a positive-current cycle. The
+    Chern–Hamilton distance-from-criticality and the discrete `H¹ ≠ 0` escape
+    clause of §3 are the SAME obstruction, measured as a norm versus detected as
+    topology. -/
+theorem killingDefect_pos_iff_positive_current_cycle (L : Matrix V V ℝ)
+    (pi_dist : V → ℝ) (hrow : ∀ x, ∑ y, L x y = 0) (hstat : IsStationary L pi_dist) :
+    0 < KillingDefect L pi_dist ↔
+      ∃ (len : ℕ) (c : ℕ → V), 0 < len ∧ c 0 = c len ∧
+        ∀ m < len, 0 < ProbabilityCurrent L pi_dist (c m) (c (m + 1)) := by
+  constructor
+  · intro hpos
+    have hndb : ¬ DetailedBalance L pi_dist := fun hdb =>
+      (ne_of_gt hpos) ((killingDefect_eq_zero_iff_reversible L pi_dist).mpr hdb)
+    exact ness_has_current_cycle L pi_dist hrow hstat hndb
+  · intro hcyc
+    rcases eq_or_lt_of_le (killingDefect_nonneg L pi_dist) with heq | hlt
+    · exact absurd hcyc
+        ((reversible_iff_no_positive_current_cycle L pi_dist hrow hstat).mp
+          ((killingDefect_eq_zero_iff_reversible L pi_dist).mp heq.symm))
+    · exact hlt
+
+end KillingDefect
+
 end SGC.Bridge.DiscreteFluidDynamics
