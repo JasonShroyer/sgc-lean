@@ -165,6 +165,12 @@ import SGC.InformationGeometry.FisherNoetherBridge
 -- Now axiom-free and sorry-free.
 import SGC.InformationGeometry.DefectDynamics
 
+-- Discrete Fluid-Computer Bridge: bridge lemmas B1-B6 of the Miranda program
+-- (continuity equation, static-fluid equilibrium, cycle-space H¹ obstruction,
+-- current-aggregation heredity, uniform-fiber h-principle lift, viscous horizon).
+-- Kernel-proven, no new axioms (2026-06-10).
+import SGC.Bridge.DiscreteFluidDynamics
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════

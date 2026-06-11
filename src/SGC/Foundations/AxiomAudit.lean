@@ -70,6 +70,7 @@ import SGC.Bridge.CelegansFloquetTsallis
 import SGC.Thermodynamics.EntropyProduction
 import SGC.Thermodynamics.FluxDecomposition
 import SGC.ComplexityRelativity
+import SGC.Bridge.DiscreteFluidDynamics
 
 noncomputable section
 
@@ -522,5 +523,36 @@ namespace SGC.Foundations.AxiomAudit
   Each new axiom appearing in this audit *is* the Reverse Mathematics
   jump made explicit. That is the signal we want.
 -/
+
+/-! ## 5. Discrete Fluid-Computer Bridge (2026-06-10)
+
+Expected axiom profile for all of these: `[propext, Classical.choice, Quot.sound]`
+only — no `sorryAx`, no SGC-declared axioms. The walk construction in the cycle
+theorem uses `Exists.choose` (hence `Classical.choice` essentially); everything
+else is finite-sum algebra plus one Mathlib improper integral. -/
+
+-- B1: stationarity ⇔ divergence-free current (discrete continuity equation).
+#print axioms SGC.Bridge.DiscreteFluidDynamics.stationary_iff_current_divergence_free
+
+-- B6b: nonzero cycle-space field supports a positive-current cycle (discrete H¹ ≠ 0).
+#print axioms SGC.Bridge.DiscreteFluidDynamics.cycle_of_pos_cycleSpace_field
+
+-- B6c: stationary NESS supports a positive-current cycle (cosymplectic escape clause).
+#print axioms SGC.Bridge.DiscreteFluidDynamics.ness_has_current_cycle
+
+-- Headline dichotomy: detailed balance ⇔ no positive-current cycle (discrete Chern–Hamilton).
+#print axioms SGC.Bridge.DiscreteFluidDynamics.reversible_iff_no_positive_current_cycle
+
+-- B4: coarse current = aggregated fine current (no lumpability hypothesis).
+#print axioms SGC.Bridge.DiscreteFluidDynamics.coarse_current_eq_sum_fine
+
+-- B4-rigidity: detailed balance is hereditary under arbitrary coarse-graining.
+#print axioms SGC.Bridge.DiscreteFluidDynamics.reversible_quotient_of_reversible
+
+-- B3b: every generator is realized as a strongly-lumpable quotient (flexibility).
+#print axioms SGC.Bridge.DiscreteFluidDynamics.uniformLift_quotient_realizes
+
+-- B5: the viscous time budget ∫₀^∞ e^{-νt} dt = 1/ν.
+#print axioms SGC.Bridge.DiscreteFluidDynamics.viscous_time_budget
 
 end SGC.Foundations.AxiomAudit

@@ -190,6 +190,7 @@ theorem defect_from_separation
         withinClassVariance h pi_dist numClasses + 1 =
       totalVariance h pi_dist / withinClassVariance h pi_dist numClasses := by
     field_simp
+    ring
   rw [hsum, one_div_div]
 
 /-- **Separation explosion ⟺ defect collapse**, in threshold form: the

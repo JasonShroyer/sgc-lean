@@ -394,12 +394,12 @@ def fineP : Partition (Fin 3) where
        · rcases h₂ with e₂ | a₂
          · exact Or.inr ⟨a₁.1, e₂ ▸ a₁.2⟩
          · exact Or.inr ⟨a₁.1, a₂.2⟩⟩⟩
-  decRel := fun _ _ => inferInstance
+  decRel := fun x y => inferInstanceAs (Decidable (x = y ∨ (x ≠ 0 ∧ y ≠ 0)))
 
 /-- The indiscrete one-block partition. -/
 def coarseP : Partition (Fin 3) where
   rel := ⟨fun _ _ => True, ⟨fun _ => trivial, fun _ => trivial, fun _ _ => trivial⟩⟩
-  decRel := fun _ _ => inferInstance
+  decRel := fun _ _ => inferInstanceAs (Decidable True)
 
 lemma fine_le_coarse : fineP ≤ coarseP := fun _ _ _ => trivial
 
