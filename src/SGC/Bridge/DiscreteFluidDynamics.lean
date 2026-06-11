@@ -524,4 +524,91 @@ theorem killingDefect_pos_iff_positive_current_cycle (L : Matrix V V ℝ)
 
 end KillingDefect
 
+/-! ## §8. Discrete Hodge orthogonality — the topological shield
+
+The honest discrete content of "harmonic currents are invisible to viscosity."
+On a bare graph (1-complex, no 2-cells) the Hodge decomposition has TWO legs,
+not three: `Ω¹ = im(d₀) ⊕ ker(div)`, with harmonic = divergence-free = cycle
+space. (The familiar three-subspace splitting `im(d₀) ⊕ im(d₁*) ⊕ ker(Δ₁)`
+requires filled 2-cells and does not apply here; and the statement
+`γ ∈ ker(Δ₁) → ⟨γ, Δ₁γ⟩ = 0` is a definitional rewrite, not a theorem — we
+do NOT formalize it.) The contentful statements are:
+
+1. summation by parts: `⟨ω, d₀f⟩ = −2 Σ f·(div ω)` for antisymmetric `ω`;
+2. **orthogonality iff**: `ω ⟂ im(d₀)` ⟺ `div ω = 0` — harmonic means
+   orthogonal to every gradient;
+3. **the shield**: at stationarity the probability current has ZERO overlap
+   with every gradient 1-form. Dissipative (gradient) channels cannot couple
+   to a NESS current — the discrete reason the cosymplectic escape clause
+   (arXiv:2507.07696) survives any viscosity. Combined with §7, the
+   `KillingDefect` is the squared norm of a purely harmonic object. -/
+
+section HodgeOrthogonality
+
+/-- Inner product on edge fields (1-forms), summed over ordered pairs. -/
+def edgeInner (α β : V → V → ℝ) : ℝ := ∑ x, ∑ y, α x y * β x y
+
+/-- The gradient (discrete exterior derivative `d₀`) of a potential:
+    `(d₀ f)(x,y) = f(y) − f(x)`. -/
+def gradientField (f : V → ℝ) : V → V → ℝ := fun x y => f y - f x
+
+/-- **Summation by parts**: for an antisymmetric edge field,
+    `⟨ω, d₀ f⟩ = −2 Σₓ f(x)·(div ω)(x)`. -/
+lemma edgeInner_gradient_eq (ω : V → V → ℝ) (hanti : ∀ x y, ω x y = -ω y x)
+    (f : V → ℝ) :
+    edgeInner ω (gradientField f) = -2 * ∑ x, f x * divergence ω x := by
+  simp only [edgeInner, gradientField, divergence]
+  have key : ∀ x y : V, ω x y * (f y - f x) = -(f y * ω y x) - f x * ω x y :=
+    fun x y => by rw [hanti x y]; ring
+  simp_rw [key, Finset.sum_sub_distrib, Finset.sum_neg_distrib, ← Finset.mul_sum]
+  rw [Finset.sum_comm]
+  simp_rw [← Finset.mul_sum]
+  ring
+
+/-- **Discrete Hodge orthogonality (graph layer, two-subspace form)**: an
+    antisymmetric edge field is orthogonal to EVERY gradient iff it is
+    divergence-free. `ker(div) = im(d₀)^⊥` — harmonic = cycle space, the
+    correct splitting on a 1-complex. -/
+theorem orthogonal_gradients_iff_divergence_free (ω : V → V → ℝ)
+    (hanti : ∀ x y, ω x y = -ω y x) :
+    (∀ f : V → ℝ, edgeInner ω (gradientField f) = 0) ↔
+      (∀ x, divergence ω x = 0) := by
+  constructor
+  · intro h x
+    have hdiv := h (fun z => divergence ω z)
+    rw [edgeInner_gradient_eq ω hanti] at hdiv
+    have hsum : ∑ z, divergence ω z * divergence ω z = 0 := by linarith
+    have hsq : ∀ z ∈ Finset.univ, divergence ω z * divergence ω z = 0 := by
+      intro z _
+      exact (Finset.sum_eq_zero_iff_of_nonneg
+        (fun z _ => mul_self_nonneg (divergence ω z))).mp hsum z (Finset.mem_univ z)
+    exact mul_self_eq_zero.mp (hsq x (Finset.mem_univ x))
+  · intro h f
+    rw [edgeInner_gradient_eq ω hanti]
+    simp [h]
+
+/-- **The topological shield**: at stationarity, the probability current is
+    orthogonal to every gradient 1-form. No dissipative (gradient) channel
+    couples to a NESS current — what survives coarse-graining "viscosity"
+    is exactly the harmonic (cycle-space) component, which by
+    `ness_has_current_cycle` is nonzero precisely off equilibrium. -/
+theorem stationary_current_orthogonal_gradients (L : Matrix V V ℝ)
+    (pi_dist : V → ℝ) (hrow : ∀ x, ∑ y, L x y = 0)
+    (hstat : IsStationary L pi_dist) (f : V → ℝ) :
+    edgeInner (ProbabilityCurrent L pi_dist) (gradientField f) = 0 :=
+  (orthogonal_gradients_iff_divergence_free _
+    (fun x y => current_antisymm L pi_dist x y)).mpr
+    ((stationary_iff_current_divergence_free L pi_dist hrow).mp hstat) f
+
+/-- The Killing defect of §7 is the squared `edgeInner`-norm of the current:
+    the energy distance from criticality is the norm of a PURELY HARMONIC
+    object at stationarity (by `stationary_current_orthogonal_gradients`). -/
+theorem killingDefect_eq_edgeInner_self (L : Matrix V V ℝ) (pi_dist : V → ℝ) :
+    KillingDefect L pi_dist
+      = edgeInner (ProbabilityCurrent L pi_dist) (ProbabilityCurrent L pi_dist) := by
+  unfold KillingDefect edgeInner
+  exact Finset.sum_congr rfl fun x _ => Finset.sum_congr rfl fun y _ => sq (ProbabilityCurrent L pi_dist x y) ▸ by ring
+
+end HodgeOrthogonality
+
 end SGC.Bridge.DiscreteFluidDynamics
