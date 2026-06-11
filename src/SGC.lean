@@ -177,6 +177,14 @@ import SGC.Bridge.DiscreteFluidDynamics
 -- rigidity). Kernel-proven, no new axioms (2026-06-11).
 import SGC.Bridge.PhaseClassifier
 
+-- The Emergence Loophole: how computation escapes the crystal-ward flow.
+-- Drive injection (crystal transparency: KillingDefect(L+D) = KillingDefect(D)
+-- exactly on a detailed-balance substrate), no-spontaneous-universality
+-- packaging, and the validity horizon T* ~ 1/epsilon (semigroup perturbation
+-- bound proved from the exponential series in an abstract real Banach algebra).
+-- Kernel-proven, no new axioms (2026-06-11).
+import SGC.Bridge.ValidityHorizon
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════

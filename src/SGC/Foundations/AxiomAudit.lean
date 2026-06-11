@@ -72,6 +72,7 @@ import SGC.Thermodynamics.FluxDecomposition
 import SGC.ComplexityRelativity
 import SGC.Bridge.DiscreteFluidDynamics
 import SGC.Bridge.PhaseClassifier
+import SGC.Bridge.ValidityHorizon
 import SGC.InformationGeometry.FisherNoetherBridge
 
 noncomputable section
@@ -606,5 +607,30 @@ Dirichlet gap machinery (`Classical.choice` via real completeness). -/
 
 -- HEADLINE: RG flow is crystal-ward (Universal → Mixing → Crystal one-way).
 #print axioms SGC.Bridge.PhaseClassifier.rg_flow_crystalward
+
+/-! ## 8. The Emergence Loophole (2026-06-11 afternoon)
+
+`Bridge/ValidityHorizon.lean`: the three escape routes from the crystal-ward
+flow. Expected profile: `[propext, Classical.choice, Quot.sound]` — finite-sum
+algebra plus the exponential series in a Banach algebra (tsum machinery uses
+`Classical.choice` via completeness). -/
+
+-- Route 1a: crystal transparency — defect of a driven crystal = defect of the drive.
+#print axioms SGC.Bridge.ValidityHorizon.killingDefect_driven_crystal
+
+-- Route 1b: a vortical drive takes a crystal substrate out of the crystal phase.
+#print axioms SGC.Bridge.ValidityHorizon.drive_injects_vorticity
+
+-- Route 2 packaging: a crystal fine system never shows a Universal coarse face.
+#print axioms SGC.Bridge.ValidityHorizon.no_spontaneous_universality
+
+-- Route 3 engine: Duhamel-type semigroup perturbation bound from the exp series.
+#print axioms SGC.Bridge.ValidityHorizon.exp_perturbation_bound
+
+-- Route 3: coarse-model tracking error ≤ t·ε·e^(t(‖A‖+ε)).
+#print axioms SGC.Bridge.ValidityHorizon.validity_horizon
+
+-- HEADLINE: T* ~ 1/ε — within one mixing time, accuracy δ holds for t ≤ δ/(e·ε).
+#print axioms SGC.Bridge.ValidityHorizon.validity_horizon_inverse_leakage
 
 end SGC.Foundations.AxiomAudit
