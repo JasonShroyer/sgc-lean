@@ -171,6 +171,12 @@ import SGC.InformationGeometry.DefectDynamics
 -- Kernel-proven, no new axioms (2026-06-10).
 import SGC.Bridge.DiscreteFluidDynamics
 
+-- Three-Phase SGC Classifier: discrete Chern-Hamilton phases (Crystal/Mixing/
+-- Universal over KillingDefect x DirichletGap), coarse-generator bridge, and the
+-- RG-monotone flow theorem (rg_flow_crystalward: consolidation is one-way toward
+-- rigidity). Kernel-proven, no new axioms (2026-06-11).
+import SGC.Bridge.PhaseClassifier
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════

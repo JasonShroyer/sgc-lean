@@ -71,6 +71,7 @@ import SGC.Thermodynamics.EntropyProduction
 import SGC.Thermodynamics.FluxDecomposition
 import SGC.ComplexityRelativity
 import SGC.Bridge.DiscreteFluidDynamics
+import SGC.Bridge.PhaseClassifier
 import SGC.InformationGeometry.FisherNoetherBridge
 
 noncomputable section
@@ -574,5 +575,36 @@ sorried declarations — the audit confirms it does NOT inherit them. -/
 
 -- Selection-safety corollary: zero covariances ⇒ no contamination.
 #print axioms SGC.InformationGeometry.FisherNoetherBridge.selection_uncorrelated_no_contamination
+
+/-! ## 7. Hodge orthogonality and the three-phase classifier (2026-06-10/11)
+
+DFD §8 (the topological shield) and `Bridge/PhaseClassifier.lean` (the discrete
+Chern–Hamilton three-phase classifier with RG-monotone flow). Expected profile:
+`[propext, Classical.choice, Quot.sound]` — finite-sum algebra plus the sInf-based
+Dirichlet gap machinery (`Classical.choice` via real completeness). -/
+
+-- §8: orthogonality iff — ker(div) = im(d₀)^⊥ on a 1-complex.
+#print axioms SGC.Bridge.DiscreteFluidDynamics.orthogonal_gradients_iff_divergence_free
+
+-- §8: the topological shield — NESS current ⊥ every gradient 1-form.
+#print axioms SGC.Bridge.DiscreteFluidDynamics.stationary_current_orthogonal_gradients
+
+-- §8: Killing defect = squared edge-norm of the (harmonic) current.
+#print axioms SGC.Bridge.DiscreteFluidDynamics.killingDefect_eq_edgeInner_self
+
+-- Classifier: the three phases are exhaustive.
+#print axioms SGC.Bridge.PhaseClassifier.phase_trichotomy
+
+-- Bridge: π-weighted coarse generator = simple quotient generator under lumpability.
+#print axioms SGC.Bridge.PhaseClassifier.coarseGenerator_eq_simple
+
+-- Crystal is RG-stable (phase form of B4-rigidity).
+#print axioms SGC.Bridge.PhaseClassifier.crystal_rg_stable
+
+-- Coarse vorticity certifies fine vorticity (K-axis heredity).
+#print axioms SGC.Bridge.PhaseClassifier.coarse_vorticity_certifies_fine
+
+-- HEADLINE: RG flow is crystal-ward (Universal → Mixing → Crystal one-way).
+#print axioms SGC.Bridge.PhaseClassifier.rg_flow_crystalward
 
 end SGC.Foundations.AxiomAudit
