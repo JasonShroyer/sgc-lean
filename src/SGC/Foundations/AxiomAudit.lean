@@ -75,6 +75,8 @@ import SGC.Bridge.PhaseClassifier
 import SGC.Bridge.ValidityHorizon
 import SGC.Bridge.DefectHorizonBridge
 import SGC.Bridge.TrajectoryClosure
+import SGC.Bridge.Consolidation
+import SGC.Bridge.Quantum
 import SGC.InformationGeometry.FisherNoetherBridge
 
 -- Spectral Pillar (FHDT): the stability bound + its three pillar lemmas.
@@ -768,5 +770,24 @@ profiles: `[propext, Classical.choice, Quot.sound]` for the first five;
 
 -- NCD uniform bound; expected to list exactly the two NCD axioms beyond the base.
 #print axioms SGC.Approximate.NCD_uniform_error_bound
+
+/-! ### 12b. Same-day cheap kills (Phase B, 2026-07-05)
+
+Three more ex-axioms, proved in place. `HeatKernel_semigroup` and
+`all_ones_norm_sq_pos` expect the pure base `[propext, Classical.choice,
+Quot.sound]`. `inner_pi_orthogonal_decomp` STATES its claim through the
+`partitionToCodeSubspace` interface axiom and extracts self-adjointness via
+`isSelfAdjoint_pi_iff` (adjoint interface), so those interface axioms are
+expected in its profile — the retirement here is the DECOMPOSITION ITSELF,
+which is no longer assumed. -/
+
+-- Semigroup law T_{s+t} = T_s · T_t, ex-axiom, now Matrix.exp_add_of_commute.
+#print axioms SGC.Bridge.Consolidation.HeatKernel_semigroup
+
+-- ⟨𝟙,𝟙⟩_π ≠ 0 over ℂ, ex-axiom (Finset.sum_pos + cast).
+#print axioms SGC.Bridge.Quantum.all_ones_norm_sq_pos
+
+-- ℂ-Pythagoras for the code projector, ex-axiom (twin of norm_sq_pi_proj_pythagorean).
+#print axioms SGC.Bridge.Quantum.inner_pi_orthogonal_decomp
 
 end SGC.Foundations.AxiomAudit

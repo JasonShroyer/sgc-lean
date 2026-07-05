@@ -93,9 +93,16 @@ theorem RG_monotonicity_step (L : Matrix V V ℝ) (t : ℝ) (p q : V → ℝ)
     RelativeEntropy p q :=
   DataProcessingInequality (HeatKernel L t) p q hT.row_sum hT.nonneg hp hq
 
-/-- **Semigroup Composition**: T_{s+t} = T_s * T_t. -/
-axiom HeatKernel_semigroup (L : Matrix V V ℝ) (s t : ℝ) :
-    HeatKernel L (s + t) = HeatKernel L s * HeatKernel L t
+/-- **Semigroup Composition**: T_{s+t} = T_s * T_t.
+
+    PROVED (2026-07-05, ex-axiom): `HeatKernel L t = exp ℝ (t • L)`, so this is
+    `Matrix.exp_add_of_commute` — `s • L` and `t • L` always commute. -/
+theorem HeatKernel_semigroup (L : Matrix V V ℝ) (s t : ℝ) :
+    HeatKernel L (s + t) = HeatKernel L s * HeatKernel L t := by
+  unfold HeatKernel
+  rw [add_smul]
+  exact Matrix.exp_add_of_commute ℝ (s • L) (t • L)
+    (((Commute.refl L).smul_left s).smul_right t)
 
 /-- Channel application distributes over matrix multiplication.
 

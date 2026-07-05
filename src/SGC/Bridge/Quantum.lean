@@ -369,14 +369,40 @@ theorem codeSubspace_proj_selfAdjoint (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi
 /-- **Structural Property 5**: Orthogonal decomposition of the inner product.
     For orthogonal projection P: ⟨ψ, ψ⟩ = ⟨Pψ, Pψ⟩ + ⟨(I-P)ψ, (I-P)ψ⟩.
 
-    **Proof path**: Use ψ = Pψ + (ψ - Pψ), expand via linearity, and show cross
-    terms vanish because P(ψ - Pψ) = 0 (by idempotence) and P is self-adjoint:
-    ⟨Pψ, ψ - Pψ⟩ = ⟨ψ, P(ψ - Pψ)⟩ = ⟨ψ, 0⟩ = 0. -/
-axiom inner_pi_orthogonal_decomp (pi_dist : V → ℝ) (P : Partition V) (ψ : V → ℂ) :
+    PROVED (2026-07-05, ex-axiom — the ℂ twin of the bridge's
+    `norm_sq_pi_proj_pythagorean`): ψ = Pψ + (ψ - Pψ), the cross terms vanish
+    because P(ψ - Pψ) = 0 (idempotence) and P is self-adjoint:
+    ⟨Pψ, ψ - Pψ⟩ = ⟨ψ, P(ψ - Pψ)⟩ = ⟨ψ, 0⟩ = 0, and the conjugate-symmetric
+    partner is star 0 = 0. (Gains the `hπ` hypothesis needed to convert the
+    structure's `IsSelfAdjoint_pi` field to inner-product form; no consumers
+    existed, so the signature change is free.) -/
+theorem inner_pi_orthogonal_decomp (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (P : Partition V) (ψ : V → ℂ) :
     let proj := (partitionToCodeSubspace pi_dist P).proj
     SGC.Axioms.GeometryGeneral.inner_pi pi_dist ψ ψ =
     SGC.Axioms.GeometryGeneral.inner_pi pi_dist (proj ψ) (proj ψ) +
-    SGC.Axioms.GeometryGeneral.inner_pi pi_dist (ψ - proj ψ) (ψ - proj ψ)
+    SGC.Axioms.GeometryGeneral.inner_pi pi_dist (ψ - proj ψ) (ψ - proj ψ) := by
+  intro proj
+  have hPP : proj (proj ψ) = proj ψ := by
+    have h := congrFun (congrArg DFunLike.coe (partitionToCodeSubspace pi_dist P).idempotent) ψ
+    simpa only [LinearMap.comp_apply] using h
+  have hPb : proj (ψ - proj ψ) = 0 := by
+    rw [map_sub, hPP, sub_self]
+  have hsa := (SGC.Axioms.GeometryGeneral.isSelfAdjoint_pi_iff pi_dist hπ _).mp
+    (partitionToCodeSubspace pi_dist P).self_adjoint
+  have hzero : SGC.Axioms.GeometryGeneral.inner_pi pi_dist ψ (0 : V → ℂ) = 0 := by
+    simp [SGC.Axioms.GeometryGeneral.inner_pi]
+  have hc1 : SGC.Axioms.GeometryGeneral.inner_pi pi_dist (proj ψ) (ψ - proj ψ) = 0 := by
+    rw [hsa ψ (ψ - proj ψ), hPb, hzero]
+  have hc2 : SGC.Axioms.GeometryGeneral.inner_pi pi_dist (ψ - proj ψ) (proj ψ) = 0 := by
+    rw [SGC.Axioms.GeometryGeneral.inner_pi_conj_symm, hc1, star_zero]
+  have hdecomp : ψ = proj ψ + (ψ - proj ψ) := by
+    ext x; simp only [Pi.add_apply, Pi.sub_apply]; ring
+  conv_lhs => rw [hdecomp]
+  rw [SGC.Axioms.GeometryGeneral.inner_pi_add_left,
+      SGC.Axioms.GeometryGeneral.inner_pi_add_right,
+      SGC.Axioms.GeometryGeneral.inner_pi_add_right, hc1, hc2]
+  ring
 
 /-- **Lemma 6a**: For codewords, the KL condition gives ‖Eψ‖² = α‖ψ‖².
 
@@ -558,10 +584,16 @@ theorem all_ones_in_code (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) (P :
     ‖𝟙‖² = ⟨𝟙,𝟙⟩_π = Σᵥ π(v) · 1̄ · 1 = Σᵥ π(v) > 0
     since all π(v) > 0 and V is nonempty (Fintype).
 
-    Note: This is mathematically trivial but kept as axiom due to Mathlib API complexity
-    with Complex coercions. The proof would use Finset.sum_pos + Complex.ofReal_ne_zero. -/
-axiom all_ones_norm_sq_pos (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) :
-    SGC.Axioms.GeometryGeneral.inner_pi pi_dist (fun _ : V => (1 : ℂ)) (fun _ => 1) ≠ 0
+    PROVED (2026-07-05, ex-axiom): the inner product collapses to
+    `((Σᵥ π(v) : ℝ) : ℂ)`, positive real, hence nonzero — exactly the
+    `Finset.sum_pos + Complex.ofReal_ne_zero` route the old note predicted. -/
+theorem all_ones_norm_sq_pos (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) :
+    SGC.Axioms.GeometryGeneral.inner_pi pi_dist (fun _ : V => (1 : ℂ)) (fun _ => 1) ≠ 0 := by
+  have hsum : (0 : ℝ) < ∑ x, pi_dist x :=
+    Finset.sum_pos (fun x _ => hπ x) Finset.univ_nonempty
+  simp only [SGC.Axioms.GeometryGeneral.inner_pi, star_one, mul_one]
+  rw [← RCLike.ofReal_sum]
+  exact fun h => ne_of_gt hsum (RCLike.ofReal_eq_zero.mp h)
 
 /-- Conservation: A matrix with row sums = 0 kills the all-ones vector.
     L_ℂ 𝟙 = 0 when ∀ v, Σ_w L(v,w) = 0. -/
