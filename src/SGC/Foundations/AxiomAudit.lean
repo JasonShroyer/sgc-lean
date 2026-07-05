@@ -73,7 +73,16 @@ import SGC.ComplexityRelativity
 import SGC.Bridge.DiscreteFluidDynamics
 import SGC.Bridge.PhaseClassifier
 import SGC.Bridge.ValidityHorizon
+import SGC.Bridge.DefectHorizonBridge
+import SGC.Bridge.TrajectoryClosure
 import SGC.InformationGeometry.FisherNoetherBridge
+
+-- Spectral Pillar (FHDT): the stability bound + its three pillar lemmas.
+import SGC.Spectral.Defs
+
+-- Rate of Consolidation (correlation-decay form, ε=0): cross-boundary correlations
+-- decay at the spectral-gap rate.
+import SGC.Information.RateOfConsolidation
 
 noncomputable section
 
@@ -632,5 +641,132 @@ algebra plus the exponential series in a Banach algebra (tsum machinery uses
 
 -- HEADLINE: T* ~ 1/ε — within one mixing time, accuracy δ holds for t ≤ δ/(e·ε).
 #print axioms SGC.Bridge.ValidityHorizon.validity_horizon_inverse_leakage
+
+/-! ## 9. The Defect-Horizon Bridge (2026-06-11 evening)
+
+`Bridge/DefectHorizonBridge.lean`: the abstract ε of §8 IS the concrete leakage
+defect of `Approximate.lean`, identified through the weighted operator algebra
+`PiMat` (a `NormedRing`/`NormOneClass`/`NormedAlgebra ℝ`/`CompleteSpace` on
+`Matrix V V ℝ` carrying the L²(π) operator norm in the TYPE). Expected profile:
+`[propext, Classical.choice, Quot.sound]` — in particular these must NOT
+mention `SGC.Approximate.HeatKernel_opNorm_bound`,
+`SGC.Approximate.Horizontal_Duhamel_integral_bound`, or
+`SGC.Approximate.Duhamel_integral_bound`, the three axioms whose statements they
+supersede with explicit constants. The horizontal gap and the vertical leakage
+are now BOTH kernel-proved: the vertical defect is the horizontal gap projected
+through the π-contraction `(I−Π)`, so it inherits the same explicit bound. -/
+
+-- The exponential transport: Banach-algebra exp on PiMat = matrix exp.
+#print axioms SGC.Bridge.DefectHorizonBridge.exp_piMat_eq
+
+-- The two ε's are one: ‖D‖_PiMat = opNorm_pi (DefectOperator).
+#print axioms SGC.Bridge.DefectHorizonBridge.defect_eq_validity_leakage
+
+-- Invariant-subspace exponentiation: exp(t(L−D))·Π = exp(tL̄)·Π.
+#print axioms SGC.Bridge.DefectHorizonBridge.exp_defectComplement_mul_proj
+
+-- Heat-kernel norm, explicit: ‖e^{sL}‖_π ≤ e^{s‖L‖_π}.
+#print axioms SGC.Bridge.DefectHorizonBridge.heatKernel_opNorm_explicit
+
+-- The axiom's exact statement, now a theorem (B := e^{T‖L‖_π}).
+#print axioms SGC.Bridge.DefectHorizonBridge.HeatKernel_opNorm_bound_proved
+
+-- HEADLINE: the Defect-Horizon Bound — trajectory gap ≤ t·‖D‖_π·e^{t(‖L−D‖_π+‖D‖_π)}·‖f₀‖_π.
+#print axioms SGC.Bridge.DefectHorizonBridge.defect_horizon_bound
+
+-- ε-form in IsApproxLumpable vocabulary (supersedes Horizontal_Duhamel_integral_bound).
+#print axioms SGC.Bridge.DefectHorizonBridge.trajectory_closure_bound_explicit
+
+-- The coarse heat kernel stays coarse: Π e^{tL̄}f₀ = e^{tL̄}f₀.
+#print axioms SGC.Bridge.DefectHorizonBridge.coarseProj_fixes_coarse_heatKernel
+
+-- HEADLINE (vertical): leakage out of the coarse subspace ≤ t·‖D‖_π·e^{t(‖L−D‖_π+‖D‖_π)}·‖f₀‖_π.
+#print axioms SGC.Bridge.DefectHorizonBridge.vertical_defect_horizon_bound
+
+-- ε-form in IsApproxLumpable vocabulary (supersedes Duhamel_integral_bound).
+#print axioms SGC.Bridge.DefectHorizonBridge.vertical_closure_bound_explicit
+
+-- §7 reusable lemma: π-orthogonal Pythagoras for Π — ‖w‖² = ‖Πw‖² + ‖w−Πw‖² (no cross term).
+#print axioms SGC.Bridge.DefectHorizonBridge.norm_sq_pi_proj_pythagorean
+
+-- HEADLINE (total split): ‖e^{tL}f₀ − e^{tL̄}f₀‖²_π = ‖horizontal‖²_π + ‖vertical‖²_π (exact, all t, all L).
+#print axioms SGC.Bridge.DefectHorizonBridge.total_error_pythagorean
+
+/-! ## 10. The Spectral Pillar — FHDT (audited 2026-06-13)
+
+  `Spectral/` is the heat-dominance pillar. Its capstone — historically the
+  **Functorial Heat Dominance Theorem (FHDT)** — now ships under the public-API
+  name `spectral_stability_bound` (`Spectral/Defs.lean`): a positive spectral gap
+  forces the stability flow β(t) to decay as |β(t)| ≤ C·e^{-λ_gap·t}. It is a
+  CONDITIONAL theorem — it ASSUMES the irreducibility / self-adjointness / PSD /
+  sector structure (h_irred, h_sa, h_psd, h_rel, h_gap_pos, …) rather than
+  deriving it. The pillar is imported by `SGC.lean` (hence built) but was, until
+  now, absent from this ε=0 ledger. These four lines are the kernel test of the
+  "verified to ε=0" claim — expected `[propext, Classical.choice, Quot.sound]`,
+  no `sorryAx`, no SGC-declared axioms. -/
+
+-- Pillar 1: gap > 0 ⇔ ker H = span{1}.
+#print axioms SGC.Spectral.gap_pos_iff_ker_eq_span_one
+
+-- Pillar 2: projected heat semigroup contracts as e^{-λ_gap·t} (envelope B(t)=1).
+#print axioms SGC.Spectral.sector_envelope_bound_canonical
+
+-- Pillar 3: Σ_x |A_xx| ≤ |V|·‖A‖_{op,π} (the diagonal bridge).
+#print axioms SGC.Spectral.sum_abs_diag_le_card_opNorm
+
+-- CAPSTONE (FHDT, conditional): |β(t)| ≤ C·e^{-λ_gap·t}.
+#print axioms SGC.Spectral.spectral_stability_bound
+
+/-! ## 11. The Rate of Consolidation — correlation-decay form (audited 2026-06-13)
+
+  `Information/RateOfConsolidation.lean` discharges the operational core of the
+  UPAT Rate-of-Consolidation Theorem: cross-boundary L²(π) correlations decay at the
+  spectral-gap rate, so the dynamical L¹ CMI proxy obeys I(t) ≤ I₀·e^{-γ_gap·t}. Built
+  on `autocorrelation_decay_from_sector` (Cauchy–Schwarz + sector contraction), so it
+  inherits the same conditional sector hypotheses but adds NO new axioms. The literal
+  log-det Gaussian-CMI dressing is the deferred v2. Expected profile:
+  `[propext, Classical.choice, Quot.sound]`, no `sorryAx`, no SGC-declared axioms. -/
+
+-- Spectral core: mean-zero heat contraction ‖e^{tL}f‖_π ≤ e^{-γt}·‖f‖_π.
+#print axioms SGC.Observables.heat_decay_mean_zero
+
+-- Cross-correlation decay: |⟨g, e^{tL}f⟩_π| ≤ ‖g‖_π·‖f‖_π·e^{-γt}.
+#print axioms SGC.Observables.cross_correlation_decay
+
+-- CAPSTONE (Rate of Consolidation): I(t) ≤ I₀·e^{-γ_gap·t}.
+#print axioms SGC.Observables.rate_of_consolidation
+
+/-! ## 12. The Axiom Retirement (2026-07-05)
+
+`Bridge/TrajectoryClosure.lean`: the three semigroup/Duhamel axioms
+(`HeatKernel_opNorm_bound`, `Duhamel_integral_bound`,
+`Horizontal_Duhamel_integral_bound`) are **deleted from the codebase**, and the
+former axiom `PropagatorDiff_eq_proj_trajectory_diff` is now a theorem (`Π`
+commutes with `e^{tL̄}` via `Commute.exp_right` on `PiMat`). The flagship
+trajectory theorems keep their canonical `SGC.Approximate` names. Expected
+profiles: `[propext, Classical.choice, Quot.sound]` for the first five;
+`spectral_stability_reversible` adds exactly `Weyl_inequality_pi`;
+`NCD_uniform_error_bound` adds exactly `NCD_defect_split` + `NCD_integral_bound`. -/
+
+-- Uniform semigroup bound, ex-axiom consumer, now kernel-clean (B := e^{T‖L‖_π}).
+#print axioms SGC.Approximate.trajectory_norm_bound_uniform
+
+-- FLAGSHIP: O(ε·t) horizontal closure, ∃C form, kernel-clean (C := e^{t(‖L−D‖_π+ε)}).
+#print axioms SGC.Approximate.trajectory_closure_bound
+
+-- O(ε·t) vertical error, ∃C form, kernel-clean.
+#print axioms SGC.Approximate.vertical_error_bound
+
+-- Ex-axiom, now a theorem: propagator difference = projected trajectory difference.
+#print axioms SGC.Approximate.PropagatorDiff_eq_proj_trajectory_diff
+
+-- Operator-norm O(ε·t) bound, kernel-clean end to end.
+#print axioms SGC.Approximate.propagator_approximation_bound
+
+-- Eigenvalue tracking; expected to list exactly Weyl_inequality_pi beyond the base.
+#print axioms SGC.Approximate.spectral_stability_reversible
+
+-- NCD uniform bound; expected to list exactly the two NCD axioms beyond the base.
+#print axioms SGC.Approximate.NCD_uniform_error_bound
 
 end SGC.Foundations.AxiomAudit

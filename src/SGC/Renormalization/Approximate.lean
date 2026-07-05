@@ -641,6 +641,33 @@ lemma CoarseProjector_contractive (P : Partition V) (pi_dist : V → ℝ) (hπ :
     _ ≤ Real.sqrt (norm_sq_pi pi_dist f) := Real.sqrt_le_sqrt h_sq_le
     _ = norm_pi pi_dist f := rfl
 
+/-- The orthogonal complement projector (I-Π) is contractive in norm_pi:
+    ‖f - Π f‖_π ≤ ‖f‖_π. Same Pythagoras argument as `CoarseProjector_contractive`,
+    applied to the complement leg. Unconditional in L (Π is self-adjoint for any
+    generator). -/
+lemma CoarseProjector_compl_contractive (P : Partition V) (pi_dist : V → ℝ)
+    (hπ : ∀ v, 0 < pi_dist v) (f : V → ℝ) :
+    norm_pi pi_dist (f - CoarseProjector P pi_dist hπ f) ≤ norm_pi pi_dist f := by
+  have h_ortho := CoarseProjector_orthogonal P pi_dist hπ f
+  have h_cross1 : inner_pi pi_dist (CoarseProjector P pi_dist hπ f)
+      (f - CoarseProjector P pi_dist hπ f) = 0 := h_ortho
+  have h_decomp : f = CoarseProjector P pi_dist hπ f + (f - CoarseProjector P pi_dist hπ f) := by
+    ext x; simp only [Pi.add_apply, Pi.sub_apply]; ring
+  have h_expand : norm_sq_pi pi_dist f =
+      norm_sq_pi pi_dist (CoarseProjector P pi_dist hπ f) +
+      norm_sq_pi pi_dist (f - CoarseProjector P pi_dist hπ f) := by
+    conv_lhs => rw [h_decomp]
+    unfold norm_sq_pi
+    rw [inner_pi_add_left, inner_pi_add_right, inner_pi_add_right, h_cross1]
+    rw [inner_pi_comm (f - CoarseProjector P pi_dist hπ f) (CoarseProjector P pi_dist hπ f), h_cross1]
+    ring
+  have h_sq_le : norm_sq_pi pi_dist (f - CoarseProjector P pi_dist hπ f) ≤ norm_sq_pi pi_dist f := by
+    rw [h_expand]; linarith [norm_sq_pi_nonneg pi_dist hπ (CoarseProjector P pi_dist hπ f)]
+  calc norm_pi pi_dist (f - CoarseProjector P pi_dist hπ f)
+      = Real.sqrt (norm_sq_pi pi_dist (f - CoarseProjector P pi_dist hπ f)) := rfl
+    _ ≤ Real.sqrt (norm_sq_pi pi_dist f) := Real.sqrt_le_sqrt h_sq_le
+    _ = norm_pi pi_dist f := rfl
+
 /-! #### 5f. Differential Inequality for Vertical Error -/
 
 /-- **Vertical Derivative Bound** (Local Differential Inequality).
@@ -750,98 +777,21 @@ def VerticalProjectorMatrix (P : Partition V) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v) : Matrix V V ℝ :=
   1 - CoarseProjectorMatrix P pi_dist hπ
 
-/-- The semigroup norm bound: for finite-dimensional V, e^{tL} has bounded operator norm.
-    This is a fundamental property of matrix exponentials on finite-dimensional spaces.
+/-! #### 6a′. Retired axioms (2026-07-05)
 
-    The bound is **uniform** on [0, T]: there exists B such that ‖e^{sL}‖ ≤ B for all s ∈ [0, T].
-    This follows from continuity of s ↦ e^{sL} and compactness of [0, T]. -/
-axiom HeatKernel_opNorm_bound (L : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (T : ℝ) (hT : 0 ≤ T) :
-    ∃ B : ℝ, B ≥ 1 ∧ ∀ s, 0 ≤ s → s ≤ T → opNorm_pi pi_dist hπ (matrixToLinearMap (HeatKernel L s)) ≤ B
+Three axioms previously declared here — `HeatKernel_opNorm_bound`,
+`Duhamel_integral_bound`, `Horizontal_Duhamel_integral_bound` — have been
+**deleted**. Their statements are theorems with explicit constants, kernel-proved
+in `SGC/Bridge/DefectHorizonBridge.lean` (`HeatKernel_opNorm_bound_proved`,
+`vertical_closure_bound_explicit`, `trajectory_closure_bound_explicit`).
+The dependent theorems (`trajectory_norm_bound_uniform`,
+`trajectory_closure_bound`, `vertical_error_bound`,
+`propagator_approximation_bound`, `spectral_stability_reversible`,
+`NCD_uniform_error_bound`) and the likewise-retired axiom
+`PropagatorDiff_eq_proj_trajectory_diff` (now a theorem) live, name-stable in the
+same `SGC.Approximate` namespace, in `SGC/Bridge/TrajectoryClosure.lean`. -/
 
-/-- The norm of the trajectory is bounded uniformly on [0, T].
-    ‖e^{sL} f₀‖ ≤ B · ‖f₀‖ for all s ∈ [0, T]. -/
-lemma trajectory_norm_bound_uniform (L : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (f₀ : V → ℝ) (T : ℝ) (hT : 0 ≤ T) :
-    ∃ B : ℝ, B ≥ 1 ∧ ∀ s, 0 ≤ s → s ≤ T → norm_pi pi_dist (HeatKernelMap L s f₀) ≤ B * norm_pi pi_dist f₀ := by
-  obtain ⟨B, hB_pos, hB⟩ := HeatKernel_opNorm_bound L pi_dist hπ T hT
-  use B, hB_pos
-  intro s hs_lo hs_hi
-  have hB_s := hB s hs_lo hs_hi
-  have h := opNorm_pi_bound pi_dist hπ (matrixToLinearMap (HeatKernel L s)) f₀
-  calc norm_pi pi_dist (HeatKernelMap L s f₀)
-      = norm_pi pi_dist (matrixToLinearMap (HeatKernel L s) f₀) := rfl
-    _ ≤ opNorm_pi pi_dist hπ (matrixToLinearMap (HeatKernel L s)) * norm_pi pi_dist f₀ := h
-    _ ≤ B * norm_pi pi_dist f₀ := by
-        apply mul_le_mul_of_nonneg_right hB_s
-        unfold norm_pi; exact Real.sqrt_nonneg _
-
-/-! #### 6b. Duhamel Integral Bound (Calculus Axiom) -/
-
-/-- **Duhamel Integral Bound**: The Mean Value Theorem for the vertical defect.
-
-    This axiom encapsulates the calculus required to complete the trajectory bound.
-    The mathematical content is:
-
-    1. Define v(s) = (I - Π) e^{sL} f₀ (vertical defect at time s)
-    2. v(0) = 0 (by norm_vertical_defect_zero)
-    3. v'(s) = (I - Π) L e^{sL} f₀ (derivative of vertical defect)
-    4. By vertical_dynamics_structure: v'(s) = L_fine v(s) + D(Π u(s))
-    5. The Duhamel transform g(s) = e^{(t-s)L_fine} v(s) satisfies:
-       g'(s) = e^{(t-s)L_fine} D(Π u(s))  [L_fine terms cancel!]
-    6. By MVT: ‖v(t)‖ = ‖g(t) - g(0)‖ ≤ t · sup_{s∈[0,t]} ‖g'(s)‖
-
-    **Discharge Path** (for future verification):
-    - Use `hasDerivAt_exp_smul_const` from Mathlib for d/ds[e^{sL}] = L e^{sL}
-    - Use `norm_image_sub_le_of_norm_deriv_le_segment` for the MVT bound
-    - The isometry `iso_L2_to_std` converts norm_pi to Euclidean norm
-
-    This is "standard library debt" - the bound is mathematically sound but
-    requires substantial boilerplate to connect our norm_pi with Mathlib's
-    NormedAddCommGroup infrastructure. -/
-axiom Duhamel_integral_bound (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
-    (hπ : ∀ v, 0 < pi_dist v) (ε : ℝ) (hε : 0 ≤ ε)
-    (hL : IsApproxLumpable L P pi_dist hπ ε)
-    (t : ℝ) (ht : 0 < t) (f₀ : V → ℝ) (hf₀ : f₀ = CoarseProjector P pi_dist hπ f₀)
-    (B : ℝ) (hB : B ≥ 1)
-    (hB_bound : ∀ s, 0 ≤ s → s ≤ t → norm_pi pi_dist (HeatKernelMap L s f₀) ≤ B * norm_pi pi_dist f₀)
-    (h_forcing : ∀ s, 0 ≤ s → s ≤ t →
-      norm_pi pi_dist (DefectOperator L P pi_dist hπ (CoarseProjector P pi_dist hπ (HeatKernelMap L s f₀))) ≤
-      ε * B * norm_pi pi_dist f₀) :
-    norm_pi pi_dist (HeatKernelMap L t f₀ - CoarseProjector P pi_dist hπ (HeatKernelMap L t f₀)) ≤
-    t * ε * B * norm_pi pi_dist f₀
-
-/-- **Horizontal Duhamel Integral Bound** (Trajectory Comparison Axiom).
-
-    This axiom encapsulates the calculus for comparing two different heat kernels:
-    e^{tL} f₀ vs e^{tL̄} f₀ where L̄ = Π L Π is the coarse generator.
-
-    The mathematical content is the Duhamel formula for the difference:
-
-    1. Define E(s) = e^{sL} f₀ - e^{sL̄} f₀ (horizontal error at time s)
-    2. E(0) = f₀ - f₀ = 0
-    3. E'(s) = L e^{sL} f₀ - L̄ e^{sL̄} f₀
-    4. For coarse f₀: L e^{sL} f₀ = L̄ e^{sL} f₀ + D e^{sL} f₀ (generator_decomposition)
-    5. Transform: g(s) = e^{(t-s)L̄} E(s), so g(t) = E(t), g(0) = 0
-    6. g'(s) = e^{(t-s)L̄} D e^{sL} f₀ (forcing term from defect operator)
-    7. By MVT: ‖E(t)‖ = ‖g(t) - g(0)‖ ≤ t · sup_{s∈[0,t]} ‖g'(s)‖
-
-    **Discharge Path** (for future verification):
-    - Use `hasDerivAt_exp_smul_const` from Mathlib for matrix exponential derivatives
-    - Use `norm_image_sub_le_of_norm_deriv_le_segment` for MVT
-    - The semigroup bound on e^{(t-s)L̄} and the defect bound ‖D‖ ≤ ε give the result
-
-    This is "standard library debt" parallel to `Duhamel_integral_bound`. -/
-axiom Horizontal_Duhamel_integral_bound (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
-    (hπ : ∀ v, 0 < pi_dist v) (ε : ℝ) (hε : 0 ≤ ε)
-    (hL : IsApproxLumpable L P pi_dist hπ ε)
-    (t : ℝ) (ht : 0 < t) (f₀ : V → ℝ) (hf₀ : f₀ = CoarseProjector P pi_dist hπ f₀)
-    (B : ℝ) (hB : B ≥ 1)
-    (hB_full : ∀ s, 0 ≤ s → s ≤ t → norm_pi pi_dist (HeatKernelMap L s f₀) ≤ B * norm_pi pi_dist f₀)
-    (hB_coarse : ∀ s, 0 ≤ s → s ≤ t →
-      norm_pi pi_dist (HeatKernelMap (CoarseGeneratorMatrix L P pi_dist hπ) s f₀) ≤ B * norm_pi pi_dist f₀) :
-    norm_pi pi_dist (HeatKernelMap L t f₀ - HeatKernelMap (CoarseGeneratorMatrix L P pi_dist hπ) t f₀) ≤
-    t * ε * B * B * norm_pi pi_dist f₀
+-- (§6b Duhamel axioms deleted 2026-07-05; see the retirement note above.)
 
 /-! #### 6c. Duhamel Derivative Lemma -/
 
@@ -889,160 +839,9 @@ lemma norm_vertical_defect_zero (L : Matrix V V ℝ) (P : Partition V) (pi_dist 
   unfold norm_pi norm_sq_pi inner_pi
   simp only [Pi.zero_apply, mul_zero, Finset.sum_const_zero, Real.sqrt_zero]
 
-/-- **Trajectory Closure Bound** (Duhamel-MVT Style, Uniform Form).
-
-    If L is approximately lumpable with leakage defect ε, then for **any** initial
-    condition f₀ that is block-constant (f₀ = Π f₀), the trajectory e^{tL} f₀
-    stays close to the **coarse trajectory** e^{tL̄} f₀.
-
-    **Horizontal Error Bound:**
-    ‖e^{tL} f₀ - e^{tL̄} f₀‖_π ≤ ε * t * C * ‖f₀‖_π
-
-    **Uniformity**: The constant C is **independent of f₀**. It depends only on
-    the operator norms of the heat kernels e^{sL} and e^{sL̄} for s ∈ [0,t].
-    This uniformity is essential for proving the operator norm bound.
-
-    **Duhamel-MVT Proof Strategy:**
-    1. Define error E(t) = e^{tL} f₀ - e^{tL̄} f₀
-    2. E(0) = 0 (both start at f₀)
-    3. Transform: g(s) = e^{(t-s)L̄} E(s), so g(t) = E(t), g(0) = e^{tL̄} E(0) = 0
-    4. g'(s) = e^{(t-s)L̄} D e^{sL} f₀ (the "forcing" term)
-    5. By MVT: ‖E(t)‖ = ‖g(t) - g(0)‖ ≤ t · sup‖g'‖ ≤ ε · t · C · ‖f₀‖ -/
-theorem trajectory_closure_bound
-    (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (ε : ℝ) (hε : 0 ≤ ε) (hL : IsApproxLumpable L P pi_dist hπ ε)
-    (t : ℝ) (ht : 0 ≤ t) :
-    ∃ C : ℝ, C ≥ 0 ∧ ∀ (f₀ : V → ℝ), f₀ = CoarseProjector P pi_dist hπ f₀ →
-    norm_pi pi_dist (HeatKernelMap L t f₀ - HeatKernelMap (CoarseGeneratorMatrix L P pi_dist hπ) t f₀) ≤
-    ε * t * C * norm_pi pi_dist f₀ := by
-  -- Get UNIFORM operator norm bounds from HeatKernel_opNorm_bound (independent of f₀)
-  obtain ⟨B_full, hB_full_pos, hB_full_opNorm⟩ := HeatKernel_opNorm_bound L pi_dist hπ t ht
-  obtain ⟨B_coarse, hB_coarse_pos, hB_coarse_opNorm⟩ :=
-    HeatKernel_opNorm_bound (CoarseGeneratorMatrix L P pi_dist hπ) pi_dist hπ t ht
-  -- The constant C = B² where B = max(B_full, B_coarse) is UNIFORM
-  let B := max B_full B_coarse
-  have hB_pos : B ≥ 1 := le_max_of_le_left hB_full_pos
-  have hB_nonneg : B ≥ 0 := le_trans (by linarith : (0 : ℝ) ≤ 1) hB_pos
-  use B * B
-  constructor
-  · exact mul_nonneg hB_nonneg hB_nonneg
-  · -- Now introduce f₀ and prove the bound
-    intro f₀ hf₀
-    -- The Duhamel-MVT bound via Horizontal_Duhamel_integral_bound
-    by_cases ht_zero : t = 0
-    · -- Case t = 0: E(0) = 0
-      subst ht_zero
-      simp only [mul_zero, zero_mul]
-      rw [HeatKernelMap_zero, HeatKernelMap_zero, LinearMap.id_coe, id_eq, sub_self]
-      unfold norm_pi norm_sq_pi inner_pi
-      simp only [Pi.zero_apply, mul_zero, Finset.sum_const_zero, Real.sqrt_zero, le_refl]
-    · -- Case t > 0: Use Horizontal Duhamel axiom
-      have ht_pos : 0 < t := lt_of_le_of_ne ht (Ne.symm ht_zero)
-      -- Establish trajectory bounds using operator norm bounds
-      have hB_full' : ∀ s, 0 ≤ s → s ≤ t → norm_pi pi_dist (HeatKernelMap L s f₀) ≤ B * norm_pi pi_dist f₀ := by
-        intro s hs_lo hs_hi
-        have h_opNorm := hB_full_opNorm s hs_lo hs_hi
-        have h_bound := opNorm_pi_bound pi_dist hπ (matrixToLinearMap (HeatKernel L s)) f₀
-        calc norm_pi pi_dist (HeatKernelMap L s f₀)
-            ≤ opNorm_pi pi_dist hπ (matrixToLinearMap (HeatKernel L s)) * norm_pi pi_dist f₀ := h_bound
-          _ ≤ B_full * norm_pi pi_dist f₀ := by
-              apply mul_le_mul_of_nonneg_right h_opNorm
-              unfold norm_pi; exact Real.sqrt_nonneg _
-          _ ≤ B * norm_pi pi_dist f₀ := by
-              apply mul_le_mul_of_nonneg_right (le_max_left _ _)
-              unfold norm_pi; exact Real.sqrt_nonneg _
-      have hB_coarse' : ∀ s, 0 ≤ s → s ≤ t →
-          norm_pi pi_dist (HeatKernelMap (CoarseGeneratorMatrix L P pi_dist hπ) s f₀) ≤ B * norm_pi pi_dist f₀ := by
-        intro s hs_lo hs_hi
-        have h_opNorm := hB_coarse_opNorm s hs_lo hs_hi
-        have h_bound := opNorm_pi_bound pi_dist hπ
-          (matrixToLinearMap (HeatKernel (CoarseGeneratorMatrix L P pi_dist hπ) s)) f₀
-        calc norm_pi pi_dist (HeatKernelMap (CoarseGeneratorMatrix L P pi_dist hπ) s f₀)
-            ≤ opNorm_pi pi_dist hπ (matrixToLinearMap (HeatKernel (CoarseGeneratorMatrix L P pi_dist hπ) s)) *
-              norm_pi pi_dist f₀ := h_bound
-          _ ≤ B_coarse * norm_pi pi_dist f₀ := by
-              apply mul_le_mul_of_nonneg_right h_opNorm
-              unfold norm_pi; exact Real.sqrt_nonneg _
-          _ ≤ B * norm_pi pi_dist f₀ := by
-              apply mul_le_mul_of_nonneg_right (le_max_right _ _)
-              unfold norm_pi; exact Real.sqrt_nonneg _
-      -- Apply the Horizontal Duhamel integral bound axiom
-      have h_duhamel := Horizontal_Duhamel_integral_bound L P pi_dist hπ ε hε hL t ht_pos f₀ hf₀
-        B hB_pos hB_full' hB_coarse'
-      -- Rearrange: t * ε * B * B = ε * t * (B * B)
-      calc norm_pi pi_dist (HeatKernelMap L t f₀ - HeatKernelMap (CoarseGeneratorMatrix L P pi_dist hπ) t f₀)
-          ≤ t * ε * B * B * norm_pi pi_dist f₀ := h_duhamel
-        _ = ε * t * (B * B) * norm_pi pi_dist f₀ := by ring
-
-/-- **Vertical Error Bound** (Projection onto fine scales).
-
-    The trajectory also satisfies a "vertical" error bound: how far e^{tL} f₀
-    deviates from the coarse subspace.
-
-    ‖(I - Π) e^{tL} f₀‖_π ≤ ε * t * C * ‖f₀‖_π
-
-    **Duhamel-MVT Proof Strategy:**
-    1. Define v(s) = (I - Π) e^{sL} f₀ (vertical defect at time s)
-    2. v(0) = 0 (since f₀ = Πf₀)
-    3. v'(s) = (I - Π) L e^{sL} f₀ bounded by vertical_deriv_bound
-    4. Transform: g(s) = e^{(t-s)L_fine} v(s) where L_fine = (I-Π)L(I-Π)
-    5. g(t) = v(t), g(0) = e^{tL_fine} · 0 = 0
-    6. g'(s) = e^{(t-s)L_fine} D(Πu(s)) (forcing term)
-    7. By MVT: ‖v(t)‖ ≤ t · sup‖g'‖ ≤ ε · t · C · ‖f₀‖ -/
-theorem vertical_error_bound
-    (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (ε : ℝ) (hε : 0 ≤ ε) (hL : IsApproxLumpable L P pi_dist hπ ε)
-    (t : ℝ) (ht : 0 ≤ t)
-    (f₀ : V → ℝ) (hf₀ : f₀ = CoarseProjector P pi_dist hπ f₀) :
-    ∃ C : ℝ, C ≥ 0 ∧
-    norm_pi pi_dist (HeatKernelMap L t f₀ - CoarseProjector P pi_dist hπ (HeatKernelMap L t f₀)) ≤
-    ε * t * C * norm_pi pi_dist f₀ := by
-  -- Get uniform semigroup bound for the constant on [0, t]
-  obtain ⟨B_L, hB_L_pos, hB_L_bound⟩ := trajectory_norm_bound_uniform L pi_dist hπ f₀ t ht
-  -- Use B_L as the constant (it captures semigroup growth uniformly on [0,t])
-  use B_L
-  constructor
-  · -- C ≥ 0 (since B_L ≥ 1)
-    linarith
-  · -- The Duhamel-MVT bound
-    by_cases ht_zero : t = 0
-    · -- Case t = 0: v(0) = 0
-      subst ht_zero
-      simp only [mul_zero, zero_mul]
-      rw [norm_vertical_defect_zero L P pi_dist hπ f₀ hf₀]
-    · -- Case t > 0: Use Duhamel-MVT via the calculus axiom
-      have ht_pos : 0 < t := lt_of_le_of_ne ht (Ne.symm ht_zero)
-
-      -- Step 1: Trajectory bound is already uniform from hB_L_bound
-
-      -- Step 2: Bound the forcing term using IsApproxLumpable
-      have h_forcing_bound : ∀ s, 0 ≤ s → s ≤ t →
-          norm_pi pi_dist (DefectOperator L P pi_dist hπ (CoarseProjector P pi_dist hπ (HeatKernelMap L s f₀))) ≤
-          ε * B_L * norm_pi pi_dist f₀ := by
-        intro s hs_lo hs_hi
-        have h_bound := opNorm_pi_bound pi_dist hπ (DefectOperator L P pi_dist hπ)
-          (CoarseProjector P pi_dist hπ (HeatKernelMap L s f₀))
-        have h_contr := CoarseProjector_contractive P pi_dist hπ (HeatKernelMap L s f₀)
-        have h_traj := hB_L_bound s hs_lo hs_hi
-        calc norm_pi pi_dist (DefectOperator L P pi_dist hπ (CoarseProjector P pi_dist hπ (HeatKernelMap L s f₀)))
-            ≤ opNorm_pi pi_dist hπ (DefectOperator L P pi_dist hπ) *
-              norm_pi pi_dist (CoarseProjector P pi_dist hπ (HeatKernelMap L s f₀)) := h_bound
-          _ ≤ ε * norm_pi pi_dist (CoarseProjector P pi_dist hπ (HeatKernelMap L s f₀)) := by
-              apply mul_le_mul_of_nonneg_right hL
-              unfold norm_pi; exact Real.sqrt_nonneg _
-          _ ≤ ε * norm_pi pi_dist (HeatKernelMap L s f₀) := by
-              apply mul_le_mul_of_nonneg_left h_contr hε
-          _ ≤ ε * (B_L * norm_pi pi_dist f₀) := by
-              apply mul_le_mul_of_nonneg_left h_traj hε
-          _ = ε * B_L * norm_pi pi_dist f₀ := by ring
-
-      -- Step 3: Apply the Duhamel integral bound axiom
-      have h_duhamel := Duhamel_integral_bound L P pi_dist hπ ε hε hL t ht_pos f₀ hf₀
-        B_L hB_L_pos hB_L_bound h_forcing_bound
-
-      -- Step 4: Rearrange to match the goal
-      have h_goal_form : ε * t * B_L * norm_pi pi_dist f₀ = t * ε * B_L * norm_pi pi_dist f₀ := by ring
-      linarith
+-- `trajectory_closure_bound` and `vertical_error_bound` moved to
+-- `SGC/Bridge/TrajectoryClosure.lean` (2026-07-05): same statements, same
+-- `SGC.Approximate` names, kernel-clean proofs (no Duhamel/semigroup axioms).
 
 /-- **Norm Equivalence Axiom**: In finite dimensions, pointwise row-sum bounds imply operator norm bounds.
 
@@ -1194,102 +993,9 @@ axiom NCD_integral_bound (L L_fast L_slow : Matrix V V ℝ) (P : Partition V) (p
     norm_pi pi_dist (HeatKernelMap L t f₀ - CoarseProjector P pi_dist hπ (HeatKernelMap L t f₀)) ≤
     (M / γ) * norm_pi pi_dist f₀
 
-/-- **Main NCD Theorem**: Uniform-in-time trajectory error bound for NCD systems.
-
-    For Near-Completely Decomposable systems, the vertical error is bounded by O(ε/γ)
-    UNIFORMLY IN TIME, regardless of how large t becomes.
-
-    This is the key result that makes NCD theory useful for multi-timescale systems
-    where we care about behavior at times t ~ 1/ε.
-
-    **Proof Strategy** (Algebraic Split):
-    1. By NCD_defect_split: DefectOperator L = ε • DefectOperator L_slow
-    2. By NCD_slow_defect_bound: ‖DefectOperator L_slow‖ ≤ K
-    3. Forcing magnitude: M = ε * K * B_traj
-    4. NCD_integral_bound gives: error ≤ (M/γ) = (ε/γ) * K * B_traj
-
-    Compare to `vertical_error_bound` which gives O(ε·t) (grows linearly in time). -/
-theorem NCD_uniform_error_bound
-    (L L_fast L_slow : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (ε γ : ℝ) (hNCD : IsNCD L L_fast L_slow P pi_dist hπ ε γ)
-    (t : ℝ) (ht : 0 ≤ t)
-    (f₀ : V → ℝ) (hf₀ : f₀ = CoarseProjector P pi_dist hπ f₀) :
-    ∃ C : ℝ, C ≥ 0 ∧
-    norm_pi pi_dist (HeatKernelMap L t f₀ - CoarseProjector P pi_dist hπ (HeatKernelMap L t f₀)) ≤
-    (ε / γ) * C * norm_pi pi_dist f₀ := by
-  have hε := hNCD.hε
-  have hγ := hNCD.hγ
-
-  -- Step 1: Get the slow defect bound K (independent of time and trajectory)
-  obtain ⟨K, hK_pos, hK_bound⟩ := NCD_slow_defect_bound L_slow P pi_dist hπ
-
-  -- Step 2: Get uniform trajectory bound B_traj
-  obtain ⟨B_traj, hB_traj_pos, hB_traj_bound⟩ := trajectory_norm_bound_uniform L pi_dist hπ f₀ t ht
-
-  -- The constant C = K * B_traj absorbs both bounds
-  use K * B_traj
-  have hB_traj_nonneg : 0 ≤ B_traj := le_trans (by linarith : (0 : ℝ) ≤ 1) hB_traj_pos
-  constructor
-  · exact mul_nonneg hK_pos hB_traj_nonneg
-  · by_cases ht_zero : t = 0
-    · -- t = 0 case
-      subst ht_zero
-      rw [norm_vertical_defect_zero L P pi_dist hπ f₀ hf₀]
-      have h1 : 0 ≤ ε / γ := div_nonneg hε (le_of_lt hγ)
-      have h2 : 0 ≤ norm_pi pi_dist f₀ := by unfold norm_pi; exact Real.sqrt_nonneg _
-      exact mul_nonneg (mul_nonneg h1 (mul_nonneg hK_pos hB_traj_nonneg)) h2
-    · -- t > 0 case: Apply NCD integral bound with generalized M
-      have ht_pos : 0 < t := lt_of_le_of_ne ht (Ne.symm ht_zero)
-
-      -- Step 3: Use the algebraic split to bound the forcing term
-      -- DefectOperator L = ε • DefectOperator L_slow (by NCD_defect_split)
-      have h_split := NCD_defect_split L L_fast L_slow P pi_dist hπ ε γ hNCD
-
-      -- Forcing magnitude: M = ε * K * B_traj
-      let M := ε * K * B_traj
-      have hM_pos : 0 ≤ M := mul_nonneg (mul_nonneg hε hK_pos) hB_traj_nonneg
-
-      have h_forcing_bound : ∀ s, 0 ≤ s → s ≤ t →
-          norm_pi pi_dist (DefectOperator L P pi_dist hπ (CoarseProjector P pi_dist hπ (HeatKernelMap L s f₀))) ≤
-          M * norm_pi pi_dist f₀ := by
-        intro s hs_lo hs_hi
-        -- Use the algebraic split: DefectOperator L = ε • DefectOperator L_slow
-        have h_apply : DefectOperator L P pi_dist hπ (CoarseProjector P pi_dist hπ (HeatKernelMap L s f₀)) =
-            ε • DefectOperator L_slow P pi_dist hπ (CoarseProjector P pi_dist hπ (HeatKernelMap L s f₀)) := by
-          rw [h_split]; rfl
-        rw [h_apply]
-        -- ‖ε • v‖ = |ε| * ‖v‖ = ε * ‖v‖ (since ε ≥ 0)
-        rw [norm_pi_smul pi_dist hε]
-        -- Now bound ‖DefectOperator L_slow (Π u)‖ ≤ K * ‖Π u‖ ≤ K * ‖u‖ ≤ K * B_traj * ‖f₀‖
-        have h_bound := opNorm_pi_bound pi_dist hπ (DefectOperator L_slow P pi_dist hπ)
-          (CoarseProjector P pi_dist hπ (HeatKernelMap L s f₀))
-        have h_contr := CoarseProjector_contractive P pi_dist hπ (HeatKernelMap L s f₀)
-        have h_traj := hB_traj_bound s hs_lo hs_hi
-        calc ε * norm_pi pi_dist (DefectOperator L_slow P pi_dist hπ (CoarseProjector P pi_dist hπ (HeatKernelMap L s f₀)))
-            ≤ ε * (opNorm_pi pi_dist hπ (DefectOperator L_slow P pi_dist hπ) *
-              norm_pi pi_dist (CoarseProjector P pi_dist hπ (HeatKernelMap L s f₀))) := by
-                apply mul_le_mul_of_nonneg_left h_bound hε
-          _ ≤ ε * (K * norm_pi pi_dist (CoarseProjector P pi_dist hπ (HeatKernelMap L s f₀))) := by
-                apply mul_le_mul_of_nonneg_left _ hε
-                apply mul_le_mul_of_nonneg_right hK_bound
-                unfold norm_pi; exact Real.sqrt_nonneg _
-          _ ≤ ε * (K * norm_pi pi_dist (HeatKernelMap L s f₀)) := by
-                apply mul_le_mul_of_nonneg_left _ hε
-                apply mul_le_mul_of_nonneg_left h_contr hK_pos
-          _ ≤ ε * (K * (B_traj * norm_pi pi_dist f₀)) := by
-                apply mul_le_mul_of_nonneg_left _ hε
-                apply mul_le_mul_of_nonneg_left h_traj hK_pos
-          _ = ε * K * B_traj * norm_pi pi_dist f₀ := by ring
-
-      -- Step 4: Apply the generalized NCD integral bound
-      have h_ncd := NCD_integral_bound L L_fast L_slow P pi_dist hπ ε γ hNCD t ht f₀ hf₀
-        M hM_pos h_forcing_bound
-
-      -- Step 5: Rearrange: (M/γ) = (ε * K * B_traj / γ) = (ε/γ) * (K * B_traj)
-      -- M = ε * K * B_traj, so M / γ = ε * K * B_traj / γ = (ε / γ) * K * B_traj
-      have h_eq : M / γ * norm_pi pi_dist f₀ = ε / γ * (K * B_traj) * norm_pi pi_dist f₀ := by
-        simp only [M]; ring
-      linarith [h_ncd, h_eq.ge]
+-- `NCD_uniform_error_bound` moved to `SGC/Bridge/TrajectoryClosure.lean`
+-- (2026-07-05): same statement and name; its `trajectory_norm_bound_uniform`
+-- ingredient is now kernel-clean. The NCD axioms above remain (separate campaign).
 
 /-! ## Section 8: Spectral Corollary
 
@@ -1338,82 +1044,11 @@ def PropagatorDiff (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
 
 /-! ### 8b. Operator Approximation Bound -/
 
-/-- **Algebraic Identity (Omitted Calculation)**: The PropagatorDiff applied to f equals
-    the projected trajectory difference on the coarse part Π f.
-
-    PropagatorDiff f = Π(e^{tL} (Π f) - e^{tL̄} (Π f))
-
-    This follows directly from the definitions of the Effective and Coarse propagators
-    by expanding the composition. Axiomatized to reduce compilation time.
-
-    **Proof Sketch** (for auditors):
-    - EffectivePropagator f = Π e^{tL} (Π f) by definition
-    - CoarsePropagatorLifted f = Π e^{tL̄} f
-    - For L̄ = ΠLΠ: e^{tL̄} annihilates vertical part, so Π e^{tL̄} f = e^{tL̄} (Π f)
-    - Since e^{tL̄} (Π f) is coarse: Π(e^{tL̄} (Π f)) = e^{tL̄} (Π f)
-    - Thus: PropagatorDiff f = Π e^{tL} (Π f) - e^{tL̄} (Π f) = Π(e^{tL} (Π f) - e^{tL̄} (Π f)) -/
-axiom PropagatorDiff_eq_proj_trajectory_diff (L : Matrix V V ℝ) (P : Partition V)
-    (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) (t : ℝ) (f : V → ℝ) :
-    PropagatorDiff L P pi_dist hπ t f =
-    CoarseProjector P pi_dist hπ (HeatKernelMap L t (CoarseProjector P pi_dist hπ f) -
-                                   HeatKernelMap (CoarseGeneratorMatrix L P pi_dist hπ) t (CoarseProjector P pi_dist hπ f))
-
-/-- **Propagator Approximation Bound**: The operator norm of the propagator difference
-    is bounded by O(ε·t).
-
-    This is the **main verified deliverable** of Goal C:
-
-    ‖Π e^{tL} Π - Π e^{t L̄}‖_op ≤ ε · t · C
-
-    **Proof Strategy**:
-    - For any coarse u₀, `trajectory_closure_bound` gives ‖Π e^{tL} u₀ - e^{t L̄} u₀‖ ≤ δ·‖u₀‖
-    - The operator norm is the supremum of this ratio
-    - Since both operators preserve the coarse subspace, we get the bound
-
-    **Physical Interpretation**: The reduced model (coarse propagator) accurately
-    tracks the full model's behavior on slow modes, with error growing linearly in time. -/
-theorem propagator_approximation_bound
-    (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (ε : ℝ) (hε : 0 ≤ ε) (hL : IsApproxLumpable L P pi_dist hπ ε)
-    (t : ℝ) (ht : 0 ≤ t) :
-    ∃ C : ℝ, C ≥ 0 ∧
-    opNorm_pi pi_dist hπ (PropagatorDiff L P pi_dist hπ t) ≤ ε * t * C := by
-  -- Key insight: PropagatorDiff f = Π(e^{tL} (Π f) - e^{tL̄} (Π f)) by PropagatorDiff_eq_proj_trajectory_diff
-  -- By Π contraction and trajectory_closure_bound (UNIFORM form):
-  -- ‖PropagatorDiff f‖ ≤ ‖e^{tL} (Π f) - e^{tL̄} (Π f)‖ ≤ ε * t * C * ‖Π f‖ ≤ ε * t * C * ‖f‖
-
-  -- Get the UNIFORM constant from trajectory_closure_bound (independent of f₀)
-  obtain ⟨C_traj, hC_traj_pos, h_traj_uniform⟩ := trajectory_closure_bound L P pi_dist hπ ε hε hL t ht
-  use C_traj
-  constructor
-  · exact hC_traj_pos
-  · -- The operator norm bound via opNorm_pi_le_of_bound
-    apply opNorm_pi_le_of_bound
-    · exact mul_nonneg (mul_nonneg hε ht) hC_traj_pos
-    · -- For all f: ‖PropagatorDiff f‖ ≤ ε * t * C * ‖f‖
-      intro f
-      let g := CoarseProjector P pi_dist hπ f
-      have hg_coarse : g = CoarseProjector P pi_dist hπ g := by
-        -- g = Π f, and we need Π f = Π (Π f), which is idempotence
-        have h_idem := CoarseProjector_idempotent P pi_dist hπ
-        have h := congrFun (congrArg DFunLike.coe h_idem) f
-        simp only [LinearMap.comp_apply] at h
-        exact h.symm
-      -- Apply the UNIFORM trajectory_closure_bound to g (which is coarse)
-      have h_traj := h_traj_uniform g hg_coarse
-      have h_contr_f := CoarseProjector_contractive P pi_dist hπ f
-      have h_contr_diff := CoarseProjector_contractive P pi_dist hπ
-        (HeatKernelMap L t g - HeatKernelMap (CoarseGeneratorMatrix L P pi_dist hπ) t g)
-      -- Use the algebraic identity axiom
-      rw [PropagatorDiff_eq_proj_trajectory_diff]
-      calc norm_pi pi_dist (CoarseProjector P pi_dist hπ
-              (HeatKernelMap L t g - HeatKernelMap (CoarseGeneratorMatrix L P pi_dist hπ) t g))
-          ≤ norm_pi pi_dist (HeatKernelMap L t g - HeatKernelMap (CoarseGeneratorMatrix L P pi_dist hπ) t g) :=
-            h_contr_diff
-        _ ≤ ε * t * C_traj * norm_pi pi_dist g := h_traj
-        _ ≤ ε * t * C_traj * norm_pi pi_dist f := by
-            apply mul_le_mul_of_nonneg_left h_contr_f
-            exact mul_nonneg (mul_nonneg hε ht) hC_traj_pos
+-- `PropagatorDiff_eq_proj_trajectory_diff` (formerly an axiom — the fourth
+-- retirement) and `propagator_approximation_bound` moved to
+-- `SGC/Bridge/TrajectoryClosure.lean` (2026-07-05). The identity is now a
+-- theorem: `Π` commutes with `e^{tL̄}` (since `ΠL̄ = L̄ = L̄Π`), transported
+-- through the Banach-algebra exponential on `PiMat` via `Commute.exp_right`.
 
 /-! ### 8c. Spectral Interface (Weyl Inequality Adapter)
 
@@ -1461,51 +1096,14 @@ axiom Weyl_inequality_pi (A B : (V → ℝ) →ₗ[ℝ] (V → ℝ)) (pi_dist : 
     ∃ eigenvalue_k : ((V → ℝ) →ₗ[ℝ] (V → ℝ)) → ℝ,
     |eigenvalue_k A - eigenvalue_k B| ≤ opNorm_pi pi_dist hπ (A - B)
 
-/-- **Spectral Stability Theorem** (REVERSIBLE SYSTEMS ONLY):
+/- **Spectral Stability Theorem** (REVERSIBLE SYSTEMS ONLY):
     The eigenvalues of the effective propagator track the eigenvalues of the coarse propagator.
 
     |λ_k(Π e^{tL} Π) - λ_k(Π e^{t L̄})| ≤ ε · t · C
 
-    **⚠️ VALIDITY CONSTRAINT**: This theorem relies on `Weyl_inequality_pi`, which is only
-    valid for reversible (self-adjoint) generators. For non-reversible systems, eigenvalues
-    may be complex and this spectral matching property FAILS.
-
-    **Physical Meaning** (reversible case): The "relaxation rates" of the reduced model match
-    those of the full model's slow modes, up to O(ε·t) error.
-
-    **For non-reversible systems**: Use `trajectory_closure_bound` instead. This provides
-    valid DYNAMICAL bounds: the coarse model correctly PREDICTS trajectories, even though
-    eigenvalue matching fails. This is the foundation for predictive emergence.
-
-    **Note**: For the NCD case with reversible L, use `NCD_uniform_error_bound` to get a
-    uniform-in-time spectral bound of O(ε/γ) instead of O(ε·t). -/
-theorem spectral_stability_reversible
-    (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (ε : ℝ) (hε : 0 ≤ ε) (hL : IsApproxLumpable L P pi_dist hπ ε)
-    (t : ℝ) (ht : 0 ≤ t) (k : ℕ)
-    (hEffSA : IsSelfAdjoint_pi (EffectivePropagator L P pi_dist hπ t) pi_dist)
-    (hCoarseSA : IsSelfAdjoint_pi (CoarsePropagatorLifted L P pi_dist hπ t) pi_dist) :
-    ∃ C : ℝ, ∃ eigenvalue_k : ((V → ℝ) →ₗ[ℝ] (V → ℝ)) → ℝ,
-    C ≥ 0 ∧
-    |eigenvalue_k (EffectivePropagator L P pi_dist hπ t) -
-     eigenvalue_k (CoarsePropagatorLifted L P pi_dist hπ t)| ≤ ε * t * C := by
-  -- Combine propagator_approximation_bound with Weyl_inequality_pi
-  obtain ⟨C_prop, hC_prop, h_prop_bound⟩ := propagator_approximation_bound L P pi_dist hπ ε hε hL t ht
-  obtain ⟨ev_k, h_weyl⟩ := Weyl_inequality_pi
-    (EffectivePropagator L P pi_dist hπ t)
-    (CoarsePropagatorLifted L P pi_dist hπ t)
-    pi_dist hπ k hEffSA hCoarseSA
-  use C_prop, ev_k
-  constructor
-  · exact hC_prop
-  · -- The eigenvalue difference is bounded by operator norm difference (Weyl)
-    -- which is bounded by ε * t * C (propagator bound)
-    calc |ev_k (EffectivePropagator L P pi_dist hπ t) -
-          ev_k (CoarsePropagatorLifted L P pi_dist hπ t)|
-        ≤ opNorm_pi pi_dist hπ (EffectivePropagator L P pi_dist hπ t -
-            CoarsePropagatorLifted L P pi_dist hπ t) := h_weyl
-      _ = opNorm_pi pi_dist hπ (PropagatorDiff L P pi_dist hπ t) := rfl
-      _ ≤ ε * t * C_prop := h_prop_bound
+    (Statement and proof moved 2026-07-05.) -/
+-- `spectral_stability_reversible` moved to `SGC/Bridge/TrajectoryClosure.lean`:
+-- same statement and name; still consumes `Weyl_inequality_pi` (separate campaign).
 
 /-! ### 8d. The Validity Horizon (Null Result)
 

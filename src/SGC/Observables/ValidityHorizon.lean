@@ -32,6 +32,7 @@ making "emergence timescale" an empirically measurable quantity.
 -/
 
 import SGC.Renormalization.Approximate
+import SGC.Bridge.TrajectoryClosure
 import SGC.Axioms.Geometry
 import SGC.Spectral.Core.Assumptions
 import SGC.Spectral.Envelope.Sector
@@ -192,25 +193,11 @@ theorem autocorrelation_decay_from_sector
             = norm_pi pi_dist f * norm_pi pi_dist f * Real.exp (-(SpectralGap_pi pi_dist H) * t) := by ring
           _ = norm_sq_pi pi_dist f * Real.exp (-(SpectralGap_pi pi_dist H) * t) := by rw [h_sq]
 
-/-- **Exponential Decay of Autocorrelation** (Parametric Form):
-
-    For mean-zero observables with spectral gap γ > 0:
-    |C_f(t)| ≤ ‖f‖²_π · e^{-γt}
-
-    This is the **parametric interface** to `autocorrelation_decay_from_sector`.
-    It takes the spectral gap γ as a parameter, avoiding the complex type dependencies
-    of the full sector machinery.
-
-    **Instantiation**: When sector conditions hold with γ = SpectralGap_pi pi_dist H,
-    this follows from `autocorrelation_decay_from_sector`.
-
-    **Connection to SpectralGap_pi**: For reversible systems where H is the
-    Dirichlet form operator, γ = SpectralGap_pi pi_dist H. -/
-axiom autocorrelation_decay_param (L : Matrix V V ℝ) (pi_dist : V → ℝ)
-    (hπ : ∀ v, 0 < pi_dist v) (γ : ℝ) (hγ : 0 < γ)
-    (f : V → ℝ) (hf : inner_pi pi_dist f (fun _ => 1) = 0)
-    (t : ℝ) (ht : 0 ≤ t) :
-    |autocorrelation L pi_dist f t| ≤ norm_sq_pi pi_dist f * Real.exp (-γ * t)
+-- REMOVED 2026-06-13 (axiom audit): `autocorrelation_decay_param` was an UNSOUND,
+-- unused axiom. It asserted decay at an ARBITRARY rate γ > 0, which is false for any
+-- γ larger than the true spectral gap (e^{-γt} would then be tighter than reality).
+-- Consumers must use the kernel-clean `autocorrelation_decay_from_sector` above, which
+-- derives the bound at the genuine rate γ = SpectralGap_pi pi_dist H.
 
 /-! ### 5. Validity Horizon and Spectral Gap Relationship -/
 
@@ -263,8 +250,9 @@ lemma predicted_validity_horizon_eq (γ Q : ℝ) (hγ : 0 < γ) (hQ : 0 < Q) :
     This means NCD systems can maintain prediction accuracy for arbitrarily
     long times (in vertical error), though horizontal drift still accumulates.
 
-    **See**: `NCD_uniform_error_bound` in Approximate.lean -/
-theorem NCD_validity_enhancement
+    **See**: `NCD_uniform_error_bound` in `SGC/Bridge/TrajectoryClosure.lean`
+    (kernel-clean home since the 2026-07-05 axiom retirement). -/
+theorem NCD_validity_enhancement [Nonempty V]
     (L L_fast L_slow : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hπ : ∀ v, 0 < pi_dist v) (ε γ : ℝ)
     (hNCD : IsNCD L L_fast L_slow P pi_dist hπ ε γ)

@@ -46,6 +46,7 @@ import SGC.Renormalization.Approximate
 import SGC.Observables.ValidityHorizon
 import SGC.Axioms.Geometry
 import SGC.Spectral.Core.Assumptions
+import SGC.Bridge.DefectHorizonBridge
 
 noncomputable section
 
@@ -53,28 +54,9 @@ namespace SGC.Observables
 
 open Finset Matrix Real SGC.Approximate SGC.Spectral
 
-variable {V : Type*} [Fintype V] [DecidableEq V]
+variable {V : Type*} [Fintype V] [DecidableEq V] [Nonempty V]
 
 /-! ### 1. Exploration Time from Trajectory Closure -/
-
-/-- **Heat Kernel Bound Monotonicity**.
-
-    The heat kernel operator norm bound from a larger time interval also applies
-    to smaller time intervals. This is because HeatKernel_opNorm_bound provides
-    uniform bounds on [0, T], so any s ∈ [0, t] ⊆ [0, T] is covered.
-
-    **Physical Meaning**: Semigroup bounds don't get worse if you look at a shorter interval. -/
-lemma HeatKernel_opNorm_bound_mono (L : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (t T : ℝ) (_ht : 0 ≤ t) (hT : 0 ≤ T) (htT : t ≤ T) :
-    ∃ B : ℝ, B ≥ 1 ∧ ∀ s, 0 ≤ s → s ≤ t →
-      opNorm_pi pi_dist hπ (matrixToLinearMap (Approximate.HeatKernel L s)) ≤ B := by
-  -- Get the bound at T (which covers [0, T])
-  obtain ⟨B, hB_pos, hB_bound⟩ := HeatKernel_opNorm_bound L pi_dist hπ T hT
-  use B, hB_pos
-  intro s hs_lo hs_hi
-  -- s ≤ t ≤ T, so s is in [0, T]
-  have hs_le_T : s ≤ T := le_trans hs_hi htT
-  exact hB_bound s hs_lo hs_le_T
 
 /-- **Trajectory Closure at Reference Time**.
 
@@ -83,8 +65,10 @@ lemma HeatKernel_opNorm_bound_mono (L : Matrix V V ℝ) (pi_dist : V → ℝ) (h
 
     This is the "monotonicity in time" property that enables computed exploration bounds.
 
-    **Proof Strategy**: Directly construct the Duhamel bound using uniform bounds on [0, T_ref],
-    rather than invoking trajectory_closure_bound at each t separately. -/
+    **Proof (kernel-clean)**: invoke the explicit bridge bound
+    `trajectory_closure_bound_explicit` — `‖·‖ ≤ t·ε·e^{t(‖L−D‖_π+ε)}·‖f₀‖` pointwise —
+    and take the uniform envelope `C = e^{T_ref·(‖L−D‖_π+ε)}` over `[0, T_ref]`, valid
+    since the exponent is increasing in `t`. No semigroup/Duhamel axioms are used. -/
 lemma trajectory_closure_bound_at_ref
     (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (ε : ℝ) (hε : 0 ≤ ε) (hL : IsApproxLumpable L P pi_dist hπ ε)
@@ -94,69 +78,26 @@ lemma trajectory_closure_bound_at_ref
         norm_pi pi_dist
           (HeatKernelMap L t f₀ - HeatKernelMap (CoarseGeneratorMatrix L P pi_dist hπ) t f₀)
         ≤ ε * t * C * norm_pi pi_dist f₀ := by
-  -- Get UNIFORM heat kernel bounds on [0, T_ref] for both generators
-  obtain ⟨B_full, hB_full_pos, hB_full_bound⟩ := HeatKernel_opNorm_bound L pi_dist hπ T_ref hT_ref
-  obtain ⟨B_coarse, hB_coarse_pos, hB_coarse_bound⟩ :=
-    HeatKernel_opNorm_bound (CoarseGeneratorMatrix L P pi_dist hπ) pi_dist hπ T_ref hT_ref
-
-  -- The constant C = B² where B = max(B_full, B_coarse)
-  let B := max B_full B_coarse
-  have hB_pos : B ≥ 1 := le_max_of_le_left hB_full_pos
-  have hB_nonneg : B ≥ 0 := le_trans (by linarith : (0 : ℝ) ≤ 1) hB_pos
-
-  use B * B
-  constructor
-  · exact mul_nonneg hB_nonneg hB_nonneg
-  · intro t ht_lo ht_hi f₀ hf₀
-
-    by_cases ht_zero : t = 0
-    · -- Case t = 0: error is 0
-      subst ht_zero
-      simp only [mul_zero, zero_mul]
-      rw [HeatKernelMap_zero, HeatKernelMap_zero, LinearMap.id_coe, id_eq, sub_self]
-      unfold norm_pi norm_sq_pi inner_pi
-      simp only [Pi.zero_apply, mul_zero, Finset.sum_const_zero, Real.sqrt_zero, le_refl]
-
-    · -- Case t > 0: Use Duhamel bound with UNIFORM constants
-      have ht_pos : 0 < t := lt_of_le_of_ne ht_lo (Ne.symm ht_zero)
-
-      -- The bounds at T_ref work for all s ∈ [0, t] ⊆ [0, T_ref]
-      have hB_full' : ∀ s, 0 ≤ s → s ≤ t →
-          norm_pi pi_dist (HeatKernelMap L s f₀) ≤ B * norm_pi pi_dist f₀ := by
-        intro s hs_lo hs_hi
-        have hs_le_T : s ≤ T_ref := le_trans hs_hi ht_hi
-        have h_opNorm := hB_full_bound s hs_lo hs_le_T
-        have h_bound := opNorm_pi_bound pi_dist hπ (matrixToLinearMap (Approximate.HeatKernel L s)) f₀
-        calc norm_pi pi_dist (HeatKernelMap L s f₀)
-            ≤ opNorm_pi pi_dist hπ (matrixToLinearMap (Approximate.HeatKernel L s)) * norm_pi pi_dist f₀ := h_bound
-          _ ≤ B_full * norm_pi pi_dist f₀ := by
-              apply mul_le_mul_of_nonneg_right h_opNorm; unfold norm_pi; exact Real.sqrt_nonneg _
-          _ ≤ B * norm_pi pi_dist f₀ := by
-              apply mul_le_mul_of_nonneg_right (le_max_left _ _); unfold norm_pi; exact Real.sqrt_nonneg _
-
-      have hB_coarse' : ∀ s, 0 ≤ s → s ≤ t →
-          norm_pi pi_dist (HeatKernelMap (CoarseGeneratorMatrix L P pi_dist hπ) s f₀) ≤ B * norm_pi pi_dist f₀ := by
-        intro s hs_lo hs_hi
-        have hs_le_T : s ≤ T_ref := le_trans hs_hi ht_hi
-        have h_opNorm := hB_coarse_bound s hs_lo hs_le_T
-        have h_bound := opNorm_pi_bound pi_dist hπ
-          (matrixToLinearMap (Approximate.HeatKernel (CoarseGeneratorMatrix L P pi_dist hπ) s)) f₀
-        calc norm_pi pi_dist (HeatKernelMap (CoarseGeneratorMatrix L P pi_dist hπ) s f₀)
-            ≤ opNorm_pi pi_dist hπ (matrixToLinearMap (Approximate.HeatKernel (CoarseGeneratorMatrix L P pi_dist hπ) s)) *
-              norm_pi pi_dist f₀ := h_bound
-          _ ≤ B_coarse * norm_pi pi_dist f₀ := by
-              apply mul_le_mul_of_nonneg_right h_opNorm; unfold norm_pi; exact Real.sqrt_nonneg _
-          _ ≤ B * norm_pi pi_dist f₀ := by
-              apply mul_le_mul_of_nonneg_right (le_max_right _ _); unfold norm_pi; exact Real.sqrt_nonneg _
-
-      -- Apply Horizontal Duhamel integral bound axiom
-      have h_duhamel := Horizontal_Duhamel_integral_bound L P pi_dist hπ ε hε hL t ht_pos f₀ hf₀
-        B hB_pos hB_full' hB_coarse'
-
-      -- Rearrange: t * ε * B * B = ε * t * (B * B)
-      calc norm_pi pi_dist (HeatKernelMap L t f₀ - HeatKernelMap (CoarseGeneratorMatrix L P pi_dist hπ) t f₀)
-          ≤ t * ε * B * B * norm_pi pi_dist f₀ := h_duhamel
-        _ = ε * t * (B * B) * norm_pi pi_dist f₀ := by ring
+  -- Kernel-clean: the explicit bridge bound, enveloped uniformly over [0, T_ref].
+  set aN := opNorm_pi pi_dist hπ
+    (matrixToLinearMap (L - SGC.Bridge.DefectHorizonBridge.DefectMatrix L P pi_dist hπ)) with haN
+  have haN0 : (0 : ℝ) ≤ aN := by rw [haN]; exact opNorm_pi_nonneg pi_dist hπ _
+  have hsum0 : (0 : ℝ) ≤ aN + ε := by linarith
+  refine ⟨Real.exp (T_ref * (aN + ε)), (Real.exp_pos _).le, ?_⟩
+  intro t ht_lo ht_hi f₀ hf₀
+  have hkey := SGC.Bridge.DefectHorizonBridge.trajectory_closure_bound_explicit
+    pi_dist hπ L P ε hL t ht_lo f₀ hf₀
+  rw [← haN] at hkey
+  have hf0 : (0 : ℝ) ≤ norm_pi pi_dist f₀ := Real.sqrt_nonneg _
+  have hexp_le : Real.exp (t * (aN + ε)) ≤ Real.exp (T_ref * (aN + ε)) :=
+    Real.exp_le_exp.mpr (mul_le_mul_of_nonneg_right ht_hi hsum0)
+  calc norm_pi pi_dist
+        (HeatKernelMap L t f₀ - HeatKernelMap (CoarseGeneratorMatrix L P pi_dist hπ) t f₀)
+      ≤ t * ε * Real.exp (t * (aN + ε)) * norm_pi pi_dist f₀ := hkey
+    _ ≤ t * ε * Real.exp (T_ref * (aN + ε)) * norm_pi pi_dist f₀ := by
+        apply mul_le_mul_of_nonneg_right _ hf0
+        exact mul_le_mul_of_nonneg_left hexp_le (mul_nonneg ht_lo hε)
+    _ = ε * t * Real.exp (T_ref * (aN + ε)) * norm_pi pi_dist f₀ := by ring
 
 /-- **Computed Exploration Time Bound**.
 

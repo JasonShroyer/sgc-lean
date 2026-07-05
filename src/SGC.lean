@@ -78,6 +78,7 @@ import SGC.SpinGlass
 -- Information Bridge: Shannon Entropy ↔ Geometric Orthogonality
 import SGC.Information.Gaussian
 import SGC.Information.Equivalence
+import SGC.Information.RateOfConsolidation
 
 -- Continuum Bridge: Graphs → Manifolds
 import SGC.Geometry.Manifold.Laplacian
@@ -184,6 +185,22 @@ import SGC.Bridge.PhaseClassifier
 -- bound proved from the exponential series in an abstract real Banach algebra).
 -- Kernel-proven, no new axioms (2026-06-11).
 import SGC.Bridge.ValidityHorizon
+
+-- The Defect-Horizon Bridge: identifies ValidityHorizon's abstract leakage
+-- ε = ‖B‖ with Approximate's concrete defect ‖(I−Π)LΠ‖_π via the weighted
+-- operator algebra PiMat (π in the type, NormedRing/NormedAlgebra instances),
+-- proves e^{t(L−D)}Π = e^{tL̄}Π (invariant-subspace exponentiation), and
+-- derives the explicit trajectory bound defect_horizon_bound — superseding
+-- the axioms HeatKernel_opNorm_bound and Horizontal_Duhamel_integral_bound
+-- with computable exponential constants. Kernel-proven (2026-06-11).
+import SGC.Bridge.DefectHorizonBridge
+
+-- Axiom retirement (2026-07-05): kernel-clean re-proofs of trajectory_closure_bound,
+-- vertical_error_bound, propagator_approximation_bound, spectral_stability_reversible,
+-- NCD_uniform_error_bound, and PropagatorDiff_eq_proj_trajectory_diff (ex-axiom),
+-- name-stable in SGC.Approximate. The axioms HeatKernel_opNorm_bound,
+-- Duhamel_integral_bound, Horizontal_Duhamel_integral_bound are DELETED.
+import SGC.Bridge.TrajectoryClosure
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
