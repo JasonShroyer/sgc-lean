@@ -215,6 +215,16 @@ import SGC.Bridge.CantorShiftTower
 -- irreversibility invariant, as homeomorphism never determines smoothness in d=4.
 import SGC.Bridge.ExoticPairs
 
+-- Affinity Protection (2026-07-07): the conserved charge sealing the exotic phase —
+-- the affinity charge (division-free Kolmogorov holonomy, a discrete Wilson loop)
+-- vanishes on every cycle under detailed balance w.r.t. ANY positive measure; one
+-- charged cycle forces KillingDefect > 0 for EVERY positive measure; charge-conserving
+-- annealing can never reach criticality. The exotic lift's handle carries charge
+-- (a+δ)³ − a³ > 0 for every base model, so the exotic pair lies in different
+-- affinity classes: "homeomorphic but never diffeomorphic", now with a conserved
+-- class datum witnessing the obstruction.
+import SGC.Bridge.AffinityProtection
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════

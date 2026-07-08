@@ -77,6 +77,7 @@ import SGC.Bridge.DefectHorizonBridge
 import SGC.Bridge.TrajectoryClosure
 import SGC.Bridge.CantorShiftTower
 import SGC.Bridge.ExoticPairs
+import SGC.Bridge.AffinityProtection
 import SGC.Bridge.Consolidation
 import SGC.Bridge.Quantum
 import SGC.InformationGeometry.FisherNoetherBridge
@@ -854,5 +855,37 @@ persistent current casts no coarse shadow. Expected profile: the pure base
 
 -- Invisibility (d): the coarse probability current of the exotic lift vanishes.
 #print axioms SGC.Bridge.ExoticPairs.exoticLift_coarse_current_zero
+
+/-! ## 15. Affinity Protection — the conserved charge sealing the exotic phase
+(audited 2026-07-07)
+
+`Bridge/AffinityProtection.lean`: the affinity charge (division-free Kolmogorov
+holonomy / discrete Wilson loop) is measure-free data of the generator; detailed
+balance w.r.t. ANY positive measure kills it on every closed cycle; one charged
+cycle forces `KillingDefect > 0` for EVERY positive measure; charge-conserving
+annealing can never reach criticality. The exotic handle carries charge
+`(a+δ)³ − a³ > 0` for every base model. Expected profile: the pure base
+`[propext, Classical.choice, Quot.sound]` throughout — no SGC-declared axioms. -/
+
+-- Kolmogorov obstruction: detailed balance ⇒ cycle products balance (flatness).
+#print axioms SGC.Bridge.AffinityProtection.cycleProd_balance_of_detailedBalance
+
+-- Protection kernel: one charged cycle ⇒ KillingDefect > 0 for EVERY positive π.
+#print axioms SGC.Bridge.AffinityProtection.killingDefect_pos_of_affinityCharge_ne_zero
+
+-- Annealing protection: conserved charge ⇒ the defect stays positive forever.
+#print axioms SGC.Bridge.AffinityProtection.annealing_protection
+
+-- The handle is charged for every base model: Q = (a+δ)³ − a³ > 0.
+#print axioms SGC.Bridge.AffinityProtection.exoticLift_affinityCharge_pos
+
+-- HEADLINE (measure-independent exoticness): K > 0 w.r.t. every positive measure.
+#print axioms SGC.Bridge.AffinityProtection.killingDefect_exoticLift_pos_universal
+
+-- The uniform member is affinity-trivial: zero charge on every closed cycle.
+#print axioms SGC.Bridge.AffinityProtection.uniformLift_affinityCharge_zero
+
+-- Separation: the exotic pair lies in DIFFERENT affinity classes.
+#print axioms SGC.Bridge.AffinityProtection.affinity_separates_pair
 
 end SGC.Foundations.AxiomAudit
