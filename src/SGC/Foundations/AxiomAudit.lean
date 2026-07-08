@@ -76,6 +76,7 @@ import SGC.Bridge.ValidityHorizon
 import SGC.Bridge.DefectHorizonBridge
 import SGC.Bridge.TrajectoryClosure
 import SGC.Bridge.CantorShiftTower
+import SGC.Bridge.ExoticPairs
 import SGC.Bridge.Consolidation
 import SGC.Bridge.Quantum
 import SGC.InformationGeometry.FisherNoetherBridge
@@ -821,5 +822,37 @@ fluid-computation triangle carries NO SGC-declared axioms. -/
 
 -- CAPSTONE (eternal validity): K^m · lift = lift · K̄^m for every horizon m.
 #print axioms SGC.Bridge.CantorShiftTower.shiftTower_eternal_closure
+
+/-! ## 14. Exotic Pairs — the coarse face does not determine the fine invariant
+(audited 2026-07-07)
+
+`Bridge/ExoticPairs.lean`: the discrete shadow of the exotic-ℝ⁴ phenomenon.
+For EVERY coarse model `M` reversible w.r.t. a positive measure, the pair
+(`uniformLift M`, `exoticLift M w₀ δ`) on `W × ZMod 3` is coarse-isomorphic
+(literally the same quotient generator, both strongly lumpable, both realizing
+`M`) yet fine-inequivalent: `KillingDefect = 0` vs `> 0` — and the handle's
+persistent current casts no coarse shadow. Expected profile: the pure base
+`[propext, Classical.choice, Quot.sound]` throughout — no SGC-declared axioms. -/
+
+-- Surgery lemma: block-neutral perturbations preserve strong lumpability.
+#print axioms SGC.Bridge.ExoticPairs.stronglyLumpable_add_blockNeutral
+
+-- Coarse isomorphism (a): identical quotient generator for the exotic pair.
+#print axioms SGC.Bridge.ExoticPairs.exoticLift_same_quotient
+
+-- Coarse isomorphism (b): the exotic lift is strongly lumpable.
+#print axioms SGC.Bridge.ExoticPairs.exoticLift_stronglyLumpable
+
+-- Coarse isomorphism (c): the exotic lift realizes the SAME coarse model M.
+#print axioms SGC.Bridge.ExoticPairs.exoticLift_quotient_realizes
+
+-- Sasakian leg (K = 0): the uniform lift sits at Chern–Hamilton criticality.
+#print axioms SGC.Bridge.ExoticPairs.killingDefect_uniformLift_zero
+
+-- HEADLINE / Anosov leg (K > 0): the exotic lift has strictly positive defect.
+#print axioms SGC.Bridge.ExoticPairs.killingDefect_exoticLift_pos
+
+-- Invisibility (d): the coarse probability current of the exotic lift vanishes.
+#print axioms SGC.Bridge.ExoticPairs.exoticLift_coarse_current_zero
 
 end SGC.Foundations.AxiomAudit

@@ -208,6 +208,13 @@ import SGC.Bridge.TrajectoryClosure
 -- Closes the Moore leg of the fluid-computation triangle (Miranda ↔ Cantor ↔ SGC).
 import SGC.Bridge.CantorShiftTower
 
+-- Exotic Pairs (2026-07-07): the discrete shadow of exotic ℝ⁴ — generator pairs
+-- that are coarse-isomorphic (same quotient, both strongly lumpable, same coarse
+-- model) yet fine-inequivalent (KillingDefect 0 vs > 0); the hidden handle's
+-- circulation casts no coarse shadow. The coarse face never determines the fine
+-- irreversibility invariant, as homeomorphism never determines smoothness in d=4.
+import SGC.Bridge.ExoticPairs
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════
