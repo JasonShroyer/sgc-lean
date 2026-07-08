@@ -291,6 +291,20 @@ theorem shiftGenerator_stronglyLumpable (p n : ℕ) :
     Quotient.sound huv
   rw [hquot]
 
+/-! ## §4b. Eternal validity: exact closure at every discrete horizon -/
+
+/-- **Eternal validity of the symbolic coarse-graining**: for EVERY number of machine
+    steps `m`, evolving fine and then coarse-graining equals coarse-graining and then
+    evolving the quotient machine — `K^m · lift = lift · (K̄)^m` with no error term.
+    This is the `ε = 0` / `T* = ∞` pole of the validity-horizon story
+    (`validity_horizon`, `damped_validity_budget`): the finite budgets of the fluid
+    computer come from viscosity alone, never from the symbolic tower. -/
+theorem shiftTower_eternal_closure (p n : ℕ) (m : ℕ) :
+    (shiftKernel p (n + 1)) ^ m * lift_matrix (tailPartition p n)
+      = lift_matrix (tailPartition p n)
+        * (QuotientGeneratorSimple (shiftKernel p (n + 1)) (tailPartition p n)) ^ m :=
+  intertwining_pow _ _ (shiftTower_stronglyLumpable p n) m
+
 /-! ## §5. The Cantor glue: tower projections intertwine the true shift -/
 
 /-- The one-sided shift on path space — Moore's machine step on the full

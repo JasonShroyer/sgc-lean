@@ -819,4 +819,7 @@ fluid-computation triangle carries NO SGC-declared axioms. -/
 -- Cantor glue: truncation semiconjugates the true path-space shift to the tower.
 #print axioms SGC.Bridge.CantorShiftTower.truncate_pathShift
 
+-- CAPSTONE (eternal validity): K^m · lift = lift · K̄^m for every horizon m.
+#print axioms SGC.Bridge.CantorShiftTower.shiftTower_eternal_closure
+
 end SGC.Foundations.AxiomAudit
