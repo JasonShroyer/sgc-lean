@@ -202,6 +202,12 @@ import SGC.Bridge.DefectHorizonBridge
 -- Duhamel_integral_bound, Horizontal_Duhamel_integral_bound are DELETED.
 import SGC.Bridge.TrajectoryClosure
 
+-- The Cantor Shift Tower (2026-07-07): Moore's symbolic dynamics as an exact
+-- (ε = 0) strongly-lumpable SGC renormalization tower on cylinder truncations;
+-- tower projections intertwine the true shift on PathSpace ≃ ℤ_[p] (Cantor set).
+-- Closes the Moore leg of the fluid-computation triangle (Miranda ↔ Cantor ↔ SGC).
+import SGC.Bridge.CantorShiftTower
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════

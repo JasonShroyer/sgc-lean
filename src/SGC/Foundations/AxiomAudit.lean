@@ -75,6 +75,7 @@ import SGC.Bridge.PhaseClassifier
 import SGC.Bridge.ValidityHorizon
 import SGC.Bridge.DefectHorizonBridge
 import SGC.Bridge.TrajectoryClosure
+import SGC.Bridge.CantorShiftTower
 import SGC.Bridge.Consolidation
 import SGC.Bridge.Quantum
 import SGC.InformationGeometry.FisherNoetherBridge
@@ -789,5 +790,33 @@ which is no longer assumed. -/
 
 -- ℂ-Pythagoras for the code projector, ex-axiom (twin of norm_sq_pi_proj_pythagorean).
 #print axioms SGC.Bridge.Quantum.inner_pi_orthogonal_decomp
+
+/-! ## 13. The Cantor Shift Tower (audited 2026-07-07)
+
+`Bridge/CantorShiftTower.lean`: Moore's symbolic dynamics as an exact (ε = 0)
+strongly-lumpable SGC renormalization tower on cylinder truncations; the
+quotient of the depth-(n+1) shift kernel IS the depth-n shift kernel, and the
+tower projections intertwine the true shift on `PathSpace ≃ ℤ_[p]` (the Cantor
+substrate of the Miranda-program fluid computers). Expected profile: the pure
+base `[propext, Classical.choice, Quot.sound]` throughout — this leg of the
+fluid-computation triangle carries NO SGC-declared axioms. -/
+
+-- Stochasticity of the machine step at every truncation depth.
+#print axioms SGC.Bridge.CantorShiftTower.shiftKernel_row_sum
+
+-- Exact lumpability of the tower step (kernel form).
+#print axioms SGC.Bridge.CantorShiftTower.shiftTower_stronglyLumpable
+
+-- HEADLINE (renormalization = shift): quotient of depth-(n+1) = depth-n machine.
+#print axioms SGC.Bridge.CantorShiftTower.shiftTower_quotient_realizes
+
+-- ε = 0: the symbolic layer imposes no validity horizon (cf. damped_validity_budget).
+#print axioms SGC.Bridge.CantorShiftTower.shiftTower_defect_zero
+
+-- Generator form (K − I): conservative and strongly lumpable.
+#print axioms SGC.Bridge.CantorShiftTower.shiftGenerator_stronglyLumpable
+
+-- Cantor glue: truncation semiconjugates the true path-space shift to the tower.
+#print axioms SGC.Bridge.CantorShiftTower.truncate_pathShift
 
 end SGC.Foundations.AxiomAudit
