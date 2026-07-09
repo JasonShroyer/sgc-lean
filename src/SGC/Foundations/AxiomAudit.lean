@@ -79,6 +79,8 @@ import SGC.Bridge.CantorShiftTower
 import SGC.Bridge.ExoticPairs
 import SGC.Bridge.AffinityProtection
 import SGC.Bridge.SchnakenbergBasis
+import SGC.Bridge.SchnakenbergIndependence
+import SGC.Bridge.SchnakenbergSpan
 import SGC.Bridge.Consolidation
 import SGC.Bridge.Quantum
 import SGC.InformationGeometry.FisherNoetherBridge
@@ -917,5 +919,39 @@ profile: pure base `[propext, Classical.choice, Quot.sound]`, no SGC axioms. -/
 
 -- Protection closes the loop: one asymmetric chord ⇒ K > 0 for every measure.
 #print axioms SGC.Bridge.SchnakenbergBasis.killingDefect_pos_of_chord_asym
+
+/-! ## 17. Schnakenberg Independence & Span — the chord basis and the dimension
+(audited 2026-07-09)
+
+`Bridge/SchnakenbergIndependence.lean` + `Bridge/SchnakenbergSpan.lean`: Phase
+F2, discharging the debt declared in §16. Ordered chords (`x < y`, both off
+the star center — one representative per unordered pair, since the triangle
+current is antisymmetric under chord swap) index a family of triangle currents
+that is (a) linearly independent — chord evaluation is a Kronecker delta — and
+(b) spanning — off-star agreement is the delta collapse, star edges follow
+from divergence-freeness of the defect, replacing telescoping bookkeeping with
+a conservation argument. Packaged as `Module.Basis`; the division-free
+dimension count `2·finrank = (n−1)(n−2)` is the first Betti number of the
+complete graph. Expected profile: pure base
+`[propext, Classical.choice, Quot.sound]`, no SGC axioms. -/
+
+-- Chord evaluation is a Kronecker delta on ordered chords.
+#print axioms SGC.Bridge.SchnakenbergIndependence.chordCurrent_apply_chord
+
+-- Linear independence of the fundamental triangle currents.
+#print axioms SGC.Bridge.SchnakenbergIndependence.triCurrent_chord_linearIndependent
+
+-- Every cycle decomposes as its chord-weighted triangle expansion.
+#print axioms SGC.Bridge.SchnakenbergSpan.cycleSpace_decomposition
+
+-- The cycle space IS the span of the star-tree fundamental cycles.
+#print axioms SGC.Bridge.SchnakenbergSpan.cycleSpace_eq_span
+
+-- dim(cycle space) = #chords.
+#print axioms SGC.Bridge.SchnakenbergSpan.finrank_cycleSpace_eq_card_chord
+
+-- HEADLINE (dimension of the NESS landscape, division-free):
+-- 2·dim = (n−1)(n−2) — the affinity data has exactly (n−1)(n−2)/2 parameters.
+#print axioms SGC.Bridge.SchnakenbergSpan.two_mul_finrank_cycleSpace
 
 end SGC.Foundations.AxiomAudit

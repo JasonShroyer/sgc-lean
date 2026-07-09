@@ -235,6 +235,23 @@ import SGC.Bridge.AffinityProtection
 -- genuine Submodule; triangle currents proven to be 1-cycles.
 import SGC.Bridge.SchnakenbergBasis
 
+-- Schnakenberg Independence (2026-07-09, F2 part 1): the fundamental triangle
+-- currents, indexed by ORDERED chords x < y (one representative per unordered
+-- pair — triCurrent v₀ x y = −triCurrent v₀ y x), are linearly independent:
+-- evaluation at each chord edge is a separating dual family (Kronecker delta
+-- on ordered chords; the reversed match is killed by strictness).
+import SGC.Bridge.SchnakenbergIndependence
+
+-- Schnakenberg Span (2026-07-09, F2 completion): the chord currents SPAN the
+-- cycle space — star edges follow from conservation, not counting: the defect
+-- J − S is a cycle vanishing off-star, and divergence-freeness kills its star
+-- edges. Packaged as Module.Basis (chordBasis); headline dimension count
+-- 2·finrank(cycleSpace) = (n−1)(n−2), division-free via the swap involution.
+-- The affinity data is conserved (E), free (F), and of exact dimension
+-- (n−1)(n−2)/2 (F2): the parameter count of the NESS landscape — the first
+-- Betti number of the complete graph, realized by star-tree fundamental cycles.
+import SGC.Bridge.SchnakenbergSpan
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════
