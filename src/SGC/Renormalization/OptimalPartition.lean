@@ -236,9 +236,15 @@ lemma coarser_proj_absorbs_finer (P₁ P₂ : Partition V) (pi_dist : V → ℝ)
 /-! ### Note on Directionality (Arrow of Time)
 
 The UNRESTRICTED version `∀ f, ‖D_{P₁} f‖ ≤ ‖D_{P₂} f‖` is FALSE for general
-generators L. When L is non-reversible (does not satisfy detailed balance), the
-CoarseProjector Π_P is NOT self-adjoint in L²(π), so the Pythagorean orthogonal
-decomposition fails, and the defect can increase under refinement.
+generators L. NOTE: this is NOT because Π fails to be self-adjoint — Π is the
+conditional expectation `E[·|σ(P)]` in L²(π), hence ALWAYS a π-orthogonal
+projection regardless of L (see `CoarseProjector_self_adjoint`, which carries no
+reversibility hypothesis). The actual reason is that `DefectOperator` op-norm is
+a supremum over ALL f, and for non-block-constant f the two defects
+`(I-Π₁)(L f)` and `(I-Π₂)(L f)` project DIFFERENT vectors (the inputs are not
+fixed by either projector), so the per-vector Pythagorean comparison below does
+not apply uniformly. This is recorded as the sealed certificate
+`defect_not_antitone_under_refinement` (`QuotientGenerator.lean`).
 
 This is the **arrow of time** in the formalization: non-reversible generators
 correspond to directed cyclic graphs where probability flows around loops. The

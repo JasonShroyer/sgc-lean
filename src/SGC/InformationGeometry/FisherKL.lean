@@ -509,23 +509,46 @@ def FisherFeasible (RF : RegularizedFisher n) (S : ConsolidatedSubspace n k)
 
     This is the correct theorem for "freeze consolidated parameters."
 
-**AXIOM: Minimal Disturbance (Primal Feasibility)**
+**THEOREM: Minimal Disturbance (Primal Feasibility)** — discharged 2026-06-20.
 
     The projector P_⊥ = I - F⁻¹Sᵀ(SF⁻¹Sᵀ)⁻¹S satisfies S(P_⊥ g) = 0.
 
-    **Proof sketch** (matrix algebra):
-    S P_⊥ g = S(I - F⁻¹Sᵀ Gram⁻¹ S)g = Sg - (SF⁻¹Sᵀ) Gram⁻¹ Sg = Sg - Sg = 0
-
-    This is axiomatized because the matrix index manipulation in Lean is tedious. -/
-axiom minimal_disturbance_primal_feasibility (RF : RegularizedFisher n)
+    **Proof** (matrix algebra): it suffices to show `S · P_⊥ = 0` as matrices,
+    since then `S *ᵥ (P_⊥ *ᵥ g) = (S · P_⊥) *ᵥ g = 0`. Writing `Gram = S F⁻¹ Sᵀ`,
+      S · P_⊥ = S − (S F⁻¹ Sᵀ) · Gram⁻¹ · S = S − Gram · Gram⁻¹ · S = S − S = 0,
+    where `Gram · Gram⁻¹ = 1` is obtained from the supplied left inverse via
+    `Matrix.mul_eq_one_comm`. Note feasibility needs ONLY the Gram inverse; the
+    Fisher inverse hypothesis `h_F_inv` is unused here (it is required for
+    optimality, not feasibility). Formerly axiomatized "because the index
+    manipulation is tedious"; now kernel-proven. -/
+theorem minimal_disturbance_primal_feasibility (RF : RegularizedFisher n)
     (S : ConsolidatedSubspace n k) (g : Fin n → ℝ)
     (F_reg_inv : Matrix (Fin n) (Fin n) ℝ)
     (Gram_inv : Matrix (Fin k) (Fin k) ℝ)
-    (h_F_inv : F_reg_inv * RF.regularized = 1)
+    (_h_F_inv : F_reg_inv * RF.regularized = 1)
     (h_Gram_inv : let S_mat := SubspaceMatrix S
                   Gram_inv * (S_mat * F_reg_inv * S_matᵀ) = 1) :
     let P_perp := FisherOrthogonalProjector RF S F_reg_inv Gram_inv
-    PrimalFeasible S (P_perp *ᵥ g)
+    PrimalFeasible S (P_perp *ᵥ g) := by
+  show PrimalFeasible S (FisherOrthogonalProjector RF S F_reg_inv Gram_inv *ᵥ g)
+  have hG : Gram_inv * (SubspaceMatrix S * F_reg_inv * (SubspaceMatrix S)ᵀ) = 1 :=
+    h_Gram_inv
+  have hcomm : (SubspaceMatrix S * F_reg_inv * (SubspaceMatrix S)ᵀ) * Gram_inv = 1 :=
+    Matrix.mul_eq_one_comm.mp hG
+  have hAP : SubspaceMatrix S * FisherOrthogonalProjector RF S F_reg_inv Gram_inv = 0 := by
+    simp only [FisherOrthogonalProjector, FisherProjector]
+    rw [Matrix.mul_sub, Matrix.mul_one,
+        (show SubspaceMatrix S
+                * (F_reg_inv * (SubspaceMatrix S)ᵀ * Gram_inv * SubspaceMatrix S)
+              = (SubspaceMatrix S * F_reg_inv * (SubspaceMatrix S)ᵀ * Gram_inv)
+                * SubspaceMatrix S by simp only [Matrix.mul_assoc]),
+        hcomm, Matrix.one_mul, sub_self]
+  have hzero : SubspaceMatrix S *ᵥ
+      (FisherOrthogonalProjector RF S F_reg_inv Gram_inv *ᵥ g) = 0 := by
+    rw [Matrix.mulVec_mulVec, hAP, Matrix.zero_mulVec]
+  unfold PrimalFeasible
+  intro i
+  exact congrFun hzero i
 
 /-- **AXIOM: Minimal Disturbance (Primal Optimality)**
 

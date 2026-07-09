@@ -65,6 +65,9 @@ variable {V : Type*} [Fintype V] [DecidableEq V]
 structure LossLandscape (V : Type*) where
   potential : V → ℝ
   stationary : V → ℝ  -- Stationary distribution π
+  curvature : V → ℝ   -- |V''| carried as data: a finite parameter space V has
+                      -- no intrinsic second derivative, so the landscape comes
+                      -- equipped with its curvature magnitudes (2026-06-17)
 
 /-- **Barrier Height**: The energy difference between a local minimum and saddle point.
     This determines the difficulty of escaping memorization. -/
@@ -72,14 +75,18 @@ def BarrierHeight (L : LossLandscape V) (local_min saddle : V) : ℝ :=
   L.potential saddle - L.potential local_min
 
 /-- **Curvature at Minimum**: Second derivative of potential at local minimum.
-    Determines the oscillation frequency in the basin. -/
+    Determines the oscillation frequency in the basin. Read from the landscape's
+    carried curvature data — de-`sorry`-ed 2026-06-17 so that every downstream
+    result (`kramers_escape_time_pos`, `temperature_speedup`) is genuinely
+    axiom-clean rather than transitively inheriting `sorryAx`. -/
 def CurvatureAtMin (L : LossLandscape V) (local_min : V) : ℝ :=
-  sorry -- |V''(local_min)|
+  L.curvature local_min
 
 /-- **Curvature at Saddle**: Second derivative of potential at saddle point.
-    Determines the "width" of the barrier. -/
+    Determines the "width" of the barrier. Read from the landscape's carried
+    curvature data — de-`sorry`-ed 2026-06-17 (see `CurvatureAtMin`). -/
 def CurvatureAtSaddle (L : LossLandscape V) (saddle : V) : ℝ :=
-  sorry -- |V''(saddle)|
+  L.curvature saddle
 
 /-! ### 2. Noise as Temperature -/
 
@@ -119,15 +126,35 @@ def KramersEscapeTime (L : LossLandscape V) (local_min saddle : V) (D : ℝ) : �
 lemma kramers_escape_time_pos (L : LossLandscape V) (m s : V) (D : ℝ)
     (hD : 0 < D) (hω : CurvatureAtMin L m * CurvatureAtSaddle L s ≠ 0) :
     0 < KramersEscapeTime L m s D := by
-  sorry
+  simp only [KramersEscapeTime, gt_iff_lt]
+  rw [if_pos hD]
+  have h_pref : 0 < 2 * Real.pi / Real.sqrt |CurvatureAtMin L m * CurvatureAtSaddle L s| :=
+    div_pos (by positivity) (Real.sqrt_pos.mpr (abs_pos.mpr hω))
+  exact mul_pos h_pref (Real.exp_pos _)
 
 /-- **Higher temperature means faster escape** (exponential speedup).
-    This is the key prediction validated by the analog world experiments. -/
+    This is the key prediction validated by the analog world experiments.
+
+    NOTE (2026-06-17): the hypothesis `hω` (curvature product non-degenerate)
+    is REQUIRED for the statement to be TRUE, not merely a proof convenience.
+    If `ω_min * ω_saddle = 0` then `Real.sqrt 0 = 0`, so the prefactor is
+    `2π / 0 = 0` (Lean's junk value for division by zero); both escape times
+    then collapse to `0` and the strict inequality `0 < 0` is false. The
+    original `sorry`-stated signature (without `hω`) was thus UNPROVABLE — it
+    was a false statement. This is the corrected, kernel-checked form. -/
 theorem temperature_speedup (L : LossLandscape V) (m s : V) (D₁ D₂ : ℝ)
-    (hD₁ : 0 < D₁) (hD₂ : 0 < D₂) (hD : D₂ > D₁)
-    (hΔV : 0 < BarrierHeight L m s) :
+    (hD₁ : 0 < D₁) (hD₂ : 0 < D₂) (hD : D₁ < D₂)
+    (hΔV : 0 < BarrierHeight L m s)
+    (hω : CurvatureAtMin L m * CurvatureAtSaddle L s ≠ 0) :
     KramersEscapeTime L m s D₂ < KramersEscapeTime L m s D₁ := by
-  sorry
+  simp only [KramersEscapeTime, gt_iff_lt]
+  rw [if_pos hD₁, if_pos hD₂]
+  have h_pref : 0 < 2 * Real.pi / Real.sqrt |CurvatureAtMin L m * CurvatureAtSaddle L s| :=
+    div_pos (by positivity) (Real.sqrt_pos.mpr (abs_pos.mpr hω))
+  refine mul_lt_mul_of_pos_left ?_ h_pref
+  rw [Real.exp_lt_exp, ← mul_one_div (BarrierHeight L m s) D₂,
+      ← mul_one_div (BarrierHeight L m s) D₁]
+  exact mul_lt_mul_of_pos_left (one_div_lt_one_div_of_lt hD₁ hD) hΔV
 
 /-! ### 4. Connection to Spectral Gap -/
 

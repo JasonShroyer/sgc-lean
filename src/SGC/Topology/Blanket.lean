@@ -5,6 +5,7 @@ Authors: SGC Formalization Team
 -/
 import SGC.Axioms.Geometry
 import SGC.Renormalization.Approximate
+import SGC.Renormalization.OptimalPartition
 import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
@@ -233,11 +234,16 @@ theorem blanket_orthogonality (_L : Matrix V V ℝ) (B : BlanketPartition V)
     This is the topological foundation for emergence: systems with good blankets
     naturally admit effective theories.
 
-    **Axiomatized**: The technical construction of the Partition from BlanketPartition
-    and the defect bound require detailed Finset/quotient machinery. -/
-axiom blanket_implies_approx_lumpable (B : BlanketPartition V)
+    **Status (2026-06-13)**: now a THEOREM (was an axiom). The existential is
+    discharged honestly by the discrete partition (defect = 0 ⇒ ε = 0). NOTE: as
+    written this is vacuous w.r.t. blanket quality (it does not use `hL`); a
+    strengthened version bounding ε by the blanket width is the real content. -/
+theorem blanket_implies_approx_lumpable (B : BlanketPartition V)
     (L : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (hL : RespectsBlank L B) :
-    ∃ (P : Partition V) (ε : ℝ), ε ≥ 0 ∧ Approximate.IsApproxLumpable L P pi_dist hπ ε
+    ∃ (P : Partition V) (ε : ℝ), ε ≥ 0 ∧ Approximate.IsApproxLumpable L P pi_dist hπ ε :=
+  -- Witness: the discrete partition, whose leakage defect is exactly 0.
+  ⟨Renormalization.trivialPartition V, 0, le_refl (0 : ℝ),
+    le_of_eq (Renormalization.trivialPartition_defect_cost_zero L pi_dist hπ)⟩
 
 end SGC

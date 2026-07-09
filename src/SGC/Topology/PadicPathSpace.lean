@@ -297,6 +297,24 @@ theorem pathSpace_homeo_padicInt (p : ℕ) [Fact p.Prime]
   ⟨Continuous.homeoOfEquivCompactToT2 (f := pathSpaceEquivPadicInt p)
     (continuous_digitSeq_to_padicInt p)⟩
 
+/-! ## 3¹⁰⁄₁₀. The d-fold product: independent integrators (PROVEN) -/
+
+/-- **d independent p-ary integrators, PROVEN.** The symbolic state space of `d` *independent*
+    p-ary path integrators is canonically `(ℤ_[p])^d`. Immediate from the keystone via
+    `Homeomorph.piCongrRight`.
+
+    This is the honest formal correlate of the grokking-topology experiments (`decisions/0010`):
+    a recurrent net tracking `d` independent running sums on `ℤ_p` has, as its symbolic domain,
+    exactly `Fin d → ℤ_[p]`. The empirical finding that its *representation* concentrates on the
+    continuous torus `T^d = (S¹)^d` (d=1 ring; d=2 flat torus, with orthogonal/direct-sum carriers)
+    is the discrete→continuum **image** of THIS domain — the analytic half lives in
+    `Geometry.Manifold.Convergence` (Conjecture C-0 / `manifold_hypothesis`), not here. We claim only
+    the symbolic identity, which is exact and axiom-clean. -/
+theorem pi_pathSpace_homeo_pi_padicInt (p d : ℕ) [Fact p.Prime]
+    [TopologicalSpace (Fin p)] [DiscreteTopology (Fin p)] :
+    Nonempty ((Fin d → PathSpace (Fin p)) ≃ₜ (Fin d → ℤ_[p])) :=
+  ⟨Homeomorph.piCongrRight fun _ => (pathSpace_homeo_padicInt p).some⟩
+
 /-! ## 4. TODO — wiring to existing SGC modules (next increment)
 
 * `coarseGraining_is_truncation`: identify `Renormalization.OptimalPartition`'s

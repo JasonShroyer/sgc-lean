@@ -210,12 +210,13 @@ theorem lifted_quadform_nonneg
     Stated for an arbitrary square dimension `m` (the lifted case is `m = d*d`);
     the content is dimension-generic.
 
-    SORRY CLASSIFICATION: DEFERRED-STANDARD (2026-06-10 triage) — the Rayleigh
+    STATUS: PROVEN (lake build, no sorry) — kernel-verified. The Rayleigh
     quotient characterization of the least eigenvalue of a real symmetric
-    matrix. Bedrock spectral theory, not SGC content: the discharge path is
-    Mathlib's `Matrix.IsHermitian.spectral_theorem`, and proof effort is
-    deliberately deferred per the strategy of spending attention only on
-    non-trivial SGC-specific mathematics. -/
+    matrix is discharged by an elementary self-contained argument (no calculus,
+    no spectral API): a global Rayleigh inequality obtained by rescaling the
+    unit-norm hypothesis, then showing the residual `Sigma *ᵥ c_star - λ c_star`
+    is null because a one-parameter family `α • c_star + g` would otherwise make
+    the quadratic form unbounded below along `α`. -/
 theorem min_variance_is_min_eigenvector
     {m : ℕ}
     (Sigma : Matrix (Fin m) (Fin m) ℝ)
@@ -230,8 +231,116 @@ theorem min_variance_is_min_eigenvector
     ∃ lam_min : ℝ, (∀ i, ∑ j, Sigma i j * c_star j = lam_min * c_star i) ∧
       (∀ lam : ℝ, (∃ v : Fin m → ℝ, v ≠ 0 ∧ ∀ i, ∑ j, Sigma i j * v j = lam * v i) →
         lam_min ≤ lam) := by
-  -- DEFERRED-STANDARD: Rayleigh quotient / spectral theorem for symmetric matrices
-  sorry
+  -- Elementary Rayleigh-quotient argument (no calculus, no spectral API):
+  -- the unit-norm minimiser c_star of the quadratic form is an eigenvector for the
+  -- least eigenvalue.  The bilinear form `B u w = u ⬝ᵥ Sigma *ᵥ w` is symmetric and
+  -- the proof rests only on: (RQ) a global Rayleigh inequality obtained by rescaling
+  -- the unit-vector hypothesis `hMin`, and the residual `g = Sigma *ᵥ c_star - λ c_star`.
+  -- Rewrite the explicit double sums as `u ⬝ᵥ Sigma *ᵥ w`.
+  have dotself_nonneg : ∀ v : Fin m → ℝ, 0 ≤ v ⬝ᵥ v := fun v => by
+    simp only [dotProduct]; exact Finset.sum_nonneg fun i _ => mul_self_nonneg _
+  have bil : ∀ u w : Fin m → ℝ, (∑ i, ∑ j, u i * Sigma i j * w j) = u ⬝ᵥ Sigma *ᵥ w := by
+    intro u w
+    simp only [dotProduct, Matrix.mulVec, Finset.mul_sum, mul_assoc]
+  -- Symmetry of the bilinear form from `Sigma.IsSymm`.
+  have hsij : ∀ i j, Sigma i j = Sigma j i := fun i j => by
+    have h := congrFun (congrFun hSigma i) j; rw [Matrix.transpose_apply] at h; exact h.symm
+  have Bsymm : ∀ u w : Fin m → ℝ, u ⬝ᵥ Sigma *ᵥ w = w ⬝ᵥ Sigma *ᵥ u := by
+    intro u w
+    simp only [← bil]
+    rw [Finset.sum_comm]
+    refine Finset.sum_congr rfl (fun i _ => Finset.sum_congr rfl (fun j _ => ?_))
+    rw [hsij j i]; ring
+  set lam := ∑ i, ∑ j, c_star i * Sigma i j * c_star j with hlam
+  have hlam' : c_star ⬝ᵥ Sigma *ᵥ c_star = lam := (bil c_star c_star).symm
+  have hcc : c_star ⬝ᵥ c_star = 1 := by
+    simp only [dotProduct]; rw [← hNorm]
+    exact Finset.sum_congr rfl (fun i _ => by ring)
+  -- Global Rayleigh inequality: `lam * (c ⬝ᵥ c) ≤ c ⬝ᵥ Sigma *ᵥ c` for all `c`.
+  have RQ : ∀ c : Fin m → ℝ, lam * (c ⬝ᵥ c) ≤ c ⬝ᵥ Sigma *ᵥ c := by
+    intro c
+    rcases eq_or_lt_of_le (dotself_nonneg c) with hc | hc
+    · have hc0 : c = 0 := dotProduct_self_eq_zero.mp hc.symm
+      subst hc0; simp
+    · set s := Real.sqrt (c ⬝ᵥ c) with hs
+      have hspos : 0 < s := Real.sqrt_pos.mpr hc
+      have hsne : s ≠ 0 := hspos.ne'
+      have hs2 : s ^ 2 = c ⬝ᵥ c := Real.sq_sqrt hc.le
+      have hunit : ∑ i, (s⁻¹ • c) i ^ 2 = 1 := by
+        have he : ∑ i, (s⁻¹ • c) i ^ 2 = s⁻¹ ^ 2 * ∑ i, c i ^ 2 := by
+          rw [Finset.mul_sum]
+          exact Finset.sum_congr rfl (fun i _ => by
+            simp only [Pi.smul_apply, smul_eq_mul]; ring)
+        have hsum : (∑ i, c i ^ 2) = c ⬝ᵥ c := Finset.sum_congr rfl (fun i _ => by ring)
+        rw [he, hsum, ← hs2]; field_simp
+      have hM := hMin (s⁻¹ • c) hunit
+      simp only [bil] at hM
+      have hscale : (s⁻¹ • c) ⬝ᵥ Sigma *ᵥ (s⁻¹ • c) = s⁻¹ ^ 2 * (c ⬝ᵥ Sigma *ᵥ c) := by
+        rw [Matrix.mulVec_smul, smul_dotProduct, dotProduct_smul, smul_eq_mul, smul_eq_mul]; ring
+      rw [hscale] at hM
+      have hsimp : s⁻¹ ^ 2 * (c ⬝ᵥ Sigma *ᵥ c) * s ^ 2 = c ⬝ᵥ Sigma *ᵥ c := by
+        rw [mul_comm (s⁻¹ ^ 2) (c ⬝ᵥ Sigma *ᵥ c), mul_assoc, ← mul_pow,
+          inv_mul_cancel₀ hsne, one_pow, mul_one]
+      have hfin := mul_le_mul_of_nonneg_right hM (by positivity : (0:ℝ) ≤ s ^ 2)
+      rw [hsimp] at hfin
+      rw [hs2] at hfin; exact hfin
+  -- Residual g and the two key inner products.
+  set g : Fin m → ℝ := Sigma *ᵥ c_star - lam • c_star with hg
+  have hcg : c_star ⬝ᵥ g = 0 := by
+    rw [hg, dotProduct_sub, dotProduct_smul, smul_eq_mul, hlam', hcc]; ring
+  have hgc : g ⬝ᵥ c_star = 0 := by rw [dotProduct_comm]; exact hcg
+  have hScg : Sigma *ᵥ c_star = g + lam • c_star := by rw [hg]; abel
+  have hgSg : c_star ⬝ᵥ Sigma *ᵥ g = g ⬝ᵥ g := by
+    rw [Bsymm c_star g, hScg, dotProduct_add, dotProduct_smul, hgc,
+        smul_zero, add_zero]
+  -- Expand the Rayleigh inequality on `α • c_star + g`.
+  set NG := g ⬝ᵥ g with hNG
+  have hNGnn : 0 ≤ NG := dotself_nonneg g
+  have e1 : ∀ α : ℝ, (α • c_star + g) ⬝ᵥ (α • c_star + g) = α ^ 2 + NG := by
+    intro α
+    simp only [add_dotProduct, dotProduct_add, smul_dotProduct,
+      dotProduct_smul, smul_eq_mul, hcc, hcg, hgc]
+    ring
+  have e2 : ∀ α : ℝ, (α • c_star + g) ⬝ᵥ Sigma *ᵥ (α • c_star + g)
+      = α ^ 2 * lam + 2 * α * NG + g ⬝ᵥ Sigma *ᵥ g := by
+    intro α
+    rw [Matrix.mulVec_add, Matrix.mulVec_smul]
+    simp only [add_dotProduct, dotProduct_add, smul_dotProduct,
+      dotProduct_smul, smul_eq_mul, hlam', hgSg]
+    rw [Bsymm g c_star, hgSg]; ring
+  have hα : ∀ α : ℝ, 0 ≤ 2 * α * NG + (g ⬝ᵥ Sigma *ᵥ g - lam * NG) := by
+    intro α
+    have := RQ (α • c_star + g)
+    rw [e1, e2] at this; nlinarith [this]
+  have hNG0 : NG = 0 := by
+    by_contra h
+    have hpos : 0 < NG := lt_of_le_of_ne hNGnn (Ne.symm h)
+    set M := g ⬝ᵥ Sigma *ᵥ g - lam * NG with hM_def
+    have h2NG : (2 : ℝ) * NG ≠ 0 := ne_of_gt (by linarith)
+    have key := hα ((-M - 1) / (2 * NG))
+    have hcancel : 2 * ((-M - 1) / (2 * NG)) * NG = -M - 1 := by
+      rw [show 2 * ((-M - 1) / (2 * NG)) * NG = ((-M - 1) / (2 * NG)) * (2 * NG) from by ring]
+      exact div_mul_cancel₀ (-M - 1) h2NG
+    rw [hcancel] at key; linarith
+  have hgzero : g = 0 := dotProduct_self_eq_zero.mp hNG0
+  refine ⟨lam, ?_, ?_⟩
+  · intro i
+    have hgi := congrFun hgzero i
+    rw [hg] at hgi
+    simp only [Pi.sub_apply, Pi.smul_apply, smul_eq_mul, Pi.zero_apply] at hgi
+    have : (Sigma *ᵥ c_star) i = lam * c_star i := by linarith
+    simpa [Matrix.mulVec, dotProduct] using this
+  · intro l ⟨v, hv, hev⟩
+    have hvv : 0 < v ⬝ᵥ v :=
+      lt_of_le_of_ne (dotself_nonneg v)
+        (Ne.symm fun hh => hv (dotProduct_self_eq_zero.mp hh))
+    have hvSv : v ⬝ᵥ Sigma *ᵥ v = l * (v ⬝ᵥ v) := by
+      simp only [dotProduct, Matrix.mulVec, Finset.mul_sum]
+      refine Finset.sum_congr rfl (fun i _ => ?_)
+      rw [← Finset.mul_sum, hev i]; ring
+    have hr := RQ v
+    rw [hvSv] at hr
+    exact le_of_mul_le_mul_right hr hvv
 
 /-! ## Section 2: Exponential Family Fisher Information
 
