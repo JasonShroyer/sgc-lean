@@ -225,6 +225,16 @@ import SGC.Bridge.ExoticPairs
 -- class datum witnessing the obstruction.
 import SGC.Bridge.AffinityProtection
 
+-- Schnakenberg Basis (2026-07-08): the realizability converse — every antisymmetric
+-- charge assignment on the fundamental cycles of a star tree is realized by an
+-- explicit conservative generator with nonnegative rates. Key linearization: pinning
+-- star-tree edges to symmetric rate 1 collapses the polynomial Wilson loop to the
+-- chord antisymmetry q x y − q y x (the star gauge abelianizes the holonomy). With
+-- Phase E this completes the classification: affinity data is conserved (E) and free
+-- (F) — the exact parameter space of the NESS landscape. Cycle space packaged as a
+-- genuine Submodule; triangle currents proven to be 1-cycles.
+import SGC.Bridge.SchnakenbergBasis
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════

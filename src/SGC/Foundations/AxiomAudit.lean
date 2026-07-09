@@ -78,6 +78,7 @@ import SGC.Bridge.TrajectoryClosure
 import SGC.Bridge.CantorShiftTower
 import SGC.Bridge.ExoticPairs
 import SGC.Bridge.AffinityProtection
+import SGC.Bridge.SchnakenbergBasis
 import SGC.Bridge.Consolidation
 import SGC.Bridge.Quantum
 import SGC.InformationGeometry.FisherNoetherBridge
@@ -887,5 +888,34 @@ annealing can never reach criticality. The exotic handle carries charge
 
 -- Separation: the exotic pair lies in DIFFERENT affinity classes.
 #print axioms SGC.Bridge.AffinityProtection.affinity_separates_pair
+
+/-! ## 16. Schnakenberg Basis — realizability of affinity charges
+(audited 2026-07-08)
+
+`Bridge/SchnakenbergBasis.lean`: the converse of Phase E. The cycle space is a
+genuine submodule (antisymmetric ∩ ker divergence); triangle currents are
+1-cycles; the chord generator realizes ANY antisymmetric charge assignment on
+the star tree's fundamental cycles with honest CTMC rates — the star gauge
+linearizes the polynomial Wilson loop to the chord antisymmetry. Expected
+profile: pure base `[propext, Classical.choice, Quot.sound]`, no SGC axioms. -/
+
+-- The two cycle-space vocabularies agree (Submodule ↔ Prop-level).
+#print axioms SGC.Bridge.SchnakenbergBasis.mem_cycleSpace_iff
+
+-- Triangle currents are 1-cycles: antisymmetric, divergence-free (telescoping).
+#print axioms SGC.Bridge.SchnakenbergBasis.triCurrent_mem_cycleSpace
+
+-- The chord generator is conservative (zero row sums).
+#print axioms SGC.Bridge.SchnakenbergBasis.chordGenerator_row_sum_zero
+
+-- The star gauge linearizes: fundamental-cycle charge = chord antisymmetry.
+#print axioms SGC.Bridge.SchnakenbergBasis.chordGenerator_affinityCharge
+
+-- HEADLINE (realizability converse): every antisymmetric charge assignment is
+-- realized by a conservative, nonnegative-rate generator.
+#print axioms SGC.Bridge.SchnakenbergBasis.schnakenberg_realizability
+
+-- Protection closes the loop: one asymmetric chord ⇒ K > 0 for every measure.
+#print axioms SGC.Bridge.SchnakenbergBasis.killingDefect_pos_of_chord_asym
 
 end SGC.Foundations.AxiomAudit
