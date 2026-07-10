@@ -471,6 +471,7 @@ theorem killingDefect_quantitative (L : Matrix V V ℝ) (c : ℕ → V) (m : ℕ
               ∑ k ∈ Finset.range m, |ProbabilityCurrent L pi_dist (c k) (c (k + 1))| :=
             mul_nonneg (mul_nonneg hm_pos.le (pow_nonneg (le_of_lt hR) _)) hS_nn
           gcongr
+          exact hQ_sum_bound
     _ = (∑ k ∈ Finset.range m, |ProbabilityCurrent L pi_dist (c k) (c (k + 1))|) ^ 2 / ↑m := by
           have hRm2_ne : R ^ (2 * (m - 1)) ≠ 0 := (pow_pos hR _).ne'
           have hm3_ne : (↑m : ℝ) ^ 3 ≠ 0 := (pow_pos hm_pos 3).ne'
