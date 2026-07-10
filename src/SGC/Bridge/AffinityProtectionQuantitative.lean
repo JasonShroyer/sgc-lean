@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: SGC Formalization Team
 -/
 import SGC.Bridge.AffinityProtection
+import Mathlib.Algebra.Order.Chebyshev
 
 /-!
 # Quantitative Protection Bound — Phase G
@@ -83,7 +84,7 @@ lemma telescoping_prod_diff (a b : ℕ → ℝ) : ∀ m : ℕ,
   | zero => simp
   | succ n ih =>
     rw [Finset.prod_range_succ, Finset.prod_range_succ, Finset.sum_range_succ]
-    have hIco_empty : ∀ k, (∏ j ∈ Finset.Ico (n + 1) (n + 1), b j) = 1 := by
+    have hIco_empty : (∏ j ∈ Finset.Ico (n + 1) (n + 1), b j) = 1 := by
       simp [Finset.Ico_self]
     have hIco_step : ∀ k < n,
         (∏ j ∈ Finset.Ico (k + 1) (n + 1), b j) =
@@ -143,7 +144,7 @@ lemma telescoping_abs_le (a b : ℕ → ℝ) (m : ℕ) (B D : ℝ)
             _ = B ^ k := by rw [Finset.prod_const, Finset.card_range]
         have hbwd : |∏ j ∈ Finset.Ico (k + 1) m, b j| ≤ B ^ (m - k - 1) := by
           have hcard : (Finset.Ico (k + 1) m).card = m - k - 1 := by
-            rw [Finset.Nat.card_Ico]; omega
+            rw [Nat.card_Ico]; omega
           calc |∏ j ∈ Finset.Ico (k + 1) m, b j|
               ≤ ∏ j ∈ Finset.Ico (k + 1) m, |b j| := Finset.abs_prod _ _ |>.le
             _ ≤ ∏ _j ∈ Finset.Ico (k + 1) m, B :=
@@ -155,7 +156,7 @@ lemma telescoping_abs_le (a b : ℕ → ℝ) (m : ℕ) (B D : ℝ)
               mul_le_mul
                 (mul_le_mul hfwd (hD k hkm) (abs_nonneg _) (pow_nonneg hB k))
                 hbwd (abs_nonneg _)
-                (mul_nonneg (mul_nonneg (pow_nonneg hB k) hD_nn) (pow_nonneg hB _))
+                (mul_nonneg (pow_nonneg hB k) hD_nn)
           _ = B ^ (m - 1) * D := by
               have hsum : k + (m - k - 1) = m - 1 := by omega
               calc B ^ k * D * B ^ (m - k - 1)
@@ -181,7 +182,6 @@ lemma cycleProdFwdNorm_eq (L : Matrix V V ℝ) (pi_dist : V → ℝ) (c : ℕ �
     (∏ k ∈ Finset.range m, pi_dist (c k)) * cycleProdFwd L c m := by
   unfold cycleProdFwdNorm cycleProdFwd
   rw [← Finset.prod_mul_distrib]
-  exact Finset.prod_congr rfl fun k _ => mul_comm _ _
 
 /-- The normalized backward product splits as `(∏ π(cₖ₊₁)) · cycleProdBwd`. -/
 lemma cycleProdBwdNorm_eq (L : Matrix V V ℝ) (pi_dist : V → ℝ) (c : ℕ → V) (m : ℕ) :
@@ -189,14 +189,13 @@ lemma cycleProdBwdNorm_eq (L : Matrix V V ℝ) (pi_dist : V → ℝ) (c : ℕ �
     (∏ k ∈ Finset.range m, pi_dist (c (k + 1))) * cycleProdBwd L c m := by
   unfold cycleProdBwdNorm cycleProdBwd
   rw [← Finset.prod_mul_distrib]
-  exact Finset.prod_congr rfl fun k _ => mul_comm _ _
 
 /-- On a closed cycle the two measure products agree (Phase E shift lemma). -/
 lemma cycleNormProd_eq_of_closed (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (c : ℕ → V) (m : ℕ) (hc : c 0 = c m) :
     (∏ k ∈ Finset.range m, pi_dist (c (k + 1))) =
     (∏ k ∈ Finset.range m, pi_dist (c k)) :=
-  (cycle_measure_prod_shift pi_dist hπ c m hc).symm
+  cycle_measure_prod_shift pi_dist hπ c m hc
 
 /-- **Measure-normalized charge identity**:
     `cycleProdFwdNorm − cycleProdBwdNorm = (∏ π(cₖ)) · AffinityCharge L c m`.
@@ -244,32 +243,32 @@ lemma affinityCharge_normprod_le (L : Matrix V V ℝ) (c : ℕ → V) (m : ℕ)
       (∏ k ∈ Finset.range m, pi_dist (c k)) * |AffinityCharge L c m| := by
     rw [hQ_norm, abs_mul, abs_of_pos hprod_pos]
   rw [← habs_diff]
-  set ã : ℕ → ℝ := fun k => pi_dist (c k) * L (c k) (c (k + 1))
-  set b̃ : ℕ → ℝ := fun k => pi_dist (c (k + 1)) * L (c (k + 1)) (c k)
-  have hfwdnorm : cycleProdFwdNorm L pi_dist c m = ∏ k ∈ Finset.range m, ã k := rfl
-  have hbwdnorm : cycleProdBwdNorm L pi_dist c m = ∏ k ∈ Finset.range m, b̃ k := rfl
+  set atil : ℕ → ℝ := fun k => pi_dist (c k) * L (c k) (c (k + 1))
+  set btil : ℕ → ℝ := fun k => pi_dist (c (k + 1)) * L (c (k + 1)) (c k)
+  have hfwdnorm : cycleProdFwdNorm L pi_dist c m = ∏ k ∈ Finset.range m, atil k := rfl
+  have hbwdnorm : cycleProdBwdNorm L pi_dist c m = ∏ k ∈ Finset.range m, btil k := rfl
   rw [hfwdnorm, hbwdnorm]
   have hR_nn : 0 ≤ R := le_of_lt hR
-  have hã_bound : ∀ k < m, |ã k| ≤ R := fun k _ => by
-    simp only [ã]
+  have hatil_bound : ∀ k < m, |atil k| ≤ R := fun k _ => by
+    simp only [atil]
     rw [abs_of_nonneg (hWR_nn _ _)]
     exact hWR _ _
-  have hb̃_bound : ∀ k < m, |b̃ k| ≤ R := fun k _ => by
-    simp only [b̃]
+  have hbtil_bound : ∀ k < m, |btil k| ≤ R := fun k _ => by
+    simp only [btil]
     rw [abs_of_nonneg (hWR_nn _ _)]
     exact hWR _ _
-  have hãb̃_diff : ∀ k < m, |ã k - b̃ k| ≤
+  have hdiff_bound : ∀ k < m, |atil k - btil k| ≤
       |ProbabilityCurrent L pi_dist (c k) (c (k + 1))| := fun k _ => by
-    simp only [ã, b̃]
+    simp only [atil, btil]
     exact le_of_eq (congrArg abs (normalizedTerm_eq_current L pi_dist c k))
   have hsum_nn : 0 ≤ ∑ k ∈ Finset.range m,
       |ProbabilityCurrent L pi_dist (c k) (c (k + 1))| :=
     Finset.sum_nonneg fun k _ => abs_nonneg _
-  have hD_bound : ∀ k < m, |ã k - b̃ k| ≤
+  have hD_bound : ∀ k < m, |atil k - btil k| ≤
       ∑ k ∈ Finset.range m, |ProbabilityCurrent L pi_dist (c k) (c (k + 1))| :=
-    fun k hkm => le_trans (hãb̃_diff k hkm)
-      (Finset.single_le_sum (fun i _ => abs_nonneg _) _ (Finset.mem_range.mpr hkm))
-  exact telescoping_abs_le ã b̃ m R _ hR_nn hsum_nn hã_bound hb̃_bound hD_bound
+    fun k hkm => le_trans (hdiff_bound k hkm)
+      (Finset.single_le_sum (fun i _ => abs_nonneg _) (Finset.mem_range.mpr hkm))
+  exact telescoping_abs_le atil btil m R _ hR_nn hsum_nn hatil_bound hbtil_bound hD_bound
 
 /-- **Affinity charge bound** (division-light form):
     `|Q| ≤ m · R^(m-1) · Σ|J| / ε^m`
@@ -282,7 +281,7 @@ lemma affinityCharge_abs_le (L : Matrix V V ℝ) (c : ℕ → V) (m : ℕ)
     (hWR_nn : ∀ x y, 0 ≤ pi_dist x * L x y) :
     |AffinityCharge L c m| ≤
       ↑m * R ^ (m - 1) *
-        ∑ k ∈ Finset.range m, |ProbabilityCurrent L pi_dist (c k) (c (k + 1))| / ε ^ m := by
+        (∑ k ∈ Finset.range m, |ProbabilityCurrent L pi_dist (c k) (c (k + 1))|) / ε ^ m := by
   have hπ_pos : ∀ v, 0 < pi_dist v := fun v => lt_of_lt_of_le hε (hπ_floor v)
   have hprod_pos : 0 < ∏ k ∈ Finset.range m, pi_dist (c k) :=
     Finset.prod_pos fun k _ => hπ_pos (c k)
@@ -291,26 +290,14 @@ lemma affinityCharge_abs_le (L : Matrix V V ℝ) (c : ℕ → V) (m : ℕ)
       _ ≤ _ := Finset.prod_le_prod (fun k _ => le_of_lt hε) (fun k _ => hπ_floor (c k))
   have hεm_pos : 0 < ε ^ m := pow_pos hε m
   have hmb := affinityCharge_normprod_le L c m hc pi_dist R hR hπ_pos hWR hWR_nn
-  have hprod_nn : 0 ≤ ∏ k ∈ Finset.range m, pi_dist (c k) := le_of_lt hprod_pos
-  have hRHS_nn : 0 ≤ ↑m * R ^ (m - 1) *
-      ∑ k ∈ Finset.range m, |ProbabilityCurrent L pi_dist (c k) (c (k + 1))| :=
-    mul_nonneg (mul_nonneg (Nat.cast_nonneg m) (pow_nonneg (le_of_lt hR) _))
-      (Finset.sum_nonneg fun k _ => abs_nonneg _)
-  rw [div_eq_mul_inv]
-  calc |AffinityCharge L c m|
-      = (∏ k ∈ Finset.range m, pi_dist (c k)) * |AffinityCharge L c m| /
-          (∏ k ∈ Finset.range m, pi_dist (c k)) :=
-        (mul_div_cancel_right₀ _ (ne_of_gt hprod_pos)).symm
-    _ ≤ ↑m * R ^ (m - 1) *
-          ∑ k ∈ Finset.range m, |ProbabilityCurrent L pi_dist (c k) (c (k + 1))| /
-          (∏ k ∈ Finset.range m, pi_dist (c k)) :=
-        div_le_div_of_nonneg_right hmb hprod_pos.le
-    _ ≤ ↑m * R ^ (m - 1) *
-          ∑ k ∈ Finset.range m, |ProbabilityCurrent L pi_dist (c k) (c (k + 1))| *
-          (ε ^ m)⁻¹ := by
-        apply mul_le_mul_of_nonneg_left _ hRHS_nn
-        apply inv_le_inv_of_le hεm_pos.le
-        exact hprod_floor
+  have hQ_nn : 0 ≤ |AffinityCharge L c m| := abs_nonneg _
+  have hdiv : ↑m * R ^ (m - 1) *
+      (∑ k ∈ Finset.range m, |ProbabilityCurrent L pi_dist (c k) (c (k + 1))|) / ε ^ m *
+      ε ^ m =
+      ↑m * R ^ (m - 1) *
+      (∑ k ∈ Finset.range m, |ProbabilityCurrent L pi_dist (c k) (c (k + 1))|) :=
+    div_mul_cancel₀ _ hεm_pos.ne'
+  nlinarith [hmb, mul_le_mul_of_nonneg_right hprod_floor hQ_nn, hεm_pos, hdiv]
 
 /-! ## §4. KillingDefect ≥ one edge square -/
 
@@ -320,9 +307,9 @@ lemma killingDefect_ge_sq_edge (L : Matrix V V ℝ) (pi_dist : V → ℝ) (x y :
     (ProbabilityCurrent L pi_dist x y) ^ 2 ≤ KillingDefect L pi_dist := by
   unfold KillingDefect
   apply le_trans _
-    (Finset.single_le_sum (fun x _ => Finset.sum_nonneg fun y _ => sq_nonneg _)
-      Finset.univ (Finset.mem_univ x))
-  apply Finset.single_le_sum (fun y _ => sq_nonneg _) Finset.univ (Finset.mem_univ y)
+    (Finset.single_le_sum (f := fun x => ∑ y, (ProbabilityCurrent L pi_dist x y) ^ 2)
+      (fun x _ => Finset.sum_nonneg fun y _ => sq_nonneg _) (Finset.mem_univ x))
+  apply Finset.single_le_sum (fun y _ => sq_nonneg _) (Finset.mem_univ y)
 
 /-- The sum of squared currents along a cycle path is at most `KillingDefect`:
     each term is bounded by `KillingDefect` via `killingDefect_ge_sq_edge`, and
@@ -339,23 +326,11 @@ lemma killingDefect_ge_cycle_sum (L : Matrix V V ℝ) (pi_dist : V → ℝ)
 
 /-! ## §4b. Cauchy-Schwarz for finite sums -/
 
-/-- **(Σᵢ aᵢ)² ≤ n · Σᵢ aᵢ²** for any real sequence over a finset of size n.
-    Proved via the non-negativity of `Σᵢ Σⱼ (aᵢ - aⱼ)²`. -/
+/-- **(Σᵢ aᵢ)² ≤ n · Σᵢ aᵢ²** — Cauchy-Schwarz with the constant vector,
+    delegated to Mathlib's `sq_sum_le_card_mul_sum_sq` (Chebyshev). -/
 lemma finset_sq_sum_le (s : Finset ℕ) (f : ℕ → ℝ) :
     (∑ i ∈ s, f i) ^ 2 ≤ s.card * ∑ i ∈ s, f i ^ 2 := by
-  induction s using Finset.induction_on with
-  | empty => simp
-  | insert ha ih =>
-    rename_i a s' _
-    simp only [Finset.sum_insert ha, Finset.card_insert_of_not_mem ha]
-    push_cast
-    have hnn : (0 : ℝ) ≤ ↑s'.card := Nat.cast_nonneg _
-    have hQ_nn : (0 : ℝ) ≤ ∑ i ∈ s', f i ^ 2 :=
-      Finset.sum_nonneg fun i _ => sq_nonneg _
-    nlinarith [sq_nonneg (f a - ∑ i ∈ s', f i),
-               sq_nonneg (∑ i ∈ s', f i),
-               mul_nonneg hnn (sq_nonneg (f a - ∑ i ∈ s', f i)),
-               mul_nonneg hnn hQ_nn]
+  exact_mod_cast sq_sum_le_card_mul_sum_sq (s := s) (f := f)
 
 /-! ## §5. The quantitative bound -/
 
@@ -430,15 +405,13 @@ theorem killingDefect_quantitative (L : Matrix V V ℝ) (c : ℕ → V) (m : ℕ
   have hQ_sum_bound :
       ε ^ m * |AffinityCharge L c m| ≤ ↑m * R ^ (m - 1) *
         ∑ k ∈ Finset.range m, |ProbabilityCurrent L pi_dist (c k) (c (k + 1))| := by
-    rw [div_eq_mul_inv] at hQ_le
-    calc ε ^ m * |AffinityCharge L c m|
-        ≤ ε ^ m * (↑m * R ^ (m - 1) *
-            ∑ k ∈ Finset.range m, |ProbabilityCurrent L pi_dist (c k) (c (k + 1))| *
-            (ε ^ m)⁻¹) :=
-          mul_le_mul_of_nonneg_left hQ_le hεm_pos.le
-      _ = ↑m * R ^ (m - 1) *
-            ∑ k ∈ Finset.range m, |ProbabilityCurrent L pi_dist (c k) (c (k + 1))| := by
-          field_simp
+    have hdiv : ↑m * R ^ (m - 1) *
+        (∑ k ∈ Finset.range m, |ProbabilityCurrent L pi_dist (c k) (c (k + 1))|) / ε ^ m *
+        ε ^ m =
+        ↑m * R ^ (m - 1) *
+        (∑ k ∈ Finset.range m, |ProbabilityCurrent L pi_dist (c k) (c (k + 1))|) :=
+      div_mul_cancel₀ _ hεm_pos.ne'
+    nlinarith [hQ_le, hεm_pos, hdiv, abs_nonneg (AffinityCharge L c m)]
   have hsum_sq_le : ∑ k ∈ Finset.range m,
       |ProbabilityCurrent L pi_dist (c k) (c (k + 1))| ^ 2 ≤
       ↑m * KillingDefect L pi_dist := by
