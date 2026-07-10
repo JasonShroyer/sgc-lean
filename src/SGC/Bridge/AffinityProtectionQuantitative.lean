@@ -337,6 +337,26 @@ lemma killingDefect_ge_cycle_sum (L : Matrix V V ℝ) (pi_dist : V → ℝ)
     _ = ↑m * KillingDefect L pi_dist := by
         rw [Finset.sum_const, Finset.card_range, nsmul_eq_mul]
 
+/-! ## §4b. Cauchy-Schwarz for finite sums -/
+
+/-- **(Σᵢ aᵢ)² ≤ n · Σᵢ aᵢ²** for any real sequence over a finset of size n.
+    Proved via the non-negativity of `Σᵢ Σⱼ (aᵢ - aⱼ)²`. -/
+lemma finset_sq_sum_le (s : Finset ℕ) (f : ℕ → ℝ) :
+    (∑ i ∈ s, f i) ^ 2 ≤ s.card * ∑ i ∈ s, f i ^ 2 := by
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert ha ih =>
+    rename_i a s' _
+    simp only [Finset.sum_insert ha, Finset.card_insert_of_not_mem ha]
+    push_cast
+    have hnn : (0 : ℝ) ≤ ↑s'.card := Nat.cast_nonneg _
+    have hQ_nn : (0 : ℝ) ≤ ∑ i ∈ s', f i ^ 2 :=
+      Finset.sum_nonneg fun i _ => sq_nonneg _
+    nlinarith [sq_nonneg (f a - ∑ i ∈ s', f i),
+               sq_nonneg (∑ i ∈ s', f i),
+               mul_nonneg hnn (sq_nonneg (f a - ∑ i ∈ s', f i)),
+               mul_nonneg hnn hQ_nn]
+
 /-! ## §5. The quantitative bound -/
 
 /-- **Quantitative protection bound (Phase G, G1)**:
@@ -429,14 +449,14 @@ theorem killingDefect_quantitative (L : Matrix V V ℝ) (c : ℕ → V) (m : ℕ
       _ ≤ ↑m * KillingDefect L pi_dist := killingDefect_ge_cycle_sum L pi_dist c m
   have hCS_sq : (∑ k ∈ Finset.range m,
       |ProbabilityCurrent L pi_dist (c k) (c (k + 1))|) ^ 2 ≤
-      ↑m * KillingDefect L pi_dist := by
-    have hCS := Finset.inner_mul_le_norm_sq_mul_norm_sq ℝ (Finset.range m)
-      (fun k => |ProbabilityCurrent L pi_dist (c k) (c (k + 1))|)
-      (fun _ => 1)
-    simp only [mul_one, Finset.sum_const, Finset.card_range, nsmul_eq_mul] at hCS
+      ↑m ^ 2 * KillingDefect L pi_dist :=
     calc (∑ k ∈ Finset.range m, |ProbabilityCurrent L pi_dist (c k) (c (k + 1))|) ^ 2
-        ≤ ↑m * ∑ k ∈ Finset.range m,
-            |ProbabilityCurrent L pi_dist (c k) (c (k + 1))| ^ 2 := by exact_mod_cast hCS
+        ≤ (Finset.range m).card * ∑ k ∈ Finset.range m,
+            |ProbabilityCurrent L pi_dist (c k) (c (k + 1))| ^ 2 :=
+          finset_sq_sum_le _ _
+      _ = ↑m * ∑ k ∈ Finset.range m,
+            |ProbabilityCurrent L pi_dist (c k) (c (k + 1))| ^ 2 := by
+          simp [Finset.card_range]
       _ ≤ ↑m * (↑m * KillingDefect L pi_dist) :=
           mul_le_mul_of_nonneg_left hsum_sq_le (Nat.cast_nonneg m)
       _ = ↑m ^ 2 * KillingDefect L pi_dist := by ring
@@ -460,11 +480,13 @@ theorem killingDefect_quantitative (L : Matrix V V ℝ) (c : ℕ → V) (m : ℕ
           ring
     _ ≤ ↑m ^ 2 * KillingDefect L pi_dist / ↑m := by
           apply div_le_div_of_nonneg_right hCS_sq (le_of_lt hm_pos)
-    _ = ↑m * KillingDefect L pi_dist := by field_simp; ring
+    _ = ↑m * KillingDefect L pi_dist := by field_simp
 
 /-! ## §6. Instantiation on the exotic lift -/
 
 section Instantiation
+
+open SGC.Bridge.ExoticPairs
 
 variable {W : Type*} [Fintype W] [DecidableEq W]
 
