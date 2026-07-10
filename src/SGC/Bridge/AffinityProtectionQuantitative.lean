@@ -466,20 +466,22 @@ theorem killingDefect_quantitative (L : Matrix V V ℝ) (c : ℕ → V) (m : ℕ
       ≤ (↑m * R ^ (m - 1) *
             ∑ k ∈ Finset.range m, |ProbabilityCurrent L pi_dist (c k) (c (k + 1))|) ^ 2 /
           (↑m ^ 3 * R ^ (2 * (m - 1))) := by
-          apply div_le_div_of_nonneg_right _ (mul_nonneg (pow_nonneg hm_pos.le 3)
-            (pow_nonneg (pow_nonneg (le_of_lt hR) _) 2))
-          apply sq_le_sq'
-          · linarith [mul_nonneg (mul_nonneg hm_pos.le (pow_nonneg (le_of_lt hR) _)) hS_nn]
-          · exact hQ_sum_bound
+          have hdenom_pos : 0 < ↑m ^ 3 * R ^ (2 * (m - 1)) :=
+            mul_pos (pow_pos hm_pos 3) (pow_pos hR _)
+          rw [div_le_div_right hdenom_pos]
+          have hlhs_nn : 0 ≤ ε ^ m * |AffinityCharge L c m| := mul_nonneg hεm_pos.le hQ_abs_pos.le
+          have hrhs_nn : 0 ≤ ↑m * R ^ (m - 1) *
+              ∑ k ∈ Finset.range m, |ProbabilityCurrent L pi_dist (c k) (c (k + 1))| :=
+            mul_nonneg (mul_nonneg hm_pos.le (pow_nonneg (le_of_lt hR) _)) hS_nn
+          exact sq_le_sq'' (by linarith) hQ_sum_bound
     _ = (∑ k ∈ Finset.range m, |ProbabilityCurrent L pi_dist (c k) (c (k + 1))|) ^ 2 / ↑m := by
-          have hRm2_pos : 0 < R ^ (2 * (m - 1)) := pow_pos hR _
-          have hm3_pos : (0 : ℝ) < ↑m ^ 3 := pow_pos hm_pos 3
-          have hpow_eq : R ^ ((m - 1) * 2) = R ^ (2 * (m - 1)) := by
-            congr 1; ring
-          rw [div_eq_div_iff (mul_pos hm3_pos hRm2_pos) hm_pos, mul_pow, hpow_eq]
+          have hRm2_ne : R ^ (2 * (m - 1)) ≠ 0 := (pow_pos hR _).ne'
+          have hm3_ne : (↑m : ℝ) ^ 3 ≠ 0 := (pow_pos hm_pos 3).ne'
+          have hm_ne : (↑m : ℝ) ≠ 0 := hm_pos.ne'
+          field_simp [hRm2_ne, hm3_ne, hm_ne]
           ring
     _ ≤ ↑m ^ 2 * KillingDefect L pi_dist / ↑m := by
-          apply div_le_div_of_nonneg_right hCS_sq (le_of_lt hm_pos)
+          exact (div_le_div_right hm_pos).mpr hCS_sq
     _ = ↑m * KillingDefect L pi_dist := by field_simp
 
 /-! ## §6. Instantiation on the exotic lift -/
