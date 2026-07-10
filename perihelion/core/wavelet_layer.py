@@ -157,11 +157,10 @@ class WaveletNoiseInjector:
         
         # Project noise onto singular vectors
         if self._cached_Vh is not None:
-            noise_flat = noise.flatten()
-            if len(noise_flat) != self._cached_Vh.shape[1]:
+            if noise.dim() != 2 or noise.shape[-1] != self._cached_Vh.shape[-1]:
                 return 0.01
             
-            coeffs = self._cached_Vh @ noise_flat
+            coeffs = (noise @ self._cached_Vh.conj().transpose(-2, -1)).norm(dim=0)
             noise_energy = (coeffs ** 2).sum().item()
             if noise_energy < 1e-10:
                 return 0.01

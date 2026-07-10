@@ -1,0 +1,4 @@
+﻿[cantor-layer-wip ceb7c5f] Cantor Shift Tower: Moore leg of the fluid-computation triangle. Symbolic shift as exact (eps=0) strongly-lumpable SGC RG tower on cylinder truncations: shiftTower_quotient_realizes (renormalization = shift), shiftTower_defect_zero, generator form, truncate_pathShift semiconjugacy with the PathSpace = Z_p Cantor shift (zero axioms, definitional). Audit section 13: all pure [propext, Classical.choice, Quot.sound]. Full tree 3240 jobs, audit 3178 jobs, zero errors, zero sorries. Decision record 0011.
+ 4 files changed, 397 insertions(+)
+ create mode 100644 decisions/0011-cantor-shift-tower-moore-leg.md
+ create mode 100644 src/SGC/Bridge/CantorShiftTower.lean

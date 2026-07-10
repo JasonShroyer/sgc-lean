@@ -1,0 +1,1 @@
+﻿src\SGC\Bridge\SchnakenbergSpan.lean:6:0: error: object file 'C:\Lean4 Projects\.lake\build\lib\lean\SGC\Bridge\SchnakenbergIndependence.olean' of module SGC.Bridge.SchnakenbergIndependence does not exist

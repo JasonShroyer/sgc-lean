@@ -1,0 +1,9 @@
+﻿info: src/SGC/Foundations/AxiomAudit.lean:752:0: 'SGC.Approximate.trajectory_norm_bound_uniform' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:755:0: 'SGC.Approximate.trajectory_closure_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:758:0: 'SGC.Approximate.vertical_error_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:761:0: 'SGC.Approximate.PropagatorDiff_eq_proj_trajectory_diff' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:764:0: 'SGC.Approximate.propagator_approximation_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:767:0: 'SGC.Approximate.spectral_stability_reversible' depends on axioms: [propext,
+info: src/SGC/Foundations/AxiomAudit.lean:770:0: 'SGC.Approximate.NCD_uniform_error_bound' depends on axioms: [propext,
+ SGC.Approximate.NCD_integral_bound]
+Build completed successfully (3162 jobs).

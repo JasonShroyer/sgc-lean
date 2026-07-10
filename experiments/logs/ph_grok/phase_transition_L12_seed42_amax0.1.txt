@@ -1,0 +1,30 @@
+================================================================================
+RECURRENT PHASE TRANSITION (Leg 3)  --  alpha in [0, 0.1] (11 pts)  L=12 seed=42
+  H_snap: k* holds high then SNAPS to fundamental; b1 jumps 0->1 at same alpha* (sharp)
+  H_smooth: k* drifts, b1 creeps up (crossover)   |   H_cap: alpha* set by memory ~alpha^L
+================================================================================
+
+  device=cuda  iters=2500  reader tau1*=0.394
+
+   alpha  testacc   k*  k*pwr%  b1full  b1dom   wind  topH1  cover
+    0.00    0.010   36    10.4       0      1   -1.0  0.209   97/97
+    0.01    0.153    1    45.7       1      1   +0.0  0.461   97/97
+    0.02    0.164    1    51.6       1      1   -1.0  0.528   97/97
+    0.03    0.206    1    53.3       2      0   -1.0  0.685   97/97
+    0.04    0.306    1    54.2       1      1   -1.0  0.875   97/97
+    0.05    0.418    1    46.8       1      1   -1.0  0.911   97/97
+    0.06    0.761    2    29.2       1      1   -3.0  0.697   97/97
+    0.07    0.890    1    27.1       1      1   -1.0  0.695   97/97
+    0.08    0.949    1    27.4       2      1   -1.0  0.704   97/97
+    0.09    0.966    1    23.4       2      1   -1.0  0.643   97/97
+    0.10    0.975    1    25.1       3      1   -1.0  0.688   97/97
+
+================================================================================
+  onset alpha* (acc>=0.5): 0.06
+  largest single-step acc jump: +0.34 between alpha=0.05 -> 0.06  (sharp if one step carries most of the rise)
+  sub-onset regime: 0/6 alphas show a COHERENT high carrier (k*>=6 & power>=30%). dom-mode power below onset = [0.1, 0.46, 0.52, 0.53, 0.54, 0.47]
+    -> many coherent-high => supports H_snap 'ghost sector'; near-zero/noisy => supports Devin 'incoherent blob below onset'.
+  b1>=1 first at alpha=0.01 (acc there=0.15); k* there=1  -> ring appears WITH task competence
+  CAPACITY CONTROL: rerun with a different --L; if alpha* tracks 1-c/L it is a memory
+  horizon (H_cap), not a universal critical point. (sharp vs smooth is read off the table)
+================================================================================

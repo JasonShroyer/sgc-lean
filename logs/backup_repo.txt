@@ -1,0 +1,17 @@
+﻿No oversized files.
+Credential found for user: JasonShroyer
+Repo already exists (422) - continuing.
+Remote origin added.
+powershell : git : To https://github.com/JasonShroyer/sgc-second-brain.git
+At line:1 char:1
++ powershell -ExecutionPolicy Bypass -File "C:\Lean4 Projects\scripts\c ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (git : To https:...econd-brain.git:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+At C:\Lean4 Projects\scripts\create_backup_repo.ps1:35 char:1
++ git push -u origin master 2>&1 | Select-Object -Last 5
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (To https://gith...econd-brain.git:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

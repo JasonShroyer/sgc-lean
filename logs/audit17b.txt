@@ -1,0 +1,16 @@
+﻿
+ΓÜá [3149/3253] Replayed SGC.Bridge.SchnakenbergSpan
+warning: src/SGC/Bridge/SchnakenbergSpan.lean:71:0: automatically included section variable(s) unused in theorem `SGC.Bridge.SchnakenbergSpan.antisymm_diag_zero`:
+warning: src/SGC/Bridge/CanonicalWavelet.lean:416:0: automatically included section variable(s) unused in theorem `SGC.Bridge.CanonicalWavelet.tight_frame_representation_error_zero`:
+info: src/SGC/Foundations/AxiomAudit.lean:701:0: 'SGC.Bridge.DefectHorizonBridge.total_error_pythagorean' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:766:0: 'SGC.Approximate.vertical_error_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:778:0: 'SGC.Approximate.NCD_uniform_error_bound' depends on axioms: [propext,
+info: src/SGC/Foundations/AxiomAudit.lean:939:0: 'SGC.Bridge.SchnakenbergIndependence.chordCurrent_apply_chord' depends on axioms: [propext,
+info: src/SGC/Foundations/AxiomAudit.lean:942:0: 'SGC.Bridge.SchnakenbergIndependence.triCurrent_chord_linearIndependent' depends on axioms: [propext,
+info: src/SGC/Foundations/AxiomAudit.lean:945:0: 'SGC.Bridge.SchnakenbergSpan.cycleSpace_decomposition' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:948:0: 'SGC.Bridge.SchnakenbergSpan.cycleSpace_eq_span' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:951:0: 'SGC.Bridge.SchnakenbergSpan.finrank_cycleSpace_eq_card_chord' depends on axioms: [propext,
+info: src/SGC/Foundations/AxiomAudit.lean:955:0: 'SGC.Bridge.SchnakenbergSpan.two_mul_finrank_cycleSpace' depends on axioms: [propext, Classical.choice, Quot.sound]
+Build completed successfully (3253 jobs).
+
+

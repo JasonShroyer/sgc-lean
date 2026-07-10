@@ -1,0 +1,2 @@
+﻿[cantor-layer-wip 3188327] Phase B axiom kills: HeatKernel_semigroup (Matrix.exp_add_of_commute), all_ones_norm_sq_pos (sum_pos + RCLike cast), inner_pi_orthogonal_decomp (C-Pythagoras via CodeSubspace self_adjoint+idempotent, gains hpi, no consumers existed). First two pure kernel-clean; third reduced to interface axioms only. Audit 12b added; audit 3166 jobs, full tree 3239 jobs, zero errors.
+ 3 files changed, 72 insertions(+), 12 deletions(-)

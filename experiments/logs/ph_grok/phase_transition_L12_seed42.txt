@@ -1,0 +1,30 @@
+================================================================================
+RECURRENT PHASE TRANSITION (Leg 3)  --  alpha-gate sweep  L=12 seed=42
+  H_snap: k* holds high then SNAPS to fundamental; b1 jumps 0->1 at same alpha* (sharp)
+  H_smooth: k* drifts, b1 creeps up (crossover)   |   H_cap: alpha* set by memory ~alpha^L
+================================================================================
+
+  device=cuda  iters=2500  reader tau1*=0.394
+
+   alpha  testacc   k*  k*pwr%  b1full  b1dom   wind  topH1  cover
+    0.00    0.010   36    10.4       0      1   -1.0  0.209   97/97
+    0.10    0.975    1    25.1       3      1   -1.0  0.688   97/97
+    0.20    0.999    2    18.8       4      1   -3.0  0.651   97/97
+    0.30    1.000    2    16.7       3      1   -1.0  0.639   97/97
+    0.40    1.000    2    15.5       4      1   -1.0  0.656   97/97
+    0.50    1.000    2    14.6       4      1   -1.0  0.624   97/97
+    0.60    1.000    2    15.0       4      1   -1.0  0.562   97/97
+    0.70    1.000    2    17.1       2      1   -1.0  0.636   97/97
+    0.80    1.000    2    20.0       1      1   -2.0  0.566   97/97
+    0.90    1.000    2    18.7       2      1   -1.0  0.651   97/97
+    1.00    1.000    2    20.0       1      1   -2.0  0.629   97/97
+
+================================================================================
+  onset alpha* (acc>=0.5): 0.1
+  largest single-step acc jump: +0.97 between alpha=0.00 -> 0.10  (sharp if one step carries most of the rise)
+  sub-onset regime: 0/1 alphas show a COHERENT high carrier (k*>=6 & power>=30%). dom-mode power below onset = [0.1]
+    -> many coherent-high => supports H_snap 'ghost sector'; near-zero/noisy => supports Devin 'incoherent blob below onset'.
+  b1>=1 first at alpha=0.10 (acc there=0.98); k* there=1  -> ring appears WITH task competence
+  CAPACITY CONTROL: rerun with a different --L; if alpha* tracks 1-c/L it is a memory
+  horizon (H_cap), not a universal critical point. (sharp vs smooth is read off the table)
+================================================================================

@@ -1,0 +1,7 @@
+﻿src\SGC\Bridge\SchnakenbergIndependence.lean:50:29: error: unexpected token 'omit'; expected 'lemma'
+src\SGC\Bridge\SchnakenbergIndependence.lean:81:0: warning: automatically included section variable(s) unused in theorem `SGC.Bridge.SchnakenbergIndependence.chordCurrent_apply_chord`:
+  [Fintype V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`

@@ -1,0 +1,18 @@
+﻿=== 0.1 TIMEZONE + NTP ===
+The command completed successfully.
+Sending resync command to local computer
+The command completed successfully.
+TZ now: Mountain Standard Time | Time now: 07/09/2026 06:40:09
+=== 0.2 POWER PLAN ===
+Power Scheme GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c  (High performance)=== 0.3 LONG PATHS ===
+LongPathsEnabled: 1
+=== 0.4 WINDOWS UPDATE ACTIVE HOURS ===
+ActiveHours: 8-2
+=== 0.5 WORK ROOT ===
+C:\forge tree: datasets, runs, tools
+=== 0.6 DEFENDER EXCLUSIONS ===
+Exclusions: C:\forge; C:\Users\jason\miniconda3
+=== 0.7 DIRECT LINK STATIC IP ===
+Ethernet: 169.254.62.34/16
+Ethernet: 10.10.10.2/30
+=== PHASE0 DONE ===

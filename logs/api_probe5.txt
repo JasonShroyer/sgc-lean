@@ -1,0 +1,16 @@
+﻿=== funLeft_comp ===
+\Algebra\Module\Equiv\Basic.lean:773: theorem funLeft_comp (f₁ : n → p) (f₂ : m → n) :
+\Algebra\Module\Equiv\Basic.lean:796: funext fun i ↦ by rw [id_apply, ← funLeft_comp, Equiv.symm_comp_self, LinearMap.funLeft_id])
+\Algebra\Module\Equiv\Basic.lean:798: funext fun i ↦ by rw [id_apply, ← funLeft_comp, Equiv.self_comp_symm, LinearMap.funLeft_id])
+=== funLeft_id ===
+\Algebra\Module\Equiv\Basic.lean:770: theorem funLeft_id (g : n → M) : funLeft R M _root_.id g = g :=
+\Algebra\Module\Equiv\Basic.lean:796: funext fun i ↦ by rw [id_apply, ← funLeft_comp, Equiv.symm_comp_self, LinearMap.funLeft_id])
+\Algebra\Module\Equiv\Basic.lean:798: funext fun i ↦ by rw [id_apply, ← funLeft_comp, Equiv.self_comp_symm, LinearMap.funLeft_id])
+=== theorem castHom_comp|lemma castHom_comp ===
+\Data\ZMod\Basic.lean:1128: lemma castHom_comp {m d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
+=== range_comp_le_range ===
+\Algebra\Algebra\NonUnitalSubalgebra.lean:476: theorem range_comp_le_range (f : A →ₙₐ[R] B) (g : B →ₙₐ[R] C) :
+\Algebra\Algebra\Subalgebra\Basic.lean:541: theorem range_comp_le_range (f : A →ₐ[R] B) (g : B →ₐ[R] C) : (g.comp f).range ≤ g.range :=
+\Algebra\Category\ModuleCat\Subobject.lean:64: convert LinearMap.range_comp_le_range (ofMkLEMk _ _ h).hom (ofHom T.subtype).hom
+=== funLeft_apply ===
+\Algebra\Module\Equiv\Basic.lean:766: theorem funLeft_apply (f : m → n) (g : n → M) (i : m) : funLeft R M f g i = g (f i) :=

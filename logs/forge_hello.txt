@@ -1,0 +1,8 @@
+﻿ssh : Warning: Permanently added '100.123.223.27' (ED25519) to the list of known hosts.
+At line:1 char:101
++ ... lyContinue; ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Warning: Perman...of known hosts.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+

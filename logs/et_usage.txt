@@ -1,0 +1,6 @@
+﻿L63: to smaller time intervals. This is because HeatKernel_opNorm_bound provides
+L67: lemma HeatKernel_opNorm_bound_mono (L : Matrix V V â„) (pi_dist : V â†’ â„) (hÏ€ : âˆ€ v, 0 < pi_dist v)
+L72: obtain âŸ¨B, hB_pos, hB_boundâŸ© := HeatKernel_opNorm_bound L pi_dist hÏ€ T hT
+L98: obtain âŸ¨B_full, hB_full_pos, hB_full_boundâŸ© := HeatKernel_opNorm_bound L pi_dist hÏ€ T_ref hT_ref
+L100: HeatKernel_opNorm_bound (CoarseGeneratorMatrix L P pi_dist hÏ€) pi_dist hÏ€ T_ref hT_ref
+L153: have h_duhamel := Horizontal_Duhamel_integral_bound L P pi_dist hÏ€ Îµ hÎµ hL t ht_pos fâ‚€ hfâ‚€

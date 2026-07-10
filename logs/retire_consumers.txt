@@ -1,0 +1,107 @@
+﻿SGC.lean:194: -- the axioms HeatKernel_opNorm_bound and Horizontal_Duhamel_integral_bound
+SGC\Bridge\CanonicalWaveletFisherRao.lean:108: `spectral_stability_bound` machinery in
+SGC\Bridge\DefectHorizonBridge.lean:17: declared axioms (`HeatKernel_opNorm_bound`, `Horizontal_Duhamel_integral_bound`).
+SGC\Bridge\DefectHorizonBridge.lean:43: two axioms that `trajectory_closure_bound` consumes: the existential constants
+SGC\Bridge\DefectHorizonBridge.lean:44: `B`, `B²` of `HeatKernel_opNorm_bound` and `Horizontal_Duhamel_integral_bound`
+SGC\Bridge\DefectHorizonBridge.lean:46: (`trajectory_closure_bound_explicit`) restates the supersession in
+SGC\Bridge\DefectHorizonBridge.lean:57: third axiom, `Duhamel_integral_bound`, with no MVT and no side conditions.
+SGC\Bridge\DefectHorizonBridge.lean:438: /-- **Supersedes `HeatKernel_opNorm_bound`, quantitatively**: the heat kernel's
+SGC\Bridge\DefectHorizonBridge.lean:454: theorem HeatKernel_opNorm_bound_proved (L : Matrix V V ℝ) (T : ℝ) (hT : 0 ≤ T) :
+SGC\Bridge\DefectHorizonBridge.lean:478: /-- **The Defect-Horizon Bound** (supersedes `Horizontal_Duhamel_integral_bound`,
+SGC\Bridge\DefectHorizonBridge.lean:525: theorem trajectory_closure_bound_explicit (L : Matrix V V ℝ) (P : Partition V)
+SGC\Bridge\DefectHorizonBridge.lean:553: /-! ## §6. The vertical companion: superseding `Duhamel_integral_bound` -/
+SGC\Bridge\DefectHorizonBridge.lean:648: /-- **The vertical defect-horizon bound** (supersedes `Duhamel_integral_bound`,
+SGC\Bridge\DefectHorizonBridge.lean:674: superseded `Duhamel_integral_bound`): leakage out of the coarse subspace is
+SGC\Bridge\DiscreteFluidDynamics.lean:419: with the SGC validity horizon `T* ~ 1/ε` (`trajectory_closure_bound`, Approximate.lean)
+SGC\Bridge\ReasoningBarriers.lean:196: trajectory_closure_bound_explicit pi_dist hπ L P ε hL t ht f₀ hf₀
+SGC\Bridge\RepresentedStabilityFlowDecay.lean:13: and Phase 4B (triangle bound) with `spectral_stability_bound`
+SGC\Bridge\RepresentedStabilityFlowDecay.lean:36: Phase 4A + 4B + `spectral_stability_bound` + the Phase 3A
+SGC\Bridge\RepresentedStabilityFlowDecay.lean:39: beyond what `spectral_stability_bound` already requires; the sole
+SGC\Bridge\RepresentedStabilityFlowDecay.lean:51: * `spectral_stability_bound` (core SGC theorem, `Spectral/Defs.lean`)
+SGC\Bridge\RepresentedStabilityFlowDecay.lean:80: `spectral_stability_bound` verbatim:
+SGC\Bridge\RepresentedStabilityFlowDecay.lean:91: `spectral_stability_bound` with `pi_dist := lift ψ`,
+SGC\Bridge\RepresentedStabilityFlowDecay.lean:122: exact spectral_stability_bound h_irred h_gap_pos hL1 hK1 hH_const
+SGC\Bridge\RepresentedStabilityFlowDecay.lean:177: spectral_stability_bound h_irred h_gap_pos hL1 hK1 hH_const
+SGC\Bridge\RepresentedStabilityFlowDecay.lean:215: constant `C` is packaged inside `spectral_stability_bound` (which
+SGC\Foundations\AxiomAudit.lean:651: mention `SGC.Approximate.HeatKernel_opNorm_bound`,
+SGC\Foundations\AxiomAudit.lean:652: `SGC.Approximate.Horizontal_Duhamel_integral_bound`, or
+SGC\Foundations\AxiomAudit.lean:653: `SGC.Approximate.Duhamel_integral_bound`, the three axioms whose statements they
+SGC\Foundations\AxiomAudit.lean:671: #print axioms SGC.Bridge.DefectHorizonBridge.HeatKernel_opNorm_bound_proved
+SGC\Foundations\AxiomAudit.lean:676: -- ε-form in IsApproxLumpable vocabulary (supersedes Horizontal_Duhamel_integral_bound).
+SGC\Foundations\AxiomAudit.lean:677: #print axioms SGC.Bridge.DefectHorizonBridge.trajectory_closure_bound_explicit
+SGC\Foundations\AxiomAudit.lean:685: -- ε-form in IsApproxLumpable vocabulary (supersedes Duhamel_integral_bound).
+SGC\Foundations\AxiomAudit.lean:698: name `spectral_stability_bound` (`Spectral/Defs.lean`): a positive spectral gap
+SGC\Foundations\AxiomAudit.lean:717: #print axioms SGC.Spectral.spectral_stability_bound
+SGC\InformationGeometry\FisherKL.lean:29: **SGC Bridge**: This is the learning-side sibling of `trajectory_closure_bound` -
+SGC\InformationGeometry\FisherKL.lean:747: This is the **learning-side sibling of trajectory_closure_bound**.
+SGC\InformationGeometry\FisherKL.lean:884: - Learning-side sibling of trajectory_closure_bound
+SGC\InformationGeometry\FisherKL.lean:902: - Validity horizon ↔ trajectory_closure_bound
+SGC\InformationGeometry\ThermodynamicBridge.lean:222: - trajectory_closure_bound (SGC)
+SGC\Observables\ExplorationTime.lean:13: The exploration time bound falls straight out of `trajectory_closure_bound`:
+SGC\Observables\ExplorationTime.lean:40: - SGC `trajectory_closure_bound` (Approximate.lean)
+SGC\Observables\ExplorationTime.lean:63: Key lemma: if we have HeatKernel bounds on [0, T_ref], then trajectory_closure_bound
+SGC\Observables\ExplorationTime.lean:69: `trajectory_closure_bound_explicit` — `‖·‖ ≤ t·ε·e^{t(‖L−D‖_π+ε)}·‖f₀‖` pointwise —
+SGC\Observables\ExplorationTime.lean:72: lemma trajectory_closure_bound_at_ref
+SGC\Observables\ExplorationTime.lean:88: have hkey := SGC.Bridge.DefectHorizonBridge.trajectory_closure_bound_explicit
+SGC\Observables\ExplorationTime.lean:116: 2. Get uniform C from trajectory_closure_bound_at_ref
+SGC\Observables\ExplorationTime.lean:135: trajectory_closure_bound_at_ref L P pi_dist hπ ε (le_of_lt hε) hL T_ref hT_ref_nonneg
+SGC\Observables\ExplorationTime.lean:291: - C is the trajectory closure constant (from trajectory_closure_bound) -/
+SGC\Observables\ThermodynamicBounds.lean:78: -- where ε = ‖D‖. This is proven in `trajectory_closure_bound`.
+SGC\Observables\TopologicalPersistence.lean:238: ↓ (trajectory_closure_bound)
+SGC\Observables\ValidityHorizon.lean:21: For a system with leakage defect ε, the `trajectory_closure_bound` gives error O(ε·t).
+SGC\Observables\ValidityHorizon.lean:29: - SGC `trajectory_closure_bound` (Approximate.lean)
+SGC\Renormalization\Approximate.lean:18: - `trajectory_closure_bound`: Duhamel-style bound on trajectory deviation
+SGC\Renormalization\Approximate.lean:310: 1. **Trajectory Closure** (`trajectory_closure_bound`): Prediction error grows as ε·t
+SGC\Renormalization\Approximate.lean:324: because it is based on `trajectory_closure_bound`, not spectral matching. -/
+SGC\Renormalization\Approximate.lean:787: `SGC.Bridge.DefectHorizonBridge.HeatKernel_opNorm_bound_proved`, which proves
+SGC\Renormalization\Approximate.lean:792: axiom HeatKernel_opNorm_bound (L : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+SGC\Renormalization\Approximate.lean:798: lemma trajectory_norm_bound_uniform (L : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+SGC\Renormalization\Approximate.lean:801: obtain ⟨B, hB_pos, hB⟩ := HeatKernel_opNorm_bound L pi_dist hπ T hT
+SGC\Renormalization\Approximate.lean:846: for the legacy `trajectory_closure_bound` below; new code should use the bridge
+SGC\Renormalization\Approximate.lean:848: axiom Duhamel_integral_bound (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+SGC\Renormalization\Approximate.lean:880: This is "standard library debt" parallel to `Duhamel_integral_bound`.
+SGC\Renormalization\Approximate.lean:883: `SGC.Bridge.DefectHorizonBridge.trajectory_closure_bound_explicit`, which
+SGC\Renormalization\Approximate.lean:890: `trajectory_closure_bound` below; new code should use the bridge theorem. -/
+SGC\Renormalization\Approximate.lean:891: axiom Horizontal_Duhamel_integral_bound (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+SGC\Renormalization\Approximate.lean:967: theorem trajectory_closure_bound
+SGC\Renormalization\Approximate.lean:974: -- Get UNIFORM operator norm bounds from HeatKernel_opNorm_bound (independent of f₀)
+SGC\Renormalization\Approximate.lean:975: obtain ⟨B_full, hB_full_pos, hB_full_opNorm⟩ := HeatKernel_opNorm_bound L pi_dist hπ t ht
+SGC\Renormalization\Approximate.lean:977: HeatKernel_opNorm_bound (CoarseGeneratorMatrix L P pi_dist hπ) pi_dist hπ t ht
+SGC\Renormalization\Approximate.lean:987: -- The Duhamel-MVT bound via Horizontal_Duhamel_integral_bound
+SGC\Renormalization\Approximate.lean:1026: have h_duhamel := Horizontal_Duhamel_integral_bound L P pi_dist hπ ε hε hL t ht_pos f₀ hf₀
+SGC\Renormalization\Approximate.lean:1048: theorem vertical_error_bound
+SGC\Renormalization\Approximate.lean:1057: obtain ⟨B_L, hB_L_pos, hB_L_bound⟩ := trajectory_norm_bound_uniform L pi_dist hπ f₀ t ht
+SGC\Renormalization\Approximate.lean:1096: have h_duhamel := Duhamel_integral_bound L P pi_dist hπ ε hε hL t ht_pos f₀ hf₀
+SGC\Renormalization\Approximate.lean:1138: The standard `vertical_error_bound` gives error O(t·ε), which is useless for times t ~ 1/ε.
+SGC\Renormalization\Approximate.lean:1267: Compare to `vertical_error_bound` which gives O(ε·t) (grows linearly in time). -/
+SGC\Renormalization\Approximate.lean:1283: obtain ⟨B_traj, hB_traj_pos, hB_traj_bound⟩ := trajectory_norm_bound_uniform L pi_dist hπ f₀ t ht
+SGC\Renormalization\Approximate.lean:1411: axiom PropagatorDiff_eq_proj_trajectory_diff (L : Matrix V V ℝ) (P : Partition V)
+SGC\Renormalization\Approximate.lean:1425: - For any coarse u₀, `trajectory_closure_bound` gives ‖Π e^{tL} u₀ - e^{t L̄} u₀‖ ≤ δ·‖u₀‖
+SGC\Renormalization\Approximate.lean:1431: theorem propagator_approximation_bound
+SGC\Renormalization\Approximate.lean:1437: -- Key insight: PropagatorDiff f = Π(e^{tL} (Π f) - e^{tL̄} (Π f)) by PropagatorDiff_eq_proj_trajectory_diff
+SGC\Renormalization\Approximate.lean:1438: -- By Π contraction and trajectory_closure_bound (UNIFORM form):
+SGC\Renormalization\Approximate.lean:1441: -- Get the UNIFORM constant from trajectory_closure_bound (independent of f₀)
+SGC\Renormalization\Approximate.lean:1442: obtain ⟨C_traj, hC_traj_pos, h_traj_uniform⟩ := trajectory_closure_bound L P pi_dist hπ ε hε hL t ht
+SGC\Renormalization\Approximate.lean:1458: -- Apply the UNIFORM trajectory_closure_bound to g (which is coarse)
+SGC\Renormalization\Approximate.lean:1464: rw [PropagatorDiff_eq_proj_trajectory_diff]
+SGC\Renormalization\Approximate.lean:1482: - Use `trajectory_closure_bound` instead for valid dynamical bounds
+SGC\Renormalization\Approximate.lean:1484: The trajectory-based results (`trajectory_closure_bound`, `NCD_uniform_error_bound`)
+SGC\Renormalization\Approximate.lean:1505: `trajectory_closure_bound` theorem which provides valid dynamical bounds.
+SGC\Renormalization\Approximate.lean:1532: **For non-reversible systems**: Use `trajectory_closure_bound` instead. This provides
+SGC\Renormalization\Approximate.lean:1538: theorem spectral_stability_reversible
+SGC\Renormalization\Approximate.lean:1548: -- Combine propagator_approximation_bound with Weyl_inequality_pi
+SGC\Renormalization\Approximate.lean:1549: obtain ⟨C_prop, hC_prop, h_prop_bound⟩ := propagator_approximation_bound L P pi_dist hπ ε hε hL t ht
+SGC\Renormalization\Approximate.lean:1569: systems exhibit uniform-in-time spectral stability (`NCD_spectral_stability`).
+SGC\Renormalization\Approximate.lean:1582: - `spectral_stability`: Standard spectral stability with O(ε·t) error ✓
+SGC\Renormalization\Approximate.lean:1585: - `NCD_spectral_stability`: Uniform-in-time spectral stability ✗
+SGC\Renormalization\Lumpability.lean:569: **For non-reversible systems**: Use `trajectory_closure_bound` in `Approximate.lean`,
+SGC\Renormalization\Lumpability.lean:583: `SGC.Renormalization.Approximate.trajectory_closure_bound`. We found that static
+SGC\Renormalization\Lumpability.lean:589: 2. Proves `trajectory_closure_bound` via Duhamel's principle (O(ε·t) error)
+SGC\Renormalization\Lumpability.lean:590: 3. Proves `spectral_stability` via Weyl inequality (eigenvalue tracking)
+SGC\Renormalization\Lumpability.lean:704: **For non-reversible systems**: Use `trajectory_closure_bound` instead, which
+SGC\Spectral\Defs.lean:17: **NOTE**: The main theorem `spectral_stability_bound` uses a **monolithic proof
+SGC\Spectral\Defs.lean:151: **Spectral Stability Bound** (canonical name: `spectral_stability_bound`)
+SGC\Spectral\Defs.lean:160: theorem spectral_stability_bound
+SGC\Thermodynamics\EntropyProduction.lean:464: 3. Trajectory bound: ‖fine - coarse‖₂ ≤ ε · t · C (from trajectory_closure_bound)
+SGC\Thermodynamics\EntropyProduction.lean:589: Given a trajectory constant C_traj from `trajectory_closure_bound`, the hidden
+SGC\Thermodynamics\EntropyProduction.lean:611: 1. `trajectory_closure_bound` ⇒ trajectories differ by O(ε·t) in ‖·‖_π

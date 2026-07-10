@@ -1,0 +1,38 @@
+﻿=== COUNTS ===
+concepts: 992
+code pages: 254
+candidate concepts: 0
+candidate entities: 0
+applied: 0
+extracts(md): 251
+=== LIKELY-JUNK CONCEPTS (no hyphen AND <=6 chars) ===
+count: 160
+actual, alpha, anti, apply, axiom, axioms, based, before, beta, betti, block, bound, bridge, brief, camera, cantor, cdot, chain, circle, claim, class, coarse, code, color, const, cost, custom, cycle, decay, defect, degree, delta, deriv, diff, disk, dist, docs, down, drives, dsqrt, edge, edges, else, energy, engine, epoch, error, escape, exact, file, files, filter, finset, fisher, float, flow, flows, fluid, flux, form, forman, frac, frame, from, func, gain, gate, gauge, graph, groups, half, have, hidden, honest, import, index, inner, input, json, kernel
+=== DASHBOARDS ===
+contradictions.md  (0.5 KB)
+index.md  (0.9 KB)
+open-questions.md  (33.6 KB)
+reading-log.md  (3.5 KB)
+recent-sources.md  (6 KB)
+research-map.md  (12 KB)
+source-guides.md  (0.6 KB)
+source-sessions.md  (0.6 KB)
+timeline.md  (0.5 KB)
+=== GRAPH ===
+graph.json size KB: 10798.1
+top-level keys: generatedAt, nodes, edges, hyperedges, communities, sources, pages
+nodes: 2004
+edges: 6712
+=== LOG TAIL ===
+- # Auto-Promotion Run
+- 
+- - started: 2026-06-13T12:02:04.427Z
+- - finished: 2026-06-13T12:02:04.491Z
+- - mode: applied
+- - promoted: 0
+- - evaluated: 0
+- 
+- | page | decision | score | reasons |
+- | --- | --- | --- | --- |
+- 
+

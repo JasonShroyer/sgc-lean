@@ -1,0 +1,6 @@
+﻿=== theorem mul_pred|lemma mul_pred ===
+=== theorem mul_sub_one|lemma mul_sub_one ===
+\Algebra\Ring\Defs.lean:335: theorem mul_sub_one (a b : α) : a * (b - 1) = a * b - a := by rw [mul_sub, mul_one]
+=== protected theorem mul_sub\b|theorem Nat.mul_sub\b ===
+\Data\ENNReal\Operations.lean:422: protected theorem mul_sub (h : 0 < c → c < b → a ≠ ∞) : a * (b - c) = a * b - a * c := by
+\Data\Matrix\Mul.lean:512: protected theorem mul_sub (M : Matrix m n α) (N N' : Matrix n o α) :

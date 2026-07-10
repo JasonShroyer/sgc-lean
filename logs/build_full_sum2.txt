@@ -1,0 +1,4 @@
+﻿ERRORS=1
+warning: src/SGC/Bridge/CanonicalWavelet.lean:416:0: automatically included section variable(s) unused in theorem `SGC.Bridge.CanonicalWavelet.tight_frame_representation_error_zero`:
+Γ£ö [3238/3239] Built SGC (7.6s)
+Build completed successfully (3239 jobs).

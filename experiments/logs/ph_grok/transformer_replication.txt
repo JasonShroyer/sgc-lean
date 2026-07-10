@@ -1,0 +1,21 @@
+==============================================================================
+TRANSFORMER REPLICATION  --  carrier-frequency law across seeds 42-45
+==============================================================================
+
+  per-seed readout (identical reader, tau1*=0.394):
+  seed 42
+    embed      full_b1=0  dom_k*=31 (winding -31.0)  k<=4_b1=1  PR=7.3  keys=k31,k6,k22,k32,k8  topH1=0.129
+    resid@=    full_b1=0  dom_k*=31 (winding -0.0)  k<=4_b1=1  PR=4.7  keys=k31,k6,k22,k32,k8  topH1=0.202
+  seed 43
+    embed      full_b1=0  dom_k*=38 (winding -38.0)  k<=4_b1=1  PR=4.4  keys=k38,k36,k31,k35,k21  topH1=0.245
+    resid@=    full_b1=1  dom_k*=38 (winding -38.0)  k<=4_b1=1  PR=2.7  keys=k38,k36,k31,k21,k35  topH1=0.399
+  seed 44
+    embed      full_b1=1  dom_k*=42 (winding -42.0)  k<=4_b1=1  PR=3.4  keys=k42,k10,k14,k20,k17  topH1=0.509
+    resid@=    full_b1=2  dom_k*=42 (winding -40.0)  k<=4_b1=1  PR=2.3  keys=k42,k10,k14,k13,k29  topH1=0.458
+  seed 45
+    embed      full_b1=0  dom_k*=21 (winding -21.0)  k<=4_b1=2  PR=4.0  keys=k21,k40,k33,k42,k17  topH1=0.348
+    resid@=    full_b1=1  dom_k*=21 (winding -21.0)  k<=4_b1=2  PR=1.7  keys=k21,k40,k33,k42,k34  topH1=0.818
+==============================================================================
+  VERDICT: NOT uniform -- inspect rows (some seed folds/carries differently).
+  embed full_b1 per seed: [0, 0, 1, 0]  dom_k* per seed: [31, 38, 42, 21]  k<=4 circular: True
+==============================================================================

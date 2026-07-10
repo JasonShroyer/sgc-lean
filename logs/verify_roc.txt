@@ -1,0 +1,19 @@
+﻿MATCHES=18
+C:\Lean4 Projects\src\SGC\Information\Equivalence.lean:33: * `dynamical_blanket_iff_information_blanket` - The main equivalence theorem
+C:\Lean4 Projects\src\SGC\Information\Equivalence.lean:52: def conditionalMutualInfo (P : PrecisionMatrix n) (A B : Finset (Fin n)) : ℝ :=
+C:\Lean4 Projects\src\SGC\Information\Equivalence.lean:56: lemma conditionalMutualInfo_nonneg (P : PrecisionMatrix n) (A B : Finset (Fin n)) :
+C:\Lean4 Projects\src\SGC\Information\Equivalence.lean:57: 0 ≤ conditionalMutualInfo P A B := by
+C:\Lean4 Projects\src\SGC\Information\Equivalence.lean:58: unfold conditionalMutualInfo
+C:\Lean4 Projects\src\SGC\Information\Equivalence.lean:84: conditionalMutualInfo P A B = 0 ↔ ∀ a ∈ A, ∀ b ∈ B, P.entry a b = 0 := by
+C:\Lean4 Projects\src\SGC\Information\Equivalence.lean:85: unfold conditionalMutualInfo
+C:\Lean4 Projects\src\SGC\Information\Equivalence.lean:118: conditionalMutualInfo P B.internal B.external = 0
+C:\Lean4 Projects\src\SGC\Information\Equivalence.lean:124: theorem dynamical_blanket_iff_information_blanket (P : PrecisionMatrix n)
+C:\Lean4 Projects\src\SGC\Information\Equivalence.lean:197: theorem information_geometry_equivalence (L : Matrix V V ℝ) (B : BlanketPartition V)
+C:\Lean4 Projects\src\SGC\Observables\TopologicalPersistence.lean:236: ↓ (blanket_implies_approx_lumpable)
+C:\Lean4 Projects\src\SGC\Observables\TopologicalPersistence.lean:375: exact SGC.blanket_implies_approx_lumpable B L pi_dist hπ hResp
+C:\Lean4 Projects\src\SGC\Observables\ValidityHorizon.lean:136: theorem autocorrelation_decay_from_sector
+C:\Lean4 Projects\src\SGC\Observables\ValidityHorizon.lean:200: This is the **parametric interface** to `autocorrelation_decay_from_sector`.
+C:\Lean4 Projects\src\SGC\Observables\ValidityHorizon.lean:205: this follows from `autocorrelation_decay_from_sector`.
+C:\Lean4 Projects\src\SGC\Observables\ValidityHorizon.lean:209: axiom autocorrelation_decay_param (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+C:\Lean4 Projects\src\SGC\Topology\Blanket.lean:30: - `blanket_implies_approx_lumpable`: Bottleneck blankets yield approximate lumpability
+C:\Lean4 Projects\src\SGC\Topology\Blanket.lean:238: axiom blanket_implies_approx_lumpable (B : BlanketPartition V)

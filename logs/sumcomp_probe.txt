@@ -1,0 +1,2 @@
+﻿\Algebra\Polynomial\Eval\Defs.lean:461: @[simp] lemma sum_comp (s : Finset ι) (p : ι → R[X]) (q : R[X]) :
+\CategoryTheory\Preadditive\Basic.lean:168: theorem sum_comp {P Q R : C} {J : Type*} (s : Finset J) (f : J → (P ⟶ Q)) (g : Q ⟶ R) :

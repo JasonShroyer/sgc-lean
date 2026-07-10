@@ -1,0 +1,2 @@
+﻿Γ£ö [2863/2863] Built SGC.Bridge.FourierIntertwiner (8.0s)
+Build completed successfully (2863 jobs).

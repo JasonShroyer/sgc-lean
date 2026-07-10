@@ -1,0 +1,19 @@
+﻿trace: .> LEAN_PATH=C:\Lean4 Projects\.lake\packages\Cli\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\batteries\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\Qq\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\aesop\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\proofwidgets\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\importGraph\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\LeanSearchClient\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\plausible\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\mathlib\.lake\build\lib\lean;C:\Lean4 Projects\.lake\build\lib\lean c:\Users\Jason\.elan\toolchains\leanprover--lean4---v4.25.2\bin\lean.exe C:\Lean4 Projects\src\SGC\Bridge\Consolidation.lean -o C:\Lean4 Projects\.lake\build\lib\lean\SGC\Bridge\Consolidation.olean -i C:\Lean4 Projects\.lake\build\lib\lean\SGC\Bridge\Consolidation.ilean -c C:\Lean4 Projects\.lake\build\ir\SGC\Bridge\Consolidation.c --setup C:\Lean4 Projects\.lake\build\ir\SGC\Bridge\Consolidation.setup.json --json
+error: src/SGC/Bridge/Consolidation.lean:104:34: Application type mismatch: The argument
+  Commute.smul_right (Commute.smul_left (Commute.refl L) s) t
+has type
+  Commute (s ΓÇó L) (t ΓÇó L)
+of sort `Prop` but is expected to have type
+  Type ?u.4814
+of sort `Type (?u.4814 + 1)` in the application
+  @exp_add_of_commute (Commute.smul_right (Commute.smul_left (Commute.refl L) s) t)
+error: Lean exited with code 1
+Some required targets logged failures:
+- SGC.Bridge.Consolidation
+lake.exe : error: build failed
+At line:1 char:1
++ & "$env:USERPROFILE\.elan\bin\lake.exe" build SGC.Bridge.Consolidatio ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (error: build failed:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

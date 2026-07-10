@@ -1,0 +1,30 @@
+================================================================================
+2-TORUS INTEGRATOR (Waypoint B)  --  two running sums on Z_17  L=20 seed=42
+  competent net forces b1>=2; the test is b2:  TORUS b2=1 (2-void)  vs  WEDGE b2=0
+================================================================================
+
+  device=cuda  reader tau1*=0.394  tau2*=0.145
+
+  training 2-torus integrator (p=17, hidden=256, iters=6000):
+    iter     1  loss 5.682  trainacc s1=0.054 s2=0.056
+    iter  1000  loss 0.049  trainacc s1=1.000 s2=1.000
+    iter  2000  loss 0.020  trainacc s1=1.000 s2=1.000
+    iter  3000  loss 0.010  trainacc s1=1.000 s2=1.000
+    iter  4000  loss 0.006  trainacc s1=1.000 s2=1.000
+    iter  5000  loss 0.003  trainacc s1=1.000 s2=1.000
+    iter  6000  loss 0.002  trainacc s1=1.000 s2=1.000
+  -> test acc  s1=1.000  s2=1.000   grid coverage 289/289
+
+  ============================================================================
+  TOPOLOGY of joint code H[s1,s2]  (grid N=289; calibrated reader subsamples H1:250x8 H2:100x4)
+  ============================================================================
+    b1 = 2   (tau1*=0.394)   top-5 H1 = [0.772 0.707 0.345 0.336 0.334]   gap(top/2nd)=1.1x
+    b2 = 0   (tau2*=0.145)   top-5 H2 = [0.132 0.120 0.108 0.104 0.091]   gap(top/2nd)=1.1x
+
+    marginal rings: s1-circle b1=1   s2-circle b1=1  (each should be 1)
+    2D carriers (k1,k2):power  (+0,-1):22%  (+0,+1):22%  (-1,+0):20%  (+1,+0):20%  (+0,+3):2%  (+0,-3):2%
+    axis-power(top4)=83%  cross-power(top4)=0%  (axis-dominant => clean PRODUCT torus; cross-heavy => entangled)
+
+================================================================================
+  VERDICT: NO 2-void (b2=0, top H2 bar 0.132 not isolated, gap 1.1x). With b1=2, the join is a WEDGE/figure-8 of circles, not a product torus.
+================================================================================

@@ -267,7 +267,9 @@ lemma affinityCharge_normprod_le (L : Matrix V V ℝ) (c : ℕ → V) (m : ℕ)
   have hD_bound : ∀ k < m, |atil k - btil k| ≤
       ∑ k ∈ Finset.range m, |ProbabilityCurrent L pi_dist (c k) (c (k + 1))| :=
     fun k hkm => le_trans (hdiff_bound k hkm)
-      (Finset.single_le_sum (fun i _ => abs_nonneg _) (Finset.mem_range.mpr hkm))
+      (Finset.single_le_sum
+        (f := fun i => |ProbabilityCurrent L pi_dist (c i) (c (i + 1))|)
+        (fun i _ => abs_nonneg _) (Finset.mem_range.mpr hkm))
   exact telescoping_abs_le atil btil m R _ hR_nn hsum_nn hatil_bound hbtil_bound hD_bound
 
 /-- **Affinity charge bound** (division-light form):

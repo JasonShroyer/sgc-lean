@@ -1,0 +1,34 @@
+﻿===HOST===
+DESKTOP-5101IAD
+===CPU===
+Intel(R) Core(TM) i7-6700K CPU @ 4.00GHz | Cores: 4 | Threads: 8
+===RAM===
+62.08 GB
+===GPU===
+NVIDIA GeForce RTX 5070, 12227 MiB, 576.88, 12.0
+===STORAGE===
+C: 739.6 GB free / 1,861.9 GB total
+O: 0.0 GB free / 0.0 GB total
+===NET_ADAPTERS===
+Ethernet 2 | Intel(R) Ethernet Connection (2) I219-V | 1 Gbps | MAC 30-5A-3A-02-DF-4E
+Wi-Fi 3 | Wireless AC1200 Dual Band USB Adapter #2 | 390 Mbps | MAC C4-12-F5-DA-7F-25
+Tailscale | Tailscale Tunnel | 100 Gbps | MAC 
+===PYTHON===
+Python 3.12.3
+===CONDA===
+conda 25.7.0
+===TORCH===
+torch 2.10.0+cu128 | cuda 12.8 | device NVIDIA GeForce RTX 5070
+===GIT===
+git version 2.49.0.windows.1
+===ELAN===
+elan 4.1.2 (58e8d545e 2025-05-26)
+Lake version 5.0.0-src+b86e2e5 (Lean version 4.25.2)
+===POWERSHELL===
+5.1.19041.6456
+===PWSH7===
+===OS===
+Windows 10 Pro | 22H2 | Build 19045.6466
+===TIMEZONE===
+Mountain Standard Time
+===DONE===

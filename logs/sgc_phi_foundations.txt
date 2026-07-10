@@ -1,0 +1,66 @@
+﻿\SGC\EmergenceCapacity.lean:314: def EscortSpectralGap (q : ℝ) (L : Matrix V V ℝ) (pi_dist : V → ℝ) : ℝ :=
+\SGC\NonlinearEmergence.lean:106: def FloquetSpectralGap (γ_F : ℝ) : Prop := γ_F > 0
+\SGC\Axioms\GeometryGeneral.lean:149: noncomputable def SpectralGap_pi (pi_dist : V → ℝ) (H : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) : ℝ :=
+\SGC\Bridge\CoherenceObstruction.lean:281: axiom AnyonRandomWalk.spectralGap {V : Type*} [Fintype V] [DecidableEq V] [Nonempty V]
+\SGC\Bridge\Consolidation.lean:296: theorem three_way_closure_from_approx_lumpable (L : Matrix V V ℝ) (P : Partition V)
+\SGC\Bridge\DefectHorizonBridge.lean:290: lemma coarseGeneratorMatrix_mul_proj :
+\SGC\Bridge\DiscreteFluidDynamics.lean:230: lemma pibar_mul_coarseGenerator (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+\SGC\Bridge\DiscreteFluidDynamics.lean:351: theorem uniformLift_stronglyLumpable (M : Matrix W W ℝ) :
+\SGC\Bridge\GeometricClosure.lean:235: theorem approx_lumpable_from_ricci (L : Matrix V V ℝ) (P : Partition V)
+\SGC\Bridge\PhaseClassifier.lean:143: lemma coarseGenerator_eq_weighted (L : Matrix V V ℝ) (P : Partition V)
+\SGC\Bridge\PhaseClassifier.lean:158: lemma coarseGenerator_eq_simple (L : Matrix V V ℝ) (P : Partition V)
+\SGC\Bridge\RennerSGC.lean:136: axiom functional_defect_implies_approx_lumpable
+\SGC\Bridge\RennerSGC.lean:503: def almost_iid_approx_lumpable_correspondence : Prop :=
+\SGC\Bridge\SingularLearning.lean:12: axiom and the trajectory axiom behind `hidden_entropy_bounded_by_defect`):
+\SGC\Examples\ThreeStateCycle.lean:72: theorem detailed_balance_of_symmetric (r : ℝ) : hasDetailedBalance r r := by
+\SGC\Examples\ThreeStateCycle.lean:84: theorem no_detailed_balance_of_asymmetric {α β : ℝ} (h : α ≠ β) :
+\SGC\Experiments\TopologyBenchmarks.lean:139: def spectralGapProxy (L : Matrix6) : Float :=
+\SGC\Geometry\CurvatureBridge.lean:284: axiom yamabe_bounds_hidden_entropy
+\SGC\Geometry\Manifold\Laplacian.lean:107: def spectralGap (_Δ : LaplaceBeltrami n) (ev0 ev1 : ℝ) : ℝ := ev1 - ev0
+\SGC\InformationGeometry\KramersEscape.lean:166: def SpectralGap (L : Matrix V V ℝ) : ℝ :=
+\SGC\InformationGeometry\TsallisStatistics.lean:499: def QSpectralGap (q : ℝ) (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+\SGC\InformationGeometry\TsallisStatistics.lean:504: lemma QSpectralGap_at_one (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+\SGC\InformationGeometry\TsallisStatistics.lean:545: def QHiddenEntropyProduction (q : ℝ) (L : Matrix V V ℝ) (P : Partition V)
+\SGC\InformationGeometry\TsallisStatistics.lean:556: theorem QHiddenEntropyProduction_at_one (L : Matrix V V ℝ) (P : Partition V)
+\SGC\Renormalization\Approximate.lean:185: def CoarseGeneratorMatrix (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+\SGC\Renormalization\Approximate.lean:239: def CoarseGenerator (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+\SGC\Renormalization\Approximate.lean:244: lemma CoarseGenerator_apply (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+\SGC\Renormalization\Approximate.lean:325: def IsApproxLumpable (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+\SGC\Renormalization\Lumpability.lean:96: def IsStronglyLumpable (L : Matrix V V ℝ) (P : Partition V) : Prop :=
+\SGC\Renormalization\Lumpability.lean:116: def IsRowSumApproxLumpable (L : Matrix V V ℝ) (P : Partition V) (ε : ℝ) : Prop :=
+\SGC\Renormalization\Lumpability.lean:212: theorem intertwining (L : Matrix V V ℝ) (P : Partition V) (hL : IsStronglyLumpable L P) :
+\SGC\Renormalization\Lumpability.lean:218: theorem intertwining_pow (L : Matrix V V ℝ) (P : Partition V) (hL : IsStronglyLumpable L P)
+\SGC\Renormalization\Lumpability.lean:413: theorem L_lift_eq (L : Matrix V V ℝ) (P : Partition V) (hL : IsStronglyLumpable L P)
+\SGC\Renormalization\QuotientGenerator.lean:407: lemma coarse_lumpable : IsStronglyLumpable L3 coarseP := by
+\SGC\Renormalization\QuotientGenerator.lean:426: lemma fine_not_lumpable : ¬ IsStronglyLumpable L3 fineP := by
+\SGC\Spectral\Defs.lean:160: theorem spectral_stability_bound
+\SGC\Spectral\Core\Assumptions.lean:120: noncomputable def SpectralGap_pi (pi_dist : V → ℝ) (H : Matrix V V ℝ) : ℝ :=
+\SGC\Spectral\Core\Assumptions.lean:211: lemma SpectralGap_coercivity [Nontrivial V]
+\SGC\Stochastic\BrownianMotion.lean:171: theorem defectOperator_zero_iff_detailed_balance
+\SGC\Stochastic\BrownianMotion.lean:510: theorem boundaryCurrent_zero_of_detailed_balance
+\SGC\Stochastic\BrownianMotion.lean:528: theorem boundaryCurrent_zero_of_detailed_balance_forall
+\SGC\Stochastic\BrownianMotion.lean:769: theorem dContactForm_canonical_zero_of_detailed_balance
+\SGC\Stochastic\BrownianMotion.lean:792: theorem not_isContactBlanket_of_detailed_balance
+\SGC\Stochastic\BrownianMotion.lean:862: theorem cycle_not_detailed_balance :
+\SGC\Thermodynamics\EntropyProduction.lean:72: noncomputable def KLDiv (p q : V → ℝ) : ℝ :=
+\SGC\Thermodynamics\EntropyProduction.lean:273: lemma current_zero_of_detailed_balance (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+\SGC\Thermodynamics\EntropyProduction.lean:293: noncomputable def EntropyProductionRate (L : Matrix V V ℝ) (pi_dist : V → ℝ) : ℝ :=
+\SGC\Thermodynamics\EntropyProduction.lean:380: theorem entropy_production_zero_of_detailed_balance (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+\SGC\Thermodynamics\EntropyProduction.lean:415: noncomputable def CoarseGenerator (L : Matrix V V ℝ) (P : Partition V)
+\SGC\Thermodynamics\EntropyProduction.lean:424: noncomputable def CoarseEntropyProduction (L : Matrix V V ℝ) (P : Partition V)
+\SGC\Thermodynamics\EntropyProduction.lean:438: noncomputable def HiddenEntropyProduction (L : Matrix V V ℝ) (P : Partition V)
+\SGC\Thermodynamics\EntropyProduction.lean:450: axiom hidden_entropy_nonneg (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+\SGC\Thermodynamics\EntropyProduction.lean:486: axiom pinsker_inequality (p q : V → ℝ)
+\SGC\Thermodynamics\EntropyProduction.lean:600: axiom hidden_entropy_bound_from_trajectory
+\SGC\Thermodynamics\EntropyProduction.lean:619: theorem hidden_entropy_bounded_by_defect
+\SGC\Thermodynamics\EntropyProduction.lean:718: theorem hidden_entropy_lower_bound
+\SGC\Thermodynamics\EntropyProduction.lean:739: theorem efficiency_requires_prediction
+\SGC\Thermodynamics\Evolution.lean:127: noncomputable def KLDivergence (p q : V → ℝ) : ℝ :=
+\SGC\Thermodynamics\FluxDecomposition.lean:134: theorem symmetric_part_detailed_balance (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+\SGC\Thermodynamics\FluxDecomposition.lean:182: lemma detailed_balance_iff_zero_current (L : Matrix V V ℝ) (pi_dist : V → ℝ) :
+\SGC\Thermodynamics\FluxDecomposition.lean:197: theorem antisymmetric_part_zero_iff_detailed_balance (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+\SGC\Thermodynamics\FluxDecomposition.lean:225: theorem generator_eq_symmetric_of_detailed_balance (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+\SGC\Thermodynamics\FluxDecomposition.lean:370: theorem housekeeping_zero_iff_detailed_balance (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+\SGC\Thermodynamics\FluxDecomposition.lean:536: theorem self_adjoint_iff_detailed_balance (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+\SGC\Thermodynamics\FluxDecomposition.lean:619: theorem detailed_balance_implies_normal (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+\SGC\Topology\Blanket.lean:241: theorem blanket_implies_approx_lumpable (B : BlanketPartition V)

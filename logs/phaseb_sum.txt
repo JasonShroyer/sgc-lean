@@ -1,0 +1,13 @@
+﻿ERR=4
+error: src/SGC/Bridge/Quantum.lean:571:8: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+error: Lean exited with code 1
+lake.exe : error: build failed
+    + CategoryInfo          : NotSpecified: (error: build failed:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+SGC\Bridge\Quantum.lean:375
+GG L114: def IsSelfAdjoint_pi (pi_dist : V â†’ â„) (A : (V â†’ ð•œ) â†’â‚—[ð•œ] (V â†’ ð•œ)) : Prop :=
+GG L118: lemma isSelfAdjoint_pi_iff (pi_dist : V â†’ â„) (hÏ€ : âˆ€ v, 0 < pi_dist v)
+GG L120: IsSelfAdjoint_pi pi_dist A â†” âˆ€ u v, inner_pi pi_dist (A u) v = inner_pi pi_dist u (A v) := by
+GG L139: (hA : IsSelfAdjoint_pi pi_dist A) (u : V â†’ ð•œ) :
+GG L164: self_adjoint : IsSelfAdjoint_pi pi_dist Ï

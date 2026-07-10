@@ -1,0 +1,11 @@
+﻿=== finrank_fintype_fun_eq_card def ===
+\LinearAlgebra\Dimension\Constructions.lean:320: theorem Module.finrank_fintype_fun_eq_card : finrank R (η → R) = Fintype.card η :=
+\LinearAlgebra\FiniteDimensional\Lemmas.lean:247: basisOfLinearIndependentOfCardEqFinrank hb (Module.finrank_fintype_fun_eq_card K).symm
+\LinearAlgebra\Matrix\Rank.lean:456: ← Module.finrank_fintype_fun_eq_card R,
+\LinearAlgebra\Matrix\GeneralLinearGroup\Card.lean:85: Module.finrank_fintype_fun_eq_card, Fintype.card_fin]
+\LinearAlgebra\Matrix\GeneralLinearGroup\Card.lean:86: simp only [Module.finrank_fintype_fun_eq_card, Fintype.card_fin, le_refl]
+=== finrank_pi def ===
+\LinearAlgebra\Dimension\Constructions.lean:287: theorem Module.finrank_pi {ι : Type v} [Fintype ι] :
+\LinearAlgebra\Matrix\Rank.lean:139: rw [rank, mulVecLin_one, LinearMap.range_id, finrank_top, finrank_pi]
+\LinearAlgebra\Matrix\Rank.lean:159: exact A.mulVecLin.finrank_range_le.trans_eq (finrank_pi _)
+\LinearAlgebra\Matrix\Rank.lean:296: exact (Submodule.finrank_le _).trans (finrank_pi R).le

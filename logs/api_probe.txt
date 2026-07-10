@@ -1,0 +1,109 @@
+﻿C:\Lean4 Projects\src\SGC\ComplexityRelativity.lean:34: | Zero | No string achieves `K = 0` | `trivialPartition` achieves cost `= 0` |
+C:\Lean4 Projects\src\SGC\ComplexityRelativity.lean:182: Direct consequence of `trivialPartition_defect_cost_zero`. -/
+C:\Lean4 Projects\src\SGC\ComplexityRelativity.lean:186: ComplexityGap L pi_dist hπ P (trivialPartition V) = defect_cost L pi_dist hπ P := by
+C:\Lean4 Projects\src\SGC\ComplexityRelativity.lean:188: rw [trivialPartition_defect_cost_zero L pi_dist hπ, sub_zero]
+C:\Lean4 Projects\src\SGC\ComplexityRelativity.lean:221: `defect_cost_nonneg`, `trivialPartition_defect_cost_zero`,
+C:\Lean4 Projects\src\SGC\ComplexityRelativity.lean:232: (defect_cost L pi_dist hπ (trivialPartition V) = 0) ∧
+C:\Lean4 Projects\src\SGC\ComplexityRelativity.lean:248: exact defect_cost_nonneg L pi_dist hπ
+C:\Lean4 Projects\src\SGC\ComplexityRelativity.lean:249: · -- (2) trivialPartition has zero defect cost
+C:\Lean4 Projects\src\SGC\ComplexityRelativity.lean:250: exact trivialPartition_defect_cost_zero L pi_dist hπ
+C:\Lean4 Projects\src\SGC\ComplexityRelativity.lean:268: defect_cost L pi_dist hπ (trivialPartition V) ≤ defect_cost L pi_dist hπ P := by
+C:\Lean4 Projects\src\SGC\ComplexityRelativity.lean:270: rw [trivialPartition_defect_cost_zero L pi_dist hπ]
+C:\Lean4 Projects\src\SGC\ComplexityRelativity.lean:271: exact defect_cost_nonneg L pi_dist hπ P
+C:\Lean4 Projects\src\SGC\ComplexityRelativity.lean:317: (`indiscretePartition`, `Partition.blockCount`, `Partition.IsKBounded`,
+C:\Lean4 Projects\src\SGC\EmergenceEquivalence.lean:270: (∀ f : V → ℝ, DefectOperator L (trivialPartition V) pi_dist hπ f = 0) := by
+C:\Lean4 Projects\src\SGC\NonlinearEmergence.lean:179: (∀ f : V → ℝ, DefectOperator L_avg (trivialPartition V) pi_dist hπ f = 0)
+C:\Lean4 Projects\src\SGC\Bridge\CoherenceObstruction.lean:222: def Partition.toSoft (P : Partition V) [Fintype P.Quot] :
+C:\Lean4 Projects\src\SGC\Bridge\RennerSGC.lean:293: le_antisymm h_le (Renormalization.defect_cost_nonneg L pi_dist hπ P)
+C:\Lean4 Projects\src\SGC\Bridge\RennerSGC.lean:308: Renormalization.defect_cost L pi_dist hπ (Renormalization.trivialPartition V) = 0 := by
+C:\Lean4 Projects\src\SGC\Bridge\RennerSGC.lean:309: have h_op : Approximate.DefectOperator L (Renormalization.trivialPartition V) pi_dist hπ = 0 := by
+C:\Lean4 Projects\src\SGC\Experiments\BrainDecoding.lean:34: abbrev Partition := UInt32
+C:\Lean4 Projects\src\SGC\Experiments\BrainDecoding.lean:39: def partitionSize (p : Partition) : Nat :=
+C:\Lean4 Projects\src\SGC\Experiments\BrainDecoding.lean:42: def partitionMembers (p : Partition) : List (Fin 20) :=
+C:\Lean4 Projects\src\SGC\Experiments\BrainDecoding.lean:45: def partitionNames (p : Partition) : String :=
+C:\Lean4 Projects\src\SGC\Experiments\BrainDecoding.lean:62: def partitionVolume (p : Partition) : Float :=
+C:\Lean4 Projects\src\SGC\Experiments\Celegans.lean:124: def partitionVolume (inPartition : Fin 20 → Bool) : Float :=
+C:\Lean4 Projects\src\SGC\Experiments\Celegans.lean:129: def partitionSize (inPartition : Fin 20 → Bool) : Nat :=
+C:\Lean4 Projects\src\SGC\Experiments\Celegans.lean:137: def partitionConductance (inPartition : Fin 20 → Bool) : Float :=
+C:\Lean4 Projects\src\SGC\Experiments\Celegans.lean:146: def partitionDensity (inPartition : Fin 20 → Bool) : Float :=
+C:\Lean4 Projects\src\SGC\Experiments\MetabolicCore.lean:250: def partition_first_half : Fin 6 → Bool := fun i => i.val < 3
+C:\Lean4 Projects\src\SGC\Experiments\TopologyBenchmarks.lean:111: def partitionMassS (pi : Fin 6 → Float) : Float :=
+C:\Lean4 Projects\src\SGC\Foundations\AxiomAudit.lean:292: theorems (no new axioms): `defect_cost_nonneg`,
+C:\Lean4 Projects\src\SGC\Foundations\AxiomAudit.lean:293: `trivialPartition_defect_cost_zero`, `defect_antitone_on_coarse_domain`,
+C:\Lean4 Projects\src\SGC\Foundations\AxiomAudit.lean:320: `optimal_kBounded_partition_exists` (new) + `defect_cost_nonneg`. Zero
+C:\Lean4 Projects\src\SGC\Observables\ValidityHorizon.lean:209: axiom autocorrelation_decay_param (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+C:\Lean4 Projects\src\SGC\Renormalization\Approximate.lean:325: def IsApproxLumpable (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+C:\Lean4 Projects\src\SGC\Renormalization\Lumpability.lean:38: structure Partition (V : Type*) [DecidableEq V] where
+C:\Lean4 Projects\src\SGC\Renormalization\Lumpability.lean:43: abbrev Partition.Quot {V : Type*} [DecidableEq V] (P : Partition V) : Type _ := Quotient P.rel
+C:\Lean4 Projects\src\SGC\Renormalization\Lumpability.lean:55: def Partition.quot_map (P : Partition V) : V → P.Quot := Quotient.mk P.rel
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:63: def defect_cost (L : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:73: def trivialPartition (V : Type*) [DecidableEq V] : Partition V where
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:113: (defect_cost L pi_dist hπ) ⟨trivialPartition V, Finset.mem_univ _⟩
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:119: defect_cost L pi_dist hπ P ≤ defect_cost L pi_dist hπ (trivialPartition V) := by
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:121: exact ⟨P_opt, hP_opt (trivialPartition V)⟩
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:133: def Partition.Refines (P₁ P₂ : Partition V) : Prop :=
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:145: lemma trivialPartition_refines_all (P : Partition V) :
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:146: trivialPartition V ≤ P := by
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:149: change (trivialPartition V).rel.r x y at hxy
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:150: simp only [trivialPartition] at hxy
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:402: norm_pi pi_dist (DefectOperator L (trivialPartition V) pi_dist hπ f) ≤
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:404: defect_antitone_on_coarse_domain L pi_dist hπ (trivialPartition V) P
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:405: (trivialPartition_refines_all P) f hf
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:446: defect_cost L pi_dist hπ (trivialPartition V))
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:463: h_global (trivialPartition V)⟩
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:548: lemma defect_cost_nonneg (L : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:560: exact defect_cost_nonneg L pi_dist hπ P'
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:566: ∀ f : V → ℝ, DefectOperator L (trivialPartition V) pi_dist hπ f = 0 := by
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:571: have h_all_block : IsBlockConstant (trivialPartition V) (L *ᵥ (CoarseProjector (trivialPartition V) pi_dist hπ f)) := by
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:573: change (trivialPartition V).rel.r x y at hxy
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:574: simp only [trivialPartition] at hxy
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:577: have h_fix := CoarseProjector_fixes_block_constant (trivialPartition V) pi_dist hπ _ h_all_block
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:600: lemma trivialPartition_defect_cost_zero (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:602: defect_cost L pi_dist hπ (trivialPartition V) = 0 := by
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:604: -- The DefectOperator for trivialPartition is the zero operator
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:605: have h_zero_op : DefectOperator L (trivialPartition V) pi_dist hπ = 0 := by
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:671: (proved in trivialPartition_defect_cost_zero). Therefore h_bound implies
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:695: defect_cost L pi_dist hπ (trivialPartition V)) :
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:698: -- Step 1: trivialPartition has zero defect cost
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:699: have h_triv_zero : defect_cost L pi_dist hπ (trivialPartition V) = 0 :=
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:700: trivialPartition_defect_cost_zero L pi_dist hπ
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:704: have h_nonneg := defect_cost_nonneg L pi_dist hπ P_local
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:709: exact defect_cost_nonneg L pi_dist hπ P
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:717: lattice shortcut: trivialPartition has zero defect, so any locally optimal partition
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:764: def Partition.blockCount (P : Partition V) : ℕ := Fintype.card P.Quot
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:768: def Partition.IsKBounded (P : Partition V) (K : ℕ) : Prop := P.blockCount ≤ K
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:781: This is the COARSEST partition (single block, dual to `trivialPartition`).
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:784: def indiscretePartition (V : Type*) [DecidableEq V] : Partition V where
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:793: lemma indiscretePartition_blockCount_le_one (V : Type*) [Fintype V] [DecidableEq V] :
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:794: (indiscretePartition V).blockCount ≤ 1 := by
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:795: have h_sub : Subsingleton (indiscretePartition V).Quot := by
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:799: have hxy : (indiscretePartition V).rel.r x y := trivial
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:806: lemma indiscretePartition_isKBounded (V : Type*) [Fintype V] [DecidableEq V]
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:807: {K : ℕ} (hK : 1 ≤ K) : (indiscretePartition V).IsKBounded K :=
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:808: le_trans (indiscretePartition_blockCount_le_one V) hK
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:837: have h_indiscrete_mem : indiscretePartition V ∈ S := by
+C:\Lean4 Projects\src\SGC\Renormalization\OptimalPartition.lean:839: exact indiscretePartition_isKBounded V hK
+C:\Lean4 Projects\src\SGC\Renormalization\QuotientGenerator.lean:351: (defect_cost_nonneg L pi_dist hπ P₁)
+C:\Lean4 Projects\src\SGC\Renormalization\QuotientGenerator.lean:354: (defect_cost_nonneg L pi_dist hπ P₂)
+C:\Lean4 Projects\src\SGC\Renormalization\QuotientGenerator.lean:465: exact le_antisymm h (defect_cost_nonneg _ _ _ _)
+C:\Lean4 Projects\src\SGC\Renormalization\QuotientGenerator.lean:467: rcases lt_or_eq_of_le (defect_cost_nonneg L3 (fun _ => 1) (fun _ => one_pos) fineP)
+C:\Lean4 Projects\src\SGC\Renormalization\QuotientGenerator.lean:745: use trivialPartition V
+C:\Lean4 Projects\src\SGC\Renormalization\QuotientGenerator.lean:747: · -- trivialPartition < P (strictly refines)
+C:\Lean4 Projects\src\SGC\Renormalization\QuotientGenerator.lean:749: · exact trivialPartition_refines_all P
+C:\Lean4 Projects\src\SGC\Renormalization\QuotientGenerator.lean:750: · -- ¬(P ≤ trivialPartition): P cannot refine trivial (trivial is already finest)
+C:\Lean4 Projects\src\SGC\Renormalization\QuotientGenerator.lean:751: -- If P ≤ trivialPartition, then P.rel implies trivialPartition.rel (equality)
+C:\Lean4 Projects\src\SGC\Renormalization\QuotientGenerator.lean:752: -- So P has the same equivalence as trivialPartition
+C:\Lean4 Projects\src\SGC\Renormalization\QuotientGenerator.lean:754: -- P refines trivialPartition means: P.rel x y → (x = y)
+C:\Lean4 Projects\src\SGC\Renormalization\QuotientGenerator.lean:755: -- Combined with reflexivity, P.rel = Eq, so P = trivialPartition
+C:\Lean4 Projects\src\SGC\Renormalization\QuotientGenerator.lean:756: have h_rel_eq : P.rel = (trivialPartition V).rel := by
+C:\Lean4 Projects\src\SGC\Renormalization\QuotientGenerator.lean:762: simp only [trivialPartition] at hxy
+C:\Lean4 Projects\src\SGC\Renormalization\QuotientGenerator.lean:766: have h_anti : P = trivialPartition V := by
+C:\Lean4 Projects\src\SGC\Renormalization\QuotientGenerator.lean:768: have h_setoid_eq : P.rel = (trivialPartition V).rel := h_rel_eq
+C:\Lean4 Projects\src\SGC\Renormalization\QuotientGenerator.lean:770: simp only [trivialPartition] at h_setoid_eq ⊢
+C:\Lean4 Projects\src\SGC\Renormalization\QuotientGenerator.lean:775: have h_triv_zero := trivialPartition_defect_cost_zero L pi_dist hπ
+C:\Lean4 Projects\src\SGC\Renormalization\QuotientGenerator.lean:778: · -- defect(trivialPartition) < defect(P)
+C:\Lean4 Projects\src\SGC\Renormalization\QuotientGenerator.lean:779: rw [trivialPartition_defect_cost_zero L pi_dist hπ]
+C:\Lean4 Projects\src\SGC\Renormalization\QuotientGenerator.lean:781: have h_nonneg := defect_cost_nonneg L pi_dist hπ P
+C:\Lean4 Projects\src\SGC\Renormalization\QuotientGenerator.lean:911: have h_le_triv := hP_min (trivialPartition V)
+C:\Lean4 Projects\src\SGC\Renormalization\QuotientGenerator.lean:912: have h_triv_zero := trivialPartition_defect_cost_zero L pi_dist hπ
+C:\Lean4 Projects\src\SGC\Renormalization\QuotientGenerator.lean:913: have h_nonneg := defect_cost_nonneg L pi_dist hπ P_opt

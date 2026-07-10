@@ -1,0 +1,48 @@
+﻿ΓÜá [3018/3029] Replayed SGC.Axioms.Geometry
+warning: src/SGC/Axioms/Geometry.lean:279:48: This simp argument is unused:
+  mul_left_comm
+
+Hint: Omit it from the simp argument list.
+  simp only [mul_assoc, mul_comm (pi_dist _), mul_l╠╡e╠╡f╠╡t╠╡_╠╡c╠╡o╠╡m╠╡m╠╡,╠╡ ╠╡m╠╡u╠╡l╠╡_╠╡sum]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: src/SGC/Axioms/Geometry.lean:402:8: 'change
+  toE (iso (A (iso.symm (fromE (x + y))))) =
+    toE (iso (A (iso.symm (fromE x)))) + toE (iso (A (iso.symm (fromE y))))' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+ΓÜá [3021/3029] Replayed SGC.Renormalization.Lumpability
+warning: src/SGC/Renormalization/Lumpability.lean:335:0: automatically included section variable(s) unused in theorem `SGC.lift_is_block_constant`:
+  [Fintype V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Renormalization/Lumpability.lean:545:31: This simp argument is unused:
+  DirichletForm_bar
+
+Hint: Omit it from the simp argument list.
+  s╠╡i╠╡m╠╡p╠╡ ╠╡o╠╡n╠╡l╠╡y╠╡ ╠╡[╠╡R╠╡a╠╡y╠╡l╠╡e╠╡i╠╡g╠╡h╠╡Q╠╡u╠╡o╠╡t╠╡i╠╡e╠╡n╠╡t╠╡,╠╡ ╠╡D╠╡i╠╡r╠╡i╠╡c╠╡h╠╡l╠╡e╠╡t╠╡F╠╡o╠╡r╠╡m╠╡_╠╡b╠╡a╠╡r╠╡]╠╡ ╠╡a╠╡t╠╡ ╠╡*╠╡s╠▓i╠▓m╠▓p╠▓ ╠▓o╠▓n╠▓l╠▓y╠▓ ╠▓[╠▓R╠▓a╠▓y╠▓l╠▓e╠▓i╠▓g╠▓h╠▓Q╠▓u╠▓o╠▓t╠▓i╠▓e╠▓n╠▓t╠▓]╠▓ ╠▓a╠▓t╠▓ ╠▓*╠▓
+  ╠▓ ╠▓ ╠▓ ╠▓ ╠▓ ╠▓ ╠▓-╠▓-╠▓ ╠▓N╠▓u╠▓m╠▓e╠▓r╠▓a╠▓t╠▓o╠▓r╠▓:╠▓ ╠▓Γä░╠▓(╠▓l╠▓i╠▓f╠▓t╠▓(╠▓f╠▓)╠▓)╠▓ ╠▓=╠▓ ╠▓Γä░╠▓╠ä╠▓(╠▓f╠▓)╠▓ ╠▓b╠▓y╠▓ ╠▓d╠▓i╠▓r╠▓i╠▓c╠▓h╠▓l╠▓e╠▓t╠▓_╠▓f╠▓o╠▓r╠▓m╠▓_╠▓l╠▓i╠▓f╠▓t╠▓_╠▓e╠▓q╠▓
+  ╠▓ ╠▓ ╠▓ ╠▓ ╠▓ ╠▓ ╠▓
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: src/SGC/Renormalization/Lumpability.lean:641:0: automatically included section variable(s) unused in theorem `SGC.lift_fun_is_block_constant`:
+  [Fintype V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+ΓÜá [3028/3029] Replayed SGC.Renormalization.Approximate
+warning: src/SGC/Renormalization/Approximate.lean:106:5: unused variable `h╧Ç`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: src/SGC/Renormalization/Approximate.lean:916:0: automatically included section variable(s) unused in theorem `SGC.Approximate.duhamel_forcing_identity`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+ΓÜá [3029/3029] Built SGC.Bridge.TruncationProjector (47s)
+warning: src/SGC/Bridge/TruncationProjector.lean:32:8: declaration uses 'sorry'
+Build completed successfully (3029 jobs).

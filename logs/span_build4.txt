@@ -1,0 +1,45 @@
+﻿  omit [Fintype W] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+ΓÜá [3100/3102] Replayed SGC.Bridge.SchnakenbergBasis
+warning: src/SGC/Bridge/SchnakenbergBasis.lean:82:8: automatically included section variable(s) unused in theorem `SGC.Bridge.SchnakenbergBasis.divergenceHom_apply`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Bridge/SchnakenbergBasis.lean:99:0: automatically included section variable(s) unused in theorem `SGC.Bridge.SchnakenbergBasis.mem_cycleSpace_iff`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Bridge/SchnakenbergBasis.lean:114:0: automatically included section variable(s) unused in theorem `SGC.Bridge.SchnakenbergBasis.edgeCurrent_antisymm`:
+  [Fintype V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Bridge/SchnakenbergBasis.lean:118:32: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: src/SGC/Bridge/SchnakenbergBasis.lean:118:32: 'ring' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: src/SGC/Bridge/SchnakenbergBasis.lean:179:0: automatically included section variable(s) unused in theorem `SGC.Bridge.SchnakenbergBasis.fundCycle_closed`:
+  [Fintype V]
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+ΓÜá [3102/3102] Built SGC.Bridge.SchnakenbergSpan (8.1s)
+warning: src/SGC/Bridge/SchnakenbergSpan.lean:71:0: automatically included section variable(s) unused in theorem `SGC.Bridge.SchnakenbergSpan.antisymm_diag_zero`:
+  [Fintype V]
+  [DecidableEq V]
+  [LinearOrder V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] [DecidableEq V] [LinearOrder V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Build completed successfully (3102 jobs).

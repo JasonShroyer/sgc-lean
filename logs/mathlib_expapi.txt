@@ -1,0 +1,23 @@
+﻿L28: Lemmas like `NormedSpace.exp_add_of_commute` require a canonical norm on the type;
+L38: * `Matrix.exp_add_of_commute`
+L119: nonrec theorem exp_add_of_commute (A B : Matrix m m ð”¸) (h : Commute A B) :
+L121: open scoped Norms.Operator in exp_add_of_commute h
+over a topological or normed algebra.
+Note that generic results over all topological spaces such as `NormedSpace.exp_zero`
+can be used on matrices without issue, so are not repeated here.
+The topological results specific to matrices are:
+
+* `Matrix.exp_transpose`
+* `Matrix.exp_conjTranspose`
+* `Matrix.exp_diagonal`
+* `Matrix.exp_blockDiagonal`
+* `Matrix.exp_blockDiagonal'`
+
+Lemmas like `NormedSpace.exp_add_of_commute` require a canonical norm on the type;
+while there are multiple sensible choices for the norm of a `Matrix` (`Matrix.normedAddCommGroup`,
+`Matrix.frobeniusNormedAddCommGroup`, `Matrix.linftyOpNormedAddCommGroup`), none of them
+are canonical. In an application where a particular norm is chosen using
+`attribute [local instance]`, then the usual lemmas about `NormedSpace.exp` are fine.
+When choosing a norm is undesirable, the results in this file can be used.
+
+In this file, we copy across the lemmas about `NormedSpace.exp`,

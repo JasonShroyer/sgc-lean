@@ -1,0 +1,59 @@
+﻿=== SAMPLE MODIFIED FILE: wiki/candidates/concepts/operator-decomposition-l-l-d-d.md ===
+diff --git a/wiki/candidates/concepts/operator-decomposition-l-l-d-d.md b/wiki/candidates/concepts/operator-decomposition-l-l-d-d.md
+deleted file mode 100644
+index fbc7fe21..00000000
+--- a/wiki/candidates/concepts/operator-decomposition-l-l-d-d.md
++++ /dev/null
+@@ -1,52 +0,0 @@
+----
+-page_id: 'concept:operator-decomposition-l-l-d-d'
+-kind: concept
+-cssclasses:
+-  - swarmvault
+-  - sv-concept
+-title: Operator Decomposition L = (L - D) + D
+-tags:
+-  - concept
+-  - candidate
+-  - formal-methods
+-  - functional-analysis
+-  - linear-algebra
+-  - programming-languages
+-  - spectral-geometry
+-source_ids:
+-  - we-need-to-get-back-on-it-please-refer-to-our-prior-work-we-already-28a5b4ce
+-project_ids: []
+-node_ids:
+-  - 'concept:operator-decomposition-l-l-d-d'
+-freshness: fresh
+-status: candidate
+-confidence: 0.65
+-created_at: '2026-06-13T03:25:20.785Z'
+-updated_at: '2026-06-13T03:25:20.785Z'
+-compiled_from:
+-  - we-need-to-get-back-on-it-please-refer-to-our-prior-work-we-already-28a5b4ce
+-managed_by: system
+-backlinks:
+-  - >-
+-    source:we-need-to-get-back-on-it-please-refer-to-our-prior-work-we-already-28a5b4ce
+-schema_hash: 17be59f8cd5633a02eeedb581d15cc28ce1a54e77160dbaeba82a2848480451a
+-source_hashes:
+-  we-need-to-get-back-on-it-please-refer-to-our-prior-work-we-already-28a5b4ce: 28a5b4ce69b99c68b3a979fa09ab0d909148cd732d48b00e333bc0bbc493f3a2
+-source_semantic_hashes:
+-  we-need-to-get-back-on-it-please-refer-to-our-prior-work-we-already-28a5b4ce: 87d53d7c9cb1e0721b344f1de0768bfec8b7d9ac53fdb550fbf74e60a176f726
+-decay_score: 1
+-last_confirmed_at: '2026-06-13T03:26:02.637Z'
+----
+-# Operator Decomposition L = (L - D) + D
+-
+-## Summary
+-
+-An algebraic decomposition where subtracting the defect operator D from the generator L yields an operator (L - D) that preserves the coarse subspace, matching the coarse generator exactly when restricted to that subspace.
+-
+-## Seen In
+-
+-- [[sources/we-need-to-get-back-on-it-please-refer-to-our-prior-work-we-already-28a5b4ce|We need to get back on it! Please refer to our prior work. We already]]
+-
+-## Source Claims
+-
+-

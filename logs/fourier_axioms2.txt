@@ -1,0 +1,5 @@
+﻿'SGC.Bridge.dft_eq_zero_of_period' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SGC.Bridge.periodic_of_dft_eq_zero_off_band' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SGC.Bridge.periodic_iff_dft_eq_zero_off_band' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SGC.Bridge.dft_pullback_eq_zero_of_band' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SGC.Bridge.dft_pullback_support' depends on axioms: [propext, Classical.choice, Quot.sound]

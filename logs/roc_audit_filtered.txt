@@ -1,0 +1,4 @@
+﻿info: src/SGC/Foundations/AxiomAudit.lean:730:0: 'SGC.Observables.heat_decay_mean_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:733:0: 'SGC.Observables.cross_correlation_decay' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:736:0: 'SGC.Observables.rate_of_consolidation' depends on axioms: [propext, Classical.choice, Quot.sound]
+Build completed successfully (3161 jobs).

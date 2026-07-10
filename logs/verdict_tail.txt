@@ -1,0 +1,8 @@
+﻿info: src/SGC/Foundations/AxiomAudit.lean:767:0: 'SGC.Approximate.spectral_stability_reversible' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound,
+ SGC.Approximate.Weyl_inequality_pi]
+info: src/SGC/Foundations/AxiomAudit.lean:770:0: 'SGC.Approximate.NCD_uniform_error_bound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound,
+ SGC.Approximate.NCD_defect_split,

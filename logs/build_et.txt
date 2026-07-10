@@ -1,0 +1,330 @@
+﻿ΓÜá [3017/3031] Replayed SGC.Axioms.Geometry
+warning: src/SGC/Axioms/Geometry.lean:279:48: This simp argument is unused:
+  mul_left_comm
+
+Hint: Omit it from the simp argument list.
+  simp only [mul_assoc, mul_comm (pi_dist _), mul_l╠╡e╠╡f╠╡t╠╡_╠╡c╠╡o╠╡m╠╡m╠╡,╠╡ ╠╡m╠╡u╠╡l╠╡_╠╡sum]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: src/SGC/Axioms/Geometry.lean:402:8: 'change
+  toE (iso (A (iso.symm (fromE (x + y))))) =
+    toE (iso (A (iso.symm (fromE x)))) + toE (iso (A (iso.symm (fromE y))))' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+ΓÜá [3020/3031] Replayed SGC.Renormalization.Lumpability
+warning: src/SGC/Renormalization/Lumpability.lean:335:0: automatically included section variable(s) unused in theorem `SGC.lift_is_block_constant`:
+  [Fintype V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Renormalization/Lumpability.lean:545:31: This simp argument is unused:
+  DirichletForm_bar
+
+Hint: Omit it from the simp argument list.
+  s╠╡i╠╡m╠╡p╠╡ ╠╡o╠╡n╠╡l╠╡y╠╡ ╠╡[╠╡R╠╡a╠╡y╠╡l╠╡e╠╡i╠╡g╠╡h╠╡Q╠╡u╠╡o╠╡t╠╡i╠╡e╠╡n╠╡t╠╡,╠╡ ╠╡D╠╡i╠╡r╠╡i╠╡c╠╡h╠╡l╠╡e╠╡t╠╡F╠╡o╠╡r╠╡m╠╡_╠╡b╠╡a╠╡r╠╡]╠╡ ╠╡a╠╡t╠╡ ╠╡*╠╡s╠▓i╠▓m╠▓p╠▓ ╠▓o╠▓n╠▓l╠▓y╠▓ ╠▓[╠▓R╠▓a╠▓y╠▓l╠▓e╠▓i╠▓g╠▓h╠▓Q╠▓u╠▓o╠▓t╠▓i╠▓e╠▓n╠▓t╠▓]╠▓ ╠▓a╠▓t╠▓ ╠▓*╠▓
+  ╠▓ ╠▓ ╠▓ ╠▓ ╠▓ ╠▓ ╠▓-╠▓-╠▓ ╠▓N╠▓u╠▓m╠▓e╠▓r╠▓a╠▓t╠▓o╠▓r╠▓:╠▓ ╠▓Γä░╠▓(╠▓l╠▓i╠▓f╠▓t╠▓(╠▓f╠▓)╠▓)╠▓ ╠▓=╠▓ ╠▓Γä░╠▓╠ä╠▓(╠▓f╠▓)╠▓ ╠▓b╠▓y╠▓ ╠▓d╠▓i╠▓r╠▓i╠▓c╠▓h╠▓l╠▓e╠▓t╠▓_╠▓f╠▓o╠▓r╠▓m╠▓_╠▓l╠▓i╠▓f╠▓t╠▓_╠▓e╠▓q╠▓
+  ╠▓ ╠▓ ╠▓ ╠▓ ╠▓ ╠▓ ╠▓
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: src/SGC/Renormalization/Lumpability.lean:641:0: automatically included section variable(s) unused in theorem `SGC.lift_fun_is_block_constant`:
+  [Fintype V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+ΓÜá [3028/3046] Replayed SGC.Renormalization.Approximate
+warning: src/SGC/Renormalization/Approximate.lean:106:5: unused variable `h╧Ç`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: src/SGC/Renormalization/Approximate.lean:916:0: automatically included section variable(s) unused in theorem `SGC.Approximate.duhamel_forcing_identity`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+ΓÜá [3029/3046] Replayed SGC.Spectral.Core.Projector
+warning: src/SGC/Spectral/Core/Projector.lean:94:48: This simp argument is unused:
+  mul_left_comm
+
+Hint: Omit it from the simp argument list.
+  simp only [mul_assoc, mul_comm (pi_dist _), mul_l╠╡e╠╡f╠╡t╠╡_╠╡c╠╡o╠╡m╠╡m╠╡,╠╡ ╠╡m╠╡u╠╡l╠╡_╠╡sum]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: src/SGC/Spectral/Core/Projector.lean:272:8: 'change
+  toE (iso (A (iso.symm (fromE (x + y))))) =
+    toE (iso (A (iso.symm (fromE x)))) + toE (iso (A (iso.symm (fromE y))))' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+ΓÜá [3041/3059] Replayed SGC.Spectral.Envelope
+warning: src/SGC/Spectral/Envelope.lean:111:5: unused variable `hC_nonneg`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: src/SGC/Spectral/Envelope.lean:387:76: This simp argument is unused:
+  Pi.sub_apply
+
+Hint: Omit it from the simp argument list.
+  simp only [w, P╠╡i╠╡.╠╡s╠╡u╠╡b╠╡_╠╡a╠╡p╠╡p╠╡l╠╡y╠╡,╠╡ ╠╡sub_add_cancel]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: src/SGC/Spectral/Envelope.lean:564:57: This simp argument is unused:
+  exp_zero
+
+Hint: Omit it from the simp argument list.
+  simp [HeatKernel,╠╡ ╠╡e╠╡x╠╡p╠╡_╠╡z╠╡e╠╡r╠╡o╠╡]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ΓÜá [3042/3059] Replayed SGC.Spectral.Envelope.ODE
+warning: src/SGC/Spectral/Envelope/ODE.lean:40:5: unused variable `hc_pos`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+ΓÜá [3065/3071] Replayed SGC.Thermodynamics.EntropyProduction
+warning: src/SGC/Thermodynamics/EntropyProduction.lean:87:0: automatically included section variable(s) unused in theorem `SGC.Thermodynamics.KLDiv_nonneg`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Thermodynamics/EntropyProduction.lean:143:0: automatically included section variable(s) unused in theorem `SGC.Thermodynamics.KLDiv_eq_zero_iff`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Thermodynamics/EntropyProduction.lean:233:0: automatically included section variable(s) unused in theorem `SGC.Thermodynamics.pushforward_sum`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Thermodynamics/EntropyProduction.lean:267:0: automatically included section variable(s) unused in theorem `SGC.Thermodynamics.current_antisymm`:
+  [Fintype V]
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Thermodynamics/EntropyProduction.lean:273:0: automatically included section variable(s) unused in theorem `SGC.Thermodynamics.current_zero_of_detailed_balance`:
+  [Fintype V]
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Thermodynamics/EntropyProduction.lean:501:0: automatically included section variable(s) unused in theorem `SGC.Thermodynamics.l1_le_sqrt_card_l2`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+ΓÜá [3068/3081] Replayed SGC.Spectral.Envelope.Sector
+warning: src/SGC/Spectral/Envelope/Sector.lean:22:0: automatically included section variable(s) unused in theorem `SGC.Spectral.inner_pi_one_one`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+ΓÜá [3069/3081] Replayed SGC.Observables.ValidityHorizon
+warning: src/SGC/Observables/ValidityHorizon.lean:57:30: unused variable `h╬╡`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: src/SGC/Observables/ValidityHorizon.lean:104:43: unused variable `h╬│`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: src/SGC/Observables/ValidityHorizon.lean:216:43: unused variable `hQ`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+ΓÜá [3070/3081] Replayed SGC.Thermodynamics.FluxDecomposition
+warning: src/SGC/Thermodynamics/FluxDecomposition.lean:93:0: automatically included section variable(s) unused in theorem `SGC.Thermodynamics.SymmetricPart_of_pos`:
+  [Fintype V]
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Thermodynamics/FluxDecomposition.lean:100:0: automatically included section variable(s) unused in theorem `SGC.Thermodynamics.AntisymmetricPart_of_pos`:
+  [Fintype V]
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Thermodynamics/FluxDecomposition.lean:182:0: automatically included section variable(s) unused in theorem `SGC.Thermodynamics.detailed_balance_iff_zero_current`:
+  [Fintype V]
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Thermodynamics/FluxDecomposition.lean:505:0: automatically included section variable(s) unused in theorem `SGC.Thermodynamics.pi_adjoint_inner`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Thermodynamics/FluxDecomposition.lean:536:0: automatically included section variable(s) unused in theorem `SGC.Thermodynamics.self_adjoint_iff_detailed_balance`:
+  [Fintype V]
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Thermodynamics/FluxDecomposition.lean:564:0: automatically included section variable(s) unused in theorem `SGC.Thermodynamics.symmetric_part_eq_average_with_adjoint`:
+  [Fintype V]
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Thermodynamics/FluxDecomposition.lean:581:0: automatically included section variable(s) unused in theorem `SGC.Thermodynamics.antisymmetric_part_eq_half_diff_adjoint`:
+  [Fintype V]
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Thermodynamics/FluxDecomposition.lean:611:0: automatically included section variable(s) unused in theorem `SGC.Thermodynamics.normal_of_self_adjoint`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+ΓÜá [3128/3132] Replayed SGC.Bridge.DiscreteFluidDynamics
+warning: src/SGC/Bridge/DiscreteFluidDynamics.lean:73:0: automatically included section variable(s) unused in theorem `SGC.Bridge.DiscreteFluidDynamics.divergence_current_eq_neg_residual`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Bridge/DiscreteFluidDynamics.lean:129:8: automatically included section variable(s) unused in theorem `_private.SGC.Bridge.DiscreteFluidDynamics.0.SGC.Bridge.DiscreteFluidDynamics.exists_cycle_of_walk`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Bridge/DiscreteFluidDynamics.lean:318:0: automatically included section variable(s) unused in theorem `SGC.Bridge.DiscreteFluidDynamics.fiberPartition_quot_map_eq_iff`:
+  [Fintype W]
+  [Fintype F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype W] [Fintype F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Bridge/DiscreteFluidDynamics.lean:375:0: automatically included section variable(s) unused in theorem `SGC.Bridge.DiscreteFluidDynamics.uniformLift_row_sum_zero`:
+  [DecidableEq W]
+  [DecidableEq F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq W] [DecidableEq F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Bridge/DiscreteFluidDynamics.lean:387:0: automatically included section variable(s) unused in theorem `SGC.Bridge.DiscreteFluidDynamics.uniformLift_stationary`:
+  [DecidableEq W]
+  [DecidableEq F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq W] [DecidableEq F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Bridge/DiscreteFluidDynamics.lean:405:0: automatically included section variable(s) unused in theorem `SGC.Bridge.DiscreteFluidDynamics.uniformLift_current_scales`:
+  [Fintype W]
+  [DecidableEq W]
+  [DecidableEq F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype W] [DecidableEq W] [DecidableEq F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Bridge/DiscreteFluidDynamics.lean:467:0: automatically included section variable(s) unused in theorem `SGC.Bridge.DiscreteFluidDynamics.killingDefect_nonneg`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Bridge/DiscreteFluidDynamics.lean:557:0: automatically included section variable(s) unused in theorem `SGC.Bridge.DiscreteFluidDynamics.edgeInner_gradient_eq`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Bridge/DiscreteFluidDynamics.lean:606:0: automatically included section variable(s) unused in theorem `SGC.Bridge.DiscreteFluidDynamics.killingDefect_eq_edgeInner_self`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+ΓÜá [3129/3132] Replayed SGC.Bridge.PhaseClassifier
+warning: src/SGC/Bridge/PhaseClassifier.lean:91:9: `LE.le.eq_or_gt` has been deprecated: Use `LE.le.eq_or_lt'` instead
+warning: src/SGC/Bridge/PhaseClassifier.lean:97:0: automatically included section variable(s) unused in theorem `SGC.Bridge.PhaseClassifier.crystal_not_mixing`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Bridge/PhaseClassifier.lean:104:0: automatically included section variable(s) unused in theorem `SGC.Bridge.PhaseClassifier.crystal_not_universal`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Bridge/PhaseClassifier.lean:111:0: automatically included section variable(s) unused in theorem `SGC.Bridge.PhaseClassifier.mixing_not_universal`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Bridge/PhaseClassifier.lean:192:9: `LE.le.eq_or_gt` has been deprecated: Use `LE.le.eq_or_lt'` instead
+ΓÜá [3130/3132] Replayed SGC.Bridge.ValidityHorizon
+warning: src/SGC/Bridge/ValidityHorizon.lean:83:0: automatically included section variable(s) unused in theorem `SGC.Bridge.ValidityHorizon.probabilityCurrent_add`:
+  [Fintype V]
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Bridge/ValidityHorizon.lean:148:8: automatically included section variable(s) unused in theorem `_private.SGC.Bridge.ValidityHorizon.0.SGC.Bridge.ValidityHorizon.norm_pow_le_pow`:
+  [NormedAlgebra Γä¥ ≡¥ö╕]
+  [CompleteSpace ≡¥ö╕]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [NormedAlgebra Γä¥ ≡¥ö╕] [CompleteSpace ≡¥ö╕] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+ΓÜá [3131/3132] Replayed SGC.Bridge.DefectHorizonBridge
+warning: src/SGC/Bridge/DefectHorizonBridge.lean:125:0: automatically included section variable(s) unused in theorem `SGC.Bridge.DefectHorizonBridge.norm_pi_nonneg'`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Bridge/DefectHorizonBridge.lean:394:8: automatically included section variable(s) unused in theorem `_private.SGC.Bridge.DefectHorizonBridge.0.SGC.Bridge.DefectHorizonBridge.norm_pow_le_pow'`:
+  [NormedAlgebra Γä¥ ≡¥ö╕]
+  [CompleteSpace ≡¥ö╕]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [NormedAlgebra Γä¥ ≡¥ö╕] [CompleteSpace ≡¥ö╕] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Bridge/DefectHorizonBridge.lean:434:0: automatically included section variable(s) unused in theorem `SGC.Bridge.DefectHorizonBridge.opNorm_exp_eq_pmNorm`:
+  [Nonempty V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Nonempty V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Bridge/DefectHorizonBridge.lean:468:0: automatically included section variable(s) unused in theorem `SGC.Bridge.DefectHorizonBridge.exp_defectComplement_apply`:
+  [Nonempty V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Nonempty V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Bridge/DefectHorizonBridge.lean:556:0: automatically included section variable(s) unused in theorem `SGC.Bridge.DefectHorizonBridge.proj_mul_coarseGen`:
+  [Nonempty V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Nonempty V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Bridge/DefectHorizonBridge.lean:717:0: automatically included section variable(s) unused in theorem `SGC.Bridge.DefectHorizonBridge.norm_sq_pi_proj_pythagorean`:
+  [Nonempty V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Nonempty V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+ΓÜá [3132/3132] Built SGC.Observables.ExplorationTime (60s)
+warning: src/SGC/Observables/ExplorationTime.lean:75:17: unused variable `hT_ref`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+Build completed successfully (3132 jobs).

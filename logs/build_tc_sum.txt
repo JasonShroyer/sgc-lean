@@ -1,0 +1,4 @@
+﻿ERRORCOUNT=0
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Build completed successfully (3101 jobs).

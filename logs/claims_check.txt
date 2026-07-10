@@ -1,0 +1,35 @@
+﻿=== colleague-claimed artifacts: ground truth ===
+selection_contamination_variance_shift -> FisherNoetherBridge.lean:L484
+selection_contamination_variance_shift -> FisherNoetherBridge.lean:L549
+PhaseDiagram -> PhaseDiagram.lean:L94
+PhaseDiagram -> PhaseDiagram.lean:L400
+PhaseDiagram -> CelegansFloquetTsallis.lean:L165
+PathSpace -> SGC.lean:L32
+PathSpace -> PadicPathSpace.lean:L6
+PathSpace -> PadicPathSpace.lean:L25
+dContactForm -> AxiomAudit.lean:L106
+dContactForm -> BrownianMotion.lean:L762
+dContactForm -> BrownianMotion.lean:L769
+BrownianMotion -> CelegansFloquetTsallis.lean:L7
+BrownianMotion -> CelegansFloquetTsallis.lean:L16
+BrownianMotion -> CelegansFloquetTsallis.lean:L58
+trajectory_closure_bound -> FisherKL.lean:L29
+trajectory_closure_bound -> FisherKL.lean:L724
+trajectory_closure_bound -> FisherKL.lean:L861
+discovery_requires_bottleneck -> RennerSGC.lean:L306
+constrained_update_orthogonal -> Grokking.lean:L126
+constrained_update_orthogonal -> RennerSGC.lean:L42
+constrained_update_orthogonal -> RennerSGC.lean:L463
+InverseFisherMetric -> InformationGradientLaw.lean:L112
+IsCrystallizedPhase -> PhaseDiagram.lean:L37
+IsCrystallizedPhase -> PhaseDiagram.lean:L105
+IsCrystallizedPhase -> PhaseDiagram.lean:L122
+sigma_hid_epsilon_sandwich -> RennerSGC.lean:L89
+sigma_hid_epsilon_sandwich -> RennerSGC.lean:L323
+sigma_hid_epsilon_sandwich -> RennerSGC.lean:L330
+probability current -> PhaseDiagram.lean:L79
+probability current -> CelegansFloquetTsallis.lean:L156
+probability current -> MetabolicCore.lean:L27
+ProbabilityCurrent -> BrownianMotion.lean:L182
+ProbabilityCurrent -> BrownianMotion.lean:L489
+ProbabilityCurrent -> BrownianMotion.lean:L521

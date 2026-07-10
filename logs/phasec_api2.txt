@@ -1,0 +1,23 @@
+﻿LUMP L28: namespace SGC
+LUMP L30: open Finset LinearMap Matrix Real NormedSpace
+LUMP L194: lemma quot_gen_eq_row_sum (L : Matrix V V â„) (P : Partition V)
+LUMP L215: rw [LK_entry, KM_entry, quot_gen_eq_row_sum L P hL]
+/-- Under strong lumpability, the quotient generator at âŸ¦iâŸ§ equals row_sum at i. -/
+lemma quot_gen_eq_row_sum (L : Matrix V V â„) (P : Partition V)
+    (hL : IsStronglyLumpable L P) (i : V) (B : P.Quot) :
+    QuotientGeneratorSimple L P (P.quot_map i) B = row_sum_block L P i B := by
+  simp only [QuotientGeneratorSimple]
+  -- Need: row_sum_block L P (Quotient.out (P.quot_map i)) B = row_sum_block L P i B
+  -- Since Quotient.out (P.quot_map i) â‰ˆ i
+  have h_out_eq : Quotient.mk P.rel (Quotient.out (P.quot_map i)) = P.quot_map i :=
+    Quotient.out_eq (P.quot_map i)
+PADIC L37: namespace SGC.Topology.PadicPathSpace
+PADIC L39: open Topology Filter
+PADIC L47: variable (A : Type*)
+    the cardinality that licenses reading depth-`n` truncation as the p-adic quotient. -/
+theorem card_truncations (p n : â„•) :
+    Fintype.card (Fin n â†’ Fin p) = p ^ n := by
+  simp [Fintype.card_pi]
+
+/-! ## 2. Identification with the p-adic integers (the keystone)
+

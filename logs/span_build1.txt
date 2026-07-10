@@ -1,0 +1,46 @@
+﻿in the target expression
+  Fintype.card (Chord vΓéÇ) = #{p | p.1 < p.2 Γêº p.1 Γëá vΓéÇ Γêº p.2 Γëá vΓéÇ}
+
+V : Type u_1
+instΓ£¥┬▓ : Fintype V
+instΓ£¥┬╣ : DecidableEq V
+instΓ£¥ : LinearOrder V
+vΓéÇ : V
+Γèó Fintype.card (Chord vΓéÇ) = #{p | p.1 < p.2 Γêº p.1 Γëá vΓéÇ Γêº p.2 Γëá vΓéÇ}
+error: src/SGC/Bridge/SchnakenbergSpan.lean:224:12: Insufficient number of fields for `Γƒ¿...Γƒ⌐` constructor: Constructor `Eq.refl` does not have explicit fields, but 3 were provided
+error: src/SGC/Bridge/SchnakenbergSpan.lean:227:12: Insufficient number of fields for `Γƒ¿...Γƒ⌐` constructor: Constructor `Eq.refl` does not have explicit fields, but 3 were provided
+error: src/SGC/Bridge/SchnakenbergSpan.lean:228:17: Type mismatch
+  Prod.swap_swap p
+has type
+  p.swap.swap = p
+but is expected to have type
+  p.swap Γêê {p | p.2 < p.1 Γêº p.1 Γëá vΓéÇ Γêº p.2 Γëá vΓéÇ}
+error: src/SGC/Bridge/SchnakenbergSpan.lean:229:17: Type mismatch
+  Prod.swap_swap p
+has type
+  p.swap.swap = p
+but is expected to have type
+  p.swap Γêê {p | p.1 < p.2 Γêº p.1 Γëá vΓéÇ Γêº p.2 Γëá vΓéÇ}
+error: src/SGC/Bridge/SchnakenbergSpan.lean:241:15: Invalid `Γƒ¿...Γƒ⌐` notation: The expected type `p.1 = vΓéÇ ΓåÆ False` is not an inductive type
+
+Note: This notation can only be used when the expected type is an inductive type with a single constructor
+error: src/SGC/Bridge/SchnakenbergSpan.lean:241:40: Invalid `Γƒ¿...Γƒ⌐` notation: The expected type `p.2 = vΓéÇ ΓåÆ False` is not an inductive type
+
+Note: This notation can only be used when the expected type is an inductive type with a single constructor
+error: src/SGC/Bridge/SchnakenbergSpan.lean:242:15: Invalid `Γƒ¿...Γƒ⌐` notation: The expected type `p.1 = vΓéÇ ΓåÆ False` is not an inductive type
+
+Note: This notation can only be used when the expected type is an inductive type with a single constructor
+error: src/SGC/Bridge/SchnakenbergSpan.lean:242:40: Invalid `Γƒ¿...Γƒ⌐` notation: The expected type `p.2 = vΓéÇ ΓåÆ False` is not an inductive type
+
+Note: This notation can only be used when the expected type is an inductive type with a single constructor
+error: src/SGC/Bridge/SchnakenbergSpan.lean:243:14: Tactic `rcases` failed: `leftΓ£¥ : p.1 = vΓéÇ ΓåÆ False` is not an inductive datatype
+error: Lean exited with code 1
+Some required targets logged failures:
+- SGC.Bridge.SchnakenbergSpan
+lake.exe : error: build failed
+At line:1 char:1
++ & "$env:USERPROFILE\.elan\bin\lake.exe" build SGC.Bridge.Schnakenberg ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (error: build failed:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

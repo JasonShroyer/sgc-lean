@@ -1,0 +1,85 @@
+﻿ΓÜá [1833/1841] Replayed SGC.Axioms.GeometryGeneral
+warning: src/SGC/Axioms/GeometryGeneral.lean:53:34: This simp argument is unused:
+  mul_left_comm
+
+Hint: Omit it from the simp argument list.
+  simp [Pi.smul_apply, mul_assoc, m╠╡u╠╡l╠╡_╠╡l╠╡e╠╡f╠╡t╠╡_╠╡c╠╡o╠╡m╠╡m╠╡,╠╡ ╠╡mul_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: src/SGC/Axioms/GeometryGeneral.lean:57:18: This simp argument is unused:
+  mul_assoc
+
+Hint: Omit it from the simp argument list.
+  simp [inner_pi, m╠╡u╠╡l╠╡_╠╡a╠╡s╠╡s╠╡o╠╡c╠╡,╠╡ ╠╡mul_left_comm, mul_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ΓÜá [3020/3035] Replayed SGC.Axioms.Geometry
+warning: src/SGC/Axioms/Geometry.lean:279:48: This simp argument is unused:
+  mul_left_comm
+
+Hint: Omit it from the simp argument list.
+  simp only [mul_assoc, mul_comm (pi_dist _), mul_l╠╡e╠╡f╠╡t╠╡_╠╡c╠╡o╠╡m╠╡m╠╡,╠╡ ╠╡m╠╡u╠╡l╠╡_╠╡sum]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: src/SGC/Axioms/Geometry.lean:402:8: 'change
+  toE (iso (A (iso.symm (fromE (x + y))))) =
+    toE (iso (A (iso.symm (fromE x)))) + toE (iso (A (iso.symm (fromE y))))' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+ΓÜá [3024/3035] Replayed SGC.Renormalization.Lumpability
+warning: src/SGC/Renormalization/Lumpability.lean:335:0: automatically included section variable(s) unused in theorem `SGC.lift_is_block_constant`:
+  [Fintype V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: src/SGC/Renormalization/Lumpability.lean:545:31: This simp argument is unused:
+  DirichletForm_bar
+
+Hint: Omit it from the simp argument list.
+  s╠╡i╠╡m╠╡p╠╡ ╠╡o╠╡n╠╡l╠╡y╠╡ ╠╡[╠╡R╠╡a╠╡y╠╡l╠╡e╠╡i╠╡g╠╡h╠╡Q╠╡u╠╡o╠╡t╠╡i╠╡e╠╡n╠╡t╠╡,╠╡ ╠╡D╠╡i╠╡r╠╡i╠╡c╠╡h╠╡l╠╡e╠╡t╠╡F╠╡o╠╡r╠╡m╠╡_╠╡b╠╡a╠╡r╠╡]╠╡ ╠╡a╠╡t╠╡ ╠╡*╠╡s╠▓i╠▓m╠▓p╠▓ ╠▓o╠▓n╠▓l╠▓y╠▓ ╠▓[╠▓R╠▓a╠▓y╠▓l╠▓e╠▓i╠▓g╠▓h╠▓Q╠▓u╠▓o╠▓t╠▓i╠▓e╠▓n╠▓t╠▓]╠▓ ╠▓a╠▓t╠▓ ╠▓*╠▓
+  ╠▓ ╠▓ ╠▓ ╠▓ ╠▓ ╠▓ ╠▓-╠▓-╠▓ ╠▓N╠▓u╠▓m╠▓e╠▓r╠▓a╠▓t╠▓o╠▓r╠▓:╠▓ ╠▓Γä░╠▓(╠▓l╠▓i╠▓f╠▓t╠▓(╠▓f╠▓)╠▓)╠▓ ╠▓=╠▓ ╠▓Γä░╠▓╠ä╠▓(╠▓f╠▓)╠▓ ╠▓b╠▓y╠▓ ╠▓d╠▓i╠▓r╠▓i╠▓c╠▓h╠▓l╠▓e╠▓t╠▓_╠▓f╠▓o╠▓r╠▓m╠▓_╠▓l╠▓i╠▓f╠▓t╠▓_╠▓e╠▓q╠▓
+  ╠▓ ╠▓ ╠▓ ╠▓ ╠▓ ╠▓ ╠▓
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: src/SGC/Renormalization/Lumpability.lean:641:0: automatically included section variable(s) unused in theorem `SGC.lift_fun_is_block_constant`:
+  [Fintype V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+ΓÜá [3031/3035] Replayed SGC.Renormalization.Approximate
+warning: src/SGC/Renormalization/Approximate.lean:106:5: unused variable `h╧Ç`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: src/SGC/Renormalization/Approximate.lean:810:0: automatically included section variable(s) unused in theorem `SGC.Approximate.duhamel_forcing_identity`:
+  [DecidableEq V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Γ£û [3032/3035] Building SGC.Bridge.Quantum (10s)
+trace: .> LEAN_PATH=C:\Lean4 Projects\.lake\packages\Cli\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\batteries\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\Qq\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\aesop\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\proofwidgets\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\importGraph\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\LeanSearchClient\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\plausible\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\mathlib\.lake\build\lib\lean;C:\Lean4 Projects\.lake\build\lib\lean c:\Users\Jason\.elan\toolchains\leanprover--lean4---v4.25.2\bin\lean.exe C:\Lean4 Projects\src\SGC\Bridge\Quantum.lean -o C:\Lean4 Projects\.lake\build\lib\lean\SGC\Bridge\Quantum.olean -i C:\Lean4 Projects\.lake\build\lib\lean\SGC\Bridge\Quantum.ilean -c C:\Lean4 Projects\.lake\build\ir\SGC\Bridge\Quantum.c --setup C:\Lean4 Projects\.lake\build\ir\SGC\Bridge\Quantum.setup.json --json
+warning: src/SGC/Bridge/Quantum.lean:285:13: This simp argument is unused:
+  h_P_sa
+
+Hint: Omit it from the simp argument list.
+  simp only [╠╡h╠╡_╠╡P╠╡_╠╡s╠╡a╠╡]╠╡ ╠╡at h_comp1 h_comp2
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: src/SGC/Bridge/Quantum.lean:596:2: Type mismatch: After simplification, term
+  ne_of_gt hsum
+ has type
+  ┬¼Γêæ x, pi_dist x = 0
+but is expected to have type
+  ┬¼Γêæ x, Γåæ(pi_dist x) = 0
+error: Lean exited with code 1
+Some required targets logged failures:
+- SGC.Bridge.Quantum
+lake.exe : error: build failed
+At line:1 char:1
++ & "$env:USERPROFILE\.elan\bin\lake.exe" build SGC.Bridge.Consolidatio ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (error: build failed:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

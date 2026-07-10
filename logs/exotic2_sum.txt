@@ -1,0 +1,11 @@
+﻿ERR=8
+error: src/SGC/Bridge/ExoticPairs.lean:160:90: unsolved goals
+error: src/SGC/Bridge/ExoticPairs.lean:283:52: Expected type must not contain free variables
+error: src/SGC/Bridge/ExoticPairs.lean:288:52: Expected type must not contain free variables
+error: src/SGC/Bridge/ExoticPairs.lean:290:52: Expected type must not contain free variables
+lake.exe : error: build failed
+    + CategoryInfo          : NotSpecified: (error: build failed:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+error: Lean exited with code 1
+Some required targets logged failures:
+- SGC.Bridge.ExoticPairs

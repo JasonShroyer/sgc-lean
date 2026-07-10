@@ -1,0 +1,20 @@
+﻿src\SGC\Bridge\SchnakenbergIndependence.lean:51:0: warning: automatically included section variable(s) unused in theorem `SGC.Bridge.SchnakenbergIndependence.triCurrent_apply_offstar`:
+  [Fintype V]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype V] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+src\SGC\Bridge\SchnakenbergIndependence.lean:86:2: error: unsolved goals
+case pos
+V : Type u_1
+instΓ£¥┬▓ : Fintype V
+instΓ£¥┬╣ : DecidableEq V
+instΓ£¥ : LinearOrder V
+vΓéÇ ix iy : V
+hio : (ix, iy).1 < (ix, iy).2
+hix : (ix, iy).1 Γëá vΓéÇ
+hiy : (ix, iy).2 Γëá vΓéÇ
+hpo : (ix, iy).1 < (ix, iy).2
+hpx : (ix, iy).1 Γëá vΓéÇ
+hpy : (ix, iy).2 Γëá vΓéÇ
+Γèó ix = iy ΓåÆ ┬¼iy = ix

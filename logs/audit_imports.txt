@@ -1,0 +1,44 @@
+﻿import SGC.Stochastic.BrownianMotion
+import SGC.SpinGlass
+import SGC.PhaseDiagram
+import SGC.Bridge.CelegansFloquetTsallis
+import SGC.Thermodynamics.EntropyProduction
+import SGC.Thermodynamics.FluxDecomposition
+import SGC.ComplexityRelativity
+import SGC.Bridge.DiscreteFluidDynamics
+import SGC.Bridge.PhaseClassifier
+import SGC.Bridge.ValidityHorizon
+import SGC.Bridge.DefectHorizonBridge
+import SGC.InformationGeometry.FisherNoetherBridge
+import SGC.Spectral.Defs
+import SGC.Information.RateOfConsolidation
+/-
+  # SGC/Foundations/AxiomAudit.lean
+
+  **Proof-theoretic baseline audit for SGC's discharged conjectures.**
+
+  ## Why this module exists
+
+  Every theorem in this codebase that lives behind the `[Fintype V]` firewall
+  is comfortably provable in **WKLâ‚€** (Weak KÃ¶nig's Lemma over RCAâ‚€). When
+  the continuous limit of conjecture C-0 (non-reversible Belkin-Niyogi
+  convergence on a compact manifold) is eventually attacked, we will need
+  to leave `[Fintype V]` and the proof-theoretic strength will jump,
+  potentially to **ATRâ‚€** (arithmetic transfinite recursion) or
+  **Î Â¹â‚-CAâ‚€** (Î Â¹â‚ comprehension) for theorems involving uncountable
+  suprema, real-valued Borel hierarchies, or fixed-point constructions
+  on continuous state spaces.
+
+  This module is the **baseline snapshot before that jump**. Each
+  `#print axioms` call below emits, in the Lean InfoView, the explicit
+  axiom set used by a flagship discharged theorem. When the continuous
+  pass starts, we re-run this file and diff against the baseline to see
+  exactly where the proof-theoretic strength has increased.
+
+  ## Reverse Mathematics tier reference
+
+  | Tier             | Strength                       | What it proves                                              |
+  |------------------|--------------------------------|-------------------------------------------------------------|
+  | **RCAâ‚€**         | Recursive Comprehension        | Constructive base; computable functions, finite arithmetic. |
+  | **WKLâ‚€**         | Weak KÃ¶nig's Lemma             | Compactness for `2^â„•`; Heine-Borel for `[0,1]^n`.            |
+  | **ACAâ‚€**         | Arithmetical Comprehension     | Bolzano-Weierstrass; Riemann integrability of continuous f. |

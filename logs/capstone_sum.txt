@@ -1,0 +1,3 @@
+﻿info: src/SGC/Foundations/AxiomAudit.lean:823:0: 'SGC.Bridge.CantorShiftTower.shiftTower_eternal_closure' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:823:0: 'SGC.Bridge.CantorShiftTower.shiftTower_eternal_closure' depends on axioms: [propext, Classical.choice, Quot.sound]
+Build completed successfully (3178 jobs).

@@ -1,0 +1,33 @@
+﻿
+info: src/SGC/Foundations/AxiomAudit.lean:823:0: 'SGC.Bridge.CantorShiftTower.truncate_pathShift' does not depend on any axioms
+info: src/SGC/Foundations/AxiomAudit.lean:826:0: 'SGC.Bridge.CantorShiftTower.shiftTower_eternal_closure' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:840:0: 'SGC.Bridge.ExoticPairs.stronglyLumpable_add_blockNeutral' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:843:0: 'SGC.Bridge.ExoticPairs.exoticLift_same_quotient' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:846:0: 'SGC.Bridge.ExoticPairs.exoticLift_stronglyLumpable' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:849:0: 'SGC.Bridge.ExoticPairs.exoticLift_quotient_realizes' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:852:0: 'SGC.Bridge.ExoticPairs.killingDefect_uniformLift_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:855:0: 'SGC.Bridge.ExoticPairs.killingDefect_exoticLift_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:858:0: 'SGC.Bridge.ExoticPairs.exoticLift_coarse_current_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:872:0: 'SGC.Bridge.AffinityProtection.cycleProd_balance_of_detailedBalance' depends on axioms: [propext,
+info: src/SGC/Foundations/AxiomAudit.lean:875:0: 'SGC.Bridge.AffinityProtection.killingDefect_pos_of_affinityCharge_ne_zero' depends on axioms: [propext,
+info: src/SGC/Foundations/AxiomAudit.lean:878:0: 'SGC.Bridge.AffinityProtection.annealing_protection' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:881:0: 'SGC.Bridge.AffinityProtection.exoticLift_affinityCharge_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:884:0: 'SGC.Bridge.AffinityProtection.killingDefect_exoticLift_pos_universal' depends on axioms: [propext,
+info: src/SGC/Foundations/AxiomAudit.lean:887:0: 'SGC.Bridge.AffinityProtection.uniformLift_affinityCharge_zero' depends on axioms: [propext,
+info: src/SGC/Foundations/AxiomAudit.lean:890:0: 'SGC.Bridge.AffinityProtection.affinity_separates_pair' depends on axioms: [propext, Classical.choice, Quot.sound]
+error: build failed
+info: src/SGC/Foundations/AxiomAudit.lean:903:0: 'SGC.Bridge.SchnakenbergBasis.mem_cycleSpace_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:906:0: 'SGC.Bridge.SchnakenbergBasis.triCurrent_mem_cycleSpace' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:909:0: 'SGC.Bridge.SchnakenbergBasis.chordGenerator_row_sum_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:912:0: 'SGC.Bridge.SchnakenbergBasis.chordGenerator_affinityCharge' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:916:0: 'SGC.Bridge.SchnakenbergBasis.schnakenberg_realizability' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:919:0: 'SGC.Bridge.SchnakenbergBasis.killingDefect_pos_of_chord_asym' depends on axioms: [propext,
+error: src/SGC/Foundations/AxiomAudit.lean:937:14: Unknown constant `SGC.Bridge.SchnakenbergIndependence.chordCurrent_apply_chord`
+error: src/SGC/Foundations/AxiomAudit.lean:940:14: Unknown constant `SGC.Bridge.SchnakenbergIndependence.triCurrent_chord_linearIndependent`
+error: src/SGC/Foundations/AxiomAudit.lean:943:14: Unknown constant `SGC.Bridge.SchnakenbergSpan.cycleSpace_decomposition`
+error: src/SGC/Foundations/AxiomAudit.lean:946:14: Unknown constant `SGC.Bridge.SchnakenbergSpan.cycleSpace_eq_span`
+error: src/SGC/Foundations/AxiomAudit.lean:949:14: Unknown constant `SGC.Bridge.SchnakenbergSpan.finrank_cycleSpace_eq_card_chord`
+error: src/SGC/Foundations/AxiomAudit.lean:953:14: Unknown constant `SGC.Bridge.SchnakenbergSpan.two_mul_finrank_cycleSpace`
+error: Lean exited with code 1
+
+

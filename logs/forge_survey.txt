@@ -1,0 +1,83 @@
+﻿forge01\jason
+Forge01
+===OS===
+Microsoft Windows 11 Pro
+===CPU===
+ssh : .Name : The term '.Name' is not recognized as the name of a cmdlet, function, script file, or 
+At line:1 char:1
++ ssh -o BatchMode=yes -o ConnectTimeout=10 "Jason@100.123.223.27" "who ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (.Name : The ter...cript file, or :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+===RAM===
+operable program. Check the spelling of the name, or if a path was included, verify that the path 
+is correct and try again.
+At line:1 char:152
++ ... =='; Get-CimInstance Win32_Processor | ForEach-Object { .Name + ' | C ...
++                                                             ~~~~~
+    + CategoryInfo          : ObjectNotFound: (.Name:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+= : The term '=' is not recognized as the name of a cmdlet, function, script file, or operable 
+program. Check the spelling of the name, or if a path was included, verify that the path is 
+correct and try again.
+At line:1 char:297
++ ...  ' | Base: ' + .MaxClockSpeed + 'MHz' }; echo '===RAM===';  = (Get-Ci ...
++                                                                 ~
+    + CategoryInfo          : ObjectNotFound: (=:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+/1GB : The term '/1GB' is not recognized as the name of a cmdlet, function, script file, or 
+operable program. Check the spelling of the name, or if a path was included, verify that the path 
+is correct and try again.
+At line:1 char:375
++ ... n32_ComputerSystem).TotalPhysicalMemory; '{0:N2} GB' -f (/1GB); echo  ...
+===GPU===
++                                                              ~~~~
+    + CategoryInfo          : ObjectNotFound: (/1GB:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+NVIDIA GeForce RTX 5090, 32607 MiB, 591.86, 12.0
+===STORAGE===
+.FreeSpace/1GB : The term '.FreeSpace/1GB' is not recognized as the name of a cmdlet, function, 
+script file, or operable program. Check the spelling of the name, or if a path was included, 
+verify that the path is correct and try again.
+At line:1 char:645
+===PYTHON===
++ ... ceID + ' {0:N1} GB free / {1:N1} GB total' -f (.FreeSpace/1GB), (.Siz ...
++                                                    ~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.FreeSpace/1GB:String) [], CommandNotFoundExceptio 
+   n
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+python : Python was not found; run without arguments to install from the Microsoft Store, or 
+disable this shortcut from Settings > Apps > Advanced app settings > App execution aliases.
+At line:1 char:698
++ ... B), (.Size/1GB) }; echo '===PYTHON==='; python --version 2>&1; echo ' ...
++                                             ~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Python was not ...cution aliases.:String) [], Remote 
+   Exception
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+===CUDA===
+nvcc : The term 'nvcc' is not recognized as the name of a cmdlet, function, script file, or 
+operable program. Check the spelling of the name, or if a path was included, verify that the path 
+is correct and try again.
+At line:1 char:740
++ ... ===PYTHON==='; python --version 2>&1; echo '===CUDA==='; nvcc --versi ...
++                                                              ~~~~
+    + CategoryInfo          : ObjectNotFound: (nvcc:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+===CONDA===
+conda : The term 'conda' is not recognized as the name of a cmdlet, function, script file, or 
+operable program. Check the spelling of the name, or if a path was included, verify that the path 
+is correct and try again.
+At line:1 char:781
++ ...  '===CUDA==='; nvcc --version 2>&1; echo '===CONDA==='; conda --versi ...
++                                                             ~~~~~
+    + CategoryInfo          : ObjectNotFound: (conda:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+===DONE===

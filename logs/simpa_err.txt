@@ -1,0 +1,15 @@
+﻿Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: src/SGC/Bridge/Quantum.lean:596:2: Type mismatch: After simplification, term
+  ne_of_gt hsum
+ has type
+  ┬¼Γêæ x, pi_dist x = 0
+but is expected to have type
+  ┬¼Γêæ x, Γåæ(pi_dist x) = 0
+error: Lean exited with code 1
+Some required targets logged failures:
+- SGC.Bridge.Quantum
+lake.exe : error: build failed
+At line:1 char:1
++ & "$env:USERPROFILE\.elan\bin\lake.exe" build SGC.Bridge.Consolidatio ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (error: build failed:String) [], RemoteException

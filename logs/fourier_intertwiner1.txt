@@ -1,0 +1,27 @@
+﻿Γ£û [2863/2863] Building SGC.Bridge.FourierIntertwiner (42s)
+trace: .> LEAN_PATH=C:\Lean4 Projects\.lake\packages\Cli\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\batteries\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\Qq\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\aesop\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\proofwidgets\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\importGraph\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\LeanSearchClient\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\plausible\.lake\build\lib\lean;C:\Lean4 Projects\.lake\packages\mathlib\.lake\build\lib\lean;C:\Lean4 Projects\.lake\build\lib\lean c:\Users\Jason\.elan\toolchains\leanprover--lean4---v4.25.2\bin\lean.exe C:\Lean4 Projects\src\SGC\Bridge\FourierIntertwiner.lean -o C:\Lean4 Projects\.lake\build\lib\lean\SGC\Bridge\FourierIntertwiner.olean -i C:\Lean4 Projects\.lake\build\lib\lean\SGC\Bridge\FourierIntertwiner.ilean -c C:\Lean4 Projects\.lake\build\ir\SGC\Bridge\FourierIntertwiner.c --setup C:\Lean4 Projects\.lake\build\ir\SGC\Bridge\FourierIntertwiner.setup.json --json
+error: src/SGC/Bridge/FourierIntertwiner.lean:50:19: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  ≡¥ôò ?╬ª ?k
+in the target expression
+  Γêæ j, stdAddChar (-(j * k)) ΓÇó ╬ª j = stdAddChar (-(c * k)) ΓÇó Γêæ j, stdAddChar (-(j * k)) ΓÇó ╬ª j
+
+N : Γäò
+instΓ£¥┬▓ : NeZero N
+E : Type u_1
+instΓ£¥┬╣ : AddCommGroup E
+instΓ£¥ : Module Γäé E
+╬ª : ZMod N ΓåÆ E
+c k : ZMod N
+hperiod : ΓêÇ (y : ZMod N), ╬ª (y + c) = ╬ª y
+hk : stdAddChar (-(c * k)) Γëá 1
+Γèó Γêæ j, stdAddChar (-(j * k)) ΓÇó ╬ª j = stdAddChar (-(c * k)) ΓÇó Γêæ j, stdAddChar (-(j * k)) ΓÇó ╬ª j
+error: Lean exited with code 1
+Some required targets logged failures:
+- SGC.Bridge.FourierIntertwiner
+lake.exe : error: build failed
+At line:1 char:1
++ & "C:\Users\Jason\.elan\bin\lake.exe" build SGC.Bridge.FourierIntertw ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (error: build failed:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

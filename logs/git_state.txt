@@ -1,0 +1,100 @@
+﻿cantor-layer-wip
+ M perihelion/core/wavelet_layer.py
+ M src/SGC.lean
+ M src/SGC/Foundations/AxiomAudit.lean
+ M src/SGC/InformationGeometry/FisherKL.lean
+ M src/SGC/InformationGeometry/FisherNoetherBridge.lean
+ M src/SGC/InformationGeometry/KramersEscape.lean
+ M src/SGC/Observables/ExplorationTime.lean
+ M src/SGC/Observables/ValidityHorizon.lean
+ M src/SGC/Renormalization/Approximate.lean
+ M src/SGC/Renormalization/OptimalPartition.lean
+ M src/SGC/Topology/Blanket.lean
+ M src/SGC/Topology/PadicPathSpace.lean
+?? decisions/0008-spectral-dimension-tsallis-prereg.md
+?? decisions/0009-representation-manifold-tsallis-prereg.md
+?? decisions/0010-consolidation-dimensional-collapse.md
+?? demos/aggregate_matched.py
+?? demos/aggregate_perihelion.py
+?? demos/logs/ablation/ablation_results.csv
+?? demos/logs/matched_ab/
+?? demos/logs/perihelion_ablation/
+?? demos/logs/phase6_1/run_20260616_123638/
+?? demos/logs/phase6_1/run_20260616_123810/
+?? demos/logs/phase6_1/run_20260616_123816/
+?? demos/logs/phase6_1/run_20260616_123859/
+?? demos/logs/phase6_1/run_20260616_124208/
+?? demos/logs/phase6_1/run_20260616_124403/
+?? demos/logs/phase6_1/run_20260616_131037/
+?? demos/perihelion_factorial_ablation.py
+?? demos/svd_gauge_probe.py
+?? demos/wavelet_gauge_matched_ab.py
+?? experiments/
+?? logs/api_probe.txt
+?? logs/api_probe3.txt
+?? logs/api_probe4.txt
+?? logs/api_probe5.txt
+?? logs/api_probe6.txt
+?? logs/api_probe7.txt
+?? logs/api_probe8.txt
+?? logs/audit_imports.txt
+?? logs/audit_retire_verdicts.txt
+?? logs/audit_spectral.txt
+?? logs/audit_spectral_filtered.txt
+?? logs/build_audit_pyth.txt
+?? logs/build_audit_retire.txt
+?? logs/build_et.txt
+?? logs/build_et_summary.txt
+?? logs/build_full_retire.txt
+?? logs/build_full_retire2.txt
+?? logs/build_full_sum.txt
+?? logs/build_full_sum2.txt
+?? logs/build_pyth.txt
+?? logs/build_tc.txt
+?? logs/build_tc_sum.txt
+?? logs/claims_check.txt
+?? logs/et_usage.txt
+?? logs/fourier_api_probe.txt
+?? logs/fourier_axioms.txt
+?? logs/fourier_axioms2.txt
+?? logs/fourier_axioms3.txt
+?? logs/fourier_intertwiner1.txt
+?? logs/fourier_intertwiner2.txt
+?? logs/fourier_intertwiner3.txt
+?? logs/fourier_ladder1.txt
+?? logs/git_state.txt
+?? logs/hk_defs.txt
+?? logs/inventory_20260705.txt
+?? logs/mathlib_dft_decls.txt
+?? logs/padic_pibrick.txt
+?? logs/repair_build.txt
+?? logs/retire_consumers.txt
+?? logs/roc_audit.txt
+?? logs/roc_audit_filtered.txt
+?? logs/roc_build.txt
+?? logs/roc_fullbuild.txt
+?? logs/sgc_phi_foundations.txt
+?? logs/sgc_root.txt
+?? logs/sumcomp2.txt
+?? logs/sumcomp_probe.txt
+?? logs/tower1.txt
+?? logs/trunc_proof.txt
+?? logs/trunc_proof2.txt
+?? logs/trunc_proof3.txt
+?? logs/trunc_scaffold.txt
+?? logs/vault_diag.txt
+?? logs/vault_health.txt
+?? logs/vault_sample_diff.txt
+?? logs/vault_sample_diff2.txt
+?? logs/verdict_tail.txt
+?? logs/verify_roc.txt
+?? scratch/
+?? src/SGC/Bridge/DefectHorizonBridge.lean
+?? src/SGC/Bridge/FloquetTsallisStabilization.lean
+?? src/SGC/Bridge/FourierIntertwiner.lean
+?? src/SGC/Bridge/ReasoningBarriers.lean
+?? src/SGC/Bridge/SingularLearning.lean
+?? src/SGC/Bridge/TrajectoryClosure.lean
+?? src/SGC/Bridge/TruncationProjector.lean
+?? src/SGC/Bridge/TruncationTower.lean
+?? src/SGC/Information/RateOfConsolidation.lean

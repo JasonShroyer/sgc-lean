@@ -1,0 +1,13 @@
+mode,seed,grok90,grok95,kappa_grad,elapsed
+wavelet,42,1300,1534,6.53e-06,823.9
+matched_svd_flat,42,1400,1534,3.401e-05,807.2
+matched_weight_scaled,42,1565,1819,6.479e-05,915.0
+wavelet,43,1533,1651,3.953e-05,643.4
+matched_svd_flat,43,1515,1716,5.666e-05,644.0
+matched_weight_scaled,43,1382,1440,5.106e-05,549.7
+wavelet,44,1389,1463,2.574e-05,559.8
+matched_svd_flat,44,1516,1912,7.798e-05,711.8
+matched_weight_scaled,44,1686,2064,0.00011509,760.5
+wavelet,45,1415,1486,1.896e-05,567.1
+matched_svd_flat,45,1512,1860,5.079e-05,693.9
+matched_weight_scaled,45,1620,1831,3.241e-05,680.6

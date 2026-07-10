@@ -1,0 +1,19 @@
+﻿DoobMeyer.lean:60: namespace SGC
+EntropyProduction.lean:57: namespace SGC
+EntropyProduction.lean:58: namespace Thermodynamics
+EntropyProduction.lean:263: def ProbabilityCurrent (L : Matrix V V ℝ) (pi_dist : V → ℝ) (x y : V) : ℝ :=
+Evolution.lean:55: namespace SGC.Thermodynamics
+FluxDecomposition.lean:50: namespace SGC.Thermodynamics
+FluxDecomposition.lean:178: def DetailedBalance (L : Matrix V V ℝ) (pi_dist : V → ℝ) : Prop :=
+
+end Thermodynamics
+end SGC
+/-
+Copyright (c) 2025 SGC Project. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+
+    This is equivalent to thermal equilibrium (no net flux). -/
+def DetailedBalance (L : Matrix V V â„) (pi_dist : V â†’ â„) : Prop :=
+  âˆ€ x y, pi_dist x * L x y = pi_dist y * L y x
+
+/-- Detailed balance is equivalent to zero probability current. -/

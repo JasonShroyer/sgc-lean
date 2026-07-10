@@ -1,0 +1,3 @@
+﻿ERR=0
+Γ£ö [3238/3239] Built SGC (7.5s)
+Build completed successfully (3239 jobs).

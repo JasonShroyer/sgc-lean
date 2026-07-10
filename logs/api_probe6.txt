@@ -1,0 +1,8 @@
+﻿=== theorem finrank_fintype_fun_eq_card|lemma finrank_fintype_fun_eq_card ===
+=== theorem ZMod.card |lemma ZMod.card |theorem card |lemma card  ===
+\Data\Sym\Card.lean:174: protected theorem card {α} [Fintype α] : card (Sym2 α) = Nat.choose (card α + 1) 2 :=
+\Data\ZMod\Defs.lean:164: theorem card (n : ℕ) [Fintype (ZMod n)] : Fintype.card (ZMod n) = n := by
+\FieldTheory\Finite\Basic.lean:242: theorem card (p : ℕ) [CharP K p] : ∃ n : ℕ+, Nat.Prime p ∧ q = p ^ (n : ℕ) := by
+\FieldTheory\Finite\GaloisField.lean:126: theorem card (h : n ≠ 0) : Nat.card (GaloisField p n) = p ^ n := by
+\GroupTheory\RegularWreathProduct.lean:127: theorem card [Finite Q] : Nat.card (D ≀ᵣ Q) = Nat.card D ^ Nat.card Q * Nat.card Q := by
+=== ZMod.card in ZMod/Basic ===

@@ -1,0 +1,8 @@
+﻿info: src/SGC/Foundations/AxiomAudit.lean:805:0: 'SGC.Bridge.CantorShiftTower.shiftKernel_row_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:808:0: 'SGC.Bridge.CantorShiftTower.shiftTower_stronglyLumpable' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:811:0: 'SGC.Bridge.CantorShiftTower.shiftTower_quotient_realizes' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:814:0: 'SGC.Bridge.CantorShiftTower.shiftTower_defect_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:817:0: 'SGC.Bridge.CantorShiftTower.shiftGenerator_stronglyLumpable' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:820:0: 'SGC.Bridge.CantorShiftTower.truncate_pathShift' does not depend on any axioms
+info: src/SGC/Foundations/AxiomAudit.lean:820:0: 'SGC.Bridge.CantorShiftTower.truncate_pathShift' does not depend on any axioms
+Build completed successfully (3178 jobs).

@@ -1,0 +1,10 @@
+﻿    At detailed balance (reversibility), J = 0. -/
+def ProbabilityCurrent (L : Matrix V V â„) (pi_dist : V â†’ â„) (x y : V) : â„ :=
+  pi_dist x * L x y - pi_dist y * L y x
+
+/-- The probability current is antisymmetric: J_{xy} = -J_{yx}. -/
+    This is equivalent to thermal equilibrium (no net flux). -/
+def DetailedBalance (L : Matrix V V â„) (pi_dist : V â†’ â„) : Prop :=
+  âˆ€ x y, pi_dist x * L x y = pi_dist y * L y x
+
+/-- Detailed balance is equivalent to zero probability current. -/

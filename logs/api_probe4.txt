@@ -1,0 +1,24 @@
+﻿=== castHom_surjective ===
+\Data\ZMod\Basic.lean:350: theorem castHom_surjective (h : m ∣ n) : Function.Surjective (castHom h (ZMod m)) :=
+\GroupTheory\SpecificGroups\Cyclic.lean:1002: have hf := ZMod.castHom_surjective (dvd_zero 2)
+\GroupTheory\SpecificGroups\Cyclic.lean:1008: (Prod.map_surjective.mpr ⟨ZMod.castHom_surjective (dvd_zero _), Function.surjective_id⟩)
+=== funLeft_injective_of_surjective ===
+\Algebra\Module\Equiv\Basic.lean:781: theorem funLeft_injective_of_surjective (f : m → n) (hf : Surjective f) :
+\LinearAlgebra\Dimension\ErdosKaplansky.lean:87: LinearMap.funLeft_injective_of_surjective K K _ (invFun_surjective e.injective)
+\RepresentationTheory\Homological\GroupCohomology\Functoriality.lean:93: LinearMap.funLeft_injective_of_surjective k A _ hf.comp_left
+=== def funLeft ===
+\Algebra\Module\Equiv\Basic.lean:760: def funLeft (f : m → n) : (n → M) →ₗ[R] m → M where
+=== finrank_range_of_inj ===
+\Analysis\InnerProductSpace\PiL2.lean:1092: simp only [LS, LinearMap.finrank_range_of_inj L.injective]
+\LinearAlgebra\Dimension\Finrank.lean:121: theorem LinearMap.finrank_range_of_inj {f : M →ₗ[R] N} (hf : Function.Injective f) :
+\LinearAlgebra\Dual\Lemmas.lean:874: Submodule.map_top, finrank_range_of_inj, Subspace.dual_finrank_eq]
+=== theorem finrank_pi\b ===
+=== finrank_fintype_fun_eq_card ===
+\Algebra\Module\ZLattice\Basic.lean:685: (by rw [← finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ, finrank_fintype_fun_eq_card]))
+\Algebra\Module\ZLattice\Covolume.lean:329: rw [← finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ, finrank_fintype_fun_eq_card]
+\Analysis\Fourier\FiniteAbelian\Orthogonality.lean:81: simpa only [Module.finrank_fintype_fun_eq_card] using
+=== injective_comp_right ===
+\Algebra\Group\AddChar.lean:222: rintro f g h; rw [DFunLike.ext'_iff] at h ⊢; exact hψ.injective_comp_right h
+\Algebra\Group\AddChar.lean:240: rintro ψ χ h; rw [DFunLike.ext'_iff] at h ⊢; exact hf.injective_comp_right h
+\Algebra\Module\Equiv\Basic.lean:783: hf.injective_comp_right
+=== theorem ZMod.card\b|lemma ZMod.card\b ===

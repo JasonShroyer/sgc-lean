@@ -1,0 +1,16 @@
+layer,shape,mode,fro,offdiag_frac,rot_head_deg,rot_tail_deg
+input_layer.weight,"(128, 194)",wavelet,0.098638,0.0,0.0,0.0
+input_layer.weight,"(128, 194)",matched_svd_flat,0.10151,0.0,0.0,0.0
+input_layer.weight,"(128, 194)",matched_band,0.102631,0.0,0.0,0.0
+input_layer.weight,"(128, 194)",matched_weight_scaled,0.100243,0.992156,0.727797,0.433774
+input_layer.weight,"(128, 194)",isotropic,15.787131,0.99225,79.790677,81.97191
+hidden_layer.weight,"(128, 128)",wavelet,0.099311,-0.0,0.463168,11.590939
+hidden_layer.weight,"(128, 128)",matched_svd_flat,0.098605,-0.0,0.470775,11.599635
+hidden_layer.weight,"(128, 128)",matched_band,0.101309,-0.0,0.460433,6.020247
+hidden_layer.weight,"(128, 128)",matched_weight_scaled,0.099942,0.992693,0.539212,2.428846
+hidden_layer.weight,"(128, 128)",isotropic,12.7988,0.99198,43.747455,88.160606
+output_layer.weight,"(97, 128)",wavelet,0.100259,-0.0,0.0,0.0
+output_layer.weight,"(97, 128)",matched_svd_flat,0.101477,-0.0,0.0,0.0
+output_layer.weight,"(97, 128)",matched_band,0.1008,-0.0,0.0,5.62484
+output_layer.weight,"(97, 128)",matched_weight_scaled,0.100088,0.990128,0.433428,0.838324
+output_layer.weight,"(97, 128)",isotropic,11.162321,0.990243,64.766122,81.212012

@@ -1,0 +1,30 @@
+================================================================================
+2-TORUS INTEGRATOR (Waypoint B)  --  two running sums on Z_17  L=20 seed=42
+  competent net forces b1>=2; the test is b2:  TORUS b2=1 (2-void)  vs  WEDGE b2=0
+================================================================================
+
+  device=cuda  reader tau1*=0.394  tau2*=0.181
+
+  training 2-torus integrator (p=17, hidden=256, iters=6000):
+    iter     1  loss 5.682  trainacc s1=0.054 s2=0.056
+    iter  1000  loss 0.049  trainacc s1=1.000 s2=1.000
+    iter  2000  loss 0.020  trainacc s1=1.000 s2=1.000
+    iter  3000  loss 0.010  trainacc s1=1.000 s2=1.000
+    iter  4000  loss 0.006  trainacc s1=1.000 s2=1.000
+    iter  5000  loss 0.003  trainacc s1=1.000 s2=1.000
+    iter  6000  loss 0.002  trainacc s1=1.000 s2=1.000
+  -> test acc  s1=1.000  s2=1.000   grid coverage 289/289
+
+  ============================================================================
+  TOPOLOGY of the joint hidden code H[s1,s2]  (N=289, full skeleton)
+  ============================================================================
+    b1 = 2   (tau1*=0.394)   top-5 H1 = [0.776 0.711 0.193 0.189 0.188]   gap(top/2nd)=1.1x
+    b2 = 1   (tau2*=0.181)   top-5 H2 = [0.582 0.069 0.066 0.065 0.065]   gap(top/2nd)=8.4x
+
+    marginal rings: s1-circle b1=1   s2-circle b1=1  (each should be 1)
+    2D carriers (k1,k2):power  (+0,-1):22%  (+0,+1):22%  (-1,+0):20%  (+1,+0):20%  (+0,+3):2%  (+0,-3):2%
+    axis-power(top4)=83%  cross-power(top4)=0%  (axis-dominant => clean PRODUCT torus; cross-heavy => entangled)
+
+================================================================================
+  VERDICT: GENUINE 2-TORUS confirmed -- b1=2>=2 and b2=1>=1 clears tau2*. The net builds a 2D toroidal coordinate system, not a wedge.
+================================================================================

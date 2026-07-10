@@ -1,0 +1,23 @@
+﻿=== addRight (Equiv) ===
+\Algebra\Order\Archimedean\Basic.lean:139: mem_Ioc, Equiv.coe_addRight, mul_le_mul_iff_right] using
+\Analysis\Fourier\PoissonSummation.lean:110: coe_addRight, zero_add]
+\Analysis\Fourier\PoissonSummation.lean:179: · simp_rw [ContinuousMap.restrict_apply, ContinuousMap.comp_apply, ContinuousMap.coe_addRight]
+\LinearAlgebra\Matrix\Circulant.lean:130: simp only [Equiv.trans_apply, Equiv.subLeft_apply, Equiv.coe_addRight, add_sub_cancel_right,
+\LinearAlgebra\RootSystem\Chain.lean:345: rw [this, ← OrderIso.map_csSup' _ ⟨0, by simp⟩ bdd, OrderIso.addRight_apply]
+\MeasureTheory\Measure\Lebesgue\Integral.lean:63: simpa only [ContinuousMap.restrict_apply, comp_apply, coe_addRight, Subtype.coe_mk,
+\NumberTheory\ModularForms\JacobiTheta\Bounds.lean:234: simp only [f_int, ← add_assoc, add_comm, Equiv.coe_addRight, Int.cast_add, Int.cast_one]
+\NumberTheory\ModularForms\JacobiTheta\TwoVariable.lean:396: simp_rw [jacobiTheta₂_term, ← Complex.exp_add, Equiv.coe_addRight, Int.cast_add]
+\Topology\ContinuousMap\Periodic.lean:36: simp [Equiv.coe_addRight, comp_apply, add_one_zsmul, add_comm (_ • p) p, ← add_assoc]
+=== Finset.smul_sum ===
+\Algebra\BigOperators\GroupWithZero\Action.lean:32: theorem List.smul_sum {r : M} {l : List N} : r • l.sum = (l.map (r • ·)).sum :=
+\Algebra\BigOperators\GroupWithZero\Action.lean:50: theorem Multiset.smul_sum {s : Multiset N} : r • s.sum = (s.map (r • ·)).sum :=
+\Algebra\BigOperators\GroupWithZero\Action.lean:53: theorem Finset.smul_sum {f : γ → N} {s : Finset γ} :
+=== map_add_eq_mul def ===
+75: Do not use this directly. Instead use `AddChar.map_zero_eq_one`. -/
+76: map_zero_eq_one' : toFun 0 = 1
+79: Do not use this directly. Instead use `AddChar.map_add_eq_mul`. -/
+80: map_add_eq_mul' : ∀ a b : A, toFun (a + b) = toFun a * toFun b
+102: (map_zero_eq_one' : f 0 = 1) (map_add_eq_mul' : ∀ a b : A, f (a + b) = f a * f b) :
+103: AddChar.mk f map_zero_eq_one' map_add_eq_mul' = f := by
+107: @[simp] lemma map_zero_eq_one (ψ : AddChar A M) : ψ 0 = 1 := ψ.map_zero_eq_one'
+110: lemma map_add_eq_mul (ψ : AddChar A M) (x y : A) : ψ (x + y) = ψ x * ψ y := ψ.map_add_eq_mul' x y

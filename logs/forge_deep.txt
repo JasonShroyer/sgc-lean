@@ -1,0 +1,92 @@
+﻿===OS_BUILD===
+Windows 10 Pro | DisplayVersion: 25H2 | Build: 26200.8737
+===UPTIME===
+LastBoot: 07/08/2026 20:59:42 | InstallDate: 01/01/2026 04:05:06
+===NET_ADAPTERS===
+Wi-Fi 4 | RZ717 WiFi 7 160MHz | Not Present | 0 bps | MAC 
+Wi-Fi 2 | RZ717 WiFi 7 160MHz | Not Present | 0 bps | MAC 
+Ethernet | Realtek PCIe 5GbE Family Controller | Up | 1 Gbps | MAC 9C-6B-00-9B-85-81
+Tailscale | Tailscale Tunnel | Up | 100 Gbps | MAC 
+Wi-Fi | RZ717 WiFi 7 160MHz | Up | 866.7 Mbps | MAC D8-B3-2F-82-BF-2D
+===IP_CONFIG===
+Wi-Fi 5: 169.254.142.133/16 (WellKnown)
+Wi-Fi 3: 169.254.219.234/16 (WellKnown)
+Ethernet: 169.254.62.34/16 (WellKnown)
+Wi-Fi: 192.168.1.250/24 (Dhcp)
+Tailscale: 100.123.223.27/32 (Manual)
+===POWER_PLAN===
+Power Scheme GUID: 381b4222-f694-41f0-9685-ff5bb260df2e  (Balanced)===SLEEP_STATES===
+The following sleep states are available on this system:
+    Standby (S3)
+    Hibernate
+    Fast Startup
+
+The following sleep states are not available on this system:
+    Standby (S1)
+	The system firmware does not support this standby state.
+
+    Standby (S2)
+	The system firmware does not support this standby state.
+
+===VIRTUALIZATION===
+HypervisorPresent: True
+VirtFirmwareEnabled: True
+===DEFENDER===
+RealTime: True | Exclusions: 
+===GPU_STATE===
+34, 225 MHz, 405 MHz, 3.87 W, 0 %, 0 MiB
+===GPU_RESIZABLE_BAR===
+Addressing Mode                                    : N/A
+===PAGEFILE===
+C:\pagefile.sys: current 0 MB / allocated 27648 MB
+===WINGET===
+v1.29.280
+===CHOCO===
+===DOTNET===
+===LONG_PATHS===
+LongPathsEnabled: 0
+===DEV_MODE===
+DevMode: 
+===TIME_SYNC===
+Last Successful Sync Time: unspecified
+Source: Local CMOS Clock
+TimeZone: Pacific Standard Time
+===FIREWALL===
+Domain: True
+Private: True
+Public: True
+===DISK_HEALTH===
+USB SanDisk 3.2Gen1: Healthy | Bus: USB
+Viper VP4300L 2TB: Healthy | Bus: NVMe
+USB SanDisk 3.2Gen1: Healthy | Bus: USB
+===ONEDRIVE===
+OneDrive process: True
+Documents path: C:\Users\jason\OneDrive\Documents
+===C_ROOT===
+.cache
+AMD
+inetpub
+PerfLogs
+Program Files
+Program Files (x86)
+Users
+Windows
+===USERPROFILE===
+C:\Users\jason
+===INSTALLED_RELEVANT===
+Microsoft Visual C++ 2015-2019 Redistributable (x86) - 14.29.30156
+Microsoft Visual C++ 2015-2022 Redistributable (x64) - 14.38.33130
+Microsoft Visual C++ 2019 X86 Additional Runtime - 14.29.30156
+Microsoft Visual C++ 2019 X86 Minimum Runtime - 14.29.30156
+Microsoft Visual C++ 2022 X64 Additional Runtime - 14.38.33130
+Microsoft Visual C++ 2022 X64 Minimum Runtime - 14.38.33130
+NVIDIA Graphics Driver 591.86
+NVIDIA Install Application
+Tailscale
+===SSH_SERVER===
+sshd: Running / Automatic
+DefaultShell: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+===WINDOWS_UPDATE===
+wuauserv: Running
+NoAutoReboot policy: 
+===DONE===

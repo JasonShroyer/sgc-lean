@@ -1,0 +1,28 @@
+﻿===OS===
+Microsoft Windows 11 Pro
+===CPU===
+AMD Ryzen 9 9950X3D 16-Core Processor           | Cores: 16 | Threads: 32 | Base: 4300MHz
+===RAM===
+189.61 GB
+===GPU===
+NVIDIA GeForce RTX 5090, 32607 MiB, 591.86, 12.0, 600.00 W
+===GPUDETAIL===
+GPU 0: NVIDIA GeForce RTX 5090 (UUID: GPU-647e8899-8791-a3d2-3c8b-60c28135191f)
+===STORAGE===
+C: 1,702.3 GB free / 1,862.1 GB total
+===MOTHERBOARD===
+ASRock X870E Taichi Lite (Serial: Default string)
+===PYTHON===
+===CUDA===
+===CONDA===
+===PIP===
+===GIT===
+===LEAN===
+===TAILSCALE===
+100.123.223.27  forge01          jshroyer76@  windows  -                                                     
+100.92.23.95    desktop-5101iad  jshroyer76@  windows  active; direct 192.168.1.77:41641, tx 34292 rx 21964  
+100.95.11.118   laptop-rsua2jg   jshroyer76@  windows  offline, last seen 1d ago                             
+===NVIDIA_LIBS===
+C:\Windows\System32\nvcuda.dll
+True
+===DONE===

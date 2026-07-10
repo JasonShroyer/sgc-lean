@@ -1,0 +1,26 @@
+﻿info: src/SGC/Foundations/AxiomAudit.lean:785:0: 'SGC.Bridge.Consolidation.HeatKernel_semigroup' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:788:0: 'SGC.Bridge.Quantum.all_ones_norm_sq_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:791:0: 'SGC.Bridge.Quantum.inner_pi_orthogonal_decomp' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound,
+ SGC.Axioms.GeometryGeneral.adjoint_pi,
+ SGC.Axioms.GeometryGeneral.adjoint_pi_spec,
+---
+info: src/SGC/Foundations/AxiomAudit.lean:788:0: 'SGC.Bridge.Quantum.all_ones_norm_sq_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:791:0: 'SGC.Bridge.Quantum.inner_pi_orthogonal_decomp' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound,
+ SGC.Axioms.GeometryGeneral.adjoint_pi,
+ SGC.Axioms.GeometryGeneral.adjoint_pi_spec,
+ SGC.Axioms.GeometryGeneral.linearMap_ext_inner,
+---
+info: src/SGC/Foundations/AxiomAudit.lean:791:0: 'SGC.Bridge.Quantum.inner_pi_orthogonal_decomp' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound,
+ SGC.Axioms.GeometryGeneral.adjoint_pi,
+ SGC.Axioms.GeometryGeneral.adjoint_pi_spec,
+ SGC.Axioms.GeometryGeneral.linearMap_ext_inner,
+ SGC.Bridge.Quantum.partitionToCodeSubspace]
+---
+ SGC.Bridge.Quantum.partitionToCodeSubspace]
+Build completed successfully (3166 jobs).

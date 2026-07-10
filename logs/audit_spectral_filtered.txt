@@ -1,0 +1,7 @@
+﻿warning: src/SGC/InformationGeometry/FisherNoetherBridge.lean:219:8: declaration uses 'sorry'
+warning: src/SGC/InformationGeometry/FisherNoetherBridge.lean:409:8: declaration uses 'sorry'
+info: src/SGC/Foundations/AxiomAudit.lean:704:0: 'SGC.Spectral.gap_pos_iff_ker_eq_span_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:707:0: 'SGC.Spectral.sector_envelope_bound_canonical' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:710:0: 'SGC.Spectral.sum_abs_diag_le_card_opNorm' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: src/SGC/Foundations/AxiomAudit.lean:713:0: 'SGC.Spectral.spectral_stability_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+Build completed successfully (3159 jobs).

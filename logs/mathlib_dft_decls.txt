@@ -1,0 +1,20 @@
+﻿81: noncomputable def dft : (ZMod N → E) ≃ₗ[ℂ] (ZMod N → E) where
+100: lemma dft_apply (Φ : ZMod N → E) (k : ZMod N) :
+104: lemma dft_def (Φ : ZMod N → E) :
+108: lemma invDFT_apply (Ψ : ZMod N → E) (k : ZMod N) :
+112: lemma invDFT_def (Ψ : ZMod N → E) :
+116: lemma invDFT_apply' (Ψ : ZMod N → E) (k : ZMod N) : 𝓕⁻ Ψ k = (N : ℂ)⁻¹ • 𝓕 Ψ (-k) :=
+119: lemma invDFT_def' (Ψ : ZMod N → E) : 𝓕⁻ Ψ = fun k ↦ (N : ℂ)⁻¹ • 𝓕 Ψ (-k) :=
+122: lemma dft_apply_zero (Φ : ZMod N → E) : 𝓕 Φ 0 = ∑ j, Φ j := by
+129: lemma dft_eq_fourier {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
+145: lemma dft_const_smul {R : Type*} [DistribSMul R E] [SMulCommClass R ℂ E] (r : R) (Φ : ZMod N → E) :
+149: lemma dft_smul_const {R : Type*} [Ring R] [Module ℂ R] [Module R E] [IsScalarTower ℂ R E]
+154: lemma dft_const_mul {R : Type*} [Ring R] [Algebra ℂ R] (r : R) (Φ : ZMod N → R) :
+158: lemma dft_mul_const {R : Type*} [Ring R] [Algebra ℂ R] (Φ : ZMod N → R) (r : R) :
+166: lemma dft_comp_neg (Φ : ZMod N → E) : 𝓕 (fun j ↦ Φ (-j)) = fun k ↦ 𝓕 Φ (-k) :=
+170: lemma dft_dft (Φ : ZMod N → E) : 𝓕 (𝓕 Φ) = fun j ↦ (N : ℂ) • Φ (-j) :=
+175: lemma dft_comp_unitMul (Φ : ZMod N → E) (u : (ZMod N)ˣ) (k : ZMod N) :
+183: lemma dft_even_iff {Φ : ZMod N → ℂ} : (𝓕 Φ).Even ↔ Φ.Even := by
+190: lemma dft_odd_iff {Φ : ZMod N → ℂ} : (𝓕 Φ).Odd ↔ Φ.Odd := by
+205: lemma fourierTransform_eq_gaussSum_mulShift (χ : DirichletCharacter ℂ N) (k : ZMod N) :
+213: lemma IsPrimitive.fourierTransform_eq_inv_mul_gaussSum {χ : DirichletCharacter ℂ N}

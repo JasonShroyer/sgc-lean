@@ -1,0 +1,13 @@
+﻿--- net view ---
+net : System error 5 has occurred.
+At line:1 char:66
++ ... \forge_smb.txt -Encoding utf8; net view \\100.123.223.27 2>&1 | Out-F ...
++                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (System error 5 has occurred.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+Access is denied.
+
+--- C$ root ---
+--- done ---

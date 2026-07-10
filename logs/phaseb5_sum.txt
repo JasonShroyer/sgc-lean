@@ -1,0 +1,8 @@
+﻿ERR=5
+error: src/SGC/Bridge/Consolidation.lean:104:8: typeclass instance problem is stuck, it is often due to metavariables
+error: Lean exited with code 1
+lake.exe : error: build failed
+    + CategoryInfo          : NotSpecified: (error: build failed:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+    + FullyQualifiedErrorId : NativeCommandError
+ 

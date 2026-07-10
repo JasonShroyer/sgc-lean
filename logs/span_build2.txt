@@ -1,0 +1,66 @@
+﻿hlt : a < b
+Γèó Γêæ c, (J (Γåæc).1 (Γåæc).2 ΓÇó chordCurrent vΓéÇ c) a b = J a b
+error: src/SGC/Bridge/SchnakenbergSpan.lean:110:10: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  Γêæ x, ?m.230 x
+in the target expression
+  Γêæ c, (J (Γåæc).1 (Γåæc).2 ΓÇó chordCurrent vΓéÇ c) a b = J a b
+
+case inr.inr
+V : Type u_1
+instΓ£¥┬▓ : Fintype V
+instΓ£¥┬╣ : DecidableEq V
+instΓ£¥ : LinearOrder V
+vΓéÇ : V
+J : V ΓåÆ V ΓåÆ Γä¥
+hJ : ΓêÇ (x y : V), J x y = -J y x
+a b : V
+ha : a Γëá vΓéÇ
+hb : b Γëá vΓéÇ
+hab : a Γëá b
+hgt : b < a
+Γèó Γêæ c, (J (Γåæc).1 (Γåæc).2 ΓÇó chordCurrent vΓéÇ c) a b = J a b
+error: src/SGC/Bridge/SchnakenbergSpan.lean:149:11: Unknown identifier `divergence`
+error: src/SGC/Bridge/SchnakenbergSpan.lean:154:11: Unknown identifier `divergence`
+error: src/SGC/Bridge/SchnakenbergSpan.lean:170:22: Unknown identifier `vΓéÇ`
+error: src/SGC/Bridge/SchnakenbergSpan.lean:195:26: Function expected at
+  Basis
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  (Chord vΓéÇ)
+error: src/SGC/Bridge/SchnakenbergSpan.lean:196:3: Invalid field notation: Type is not of the form `C ...` where C is a constant
+  Basis
+has type
+  xΓ£¥
+warning: src/SGC/Bridge/SchnakenbergSpan.lean:200:8: declaration uses 'sorry'
+warning: src/SGC/Bridge/SchnakenbergSpan.lean:249:13: `Ne.lt_or_lt` has been deprecated: Use `Ne.lt_or_gt` instead
+error: src/SGC/Bridge/SchnakenbergSpan.lean:268:43: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  ?n * 1
+in the target expression
+  (Fintype.card V).pred * Fintype.card V - (Fintype.card V).pred - (Fintype.card V).pred =
+    (Fintype.card V).pred * ((Fintype.card V).pred - 1)
+
+V : Type u_1
+instΓ£¥┬▓ : Fintype V
+instΓ£¥┬╣ : DecidableEq V
+instΓ£¥ : LinearOrder V
+vΓéÇ : V
+hcard : Fintype.card (Chord vΓéÇ) = #{p | p.1 < p.2 Γêº p.1 Γëá vΓéÇ Γêº p.2 Γëá vΓéÇ}
+himg : {p | p.2 < p.1 Γêº p.1 Γëá vΓéÇ Γêº p.2 Γëá vΓéÇ} = image Prod.swap {p | p.1 < p.2 Γêº p.1 Γëá vΓéÇ Γêº p.2 Γëá vΓéÇ}
+hswap : #{p | p.1 < p.2 Γêº p.1 Γëá vΓéÇ Γêº p.2 Γëá vΓéÇ} = #{p | p.2 < p.1 Γêº p.1 Γëá vΓéÇ Γêº p.2 Γëá vΓéÇ}
+hunion : {p | p.1 < p.2 Γêº p.1 Γëá vΓéÇ Γêº p.2 Γëá vΓéÇ} Γê¬ {p | p.2 < p.1 Γêº p.1 Γëá vΓéÇ Γêº p.2 Γëá vΓéÇ} = (univ.erase vΓéÇ).offDiag
+hdisj : Disjoint {p | p.1 < p.2 Γêº p.1 Γëá vΓéÇ Γêº p.2 Γëá vΓéÇ} {p | p.2 < p.1 Γêº p.1 Γëá vΓéÇ Γêº p.2 Γëá vΓéÇ}
+hoff : #(univ.erase vΓéÇ).offDiag = (Fintype.card V - 1) * (Fintype.card V - 1) - (Fintype.card V - 1)
+lake.exe : error: build failed
+At line:1 char:1
++ & "$env:USERPROFILE\.elan\bin\lake.exe" build SGC.Bridge.Schnakenberg ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (error: build failed:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Γèó (Fintype.card V).pred * Fintype.card V - (Fintype.card V).pred - (Fintype.card V).pred =
+    (Fintype.card V).pred * ((Fintype.card V).pred - 1)
+error: Lean exited with code 1
+Some required targets logged failures:
+- SGC.Bridge.SchnakenbergSpan

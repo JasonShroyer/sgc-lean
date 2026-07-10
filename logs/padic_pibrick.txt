@@ -1,0 +1,2 @@
+﻿Γ£ö [1798/1798] Built SGC.Topology.PadicPathSpace (39s)
+Build completed successfully (1798 jobs).

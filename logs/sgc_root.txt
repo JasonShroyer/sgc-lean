@@ -1,0 +1,32 @@
+﻿-- Kernel-proven, no new axioms (2026-06-11).
+import SGC.Bridge.ValidityHorizon
+
+-- The Defect-Horizon Bridge: identifies ValidityHorizon's abstract leakage
+-- Îµ = â€–Bâ€– with Approximate's concrete defect â€–(Iâˆ’Î )LÎ â€–_Ï€ via the weighted
+-- operator algebra PiMat (Ï€ in the type, NormedRing/NormedAlgebra instances),
+-- proves e^{t(Lâˆ’D)}Î  = e^{tLÌ„}Î  (invariant-subspace exponentiation), and
+-- derives the explicit trajectory bound defect_horizon_bound â€” superseding
+-- the axioms HeatKernel_opNorm_bound and Horizontal_Duhamel_integral_bound
+-- with computable exponential constants. Kernel-proven (2026-06-11).
+import SGC.Bridge.DefectHorizonBridge
+
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- Measurement & Control: Moved to proprietary veridion-core engine
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- Runtime implementations (Interfaces, Wavelets, Impulse) are now in the
+-- private Veridion repository. This public library provides only the
+-- mathematical foundations that those implementations depend on.
+
+/-!
+L46: import SGC.Bridge.Discretization
+L47: import SGC.Bridge.Quantum
+L48: import SGC.Bridge.CanonicalWavelet
+L49: import SGC.Bridge.CoherenceObstruction
+L50: import SGC.Bridge.Consolidation
+L51: import SGC.Bridge.GeometricClosure
+L52: import SGC.Bridge.Recovery
+L132: import SGC.Bridge.RennerSGC
+L173: import SGC.Bridge.DiscreteFluidDynamics
+L179: import SGC.Bridge.PhaseClassifier
+L187: import SGC.Bridge.ValidityHorizon
+L196: import SGC.Bridge.DefectHorizonBridge

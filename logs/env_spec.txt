@@ -1,0 +1,12 @@
+﻿matplotlib==3.11.0
+matplotlib-inline==0.1.6
+networkx==3.4.2
+numpy==1.26.4
+numpydoc==1.7.0
+pandas==2.2.3
+scipy==1.13.1
+sympy==1.14.0
+torch==2.10.0+cu128
+torchaudio==2.10.0+cu128
+torchvision==0.25.0+cu128
+tqdm==4.67.1

@@ -1,0 +1,8 @@
+﻿=== add_neg_cancel ===
+\CategoryTheory\Abelian\NonPreadditive.lean:367: theorem add_neg_cancel {X Y : C} (a : X ⟶ Y) : a + -a = 0 := by rw [add_neg, sub_self]
+=== NeZero.ne ===
+=== map_neg_eq_inv (AddChar) ===
+352: inversion operation for the definition (but see `AddChar.map_neg_eq_inv` below). -/
+361: @[simp] lemma inv_apply (ψ : AddChar A M) (a : A) : ψ⁻¹ a = ψ (-a) := rfl
+381: lemma map_neg_eq_inv (ψ : AddChar A M) (a : A) : ψ (-a) = (ψ a)⁻¹ := by
+394: lemma inv_apply' (ψ : AddChar A M) (a : A) : ψ⁻¹ a = (ψ a)⁻¹ := by rw [inv_apply, map_neg_eq_inv]

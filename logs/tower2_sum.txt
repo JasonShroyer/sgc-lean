@@ -1,0 +1,3 @@
+﻿ERR=0
+Γ£ö [3033/3033] Built SGC.Bridge.CantorShiftTower (9.0s)
+Build completed successfully (3033 jobs).

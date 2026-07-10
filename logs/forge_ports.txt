@@ -1,0 +1,5 @@
+﻿22: False
+445: True
+3389: True
+5985: False
+5986: False

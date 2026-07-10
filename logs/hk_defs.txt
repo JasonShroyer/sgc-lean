@@ -1,0 +1,4 @@
+﻿L229: def matrixToLinearMap (A : Matrix V V â„) : (V â†’ â„) â†’â‚—[â„] (V â†’ â„) where
+L380: def HeatKernel (L : Matrix V V â„) (t : â„) : Matrix V V â„ :=
+L384: def HeatKernelMap (L : Matrix V V â„) (t : â„) : (V â†’ â„) â†’â‚—[â„] (V â†’ â„) :=
+L388: lemma HeatKernelMap_zero (L : Matrix V V â„) : HeatKernelMap L 0 = LinearMap.id := by

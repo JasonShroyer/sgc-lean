@@ -1,0 +1,3 @@
+﻿EXIT=0 ERRORS=0
+ΓÜá [3132/3132] Built SGC.Observables.ExplorationTime (60s)
+Build completed successfully (3132 jobs).

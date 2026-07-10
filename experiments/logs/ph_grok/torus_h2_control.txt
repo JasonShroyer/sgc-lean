@@ -1,0 +1,22 @@
+================================================================================
+TORUS H2 PROTOCOL CONTROL  --  full-skeleton vs 100-pt subsample on KNOWN shapes (N=289)
+  learned torus: full b2=1 gap 8.4x  |  subsample b2=0 gap 1.1x  -- which is right?
+================================================================================
+
+  reader tau2*=0.147   clouds: 17x17 grid in R^256, noise 0.03
+
+  FAST subsample reads (100x4) first:
+    torus T^2 (b2=1)       sub    b2=1  topH2=[0.283 0.088 0.080 0.072 0.069]  gap=3.2x
+    wedge fig-8 (b2=0)     sub    b2=0  topH2=[0.052 0.041 0.029 0.017 0.015]  gap=1.3x
+
+  SLOW full-skeleton reads (289 pts, ~13 min each):
+    torus T^2 (b2=1)       full   b2=1  topH2=[0.672 0.052 0.046 0.041 0.041]  gap=12.8x
+    wedge fig-8 (b2=0)     full   b2=0  topH2=[0.051 0.045 0.040 0.029 0.028]  gap=1.1x
+
+================================================================================
+  full-skeleton:  torus gap=12.8x (b2=1)   wedge gap=1.1x (b2=0)
+  subsample100 :  torus gap=3.2x (b2=1)   wedge gap=1.3x (b2=0)
+  VERDICT: full-skeleton DISCRIMINATES (torus gap high, wedge gap ~1). The learned net's
+  full-skeleton gap 8.4x therefore certifies a GENUINE 2-TORUS; the subsampled b2=0 is an
+  under-sampling FALSE NEGATIVE.
+================================================================================

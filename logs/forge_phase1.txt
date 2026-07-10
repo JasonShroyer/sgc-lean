@@ -1,0 +1,27 @@
+﻿=== PHASE1 START 07/09/2026 06:40:58 ===
+--- git ---
+Successfully verified installer hash
+Starting package install...
+Successfully installed
+--- pwsh7 ---
+Successfully verified installer hash
+Starting package install...
+Successfully installed
+--- miniconda ---
+Successfully verified installer hash
+Starting package install...
+Successfully installed
+=== VERIFY ===
+git version 2.55.0.windows.2
+& : The term 'C:\Program Files\PowerShell\7\pwsh.exe' is not recognized as the name of a cmdlet, 
+function, script file, or operable program. Check the spelling of the name, or if a path was 
+included, verify that the path is correct and try again.
+At line:1 char:3
++ & "C:\Program Files\PowerShell\7\pwsh.exe" --version
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Program Files\PowerShell\7\pwsh.exe:String) [], 
+    CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+conda 26.5.3
+=== PHASE1 DONE 07/09/2026 06:42:20 ===

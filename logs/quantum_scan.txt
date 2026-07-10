@@ -1,0 +1,16 @@
+﻿L41: namespace SGC
+L42: namespace Bridge
+L43: namespace Quantum
+L45: open Finset
+L46: open SGC.Axioms.GeometryGeneral
+L47: open SGC.Axioms.WeightedSpace
+L48: open SGC.Spectral
+L49: open SGC.Approximate
+L55: variable {V : Type*} [Fintype V] [DecidableEq V] [Nonempty V]
+L99: structure CodeSubspace (V : Type*) [Fintype V] [DecidableEq V] (pi_dist : V â†’ â„) where
+L375: axiom inner_pi_orthogonal_decomp (pi_dist : V â†’ â„) (P : Partition V) (Ïˆ : V â†’ â„‚) :
+L563: axiom all_ones_norm_sq_pos (pi_dist : V â†’ â„) (hÏ€ : âˆ€ v, 0 < pi_dist v) :
+L631: all_ones_norm_sq_pos pi_dist hÏ€
+CO L129: âˆ€ f, code.proj ((adjoint_pi pi_dist E) (E (code.proj f))) = Î± â€¢ (code.proj f)
+CO L170: ((partitionToCodeSubspace emb.pi_dist emb.partition).proj f))) =
+CO L171: (Î± : â„‚) â€¢ (partitionToCodeSubspace emb.pi_dist emb.partition).proj f)

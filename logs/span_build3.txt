@@ -1,0 +1,51 @@
+﻿
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+error: src/SGC/Bridge/SchnakenbergSpan.lean:80:4: failed to synthesize
+  Fintype V
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+error: src/SGC/Bridge/SchnakenbergSpan.lean:80:41: failed to synthesize
+  Fintype V
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+error: src/SGC/Bridge/SchnakenbergSpan.lean:81:4: failed to synthesize
+  Fintype V
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+info: src/SGC/Bridge/SchnakenbergSpan.lean:82:2: Try this:
+  [apply] ring_nf
+  
+  The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+    
+  Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
+error: src/SGC/Bridge/SchnakenbergSpan.lean:78:54: unsolved goals
+V : Type u_1
+instΓ£¥┬╣ : DecidableEq V
+instΓ£¥ : LinearOrder V
+vΓéÇ : V
+p : Chord vΓéÇ
+x y : V
+Γèó edgeCurrent vΓéÇ (Γåæp).1 x y + edgeCurrent (Γåæp).1 (Γåæp).2 x y + edgeCurrent (Γåæp).2 vΓéÇ x y =
+    -edgeCurrent vΓéÇ (Γåæp).1 y x + (-edgeCurrent (Γåæp).1 (Γåæp).2 y x - edgeCurrent (Γåæp).2 vΓéÇ y x)
+error: src/SGC/Bridge/SchnakenbergSpan.lean:218:26: Function expected at
+  Basis
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  (Chord vΓéÇ)
+error: src/SGC/Bridge/SchnakenbergSpan.lean:219:3: Invalid field notation: Type is not of the form `C ...` where C is a constant
+  Basis
+has type
+  xΓ£¥
+warning: src/SGC/Bridge/SchnakenbergSpan.lean:223:8: declaration uses 'sorry'
+error: Lean exited with code 1
+lake.exe : error: build failed
+At line:1 char:1
++ & "$env:USERPROFILE\.elan\bin\lake.exe" build SGC.Bridge.Schnakenberg ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (error: build failed:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Some required targets logged failures:
+- SGC.Bridge.SchnakenbergSpan

@@ -1,0 +1,3 @@
+timestamp,seed,arm,lr,noise_on,quench_on,onset_epoch,grok90,grok95,mem2grok95,final_test_acc,peak_test_acc,epochs_run,wall_sec,status
+2026-06-17T06:38:18,42,lr0.001_n1_q1,0.001,1,1,-1,-1,-1,-1,0.0689,0.0727,2000,121.0,censored
+2026-06-17T06:45:04,42,lr0.001_n1_q1,0.001,1,1,59,-1,-1,-1,0.0021,0.0076,2000,285.4,censored

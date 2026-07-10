@@ -1,0 +1,32 @@
+﻿error: src/SGC/Bridge/CantorShiftTower.lean:306:35: Type mismatch
+  tail ?m.10
+has type
+  Word ?m.1 ?m.2
+of sort `Type` but is expected to have type
+  Fin n ΓåÆ A
+of sort `Type u_1`
+error: Lean exited with code 1
+Some required targets logged failures:
+- SGC.Bridge.CantorShiftTower
+lake.exe : error: build failed
+At line:1 char:1
++ & "$env:USERPROFILE\.elan\bin\lake.exe" build SGC.Bridge.CantorShiftT ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+particular `TopologicalSpace (Fin p)` instance here. -/
+
+variable (A : Type*)
+
+/-- Infinite symbolic trajectories over alphabet `A`. `abbrev` so the product topology
+instance transfers automatically. -/
+abbrev PathSpace : Type _ := â„• â†’ A
+
+/-- **Depth-`n` truncation**: the first `n` symbols of a trajectory.
+
+    This is the SGC coarse-graining projector in the uniformly-branching case
+    (`CANTOR_LAYER_SPEC Â§4.3`); it is the symbolic analogue of the p-adic projection
+    `PadicInt.toZModPow n : â„¤_[p] â†’ ZMod (p^n)`. -/
+def truncate (n : â„•) (x : PathSpace A) : Fin n â†’ A := fun i => x i.val
+
+/-- The defining equation of `truncate` (rfl). -/
+@[simp] theorem truncate_apply (n : â„•) (x : PathSpace A) (i : Fin n) :
+    truncate A n x i = x i.val := rfl

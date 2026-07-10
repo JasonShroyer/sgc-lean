@@ -1,0 +1,237 @@
+﻿=== AXIOM DECLS: 225 ===
+SGC\EmergenceCapacity.lean:163: axiom betti_monotone_under_quotient (P : Partition V)
+SGC\EmergenceCapacity.lean:193: axiom mixing_implies_nonzero_defect (L : Matrix V V ℝ) (P : Partition V)
+SGC\EmergenceCapacity.lean:215: axiom spectral_gap_lower_bounds_defect (L : Matrix V V ℝ) (P : Partition V)
+SGC\EmergenceCapacity.lean:331: axiom q_poincare_inequality (q : ℝ) (hq : 1 < q) (hq2 : q < 2)
+SGC\NonlinearEmergence.lean:152: axiom floquet_emergence_equivalence
+SGC\NonlinearEmergence.lean:203: axiom floquet_persistence
+SGC\Symbiosis.lean:396: axiom mitosis_reduces_structural_free_energy
+SGC\Axioms\GeometryGeneral.lean:71: axiom adjoint_pi (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)
+SGC\Axioms\GeometryGeneral.lean:74: axiom adjoint_pi_spec (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) (u v : V → 𝕜) :
+SGC\Axioms\GeometryGeneral.lean:78: axiom adjoint_pi_involutive (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
+SGC\Axioms\GeometryGeneral.lean:82: axiom adjoint_pi_comp (pi_dist : V → ℝ) (A B : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
+SGC\Axioms\GeometryGeneral.lean:86: axiom adjoint_pi_id (pi_dist : V → ℝ) :
+SGC\Axioms\GeometryGeneral.lean:90: axiom adjoint_pi_zero (pi_dist : V → ℝ) :
+SGC\Axioms\GeometryGeneral.lean:102: axiom inner_pi_nondegenerate (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) (x : V → 𝕜) :
+SGC\Axioms\GeometryGeneral.lean:107: axiom linearMap_ext_inner (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+SGC\Axioms\GeometryGeneral.lean:138: axiom inner_self_adjoint_real (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜))
+SGC\Axioms\GeometryGeneral.lean:176: axiom traceNorm_pi (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) : ℝ
+SGC\Axioms\GeometryGeneral.lean:179: axiom traceNorm_pi_nonneg (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
+SGC\Axioms\GeometryGeneral.lean:183: axiom traceNorm_pi_zero (pi_dist : V → ℝ) :
+SGC\Axioms\GeometryGeneral.lean:187: axiom traceNorm_pi_add (pi_dist : V → ℝ) (A B : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
+SGC\Axioms\GeometryGeneral.lean:191: axiom traceNorm_pi_neg (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
+SGC\Axioms\GeometryGeneral.lean:227: axiom traceDistance_pi_le_one (pi_dist : V → ℝ) (ρ σ : (V → 𝕜) →ₗ[𝕜] (V → 𝕜))
+SGC\Axioms\GeometryGeneral.lean:238: axiom fidelity_pi (pi_dist : V → ℝ) (ρ σ : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) : ℝ
+SGC\Axioms\GeometryGeneral.lean:241: axiom fidelity_pi_bounds (pi_dist : V → ℝ) (ρ σ : (V → 𝕜) →ₗ[𝕜] (V → 𝕜))
+SGC\Axioms\GeometryGeneral.lean:246: axiom fidelity_pi_symm (pi_dist : V → ℝ) (ρ σ : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
+SGC\Axioms\GeometryGeneral.lean:250: axiom fidelity_pi_eq_one_iff (pi_dist : V → ℝ) (ρ σ : (V → 𝕜) →ₗ[𝕜] (V → 𝕜))
+SGC\Axioms\GeometryGeneral.lean:256: axiom fuchs_van_de_graaf (pi_dist : V → ℝ) (ρ σ : (V → 𝕜) →ₗ[𝕜] (V → 𝕜))
+SGC\Axioms\GeometryGeneral.lean:275: axiom traceDistance_classical_eq_TV (pi_dist : V → ℝ) (ρ σ : (V → 𝕜) →ₗ[𝕜] (V → 𝕜))
+SGC\Bridge\CanonicalWavelet.lean:602: axiom CommutatorNorm (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+SGC\Bridge\CanonicalWavelet.lean:606: axiom commutator_norm_nonneg (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+SGC\Bridge\CanonicalWavelet.lean:623: axiom geometric_commutator_constraint (L : Matrix V V ℝ) (psi : BandPassFilter)
+SGC\Bridge\CanonicalWavelet.lean:632: axiom constant_ricci_tight_frame_exists (L : Matrix V V ℝ) (psi : BandPassFilter)
+SGC\Bridge\CoherenceObstruction.lean:90: axiom HeatKernel_preserves_nonneg (L : Matrix V V ℝ) (t : ℝ) (ht : 0 ≤ t)
+SGC\Bridge\CoherenceObstruction.lean:104: axiom HeatKernel_preserves_sum (L : Matrix V V ℝ) (t : ℝ) (ht : 0 ≤ t)
+SGC\Bridge\CoherenceObstruction.lean:159: axiom norm_zero_forces_alpha_zero (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+SGC\Bridge\CoherenceObstruction.lean:216: axiom partition_membership_sum_one (P : Partition V) [Fintype P.Quot] (v : V) :
+SGC\Bridge\CoherenceObstruction.lean:237: axiom fuzzy_KL_bound (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+SGC\Bridge\CoherenceObstruction.lean:281: axiom AnyonRandomWalk.spectralGap {V : Type*} [Fintype V] [DecidableEq V] [Nonempty V]
+SGC\Bridge\CoherenceObstruction.lean:293: axiom inverse_bridge_topological (code : TopologicalCode V) :
+SGC\Bridge\CoherenceObstruction.lean:307: axiom toric_code_spectral_gap (L : ℕ) (hL : 0 < L) :
+SGC\Bridge\CoherenceObstruction.lean:334: axiom classify_code (pi_dist : V → ℝ) (code : CodeSubspace V pi_dist)
+SGC\Bridge\Consolidation.lean:97: axiom HeatKernel_semigroup (L : Matrix V V ℝ) (s t : ℝ) :
+SGC\Bridge\Consolidation.lean:257: axiom InformationLoss_nonneg (L : Matrix V V ℝ) (t : ℝ) (p q : V → ℝ)
+SGC\Bridge\Consolidation.lean:266: axiom defect_bounds_info_loss_rate (L : Matrix V V ℝ) (P : Partition V)
+SGC\Bridge\GeometricClosure.lean:160: axiom EnergyDerivative (L : Matrix V V ℝ) (p₀ pi_stat : V → ℝ) (t : ℝ) : ℝ
+SGC\Bridge\GeometricClosure.lean:163: axiom EnergySecondDerivative (L : Matrix V V ℝ) (p₀ pi_stat : V → ℝ) (t : ℝ) : ℝ
+SGC\Bridge\GeometricClosure.lean:185: axiom BakryEmery_implies_stability (L : Matrix V V ℝ) (rho : ℝ)
+SGC\Bridge\GeometricClosure.lean:199: axiom exponential_decay_from_convexity (L : Matrix V V ℝ) (rho : ℝ) (h_rho : rho > 0)
+SGC\Bridge\GeometricClosure.lean:210: axiom spectral_gap_from_ricci (L : Matrix V V ℝ) (rho : ℝ)
+SGC\Bridge\GeometricClosure.lean:228: axiom defect_bounded_by_ricci (L : Matrix V V ℝ) (P : Partition V)
+SGC\Bridge\GeometricClosure.lean:334: axiom geometric_uncertainty_principle (L : Matrix V V ℝ) (P : Partition V)
+SGC\Bridge\GeometricClosure.lean:451: axiom Gamma_eq_DirichletForm (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+SGC\Bridge\GeometricClosure.lean:457: axiom Gamma_nonneg (L : Matrix V V ℝ) (f : V → ℝ) (v : V)
+SGC\Bridge\GeometricClosure.lean:518: axiom DirichletForm_deriv_eq_Gamma2 (L : Matrix V V ℝ) (pi_dist : V → ℝ) (f : V → ℝ)
+SGC\Bridge\GeometricClosure.lean:540: axiom Poincare_from_integrated_curvature (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+SGC\Bridge\GeometricClosure.lean:754: axiom RelativeEntropy_bounded_by_ChiSquared (p pi_dist : V → ℝ)
+SGC\Bridge\GeometricClosure.lean:847: axiom Gamma_tensorProduct_additivity (L_A : Matrix V V ℝ) (L_B : Matrix W W ℝ)
+SGC\Bridge\GeometricClosure.lean:872: axiom Gamma2_tensorProduct_additivity (L_A : Matrix V V ℝ) (L_B : Matrix W W ℝ)
+SGC\Bridge\GeometricClosure.lean:903: axiom Ricci_tensor_min (L_A : Matrix V V ℝ) (L_B : Matrix W W ℝ)
+SGC\Bridge\Quantum.lean:142: axiom embedClassical_isDensityMatrix (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+SGC\Bridge\Quantum.lean:148: axiom partitionToCodeSubspace (pi_dist : V → ℝ) (P : Partition V) :
+SGC\Bridge\Quantum.lean:153: axiom partitionToCodeSubspace_proj_eq (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) (P : Partition V) :
+SGC\Bridge\Quantum.lean:191: axiom complexifyDefect_zero_iff (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+SGC\Bridge\Quantum.lean:342: axiom KL_coefficient_real (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+SGC\Bridge\Quantum.lean:375: axiom inner_pi_orthogonal_decomp (pi_dist : V → ℝ) (P : Partition V) (ψ : V → ℂ) :
+SGC\Bridge\Quantum.lean:563: axiom all_ones_norm_sq_pos (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) :
+SGC\Bridge\Quantum.lean:801: axiom approximate_qec_bound (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+SGC\Bridge\Quantum.lean:823: axiom quantum_validity_horizon_bound (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+SGC\Bridge\Recovery.lean:139: axiom RelativeEntropy_eq_zero_iff (p q : V → ℝ)
+SGC\Bridge\Recovery.lean:156: axiom DataProcessingInequality (M : Matrix V V ℝ) (p q : V → ℝ)
+SGC\Bridge\Recovery.lean:167: axiom PetzRecoveryTheorem (M : Matrix V V ℝ) (p q : V → ℝ)
+SGC\Bridge\Recovery.lean:199: axiom ApproximateRecoveryBound (M : Matrix V V ℝ) (p q : V → ℝ)
+SGC\Bridge\Recovery.lean:254: axiom LandauerPrinciple (pi_dist : V → ℝ) (kT : ℝ) (hkT : 0 < kT)
+SGC\Bridge\RennerSGC.lean:119: axiom quantified over an *arbitrary* generator `L`, coupled to the hidden
+SGC\Bridge\RennerSGC.lean:136: axiom functional_defect_implies_approx_lumpable
+SGC\Bridge\RennerSGC.lean:344: axiom is jointly inconsistent with the proven sandwich: take `L` strongly
+SGC\Bridge\RennerSGC.lean:355: axiom renner_sgc_bridge_axiom
+SGC\Bridge\SingularLearning.lean:12: axiom and the trajectory axiom behind `hidden_entropy_bounded_by_defect`):
+SGC\Dynamics\EscortConductance.lean:286: axiom rg_monotonicity_of_cheeger {V : Type*} [Fintype V] [DecidableEq V]
+SGC\Dynamics\EscortConductance.lean:313: axiom boundary_persistence {V : Type*} [Fintype V] [DecidableEq V]
+SGC\Evolution\Conservation.lean:60: axiom BettiNumber (G : WeightedGraph V) (k : ℕ) : ℕ
+SGC\Evolution\Conservation.lean:63: axiom betti_zero_components (G : WeightedGraph V) :
+SGC\Evolution\Conservation.lean:67: axiom betti_zero_connected (G : WeightedGraph V) :
+SGC\Evolution\Conservation.lean:71: axiom betti_higher_zero (G : WeightedGraph V) (k : ℕ) (hk : k ≥ 2) :
+SGC\Evolution\Conservation.lean:75: axiom euler_characteristic (G : WeightedGraph V) :
+SGC\Evolution\Conservation.lean:116: axiom SafeSurgeryCut (G : WeightedGraph V) (threshold : ℝ) : WeightedGraph V
+SGC\Evolution\Conservation.lean:119: axiom safe_cut_is_safe (G : WeightedGraph V) (threshold : ℝ) :
+SGC\Evolution\Conservation.lean:123: axiom safe_cut_removes_stressed (G : WeightedGraph V) (threshold : ℝ) :
+SGC\Evolution\Conservation.lean:136: axiom ConstrainedSurgery (G : WeightedGraph V) (cutThreshold sewThreshold : ℝ) : WeightedGraph V
+SGC\Evolution\Conservation.lean:139: axiom constrained_surgery_is_safe (G : WeightedGraph V) (cutTh sewTh : ℝ) :
+SGC\Evolution\Conservation.lean:203: axiom betti_one_non_increasing (G : WeightedGraph V) (threshold : ℝ) :
+SGC\Evolution\Conservation.lean:210: axiom betti_one_sewing (G : WeightedGraph V) (threshold : ℝ) :
+SGC\Evolution\Conservation.lean:220: axiom self_preservation (G : WeightedGraph V) (cutTh sewTh : ℝ)
+SGC\Evolution\Dynamics.lean:133: axiom diffusionStep (G : WeightedGraph V) (π : V → ℝ) (dt : ℝ) : V → ℝ
+SGC\Evolution\Dynamics.lean:141: axiom diffusionStep_nonneg (G : WeightedGraph V) (π : V → ℝ) (dt : ℝ)
+SGC\Evolution\Dynamics.lean:151: axiom diffusionStep_sum (G : WeightedGraph V) (π : V → ℝ) (dt : ℝ) :
+SGC\Evolution\Dynamics.lean:187: axiom criticalEdges (G : WeightedGraph V) : Finset (V × V)
+SGC\Evolution\Dynamics.lean:209: axiom SurgeryStep (s : EvolutionaryState V) : EvolutionaryState V
+SGC\Evolution\Dynamics.lean:212: axiom surgery_step_idempotent_subcritical (s : EvolutionaryState V)
+SGC\Evolution\Dynamics.lean:243: axiom trajectory_time_monotone (s₀ : EvolutionaryState V) (dt : ℝ) (hdt : 0 ≤ dt) (n : ℕ) :
+SGC\Evolution\Dynamics.lean:265: axiom evolution_entropy_production (s : EvolutionaryState V) (dt : ℝ) (hdt : 0 ≤ dt) :
+SGC\Evolution\Dynamics.lean:284: axiom equilibrium_is_fixed_point (s : EvolutionaryState V) (dt : ℝ) (hdt : 0 < dt)
+SGC\Evolution\FormanRicci.lean:162: axiom forman_ricci_bottleneck (G : WeightedGraph V) (u v : V) (h : G.adj u v)
+SGC\Evolution\FormanRicci.lean:169: axiom forman_ricci_cluster (G : WeightedGraph V) (u v : V) (h : G.adj u v)
+SGC\Evolution\FormanRicci.lean:186: axiom minFormanRicci (G : WeightedGraph V) : ℝ
+SGC\Evolution\FormanRicci.lean:191: axiom maxFormanRicci (G : WeightedGraph V) : ℝ
+SGC\Evolution\Surgery.lean:103: axiom SurgerySew (G : WeightedGraph V) (threshold : ℝ) : WeightedGraph V
+SGC\Evolution\Surgery.lean:106: axiom sew_preserves_edges (G : WeightedGraph V) (threshold : ℝ) :
+SGC\Evolution\Surgery.lean:110: axiom sew_adds_good_edges (G : WeightedGraph V) (threshold : ℝ) :
+SGC\Foundations\AxiomAudit.lean:20: axiom set used by a flagship discharged theorem. When the continuous
+SGC\Geometry\Conformal.lean:112: axiom CornerAngle (r : CirclePacking V) (t : PackingTriangle V) (corner : Fin 3) : ℝ
+SGC\Geometry\Conformal.lean:115: axiom corner_angle_pos (r : CirclePacking V) (t : PackingTriangle V) (corner : Fin 3) :
+SGC\Geometry\Conformal.lean:119: axiom corner_angle_lt_pi (r : CirclePacking V) (t : PackingTriangle V) (corner : Fin 3) :
+SGC\Geometry\Conformal.lean:123: axiom triangle_angle_sum (r : CirclePacking V) (t : PackingTriangle V) :
+SGC\Geometry\Conformal.lean:170: axiom discrete_gauss_bonnet (r : CirclePacking V) (T : Triangulation V) (χ : ℤ) :
+SGC\Geometry\Conformal.lean:193: axiom KAT_existence (T : Triangulation V) (hplanar : IsPlanar T) :
+SGC\Geometry\Conformal.lean:200: axiom KAT_uniqueness (T : Triangulation V) (hplanar : IsPlanar T)
+SGC\Geometry\Conformal.lean:224: axiom flatTarget : TargetCurvature V
+SGC\Geometry\CurvatureBridge.lean:89: axiom OllivierRicciCurvature (L : Matrix V V ℝ) (x y : V) : ℝ
+SGC\Geometry\CurvatureBridge.lean:92: axiom ollivier_ricci_exists (L : Matrix V V ℝ)
+SGC\Geometry\CurvatureBridge.lean:243: axiom curvature_defect_correspondence
+SGC\Geometry\CurvatureBridge.lean:284: axiom yamabe_bounds_hidden_entropy
+SGC\Geometry\CurvatureBridge.lean:323: axiom error_gradient_is_curvature
+SGC\Geometry\CurvatureBridge.lean:387: axiom energy_entropy_rate_correspondence
+SGC\Geometry\DiscreteCurvature.lean:167: axiom solidAngle {V : Type*} [DecidableEq V] [Fintype V]
+SGC\Geometry\DiscreteCurvature.lean:177: axiom totalSolidAngle (n : ℕ) : ℝ
+SGC\Geometry\DiscreteCurvature.lean:180: axiom totalSolidAngle_two : totalSolidAngle 2 = 2 * π
+SGC\Geometry\DiscreteCurvature.lean:183: axiom totalSolidAngle_three : totalSolidAngle 3 = 4 * π
+SGC\Geometry\DiscreteCurvature.lean:215: axiom discrete_gauss_bonnet {V : Type*} [DecidableEq V] [Fintype V]
+SGC\Geometry\DiscreteCurvature.lean:299: axiom KAT_existence {V : Type*} [DecidableEq V] [Fintype V]
+SGC\Geometry\DiscreteCurvature.lean:335: axiom yamabe_flow_exists_all_time {V : Type*} [DecidableEq V] [Fintype V]
+SGC\Geometry\DiscreteCurvature.lean:352: axiom yamabe_flow_convergence {V : Type*} [DecidableEq V] [Fintype V]
+SGC\Geometry\DiscreteCurvature.lean:366: axiom yamabe_exponential_convergence {V : Type*} [DecidableEq V] [Fintype V]
+SGC\Geometry\Simplicial.lean:123: axiom dimension (K : AbstractSimplicialComplex V) : ℕ
+SGC\Geometry\Simplicial.lean:152: axiom eulerCharacteristic [Fintype V] (K : AbstractSimplicialComplex V)
+SGC\Geometry\Simplicial.lean:169: axiom complexFromGraph {V : Type*} [DecidableEq V] [Fintype V]
+SGC\Geometry\Simplicial.lean:177: axiom complexFromTriangles {V : Type*} [DecidableEq V]
+SGC\Geometry\Yamabe.lean:181: axiom YamabeFlow (r₀ : CirclePacking V) (T : Triangulation V)
+SGC\Geometry\Yamabe.lean:188: axiom yamabe_flow_preserves_bound (r₀ : CirclePacking V) (T : Triangulation V)
+SGC\Geometry\Yamabe.lean:198: axiom yamabe_energy_decreasing (r₀ : CirclePacking V) (T : Triangulation V)
+SGC\Geometry\Yamabe.lean:209: axiom variance_decreasing (r₀ : CirclePacking V) (T : Triangulation V)
+SGC\Geometry\Yamabe.lean:229: axiom yamabe_convergence (r₀ : CirclePacking V) (T : Triangulation V)
+SGC\Geometry\Yamabe.lean:243: axiom exponential_convergence (r₀ : CirclePacking V) (T : Triangulation V)
+SGC\Geometry\Yamabe.lean:277: axiom consolidation_is_yamabe (r₀ : CirclePacking V) (T : Triangulation V)
+SGC\Geometry\Manifold\Convergence.lean:148: axiom below asserts *that* it holds.
+SGC\Geometry\Manifold\Convergence.lean:247: axiom manifold_hypothesis (d : ℕ) (Δ : LaplaceBeltrami d) : PointwiseConvergence Δ
+SGC\Geometry\Manifold\Convergence.lean:256: axiom spectral_convergence_axiom (d : ℕ) (Δ : LaplaceBeltrami d) (k : ℕ) :
+SGC\InformationGeometry\FisherKL.lean:196: axiom score_function (P : ParametricFamily n V) (θ : Fin n → ℝ) (i : Fin n) (v : V) : ℝ
+SGC\InformationGeometry\FisherKL.lean:200: axiom score_zero_mean (P : ParametricFamily n V) (θ : Fin n → ℝ) (i : Fin n) :
+SGC\InformationGeometry\FisherKL.lean:222: axiom FisherMatrix_posSemidef (P : ParametricFamily n V) (θ : Fin n → ℝ) :
+SGC\InformationGeometry\FisherKL.lean:264: axiom KL_Fisher_local_bound (P : ParametricFamily n V) (θ Δθ : Fin n → ℝ) :
+SGC\InformationGeometry\FisherKL.lean:366: axiom RegularizedFisher.posDef (RF : RegularizedFisher n) :
+SGC\InformationGeometry\FisherKL.lean:565: axiom minimal_disturbance_primal_optimality (RF : RegularizedFisher n)
+SGC\InformationGeometry\FisherKL.lean:600: axiom fisher_orthogonal_projection_feasibility (RF : RegularizedFisher n)
+SGC\InformationGeometry\FisherKL.lean:613: axiom fisher_orthogonal_projection_optimality (RF : RegularizedFisher n)
+SGC\InformationGeometry\FisherKL.lean:651: axiom FisherOrthogonalProjector_idempotent (RF : RegularizedFisher n)
+SGC\InformationGeometry\FisherKL.lean:665: axiom FisherOrthogonalProjector_orthogonal (P : ParametricFamily n V) (θ : Fin n → ℝ)
+SGC\InformationGeometry\FisherKL.lean:777: axiom no_forgetting_horizon_bound {K : ℕ} [NeZero K] (P : ParametricFamily n V)
+SGC\InformationGeometry\FisherNoetherBridge.lean:372: axiom expfam_fisher_is_covariance (E) (Sigma_T : Matrix (Fin m) (Fin m) ℝ) :
+SGC\InformationGeometry\InformationGradientLaw.lean:309: axiom chentsov_uniqueness :
+SGC\InformationGeometry\KramersEscape.lean:235: axiom fokker_planck_limit :
+SGC\InformationGeometry\RenormalizationDynamics.lean:145: axiom toSubmodule (S : ConsolidatedSubspace n k) : Submodule ℝ (Fin n → ℝ)
+SGC\InformationGeometry\RenormalizationDynamics.lean:150: axiom submodule_dim (S : ConsolidatedSubspace n k) :
+SGC\InformationGeometry\RenormalizationDynamics.lean:341: axiom FisherOperatorNorm (F : Matrix (Fin n) (Fin n) ℝ) : ℝ
+SGC\InformationGeometry\RenormalizationDynamics.lean:344: axiom FisherOperatorNorm_nonneg (F : Matrix (Fin n) (Fin n) ℝ)
+SGC\InformationGeometry\RenormalizationDynamics.lean:352: axiom FisherOperatorNorm_smul (F : Matrix (Fin n) (Fin n) ℝ) (α : ℝ) (h_α : 0 < α) :
+SGC\InformationGeometry\RenormalizationDynamics.lean:383: axiom FisherSpectralCriterionRel_scale_invariant
+SGC\InformationGeometry\RenormalizationDynamics.lean:656: axiom spectral_is_variational_optimum (F : Matrix (Fin n) (Fin n) ℝ)
+SGC\InformationGeometry\RenormalizationDynamics.lean:722: axiom spectral_s_update (state : RenormalizedState n k) (field : GradientField n)
+SGC\InformationGeometry\RenormalizationDynamics.lean:741: axiom spectral_update_increases_recoverability (state : RenormalizedState n k)
+SGC\InformationGeometry\RenormalizationDynamics.lean:765: axiom update_structure : RenormalizedState n k → GradientField n → ConsolidatedSubspace n k
+SGC\InformationGeometry\RenormalizationDynamics.lean:770: axiom update_structure_preserves_criterion (state : RenormalizedState n k)
+SGC\InformationGeometry\RenormalizationDynamics.lean:776: axiom state_fisher_symm (state : RenormalizedState n k) : state.F.IsSymm
+SGC\InformationGeometry\RenormalizationDynamics.lean:780: axiom state_fisher_psd (state : RenormalizedState n k) :
+SGC\InformationGeometry\RenormalizationDynamics.lean:818: axiom update_metric : (Fin n → ℝ) → Matrix (Fin n) (Fin n) ℝ
+SGC\InformationGeometry\RenormalizationDynamics.lean:820: axiom update_metric_psd (θ : Fin n → ℝ) :
+SGC\InformationGeometry\RenormalizationDynamics.lean:879: axiom intrinsic_defect_lyapunov (state : RenormalizedState n k)
+SGC\InformationGeometry\RenormalizationDynamics.lean:899: axiom intrinsic_defect_exponential_decay (state : RenormalizedState n k)
+SGC\InformationGeometry\RenormalizationDynamics.lean:947: axiom primal_freezing_is_special_case (S : ConsolidatedSubspace n k) (theta dtheta : Fin n → ℝ)
+SGC\InformationGeometry\RenormalizationDynamics.lean:975: axiom sgc_closure_principle (state₀ : RenormalizedState n k)
+SGC\InformationGeometry\RenormalizationDynamics.lean:1021: axiom emergence_phase_transition (state₀ : RenormalizedState n k)
+SGC\InformationGeometry\ThermodynamicBridge.lean:76: axiom thermodynamic_uncertainty (P : ParametricFamily n V)
+SGC\InformationGeometry\ThermodynamicBridge.lean:94: axiom freeEnergyDiff (P : ParametricFamily n V) (θ Δθ : Fin n → ℝ) : ℝ
+SGC\InformationGeometry\ThermodynamicBridge.lean:104: axiom jarzynski_equality (P : ParametricFamily n V) (θ Δθ : Fin n → ℝ) :
+SGC\InformationGeometry\ThermodynamicBridge.lean:113: axiom crooks_fluctuation (P : ParametricFamily n V) (θ Δθ : Fin n → ℝ) (W : ℝ) :
+SGC\InformationGeometry\ThermodynamicBridge.lean:146: axiom FiringRateModel (n : ℕ) (V : Type*) [Fintype V] : ParametricFamily n V
+SGC\InformationGeometry\ThermodynamicBridge.lean:152: axiom spike_timing_precision (θ : Fin n → ℝ) :
+SGC\InformationGeometry\ThermodynamicBridge.lean:160: axiom STDP_Fisher_orthogonal {k : ℕ} (θ : Fin n → ℝ)
+SGC\InformationGeometry\ThermodynamicBridge.lean:183: axiom efficient_coding_principle (P : ParametricFamily n V) (θ : Fin n → ℝ)
+SGC\InformationGeometry\TsallisStatistics.lean:237: axiom TsallisDivergence_eq_zero_iff {V : Type*} [Fintype V] {q : ℝ} (hq : q ≠ 1)
+SGC\InformationGeometry\TsallisStatistics.lean:281: axiom TsallisDPI {q : ℝ} [NonExtensiveSystem q]
+SGC\InformationGeometry\TsallisStatistics.lean:452: axiom escort_entropy_gap_nonneg {q : ℝ} [NonExtensiveSystem q]
+SGC\InformationGeometry\TsallisStatistics.lean:615: axiom q_persistence_bound
+SGC\Observables\ThermodynamicBounds.lean:92: axiom defect_bounded_by_assembly
+SGC\Observables\ThermodynamicBounds.lean:118: axiom assembly_bounded_by_defect
+SGC\Observables\ThermodynamicBounds.lean:130: axiom assembly_bounded_by_entropy
+SGC\Observables\ThermodynamicBounds.lean:308: axiom assembly_bounded_by_housekeeping
+SGC\Observables\TopologicalPersistence.lean:159: axiom survival_bound (G : WeightedGraph V) (k : ℕ) (hk : BettiNumber G 1 > k) :
+SGC\Observables\TopologicalPersistence.lean:218: axiom defect_betti_scaling (G : WeightedGraph V) (L : Matrix V V ℝ)
+SGC\Observables\TopologicalPersistence.lean:286: axiom cycle_exists_from_betti (G : WeightedGraph V)
+SGC\Observables\TopologicalPersistence.lean:311: axiom cycle_induces_blanket (G : WeightedGraph V)
+SGC\Observables\TopologicalPersistence.lean:331: axiom laplacian_respects_cycle_blanket (G : WeightedGraph V)
+SGC\Renormalization\Approximate.lean:792: axiom HeatKernel_opNorm_bound (L : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+SGC\Renormalization\Approximate.lean:848: axiom Duhamel_integral_bound (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+SGC\Renormalization\Approximate.lean:891: axiom Horizontal_Duhamel_integral_bound (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+SGC\Renormalization\Approximate.lean:1118: axiom rowsum_to_opNorm_bound (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+SGC\Renormalization\Approximate.lean:1199: axiom NCD_defect_split (L L_fast L_slow : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+SGC\Renormalization\Approximate.lean:1222: axiom NCD_semigroup_bound (L_fast : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) :
+SGC\Renormalization\Approximate.lean:1243: axiom NCD_integral_bound (L L_fast L_slow : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+SGC\Renormalization\Approximate.lean:1411: axiom PropagatorDiff_eq_proj_trajectory_diff (L : Matrix V V ℝ) (P : Partition V)
+SGC\Renormalization\Approximate.lean:1514: axiom Weyl_inequality_pi (A B : (V → ℝ) →ₗ[ℝ] (V → ℝ)) (pi_dist : V → ℝ)
+SGC\Spectral\FloquetTheory.lean:142: axiom floquet_decay_bound (M : MonodromyOperator V) (γ_F : FloquetGap)
+SGC\Spectral\FloquetTheory.lean:197: axiom floquet_sgc_bridge (LG : PeriodicGeneratorFamily V) (γ_F : FloquetGap)
+SGC\Structure\CellularSheaf.lean:145: axiom sheaf_assembly_theorem (R : Type*) [Ring R]
+SGC\Thermodynamics\EntropyProduction.lean:251: axiom data_processing_inequality {W : Type*} [Fintype W] [DecidableEq W]
+SGC\Thermodynamics\EntropyProduction.lean:450: axiom hidden_entropy_nonneg (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+SGC\Thermodynamics\EntropyProduction.lean:486: axiom pinsker_inequality (p q : V → ℝ)
+SGC\Thermodynamics\EntropyProduction.lean:600: axiom hidden_entropy_bound_from_trajectory
+SGC\Thermodynamics\EntropyProduction.lean:677: axiom gaspard_path_space_identity
+SGC\Thermodynamics\Evolution.lean:115: axiom StationaryDistribution (G : WeightedGraph V) : V → ℝ
+SGC\Thermodynamics\Evolution.lean:118: axiom stationary_is_probability (G : WeightedGraph V) :
+SGC\Thermodynamics\Evolution.lean:263: axiom stationary_strictly_positive (G : WeightedGraph V) :
+SGC\Thermodynamics\Evolution.lean:392: axiom emergence_conjecture (G : WeightedGraph V) (t : ℕ) :
+SGC\Thermodynamics\Evolution.lean:420: axiom first_law_of_topology (G G' : WeightedGraph V) :
+SGC\Thermodynamics\FluxDecomposition.lean:681: axiom non_normality_from_flux (L : Matrix V V ℝ) (pi_dist : V → ℝ)
+=== SORRIES: 10 ===
+SGC\Bridge\FloquetTsallisStabilization.lean:122: sorry
+SGC\Bridge\FloquetTsallisStabilization.lean:200: sorry
+SGC\Bridge\ReasoningBarriers.lean:244: sorry
+SGC\Bridge\ReasoningBarriers.lean:348: sorry
+SGC\Bridge\ReasoningBarriers.lean:411: sorry
+SGC\InformationGeometry\FisherNoetherBridge.lean:546: sorry
+SGC\InformationGeometry\KramersEscape.lean:184: sorry
+SGC\InformationGeometry\KramersEscape.lean:211: sorry
+SGC\Stochastic\BrownianMotion.lean:33: - `theorem … := by sorry` -- a stated mathematical claim **not yet proved**;
+SGC\Topology\PadicPathSpace.lean:15: Discipline (CANTOR_LAYER_SPEC §0): every open result is a `theorem … := by sorry`

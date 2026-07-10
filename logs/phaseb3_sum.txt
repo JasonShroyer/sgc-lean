@@ -1,0 +1,7 @@
+﻿ERR=4
+error: src/SGC/Bridge/Quantum.lean:596:2: Type mismatch: After simplification, term
+error: Lean exited with code 1
+lake.exe : error: build failed
+    + CategoryInfo          : NotSpecified: (error: build failed:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

@@ -1,0 +1,9 @@
+﻿ERRORS=6 SORRYWARN=4
+error: src/SGC/Observables/ValidityHorizon.lean:262:2: Unknown identifier `NCD_uniform_error_bound`
+error: Lean exited with code 1
+warning: src/SGC/Bridge/CanonicalWavelet.lean:416:0: automatically included section variable(s) unused in theorem `SGC.Bridge.CanonicalWavelet.tight_frame_representation_error_zero`:
+lake.exe : error: build failed
+    + CategoryInfo          : NotSpecified: (error: build failed:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+    + FullyQualifiedErrorId : NativeCommandError
+ 

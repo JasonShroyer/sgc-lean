@@ -1,0 +1,2 @@
+﻿[cantor-layer-wip 8e2e337] Eternal-validity capstone for the Cantor Shift Tower: shiftTower_eternal_closure (K^m lift = lift Kbar^m for every horizon m, via intertwining_pow). Kernel-clean. The eps=0 / T*=infinity pole of damped_validity_budget is now a theorem, not a remark.
+ 2 files changed, 17 insertions(+)

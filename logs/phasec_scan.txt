@@ -1,0 +1,83 @@
+﻿FLUID L29: | viscous horizon `Ï„âˆž = M/Î½` ([PNAS] pp. 8â€“9)     | `viscous_time_budget`                        |
+FLUID L34: in dimension 3; viscous reparametrization budget `âˆ«â‚€^âˆž e^{-Î½t} dt = 1/Î½` (pp. 8â€“9).
+FLUID L65: def IsStationary (L : Matrix V V â„) (pi_dist : V â†’ â„) : Prop :=
+FLUID L69: def divergence (J : V â†’ V â†’ â„) (x : V) : â„ := âˆ‘ y, J x y
+FLUID L73: lemma divergence_current_eq_neg_residual (L : Matrix V V â„) (pi_dist : V â†’ â„)
+FLUID L82: theorem stationary_iff_current_divergence_free (L : Matrix V V â„) (pi_dist : V â†’ â„)
+FLUID L99: theorem current_zero_iff_reversible (L : Matrix V V â„) (pi_dist : V â†’ â„) :
+FLUID L110: def InCycleSpace (J : V â†’ V â†’ â„) : Prop :=
+FLUID L114: theorem stationary_current_in_cycle_space (L : Matrix V V â„) (pi_dist : V â†’ â„)
+FLUID L155: theorem cycle_of_pos_cycleSpace_field {J : V â†’ V â†’ â„} (hJ : InCycleSpace J)
+FLUID L185: theorem ness_has_current_cycle (L : Matrix V V â„) (pi_dist : V â†’ â„)
+FLUID L205: theorem reversible_iff_no_positive_current_cycle (L : Matrix V V â„) (pi_dist : V â†’ â„)
+FLUID L230: lemma pibar_mul_coarseGenerator (L : Matrix V V â„) (P : Partition V) (pi_dist : V â†’ â„)
+FLUID L244: theorem coarse_current_eq_sum_fine (L : Matrix V V â„) (P : Partition V) (pi_dist : V â†’ â„)
+FLUID L276: theorem reversible_quotient_of_reversible (L : Matrix V V â„) (P : Partition V)
+FLUID L290: theorem ness_quotient_forces_ness_fine (L : Matrix V V â„) (P : Partition V)
+FLUID L309: def fiberPartition : Partition (W Ã— F) where
+FLUID L314: def uniformLift (M : Matrix W W â„) : Matrix (W Ã— F) (W Ã— F) â„ :=
+FLUID L318: lemma fiberPartition_quot_map_eq_iff (p : W Ã— F) (B : (fiberPartition W F).Quot) :
+FLUID L336: lemma uniformLift_row_sum_block (M : Matrix W W â„) (p : W Ã— F)
+FLUID L351: theorem uniformLift_stronglyLumpable (M : Matrix W W â„) :
+FLUID L363: theorem uniformLift_quotient_realizes (M : Matrix W W â„) (w w' : W) (f f' : F) :
+FLUID L375: theorem uniformLift_row_sum_zero (M : Matrix W W â„) (hM : âˆ€ w, âˆ‘ w', M w w' = 0)
+FLUID L387: theorem uniformLift_stationary (M : Matrix W W â„) (piW : W â†’ â„)
+FLUID L405: theorem uniformLift_current_scales (M : Matrix W W â„) (piW : W â†’ â„) (p q : W Ã— F) :
+FLUID L414: /-! ## Â§6. The viscous horizon (B5)
+FLUID L417: Turing-complete flow with a strictly finite total simulated-time budget `Ï„âˆž = M/Î½`. The
+FLUID L419: with the SGC validity horizon `T* ~ 1/Îµ` (`trajectory_closure_bound`, Approximate.lean)
+FLUID L420: gives the combined budget `1/(Î½Îµ)`. -/
+FLUID L422: section ViscousHorizon
+FLUID L426: /-- **B5 (viscous time budget)**: the total reparametrized computation time of a
+FLUID L428: theorem viscous_time_budget {Î½ : â„} (hÎ½ : 0 < Î½) :
+FLUID L434: /-- **B5-coupling (dissipative validity budget)**: physical time budget `1/Î½` times the
+FLUID L435: coarse-model validity rate `1/Îµ` gives the combined budget `1/(Î½Îµ)` â€” finite for any
+FLUID L436: positive dissipation and positive defect. Infinite-horizon faithful computation
+FLUID L438: theorem damped_validity_budget {Î½ Îµ : â„} (hÎ½ : 0 < Î½) (_hÎµ : 0 < Îµ) :
+FLUID L440: rw [viscous_time_budget hÎ½, div_mul_div_comm, one_mul]
+FLUID L442: end ViscousHorizon
+FLUID L464: def KillingDefect (L : Matrix V V â„) (pi_dist : V â†’ â„) : â„ :=
+FLUID L467: lemma killingDefect_nonneg (L : Matrix V V â„) (pi_dist : V â†’ â„) :
+FLUID L473: theorem killingDefect_eq_zero_iff_reversible (L : Matrix V V â„) (pi_dist : V â†’ â„) :
+FLUID L491: theorem killingDefect_eq_four_antisym (L : Matrix V V â„) (pi_dist : V â†’ â„)
+FLUID L508: theorem killingDefect_pos_iff_positive_current_cycle (L : Matrix V V â„)
+FLUID L549: def edgeInner (Î± Î² : V â†’ V â†’ â„) : â„ := âˆ‘ x, âˆ‘ y, Î± x y * Î² x y
+FLUID L553: def gradientField (f : V â†’ â„) : V â†’ V â†’ â„ := fun x y => f y - f x
+FLUID L557: lemma edgeInner_gradient_eq (Ï‰ : V â†’ V â†’ â„) (hanti : âˆ€ x y, Ï‰ x y = -Ï‰ y x)
+FLUID L572: theorem orthogonal_gradients_iff_divergence_free (Ï‰ : V â†’ V â†’ â„)
+FLUID L595: theorem stationary_current_orthogonal_gradients (L : Matrix V V â„)
+FLUID L606: theorem killingDefect_eq_edgeInner_self (L : Matrix V V â„) (pi_dist : V â†’ â„) :
+VH L58: def validity_horizon (Îµ : â„) (hÎµ : 0 < Îµ) : â„ := 1 / Îµ
+VH L61: lemma validity_horizon_pos (Îµ : â„) (hÎµ : 0 < Îµ) : 0 < validity_horizon Îµ hÎµ := by
+VH L66: lemma validity_horizon_mono {Îµâ‚ Îµâ‚‚ : â„} (hÎµâ‚ : 0 < Îµâ‚) (hÎµâ‚‚ : 0 < Îµâ‚‚) (h : Îµâ‚ â‰¤ Îµâ‚‚) :
+VH L81: def autocorrelation (L : Matrix V V â„) (pi_dist : V â†’ â„) (f : V â†’ â„) (t : â„) : â„ :=
+VH L85: lemma autocorrelation_zero (L : Matrix V V â„) (pi_dist : V â†’ â„) (f : V â†’ â„) :
+VH L92: lemma autocorrelation_zero_mean_zero (L : Matrix V V â„) (pi_dist : V â†’ â„) (f : V â†’ â„)
+VH L105: def autocorrelation_time_from_gap (Î³ : â„) (hÎ³ : 0 < Î³) : â„ := 1 / Î³
+VH L108: lemma autocorrelation_time_from_gap_pos (Î³ : â„) (hÎ³ : 0 < Î³) :
+VH L137: theorem autocorrelation_decay_from_sector
+VH L216: theorem validity_horizon_lower_bound_param
+VH L235: def predicted_validity_horizon (Ï„_corr Q : â„) (_hÏ„ : 0 < Ï„_corr) (_hQ : 0 < Q) : â„ :=
+VH L239: lemma predicted_validity_horizon_eq (Î³ Q : â„) (hÎ³ : 0 < Î³) (hQ : 0 < Q) :
+VH L255: theorem NCD_validity_enhancement [Nonempty V]
+PADIC L51: abbrev PathSpace : Type _ := â„• â†’ A
+PADIC L58: def truncate (n : â„•) (x : PathSpace A) : Fin n â†’ A := fun i => x i.val
+PADIC L67: theorem card_truncations (p n : â„•) :
+PADIC L84: def finEquivZMod (m : â„•) [NeZero m] : Fin m â‰ƒ ZMod m where
+PADIC L98: def digitEncoding (p n : â„•) [NeZero p] : (Fin n â†’ Fin p) â‰ƒ ZMod (p ^ n) :=
+PADIC L110: theorem castHom_digitEncoding (p n : â„•) [NeZero p] (f : Fin (n + 1) â†’ Fin p) :
+PADIC L124: def digitVal (p n : â„•) [NeZero p] (s : â„• â†’ Fin p) : ZMod (p ^ n) :=
+PADIC L130: theorem castHom_digitVal (p n : â„•) [NeZero p] (s : â„• â†’ Fin p) :
+PADIC L139: theorem natCast_digitVal_succ (p n : â„•) [NeZero p] (s : â„• â†’ Fin p) :
+PADIC L147: theorem dvd_digitVal_succ_sub (p n : â„•) [NeZero p] (s : â„• â†’ Fin p) :
+PADIC L161: def digitSeq_to_padicInt (p : â„•) [Fact p.Prime] (s : â„• â†’ Fin p) : â„¤_[p] :=
+PADIC L169: theorem digitSeq_toZModPow (p : â„•) [Fact p.Prime] (s : â„• â†’ Fin p) (n : â„•) :
+PADIC L183: theorem digitSeq_to_padicInt_injective (p : â„•) [Fact p.Prime] :
+PADIC L197: def gtower (p : â„•) [Fact p.Prime] (y : â„¤_[p]) (n : â„•) : Fin n â†’ Fin p :=
+PADIC L201: theorem gtower_castSucc (p : â„•) [Fact p.Prime] (y : â„¤_[p]) (n : â„•) (i : Fin n) :
+PADIC L221: theorem gtower_top (p : â„•) [Fact p.Prime] (y : â„¤_[p]) :
+PADIC L237: theorem digitSeq_to_padicInt_surjective (p : â„•) [Fact p.Prime] :
+PADIC L257: def pathSpaceEquivPadicInt (p : â„•) [Fact p.Prime] : PathSpace (Fin p) â‰ƒ â„¤_[p] :=
+PADIC L264: theorem continuous_digitSeq_to_padicInt (p : â„•) [Fact p.Prime]
+PADIC L294: theorem pathSpace_homeo_padicInt (p : â„•) [Fact p.Prime]
+PADIC L313: theorem pi_pathSpace_homeo_pi_padicInt (p d : â„•) [Fact p.Prime]

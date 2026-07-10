@@ -1,0 +1,5 @@
+﻿\Algebra\BigOperators\Group\Finset\Defs.lean:703: See `Equiv.sum_comp` for a version without `h`. -/]
+\Algebra\Group\EvenFunction.lean:143: simpa [neg_eq_self, Finset.sum_neg_distrib, funext hf] using Equiv.sum_comp (.neg α) f
+\Analysis\Analytic\IteratedFDeriv.lean:247: conv_rhs => rw [← Equiv.sum_comp (Equiv.mulLeft σ)]
+\LinearAlgebra\Matrix\Determinant\Basic.lean:67: rw [det_apply, ← Equiv.sum_comp (Equiv.inv (Perm n)), ← ofSign_disjUnion, sum_disjUnion]
+\NumberTheory\SumFourSquares.lean:105: have : (∑ x, f (σ x) ^ 2) = ∑ x, f x ^ 2 := Equiv.sum_comp σ (f · ^ 2)

@@ -1,0 +1,38 @@
+﻿=== BY TOP-LEVEL DIR ===
+  2160  wiki
+     9  state
+     8  raw
+=== LINE-ENDING CONFIG ===
+core.autocrlf = input
+core.eol = 
+gitattributes exists: False
+=== EOL-ONLY TEST (tracked modified) ===
+full diff      :  2100 files changed, 16863 insertions(+), 26299 deletions(-)
+ignore-eol/ws  :  2100 files changed, 16863 insertions(+), 26299 deletions(-)
+=== RECENT REFLOG (the 'event') ===
+d3c8ad21 HEAD@{0}: commit: vault compile: 251 sources, 2087 pages
+45a78625 HEAD@{1}: commit: vault compile: 250 sources, 2078 pages
+15bff899 HEAD@{2}: commit: vault compile: 249 sources, 2078 pages
+f7072be5 HEAD@{3}: commit: triage note: ValidityHorizon sprint record - emergence loophole sealed (crystal transparency exact identity, no_spontaneous_universality, T* ~ 1/eps horizon law from semigroup perturbation bound), commit 719c2d4, all audits clean
+1547dcf7 HEAD@{4}: commit: unified_field_triage: clinical triage of 'A Unified Field Theory of Spectral Geometry' - 2 Artemis corrections confirmed (variance formula is a (0,1] spectral model not the sealed identity; camelCase) + 2 NEW violations caught (published literature wrongly listed at epsilon=0 contra the sealed singleton; continuum dress-up + garbled Satake + decorative conjecture values); goldmines logged (Neretin spheromorphisms ~ generalized shifts elevates B8; Anosov-as-uniform-defect executed as PhaseClassifier; Landauer needs statement design; BruhatTits deferred); sprint record: rg_flow_crystalward kernel-sealed
+46f11d9a HEAD@{5}: commit: vault compile: 248 sources, 2063 pages
+8232c7ba HEAD@{6}: commit: miranda_report section 8: second sprint record - B7 base (KillingDefect, criticality=crystal, energy-defect=cycle-obstruction unification) + exact selection-variance identity (Artemis formula verified by hand then kernel-sealed; old placeholder measured wrong object); B7 sketch sign slip corrected (Killing object is L - L^{*pi}, not L + L^{*pi})
+d5b1b735 HEAD@{7}: commit: vault compile: 245 sources, 2038 pages
+3288f452 HEAD@{8}: commit: miranda_report: cosymplectic NS correction RESOLVED (colleague was right - arXiv:2507.07696 published PNAS Nexus 5(5) 2026, verified via arXiv+journal abstract pages); Chern-Hamilton resolution recorded (arXiv:2311.15833, Sasakian-or-Anosov iff, three-phase dictionary); attribution fix (S4 flow = Suarez-Serrato not Cardona; TKFT real = arXiv:2503.16100; NeurIPS grokking-glass still unverified); Section 7 sprint execution record: DiscreteFluidDynamics.lean B1-B6 kernel-sealed same day, B6 elevated to centerpiece, B7/B8 remain open
+7ed6367c HEAD@{9}: commit: miranda_report.md: page-cited synthesis of 6 fluid-computer sources (PNAS S3 construction, FLEX h-principle, MIRROR undecidability, MOORE polynomial/analytic universality, FoCM25 Chern-Hamilton obstruction + open problems, UPAT companion) + page-extracted texts in raw/new papers/_extracted; candidate bridge lemmas B1-B10 tiered; ground-truth corrections incl. NS-cosymplectic claim flagged unverified (FoCM25 lists steady-NS TC as Open Problem 4)
+=== LAST 6 COMMITS ===
+d3c8ad21 2026-06-12 21:27:57 -0600 vault compile: 251 sources, 2087 pages
+45a78625 2026-06-12 03:06:34 -0600 vault compile: 250 sources, 2078 pages
+15bff899 2026-06-12 02:55:56 -0600 vault compile: 249 sources, 2078 pages
+f7072be5 2026-06-11 12:59:31 -0600 triage note: ValidityHorizon sprint record - emergence loophole sealed (crystal transparency exact identity, no_spontaneous_universality, T* ~ 1/eps horizon law from semigroup perturbation bound), commit 719c2d4, all audits clean
+1547dcf7 2026-06-11 12:02:20 -0600 unified_field_triage: clinical triage of 'A Unified Field Theory of Spectral Geometry' - 2 Artemis corrections confirmed (variance formula is a (0,1] spectral model not the sealed identity; camelCase) + 2 NEW violations caught (published literature wrongly listed at epsilon=0 contra the sealed singleton; continuum dress-up + garbled Satake + decorative conjecture values); goldmines logged (Neretin spheromorphisms ~ generalized shifts elevates B8; Anosov-as-uniform-defect executed as PhaseClassifier; Landauer needs statement design; BruhatTits deferred); sprint record: rg_flow_crystalward kernel-sealed
+46f11d9a 2026-06-11 10:43:46 -0600 vault compile: 248 sources, 2063 pages
+=== NEWEST state/ + wiki/ MTIMES ===
+2026-06-13 11:33:14  \state\retrieval\fts-000.sqlite-shm
+2026-06-13 06:02:36  \wiki\outputs\explore-you-are-the-intelligence-layer-of-the-sgc-second-brain-the-private-step-2-9.md
+2026-06-13 06:02:20  \wiki\outputs\explore-you-are-the-intelligence-layer-of-the-sgc-second-brain-the-private-step-1-9.md
+2026-06-13 06:02:06  \state\retrieval\fts-000.sqlite-wal
+2026-06-13 06:02:04  \state\librarian\explore_cursor.json
+2026-06-13 06:02:04  \wiki\log.md
+2026-06-13 06:02:04  \state\sessions\2026-06-13T12-02-04-427Z-candidate-auto-promote.md
+2026-06-13 06:02:02  \state\sessions\2026-06-13T12-02-02-213Z-lint-linted-2094-page-s.md

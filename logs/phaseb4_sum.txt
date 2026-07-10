@@ -1,0 +1,7 @@
+﻿ERR=4
+error: src/SGC/Bridge/Consolidation.lean:104:34: Application type mismatch: The argument
+error: Lean exited with code 1
+lake.exe : error: build failed
+    + CategoryInfo          : NotSpecified: (error: build failed:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

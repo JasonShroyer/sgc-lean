@@ -1,0 +1,67 @@
+﻿Renormalization\Approximate.lean:325: def IsApproxLumpable (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+Renormalization\Lumpability.lean:38: structure Partition (V : Type*) [DecidableEq V] where
+Renormalization\Lumpability.lean:96: def IsStronglyLumpable (L : Matrix V V ℝ) (P : Partition V) : Prop :=
+Renormalization\Lumpability.lean:139: def row_sum_block (L : Matrix V V ℝ) (P : Partition V) (i : V) (B : P.Quot) : ℝ :=
+Renormalization\Lumpability.lean:152: def QuotientGeneratorSimple (L : Matrix V V ℝ) (P : Partition V) : Matrix P.Quot P.Quot ℝ :=
+/-
+Copyright (c) 2026 SGC Project. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: SGC Formalization Team
+-/
+import SGC.Thermodynamics.FluxDecomposition
+import SGC.Renormalization.Lumpability
+import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+
+/-!
+# The Discrete Fluid-Computer Bridge
+
+Discrete dictionary for the Miranda-program results on fluid computers
+(Cardonaâ€“Mirandaâ€“Peralta-Salas et al.), at the finite-state Markov-generator layer.
+Realizes bridge lemmas B1â€“B6 of `miranda_report.md` (vault, 2026-06-10).
+
+## The Dictionary (continuum â†” discrete)
+
+| Continuum (steady Euler / contact mirror)       | Discrete (this module)                       |
+|-------------------------------------------------|----------------------------------------------|
+| velocity field `u` of a steady fluid            | probability current `J(x,y) = Ï€â‚“Lâ‚“áµ§ âˆ’ Ï€áµ§Láµ§â‚“` |
+| incompressibility `âˆ‡Â·u = 0`                     | `stationary_iff_current_divergence_free`     |
+| static fluid (no rotation)                      | `current_zero_iff_reversible` (lib. cited)   |
+| harmonic 1-form / `HÂ¹(M) â‰  0` escape clause     | `ness_has_current_cycle`                     |
+| Chernâ€“Hamilton rigidity (no TC at critical `g`) | `reversible_iff_no_positive_current_cycle`   |
+| h-principle flexibility (Reeb embeddings)       | `uniformLift_*` (every quotient is realized) |
+| h-principle rigidity (hereditary obstruction)   | `reversible_quotient_of_reversible`          |
+| viscous horizon `Ï„âˆž = M/Î½` ([PNAS] pp. 8â€“9)     | `viscous_time_budget`                        |
+
+## Continuum anchors (verified sources)
+
+* Cardonaâ€“Mirandaâ€“Peralta-Salasâ€“(et al.), PNAS 118 (2021): Turing-complete Euler flows
+  in dimension 3; viscous reparametrization budget `âˆ«â‚€^âˆž e^{-Î½t} dt = 1/Î½` (pp. 8â€“9).
+* Dyhrâ€“GonzÃ¡lez-Prietoâ€“Mirandaâ€“Peralta-Salas, PNAS Nexus 5:5 (2026), arXiv:2507.07696:
+  Turing-complete *stationary Navierâ€“Stokes* states for any `Î½ â‰¥ 0` on manifolds with a
+  nonvanishing harmonic 1-form (`HÂ¹(M) â‰  0`). Discrete echo: NESS current survives iff
+  the graph carries a positive-current cycle (`ness_has_current_cycle`).
+* Mitsumatsuâ€“Peralta-Salasâ€“Slobodeanu, arXiv:2311.15833: critical Chernâ€“Hamilton metrics
+  exist iff Sasakian or algebraic Anosov â€” the rigid (non-universal) phases. Discrete
+  echo: `reversible_iff_no_positive_current_cycle` (equilibrium = no cycle).
+
+## Epistemic state
+
+Every declaration in this file is **kernel-proven** (no `sorry`, no new axioms; classical
+choice only, via `Exists.choose` in the walk construction). `current_zero_iff_reversible`
+is a re-export of the library theorem `detailed_balance_iff_zero_current`
+(`Thermodynamics/FluxDecomposition.lean`). The *continuum* statements in the table are
+NOT formalized here â€” the table is a research dictionary, not a claim of equivalence.
+-/
+
+noncomputable section
+
+namespace SGC.Bridge.DiscreteFluidDynamics
+
+open Finset BigOperators Matrix Real
+open SGC.Thermodynamics
+
+variable {V : Type*} [Fintype V] [DecidableEq V]
+
+/-! ## Â§1. Divergence and stationarity (B1) -/
+
