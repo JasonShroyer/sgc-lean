@@ -252,6 +252,12 @@ import SGC.Bridge.SchnakenbergIndependence
 -- Betti number of the complete graph, realized by star-tree fundamental cycles.
 import SGC.Bridge.SchnakenbergSpan
 
+-- Graph Heat Flow (2026-07-22, Phase 4 vertical slice): Dirichlet energy is
+-- non-negative and dissipates under explicit-Euler steps within the CFL bound
+-- h·maxDegree ≤ 1. Exact-real side of the heat-flow artifact contract; the
+-- float64 companion receipt lives in the vault registry.
+import SGC.Heat.GraphHeat
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════

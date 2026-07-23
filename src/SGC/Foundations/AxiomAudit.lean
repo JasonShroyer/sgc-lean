@@ -92,6 +92,10 @@ import SGC.Spectral.Defs
 -- decay at the spectral-gap rate.
 import SGC.Information.RateOfConsolidation
 
+-- Graph Heat Flow (Phase 4 vertical slice): Dirichlet energy dissipation
+-- under the explicit-Euler CFL bound.
+import SGC.Heat.GraphHeat
+
 noncomputable section
 
 namespace SGC.Foundations.AxiomAudit
@@ -953,5 +957,24 @@ complete graph. Expected profile: pure base
 -- HEADLINE (dimension of the NESS landscape, division-free):
 -- 2·dim = (n−1)(n−2) — the affinity data has exactly (n−1)(n−2)/2 parameters.
 #print axioms SGC.Bridge.SchnakenbergSpan.two_mul_finrank_cycleSpace
+
+/-! ## 16. Graph Heat Flow — the Phase 4 vertical slice (2026-07-22)
+
+  `Heat/GraphHeat.lean`: explicit-Euler heat flow on a finite simple graph
+  dissipates Dirichlet energy under the CFL bound h·maxDegree ≤ 1. The
+  quadratic-form bound yᵀLy ≤ 2·Δ·⟨y,y⟩ packages λ_max ≤ 2Δ with no
+  eigenvalue machinery — pure edge-sum algebra over Mathlib's lapMatrix.
+  Exact-real side of the `sgc-heat-graph-energy-dissipation` artifact
+  contract (float64 receipt in the vault). Expected profile:
+  `[propext, Classical.choice, Quot.sound]`. -/
+
+-- E(x) = xᵀLx ≥ 0 (Laplacian PSD, via the edge-sum Dirichlet identity).
+#print axioms SGC.Heat.energy_nonneg
+
+-- Spectral cap in quadratic-form clothing: yᵀLy ≤ 2·maxDegree·⟨y,y⟩.
+#print axioms SGC.Heat.quadForm_le_two_maxDegree_mul
+
+-- HEADLINE: one Euler step never increases Dirichlet energy (0 ≤ h, h·Δ ≤ 1).
+#print axioms SGC.Heat.energy_nonincreasing
 
 end SGC.Foundations.AxiomAudit
