@@ -1,5 +1,12 @@
 import SGC.Structure.LocalToGlobal
 import SGC.Structure.ContinualComposition
+import SGC.Structure.LifelongSubstitution
+
+#print axioms SGC.Sheaf.SheafExtends.comp
+#print axioms SGC.Sheaf.lifelong_no_forgetting
+#print axioms SGC.Sheaf.evalRing_subst
+#print axioms SGC.Sheaf.section_subst
+#print axioms SGC.Sheaf.certified_lifelong_substitution
 
 #print axioms SGC.Sheaf.certified_implies_correct
 #print axioms SGC.Sheaf.compiler_correct

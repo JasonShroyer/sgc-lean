@@ -203,6 +203,7 @@ structure SheafExtends (F : AlgebraicComputation V R)
   parents_eq : ∀ v, F'.parents (ι v) = (F.parents v).map ι
   op_eq : ∀ v l, F'.op (ι v) l = F.op v l
 
+omit [Ring R] in
 /-- Sections of an extension restrict to sections of the old model: the
     projection `π := (· ∘ ι)` maps new global sections to old ones. -/
 theorem IsSection.restrict {F : AlgebraicComputation V R}
@@ -226,6 +227,7 @@ theorem IsSection.restrict {F : AlgebraicComputation V R}
       _ = F'.op (ι v) ((F.parents v).map (σ' ∘ ι)) := by rw [List.map_map]
       _ = F.op v ((F.parents v).map (σ' ∘ ι)) := hext.op_eq v _
 
+omit [Ring R] in
 /-- **The No-Forgetting Theorem** (formal continual learning).
 
     For ANY safe extension of the model and ANY boundary data extending the

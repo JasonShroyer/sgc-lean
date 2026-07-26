@@ -165,6 +165,12 @@ import SGC.Structure.LocalToGlobal
 -- (x+y)z machine embeds invariantly into the grammar (2026-07-25)
 import SGC.Structure.ContinualComposition
 
+-- Certified Lifelong Substitution: safe extensions form a category (refl,
+-- comp, finite chains), lifelong no-forgetting, substitution/grafting
+-- theorem, and the capstone: Certified + SafeExtension* + Substitution
+-- => Preservation + ExactComposition (2026-07-25)
+import SGC.Structure.LifelongSubstitution
+
 -- Fisher-Noether Bridge: min-variance quadratic forms = null Fisher directions
 -- (Link 1 proven 2026-06; Bridge composed 2026-06-10 after deleting the
 -- inconsistent expfam axiom). 2 sorries visible by design:
