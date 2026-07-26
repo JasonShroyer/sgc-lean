@@ -123,46 +123,34 @@ def compAggregation : CompNode → AggregationType
   | CompNode.Sum => AggregationType.Sum
   | CompNode.Result => AggregationType.Product
 
-/-! ### 5. The Assembly Theorem -/
+/-! ### 5. The Assembly Theorem
 
-/-- **The Sheaf Assembly Theorem** (Statement)
+The Sheaf Assembly Theorem is now **proved** (no longer an axiom) in
+`SGC.Structure.LocalToGlobal`:
 
-    If:
-    1. The sheaf has the composition graph structure with correct aggregation
-    2. The functional defect ε → 0 (stalks separate equivalence classes)
-    3. The functorial defect δ → 0 (restriction maps are near-homomorphisms)
+* `SGC.Sheaf.sheaf_assembly` — homomorphic restriction maps force the unique
+  global section to realize `ψ(φ((x+y)·z))`;
+* `SGC.Sheaf.native_sheaf_computes` — with identity restrictions the section
+  outputs `(x+y)·z` exactly;
+* `SGC.Sheaf.defect_propagation` — the ε-δ version: local defects bound the
+  global compositional defect linearly.
 
-    Then:
-    The sheaf computes a homomorphism from Z_p[x,y,z] to the stalk algebra,
-    i.e., the network correctly computes polynomial expressions.
+The former placeholder `axiom sheaf_assembly_theorem … : True` was removed
+on 2026-07-25. -/
 
-    **Physical Meaning**: When the network groks, it becomes isomorphic to
-    the algebraic structure of the task. Grokking IS the emergence of this
-    homomorphism.
+/-! ### 6. The Key Insight
 
-    **Experimental Validation**: The Cellular Sheaf Network achieved 100%
-    test accuracy on (x+y)*z mod 23, confirming this theorem empirically. -/
-axiom sheaf_assembly_theorem (R : Type*) [Ring R]
-    (F : CellularSheaf CompositionGraph R)
-    (ε δ : ℝ)
-    (h_aggregation : F.aggregation = compAggregation)
-    (h_small : ε + δ < 0.1) :
-    True  -- Placeholder: full formalization requires polynomial ring construction
+**Native vs Retrofitted Sheaf** — now a pair of theorems in
+`SGC.Structure.LocalToGlobal`:
 
-/-! ### 6. The Key Insight -/
+* `SGC.Sheaf.native_defect_zero` — the native sheaf has zero compositional
+  defect on every dataset (the 100% result is structural);
+* `SGC.Sheaf.starConnector_cannot_compose` — post-hoc energy gluing of
+  frozen unary representations provably cannot compute `(a+b)·z` (the 3.4%
+  failure was necessary, not accidental).
 
-/-- **Native vs Retrofitted Sheaf**
-
-    The failed "Sheaf Connector" experiment (3.4% accuracy) tried to
-    retrofit a sheaf onto pre-trained disjoint representations.
-
-    The successful "Cellular Sheaf Network" (100% accuracy) built
-    the sheaf structure INTO the architecture from the start.
-
-    **Lesson**: Compositionality requires architectural support.
-    You cannot compose representations that were trained in isolation. -/
-theorem native_beats_retrofitted :
-    True := by trivial
+**Lesson**: Compositionality requires architectural support.
+You cannot compose representations that were trained in isolation. -/
 
 /-! ### 7. Connection to Functional Blanket Theory -/
 

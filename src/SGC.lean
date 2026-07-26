@@ -153,6 +153,12 @@ import SGC.EmergenceEquivalence
 -- the discrete top-down constraint structure (compositional gluing)
 import SGC.Structure.CellularSheaf
 
+-- Local-to-Global Computation: unique global sections on computation DAGs,
+-- the proved Sheaf Assembly theorem, the Sheaf-Connector impossibility
+-- theorem (diffusion ≠ composition), defect propagation, and grokking as
+-- the zero-defect transition (proved 2026-07-25, Bosca–Ghrist bridge)
+import SGC.Structure.LocalToGlobal
+
 -- Fisher-Noether Bridge: min-variance quadratic forms = null Fisher directions
 -- (Link 1 proven 2026-06; Bridge composed 2026-06-10 after deleting the
 -- inconsistent expfam axiom). 2 sorries visible by design:
