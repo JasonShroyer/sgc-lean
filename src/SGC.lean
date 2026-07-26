@@ -178,6 +178,12 @@ import SGC.Structure.LifelongSubstitution
 -- collapse: zero local defects => exact global semantics (2026-07-26)
 import SGC.Structure.ErrorBudget
 
+-- Certified Consolidation: temporal system with plastic active state and
+-- protected memory; consolidation = safe extension; lifelong memory
+-- preservation + exact/bounded composition at every time; concrete witness
+-- that such a system is possible (2026-07-26)
+import SGC.Structure.TemporalConsolidation
+
 -- Fisher-Noether Bridge: min-variance quadratic forms = null Fisher directions
 -- (Link 1 proven 2026-06; Bridge composed 2026-06-10 after deleting the
 -- inconsistent expfam axiom). 2 sorries visible by design:

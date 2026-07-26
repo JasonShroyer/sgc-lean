@@ -2,6 +2,14 @@ import SGC.Structure.LocalToGlobal
 import SGC.Structure.ContinualComposition
 import SGC.Structure.LifelongSubstitution
 import SGC.Structure.ErrorBudget
+import SGC.Structure.TemporalConsolidation
+
+#print axioms SGC.Sheaf.Consolidation.preserves
+#print axioms SGC.Sheaf.lifelong_consolidation
+#print axioms SGC.Sheaf.temporal_exact_composition
+#print axioms SGC.Sheaf.certified_consolidation
+#print axioms SGC.Sheaf.plastic_system_correct
+#print axioms SGC.Sheaf.temporal_bounded_composition
 
 #print axioms SGC.Sheaf.evalLearned_defect_bound
 #print axioms SGC.Sheaf.section_defect_bound
