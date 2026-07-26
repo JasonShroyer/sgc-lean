@@ -184,6 +184,16 @@ import SGC.Structure.ErrorBudget
 -- that such a system is possible (2026-07-26)
 import SGC.Structure.TemporalConsolidation
 
+-- Adaptive Coherence Descent ladder: discrete Lyapunov layer (energy
+-- antitone + convergence), quantified residual descent (R(A_t) -> 0),
+-- attention gate (descent by construction for ANY policy), and the Safe
+-- Adaptive Consolidation capstone: gated attention + safe consolidation
+-- => coherence descent + lifelong no forgetting (2026-07-26)
+import SGC.Structure.CoherenceDynamics
+import SGC.Structure.ResidualDescent
+import SGC.Structure.AttentionGate
+import SGC.Structure.TemporalCoherence
+
 -- Fisher-Noether Bridge: min-variance quadratic forms = null Fisher directions
 -- (Link 1 proven 2026-06; Bridge composed 2026-06-10 after deleting the
 -- inconsistent expfam axiom). 2 sorries visible by design:

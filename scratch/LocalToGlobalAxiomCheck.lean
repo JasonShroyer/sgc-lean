@@ -3,6 +3,7 @@ import SGC.Structure.ContinualComposition
 import SGC.Structure.LifelongSubstitution
 import SGC.Structure.ErrorBudget
 import SGC.Structure.TemporalConsolidation
+import SGC.Structure.TemporalCoherence
 
 #print axioms SGC.Sheaf.Consolidation.preserves
 #print axioms SGC.Sheaf.lifelong_consolidation
@@ -36,3 +37,13 @@ import SGC.Structure.TemporalConsolidation
 #print axioms SGC.Sheaf.defect_propagation
 #print axioms SGC.Sheaf.grokked_iff_defect_zero
 #print axioms SGC.Sheaf.native_defect_zero
+
+#print axioms SGC.Coherence.CoherenceDynamics.energy_antitone
+#print axioms SGC.Coherence.CoherenceDynamics.energy_tendsto
+#print axioms SGC.Coherence.ResidualDynamics.residual_tendsto_zero
+#print axioms SGC.Coherence.ResidualDynamics.tsum_residual_sq_le
+#print axioms SGC.Coherence.gated_descent
+#print axioms SGC.Coherence.gated_energy_antitone
+#print axioms SGC.Sheaf.safe_adaptive_consolidation
+#print axioms SGC.Sheaf.coherent_adaptive_consolidation
+#print axioms SGC.Sheaf.gated_system_correct
