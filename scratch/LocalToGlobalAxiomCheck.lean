@@ -1,4 +1,12 @@
 import SGC.Structure.LocalToGlobal
+import SGC.Structure.ContinualComposition
+
+#print axioms SGC.Sheaf.certified_implies_correct
+#print axioms SGC.Sheaf.compiler_correct
+#print axioms SGC.Sheaf.expr_existsUnique
+#print axioms SGC.Sheaf.no_forgetting
+#print axioms SGC.Sheaf.legacy_section_preserved
+#print axioms SGC.Sheaf.continual_compositional_correct
 
 #print axioms SGC.Sheaf.existsUnique_section
 #print axioms SGC.Sheaf.sheaf_assembly

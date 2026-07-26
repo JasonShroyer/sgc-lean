@@ -159,6 +159,12 @@ import SGC.Structure.CellularSheaf
 -- the zero-defect transition (proved 2026-07-25, Bosca–Ghrist bridge)
 import SGC.Structure.LocalToGlobal
 
+-- Continual Compositional Assembly: expression grammar as native sheaf,
+-- certified local ops => correct evaluation of ALL composite expressions
+-- (zero-shot), safe extension => formal no-forgetting theorem, legacy
+-- (x+y)z machine embeds invariantly into the grammar (2026-07-25)
+import SGC.Structure.ContinualComposition
+
 -- Fisher-Noether Bridge: min-variance quadratic forms = null Fisher directions
 -- (Link 1 proven 2026-06; Bridge composed 2026-06-10 after deleting the
 -- inconsistent expfam axiom). 2 sorries visible by design:
