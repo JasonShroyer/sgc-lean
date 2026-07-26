@@ -86,17 +86,17 @@ structure IsSection (C : AlgebraicComputation V R) (b : V → R) (σ : V → R) 
 
 /-- **Topological evaluation**: the canonical global section, defined by
     well-founded recursion on rank.  This is the "forward pass". -/
-def eval (C : AlgebraicComputation V R) (b : V → R) (v : V) : R :=
+def eval [DecidableEq V] (C : AlgebraicComputation V R) (b : V → R) (v : V) : R :=
   if h : C.parents v = [] then b v
   else C.op v ((C.parents v).pmap (fun u hu => eval C b u) (fun _ hu => hu))
 termination_by C.rank v
 decreasing_by exact C.wf v u hu
 
 /-- Unfolding lemma for `eval`. -/
-theorem eval_eq (C : AlgebraicComputation V R) (b : V → R) (v : V) :
+theorem eval_eq [DecidableEq V] (C : AlgebraicComputation V R) (b : V → R) (v : V) :
     eval C b v = if C.parents v = [] then b v
       else C.op v ((C.parents v).map (eval C b)) := by
-  rw [eval]
+  unfold eval
   by_cases h : C.parents v = []
   · simp [h]
   · simp [h, List.pmap_eq_map]
@@ -112,7 +112,7 @@ private theorem map_congr_mem {α β : Type*} {l : List α} {f g : α → β}
     rw [h a (by simp), ih (fun x hx => h x (by simp [hx]))]
 
 /-- **Existence**: the forward pass is a global section. -/
-theorem eval_isSection (C : AlgebraicComputation V R) (b : V → R) :
+theorem eval_isSection [DecidableEq V] (C : AlgebraicComputation V R) (b : V → R) :
     IsSection C b (eval C b) := by
   constructor
   · intro v hv
@@ -133,8 +133,11 @@ theorem IsSection.unique {C : AlgebraicComputation V R} {b : V → R} {σ τ : V
     intro w hw
     rcases eq_or_ne (C.parents w) [] with h | h
     · rw [hσ.boundary w h, hτ.boundary w h]
-    · obtain ⟨u, hu⟩ := List.exists_mem_of_ne_nil _ h
-      exact absurd (C.wf w u hu) (by omega)
+    · cases hp : C.parents w with
+      | nil => exact absurd hp h
+      | cons u t =>
+        have hu : u ∈ C.parents w := by rw [hp]; simp
+        exact absurd (C.wf w u hu) (by omega)
   | succ n ih =>
     intro w hw
     rcases eq_or_ne (C.parents w) [] with h | h
@@ -146,7 +149,7 @@ theorem IsSection.unique {C : AlgebraicComputation V R} {b : V → R} {σ τ : V
 /-- **T1. Local-to-Global Computation Theorem**: a finite acyclic
     computation graph admits exactly one global section extending any
     boundary data.  Local compatibility determines the global computation. -/
-theorem existsUnique_section (C : AlgebraicComputation V R) (b : V → R) :
+theorem existsUnique_section [DecidableEq V] (C : AlgebraicComputation V R) (b : V → R) :
     ∃! σ : V → R, IsSection C b σ :=
   ⟨eval C b, eval_isSection C b, fun _ hτ => hτ.unique (eval_isSection C b)⟩
 
@@ -221,7 +224,7 @@ theorem compSection_isSection (F : CellularSheaf CompositionGraph R) (x y z : R)
     IsSection (sheafComputation F) (compBoundary x y z) (compSection F x y z) := by
   constructor
   · intro v hv
-    cases v <;> first | rfl | exact absurd hv (by decide)
+    cases v <;> first | rfl | exact absurd hv (List.cons_ne_nil _ _)
   · intro v hv
     cases v <;> first | rfl | exact absurd rfl hv
 
@@ -372,7 +375,7 @@ theorem defect_propagation (opS opR : ℝ → ℝ → ℝ) (δ₁ δ₂ : ℝ)
       (opR (opS x y) z - opS x y * z) + (opS x y - (x + y)) * z := by ring
   rw [key]
   calc |(opR (opS x y) z - opS x y * z) + (opS x y - (x + y)) * z|
-      ≤ |opR (opS x y) z - opS x y * z| + |(opS x y - (x + y)) * z| := abs_add _ _
+      ≤ |opR (opS x y) z - opS x y * z| + |(opS x y - (x + y)) * z| := abs_add_le _ _
     _ ≤ δ₂ + δ₁ * |z| := by
         rw [abs_mul]
         exact add_le_add (hR _ _)
