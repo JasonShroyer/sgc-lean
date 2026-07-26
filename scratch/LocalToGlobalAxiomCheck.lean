@@ -1,6 +1,11 @@
 import SGC.Structure.LocalToGlobal
 import SGC.Structure.ContinualComposition
 import SGC.Structure.LifelongSubstitution
+import SGC.Structure.ErrorBudget
+
+#print axioms SGC.Sheaf.evalLearned_defect_bound
+#print axioms SGC.Sheaf.section_defect_bound
+#print axioms SGC.Sheaf.defect_collapse
 
 #print axioms SGC.Sheaf.SheafExtends.comp
 #print axioms SGC.Sheaf.lifelong_no_forgetting

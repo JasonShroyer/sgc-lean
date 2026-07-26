@@ -171,6 +171,13 @@ import SGC.Structure.ContinualComposition
 -- => Preservation + ExactComposition (2026-07-25)
 import SGC.Structure.LifelongSubstitution
 
+-- Recursive Error Budget: B(leaf)=0, B(op(e..)) = delta_op + sum L_i B(e_i)
+-- with data-dependent Lipschitz constants; induction theorem
+-- |evalLearned e - evalRing e| <= B(e) at arbitrary depth (generalizes T4),
+-- sheaf-level bound via section uniqueness, and grokking as budget
+-- collapse: zero local defects => exact global semantics (2026-07-26)
+import SGC.Structure.ErrorBudget
+
 -- Fisher-Noether Bridge: min-variance quadratic forms = null Fisher directions
 -- (Link 1 proven 2026-06; Bridge composed 2026-06-10 after deleting the
 -- inconsistent expfam axiom). 2 sorries visible by design:
