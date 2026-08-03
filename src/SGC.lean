@@ -310,6 +310,16 @@ import SGC.Heat.GraphHeat
 -- does NOT follow (both branches have gap 0).
 import SGC.Bridge.CurvatureUndecidability
 
+-- Curvature Quotient (2026-08-02): Bakry-Emery curvature bounds DESCEND along
+-- exactly lumpable quotients — CD(rho, inf) upstairs forces CD(rho, inf)
+-- downstairs, same rho. The whole Gamma-calculus intertwines because lifting is
+-- multiplicative as well as generator-intertwining (L_lift_eq), so Gamma and
+-- Gamma_2 both commute with coarse-graining. Settles the question the research
+-- foraging flagged as Contested and load-bearing. One-way only: renormalization
+-- can only improve curvature, so coarse-graining is a sound one-sided
+-- certificate for curvature VIOLATION and useless for verification.
+import SGC.Renormalization.CurvatureQuotient
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════
