@@ -299,6 +299,17 @@ import SGC.Bridge.SchnakenbergSpan
 -- float64 companion receipt lives in the vault registry.
 import SGC.Heat.GraphHeat
 
+-- Curvature Undecidability (2026-08-02): deciding a GLOBAL Bakry-Émery bound
+-- for a computable Markov generator is Π⁰₁-hard — equivalent to the complement
+-- of the halting problem — already on the bi-infinite path with rates in {1,4}.
+-- Two kernel-clean halves: an exact discrete Bochner identity making Γ₂ a sum
+-- of three squared second differences (so the flat line is CD(0,∞)), and a
+-- one-edge gadget whose explicit step-function witness gives Γ₂ = -1/4 < 0.
+-- Fixed geometry, no marked point, no fluid dynamics: the Euler/Beltrami route
+-- is not needed for the hardness half, and a spectral-gap transfer provably
+-- does NOT follow (both branches have gap 0).
+import SGC.Bridge.CurvatureUndecidability
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════
