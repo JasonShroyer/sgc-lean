@@ -13,6 +13,7 @@ report). This file is the hard gate for the verified core.
 import SGC.Topology.PadicPathSpace
 import SGC.Bridge.AffinityProtectionQuantitative
 import SGC.Bridge.CurvatureUndecidability
+import SGC.Bridge.HaltingCompiler
 import SGC.Renormalization.CurvatureQuotient
 
 /-- info: 'SGC.Topology.PadicPathSpace.pathSpace_homeo_padicInt' depends on axioms: [propext, Classical.choice, Quot.sound] -/
@@ -38,6 +39,22 @@ import SGC.Renormalization.CurvatureQuotient
 /-- info: 'SGC.Bridge.CurvatureUndecidability.not_cd0_haltW_of_halts' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms SGC.Bridge.CurvatureUndecidability.not_cd0_haltW_of_halts
+
+/-- info: 'SGC.Bridge.HaltingCompiler.cd0_compiled_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Bridge.HaltingCompiler.cd0_compiled_iff
+
+/-- info: 'SGC.Bridge.HaltingCompiler.not_cd0_compiled_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Bridge.HaltingCompiler.not_cd0_compiled_iff
+
+/-- info: 'SGC.Bridge.HaltingCompiler.not_cd0_haltNow' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Bridge.HaltingCompiler.not_cd0_haltNow
+
+/-- info: 'SGC.Bridge.HaltingCompiler.cd0_spinRight' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Bridge.HaltingCompiler.cd0_spinRight
 
 /-- info: 'SGC.Renormalization.CurvatureQuotient.RicciCurvatureBound_quotient' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in

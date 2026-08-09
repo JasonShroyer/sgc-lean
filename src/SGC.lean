@@ -320,6 +320,16 @@ import SGC.Bridge.CurvatureUndecidability
 -- certificate for curvature VIOLATION and useless for verification.
 import SGC.Renormalization.CurvatureQuotient
 
+-- Halting Compiler (2026-08-09): the computability bridge that upgrades the
+-- curvature gadget into a genuine Turing-machine theorem. Compiles Mathlib's
+-- TM0 machines into exact-step Boolean markers (haltMarker, total and
+-- structurally recursive), proves the at-most-once hypothesis as a THEOREM,
+-- bridges the fuel-indexed simulation to Mathlib's PFun.fix evaluation
+-- semantics, and concludes: CD0 (haltW (haltMarker M w)) <-> NOT (TM0.eval M
+-- w).Dom. Deciding the global Bakry-Emery bound on the compiled family IS
+-- deciding non-halting. Both poles inhabited by explicit machines.
+import SGC.Bridge.HaltingCompiler
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════
