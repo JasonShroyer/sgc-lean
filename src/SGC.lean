@@ -330,6 +330,17 @@ import SGC.Renormalization.CurvatureQuotient
 -- deciding non-halting. Both poles inhabited by explicit machines.
 import SGC.Bridge.HaltingCompiler
 
+-- The Resolution Horizon (2026-08-09): halting fuel = cylinder depth =
+-- curvature-defect location, as one kernel theorem cluster. The compiled
+-- machine's halting history IS a point of the Cantor space (markerPath);
+-- halting at fuel T is coordinate T of the depth-(T+1) truncation; below
+-- that depth the marker path EQUALS the never-halting path (resolution
+-- blindness, exact); and the compiled generator's Gamma_2 is pointwise >= 0
+-- at every site whose four-edge stencil avoids T (localized Bochner,
+-- stencil derived not assumed). Undecidable content is concentrated at one
+-- resolution depth and one lattice edge — the same number T.
+import SGC.Bridge.CantorHalting
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════
