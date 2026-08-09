@@ -14,6 +14,7 @@ import SGC.Topology.PadicPathSpace
 import SGC.Bridge.AffinityProtectionQuantitative
 import SGC.Bridge.CurvatureUndecidability
 import SGC.Bridge.HaltingCompiler
+import SGC.Bridge.CantorHalting
 import SGC.Renormalization.CurvatureQuotient
 
 /-- info: 'SGC.Topology.PadicPathSpace.pathSpace_homeo_padicInt' depends on axioms: [propext, Classical.choice, Quot.sound] -/
@@ -55,6 +56,14 @@ import SGC.Renormalization.CurvatureQuotient
 /-- info: 'SGC.Bridge.HaltingCompiler.cd0_spinRight' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms SGC.Bridge.HaltingCompiler.cd0_spinRight
+
+/-- info: 'SGC.Bridge.CantorHalting.resolution_horizon' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Bridge.CantorHalting.resolution_horizon
+
+/-- info: 'SGC.Bridge.CantorHalting.compiled_gam2_nonneg_away' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Bridge.CantorHalting.compiled_gam2_nonneg_away
 
 /-- info: 'SGC.Renormalization.CurvatureQuotient.RicciCurvatureBound_quotient' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
