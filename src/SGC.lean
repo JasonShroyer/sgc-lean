@@ -341,6 +341,19 @@ import SGC.Bridge.HaltingCompiler
 -- resolution depth and one lattice edge — the same number T.
 import SGC.Bridge.CantorHalting
 
+-- The Discrete Operator-Strain Bridge (2026-08-09): NS-Table goal 1,
+-- discrete-first. The exact Bochner-with-strain identity on the weighted
+-- line: Gamma_2 = Hessian sum-of-squares + strain quadratic form on the
+-- gradient (strainL/strainR = deviation of the rate field from local
+-- flatness) — the discrete shadow of Gamma_2 = nu^2 |Hess f|^2 +
+-- (nu Ric - S_u)(grad f, grad f). Zero strain => CD(0,inf); uniform drift
+-- is strain-free (discrete constant vector field); ANY single-edge strain
+-- s > 0 breaks CD(0,inf) witnessed by the identity function (the rate-4
+-- gadget was the s = 3 point); total strain forms a dipole summing to
+-- 8 s^2 >= 0 — the discrete precursor of trace-free incompressible strain.
+-- All identities CAS-derived before formalization (scripts/derivations/).
+import SGC.Geometry.OperatorStrain
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════

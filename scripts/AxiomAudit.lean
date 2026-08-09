@@ -15,6 +15,7 @@ import SGC.Bridge.AffinityProtectionQuantitative
 import SGC.Bridge.CurvatureUndecidability
 import SGC.Bridge.HaltingCompiler
 import SGC.Bridge.CantorHalting
+import SGC.Geometry.OperatorStrain
 import SGC.Renormalization.CurvatureQuotient
 
 /-- info: 'SGC.Topology.PadicPathSpace.pathSpace_homeo_padicInt' depends on axioms: [propext, Classical.choice, Quot.sound] -/
@@ -64,6 +65,22 @@ import SGC.Renormalization.CurvatureQuotient
 /-- info: 'SGC.Bridge.CantorHalting.compiled_gam2_nonneg_away' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms SGC.Bridge.CantorHalting.compiled_gam2_nonneg_away
+
+/-- info: 'SGC.Geometry.OperatorStrain.gam2_strain_eq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Geometry.OperatorStrain.gam2_strain_eq
+
+/-- info: 'SGC.Geometry.OperatorStrain.driftline_bochner' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Geometry.OperatorStrain.driftline_bochner
+
+/-- info: 'SGC.Geometry.OperatorStrain.not_cd0_heavyW' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Geometry.OperatorStrain.not_cd0_heavyW
+
+/-- info: 'SGC.Geometry.OperatorStrain.heavyW_dipole_sum' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Geometry.OperatorStrain.heavyW_dipole_sum
 
 /-- info: 'SGC.Renormalization.CurvatureQuotient.RicciCurvatureBound_quotient' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
