@@ -46,6 +46,8 @@ The library is explicitly stratified; the CI enforces the boundary.
 | `killingDefect_exoticLift_quantitative` | `SGC.Bridge.AffinityProtectionQuantitative` | Instantiation at the m = 3 exotic-lift handle cycle |
 | `cd0_haltW_iff` | `SGC.Bridge.CurvatureUndecidability` | On the bi-infinite path with rates in {1,4}: `CD(0,∞)` holds iff the (at-most-once) marker never fires — the hardness gadget for deciding a global Bakry-Émery bound |
 | `not_cd0_haltW_of_halts` | `SGC.Bridge.CurvatureUndecidability` | Contrapositive: a fired marker is witnessed by strictly negative Γ₂ |
+| `cd0_compiled_iff` | `SGC.Bridge.HaltingCompiler` | The compiled reduction: `CD0 (haltW (haltMarker M w)) ↔ ¬ (TM0.eval M w).Dom` — deciding the global curvature bound on the compiled generator family is deciding non-halting for Mathlib's `Turing.TM0` machines |
+| `not_cd0_compiled_iff` | `SGC.Bridge.HaltingCompiler` | Contrapositive: a curvature violation in the compiled generator is exactly a halting certificate (both poles inhabited: `not_cd0_haltNow`, `cd0_spinRight`) |
 | `RicciCurvatureBound_quotient` | `SGC.Renormalization.CurvatureQuotient` | `CD(ρ,∞)` descends along exactly lumpable quotients (Γ-calculus intertwining) |
 | `StarExample.curvature_hiding` | `SGC.Renormalization.CurvatureQuotient` | Strictness witness: the star `K_{1,6}` violates `CD(0,∞)` while its two-state orbit quotient satisfies `CD(9/2,∞)` |
 
@@ -68,9 +70,11 @@ The library is explicitly stratified; the CI enforces the boundary.
   claimed. The curvature-undecidability module is self-contained and does not
   use fluid dynamics.
 - `cd0_haltW_iff` is stated for an abstract at-most-once Boolean marker; the
-  computable Turing-machine compiler (`(M, w) ↦ haltMarker`) upgrading it to a
-  Π⁰₁-hardness statement over `Mathlib.Computability.TuringMachine` is the
-  current work front.
+  computable compiler `(M, w) ↦ haltMarker M w` closing this gap is provided
+  by `SGC.Bridge.HaltingCompiler` (`cd0_compiled_iff`), over Mathlib's own
+  `Turing.TM0` model and halting predicate `(TM0.eval M w).Dom`. The
+  undecidability of `TM0` halting itself and Π⁰₁ *membership* of the global
+  bound are not re-proved there; the reduction is the formalized content.
 
 ## License
 
