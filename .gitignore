@@ -1,0 +1,8 @@
+# Build artifacts
+build/
+lake-packages/
+.lake/
+
+# Local environment
+.DS_Store
+.vscode/settings.json

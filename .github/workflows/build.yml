@@ -1,0 +1,57 @@
+# CI for the SGC formalization archive branch.
+#
+# Two independent checks, per the audit policy:
+#   1. Headline axiom audit (HARD GATE): the dependency closure of every
+#      headline theorem must contain exactly Lean's classical kernel trio
+#      [propext, Classical.choice, Quot.sound]. Enforced by #guard_msgs in
+#      scripts/AxiomAudit.lean — if any project axiom or sorryAx enters a
+#      headline closure, elaboration fails and the build goes red.
+#   2. Repository hygiene (REPORT ONLY): counts and locations of `axiom`
+#      declarations (firewalled modeling interfaces, present by design) and
+#      `sorry` occurrences (work-in-progress modules). Transparency
+#      information, not a build failure.
+
+name: Build & Audit
+
+on:
+  push:
+    branches: [ formalization ]
+  pull_request:
+    branches: [ formalization ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: false
+
+    - name: Install elan
+      run: |
+        curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
+        echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+    - name: Get Mathlib cache
+      run: |
+        lake exe cache get || true
+
+    - name: Build SGC
+      run: lake build
+
+    - name: Headline axiom audit (hard gate)
+      run: lake env lean scripts/AxiomAudit.lean
+
+    - name: Repository hygiene report (informational)
+      run: |
+        echo "=== axiom declarations (firewalled modeling interfaces) ==="
+        grep -rn "^axiom " src --include="*.lean" | tee /dev/stderr | wc -l
+        echo "=== sorry occurrences (work-in-progress modules) ==="
+        grep -rn "^\s*sorry\b" src --include="*.lean" | tee /dev/stderr | wc -l
+      continue-on-error: true
