@@ -16,6 +16,7 @@ import SGC.Bridge.CurvatureUndecidability
 import SGC.Bridge.HaltingCompiler
 import SGC.Bridge.CantorHalting
 import SGC.Geometry.OperatorStrain
+import SGC.Bridge.DissipationFloor
 import SGC.Renormalization.CurvatureQuotient
 
 /-- info: 'SGC.Topology.PadicPathSpace.pathSpace_homeo_padicInt' depends on axioms: [propext, Classical.choice, Quot.sound] -/
@@ -81,6 +82,18 @@ import SGC.Renormalization.CurvatureQuotient
 /-- info: 'SGC.Geometry.OperatorStrain.heavyW_dipole_sum' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms SGC.Geometry.OperatorStrain.heavyW_dipole_sum
+
+/-- info: 'SGC.Bridge.DissipationFloor.entropyProductionRate_ge_killingDefect_div' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Bridge.DissipationFloor.entropyProductionRate_ge_killingDefect_div
+
+/-- info: 'SGC.Bridge.DissipationFloor.dissipation_floor' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Bridge.DissipationFloor.dissipation_floor
+
+/-- info: 'SGC.Bridge.DissipationFloor.entropyProduction_pos_of_affinityCharge' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Bridge.DissipationFloor.entropyProduction_pos_of_affinityCharge
 
 /-- info: 'SGC.Renormalization.CurvatureQuotient.RicciCurvatureBound_quotient' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
