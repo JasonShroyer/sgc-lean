@@ -17,6 +17,7 @@ import SGC.Bridge.HaltingCompiler
 import SGC.Bridge.CantorHalting
 import SGC.Geometry.OperatorStrain
 import SGC.Bridge.DissipationFloor
+import SGC.Topology.BoundaryReadout
 import SGC.Renormalization.CurvatureQuotient
 
 /-- info: 'SGC.Topology.PadicPathSpace.pathSpace_homeo_padicInt' depends on axioms: [propext, Classical.choice, Quot.sound] -/
@@ -94,6 +95,14 @@ import SGC.Renormalization.CurvatureQuotient
 /-- info: 'SGC.Bridge.DissipationFloor.entropyProduction_pos_of_affinityCharge' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms SGC.Bridge.DissipationFloor.entropyProduction_pos_of_affinityCharge
+
+/-- info: 'SGC.Topology.BoundaryReadout.boundary_readout_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Topology.BoundaryReadout.boundary_readout_bound
+
+/-- info: 'SGC.Topology.BoundaryReadout.readout_strongly_lumpable_of_zero_gain' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Topology.BoundaryReadout.readout_strongly_lumpable_of_zero_gain
 
 /-- info: 'SGC.Renormalization.CurvatureQuotient.RicciCurvatureBound_quotient' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
