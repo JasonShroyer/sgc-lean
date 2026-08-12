@@ -366,6 +366,20 @@ import SGC.Geometry.OperatorStrain
 -- (docs/predictive-thermodynamics-chain-design.md).
 import SGC.Bridge.DissipationFloor
 
+-- The Boundary Readout Theorem (2026-08-11): link L1 of the predictive-
+-- thermodynamics chain. A blanket partition induces the canonical
+-- particle/environment readout; for conservative nonneg-rate generators
+-- respecting the blanket, the readout's row-sum lumpability defect is
+-- bounded by the boundary throughput gamma (boundary_readout_bound), with
+-- zero throughput giving exact lumpability (the sealed-particle pole).
+-- Mechanism identified in the proof: the defect is the STRAIN (spread) of
+-- the external-gain field across the particle block — internal states have
+-- gain 0 by screening, blanket states have gain in [0, gamma] — the same
+-- inhomogeneity mechanism as OperatorStrain and the same reason the shift
+-- tower (uniform gain) is exact. Discharges the strengthening flagged in
+-- Blanket.lean's blanket_implies_approx_lumpable docstring.
+import SGC.Topology.BoundaryReadout
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════
