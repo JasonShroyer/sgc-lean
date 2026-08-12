@@ -354,6 +354,18 @@ import SGC.Bridge.CantorHalting
 -- All identities CAS-derived before formalization (scripts/derivations/).
 import SGC.Geometry.OperatorStrain
 
+-- The Dissipation Floor (2026-08-11): entropy production is bounded below by
+-- topology. Sharpened Gibbs inequality (a-b)^2/(a+b) <= (a-b)log(a/b) turns
+-- the second law from a sign into a quantity; Schnakenberg entropy
+-- production dominates the Killing defect (sigma >= K/4R, the thermodynamic
+-- and geometric registers exchange at rate 1/4R); composed with the
+-- quantitative affinity bound: a nonzero cycle charge forces strictly
+-- positive dissipation for EVERY admissible measure. No readout
+-- optimization can dissipate below the topological charge — the Landauer
+-- floor of the predictive-thermodynamics chain
+-- (docs/predictive-thermodynamics-chain-design.md).
+import SGC.Bridge.DissipationFloor
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════
