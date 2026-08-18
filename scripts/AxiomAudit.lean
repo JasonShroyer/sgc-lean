@@ -18,6 +18,7 @@ import SGC.Bridge.CantorHalting
 import SGC.Geometry.OperatorStrain
 import SGC.Bridge.DissipationFloor
 import SGC.Topology.BoundaryReadout
+import SGC.Renormalization.SymmetryLumpability
 import SGC.Renormalization.CurvatureQuotient
 
 /-- info: 'SGC.Topology.PadicPathSpace.pathSpace_homeo_padicInt' depends on axioms: [propext, Classical.choice, Quot.sound] -/
@@ -103,6 +104,14 @@ import SGC.Renormalization.CurvatureQuotient
 /-- info: 'SGC.Topology.BoundaryReadout.readout_strongly_lumpable_of_zero_gain' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms SGC.Topology.BoundaryReadout.readout_strongly_lumpable_of_zero_gain
+
+/-- info: 'SGC.Renormalization.SymmetryLumpability.orbitPartition_stronglyLumpable' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Renormalization.SymmetryLumpability.orbitPartition_stronglyLumpable
+
+/-- info: 'SGC.Renormalization.SymmetryLumpability.counterexample_lumpable_not_symmetric' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Renormalization.SymmetryLumpability.counterexample_lumpable_not_symmetric
 
 /-- info: 'SGC.Renormalization.CurvatureQuotient.RicciCurvatureBound_quotient' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
