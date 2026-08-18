@@ -380,6 +380,19 @@ import SGC.Bridge.DissipationFloor
 -- Blanket.lean's blanket_implies_approx_lumpable docstring.
 import SGC.Topology.BoundaryReadout
 
+-- Symmetry Lumpability (2026-08-18): the discrete form of the symmetry-first
+-- definition of macroscopic law (fluid-EFT program, Dubovsky-Hui-Nicolis-Son
+-- / Crossley-Glorioso-Liu). orbitPartition_stronglyLumpable: an equivariant
+-- generator's orbit partition is strongly lumpable — swapping within an
+-- orbit is free, so the macro-law is exactly closed (finite reindexing
+-- proof). Vocabulary: strong lumpability = equitable partition (Dynkin).
+-- AND the converse fails (counterexample_lumpable_not_symmetric): a
+-- four-state generator, exactly lumpable over a nontrivial partition, whose
+-- only automorphism is the identity. Symmetry is a sufficient mechanism for
+-- exact consolidation; exact consolidation is strictly more general. This
+-- is where SGC's theory of emergence exceeds the symmetry-first program.
+import SGC.Renormalization.SymmetryLumpability
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════
