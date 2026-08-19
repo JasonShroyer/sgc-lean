@@ -105,6 +105,14 @@ import SGC.Renormalization.CurvatureQuotient
 #guard_msgs (whitespace := lax) in
 #print axioms SGC.Topology.BoundaryReadout.readout_strongly_lumpable_of_zero_gain
 
+/-- info: 'SGC.Topology.BoundaryReadout.boundary_readout_lower_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Topology.BoundaryReadout.boundary_readout_lower_bound
+
+/-- info: 'SGC.Topology.BoundaryReadout.not_stronglyLumpable_of_interior_gain' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Topology.BoundaryReadout.not_stronglyLumpable_of_interior_gain
+
 /-- info: 'SGC.Renormalization.SymmetryLumpability.orbitPartition_stronglyLumpable' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms SGC.Renormalization.SymmetryLumpability.orbitPartition_stronglyLumpable
