@@ -125,4 +125,4 @@ Each cited theorem above can be re-verified by checking out the tag and running 
 
 If you build on or extend any claim above, please cite:
 
-> Shroyer, J. *et al.* (2026). *SGC-Lean v1.0: The Spectral Geometry of Consolidation, Actuation Phase 1.*  GitHub: `JasonShroyer/sgc-lean`.  Tag: `v1.0-actuation-phase-1`.
+> Shroyer, J. (2026). *SGC-Lean v1.0: The Spectral Geometry of Consolidation, Actuation Phase 1.*  GitHub: `JasonShroyer/sgc-lean`.  Tag: `v1.0-actuation-phase-1`.

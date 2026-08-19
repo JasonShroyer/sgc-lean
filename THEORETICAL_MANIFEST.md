@@ -136,4 +136,4 @@ The git tag is the citable artefact.  Every theorem above resolves to a specific
 
 Apache 2.0.  Cite as:
 
-> Shroyer, J. *et al.* (2026). *SGC-Lean: The Spectral Geometry of Consolidation, v1.0-actuation-phase-1*.  GitHub: `JasonShroyer/sgc-lean`.  Tag: `v1.0-actuation-phase-1`.
+> Shroyer, J. (2026). *SGC-Lean: The Spectral Geometry of Consolidation, v1.0-actuation-phase-1*.  GitHub: `JasonShroyer/sgc-lean`.  Tag: `v1.0-actuation-phase-1`.

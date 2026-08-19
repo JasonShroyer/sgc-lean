@@ -272,4 +272,74 @@ theorem readout_strongly_lumpable_of_zero_gain (B : SGC.BlanketPartition V)
   rw [abs_nonpos_iff] at this
   linarith [this]
 
+/-! ## §4. The lower bound: interiority prices the readout (two-sided)
+
+`boundary_readout_bound` says the canonical readout pays AT MOST the
+boundary throughput. The theorems below close the other side, answering the
+red-team critique (insights/0010, Attack 2) that the price-of-interiority
+narrative was formalized in the upper direction only: the defect of the
+canonical readout is AT LEAST every blanket state's external gain. The
+mechanism is interiority itself — a screened internal state (gain `0`)
+sits in the same block as the blanket state (gain `g`), so the row-sum
+spread is at least `g`. Together: for a blanket with a nonempty interior,
+
+  max blanket gain ≤ (canonical readout defect) ≤ boundary throughput γ,
+
+and with positive throughput the readout is provably NOT exact
+(`not_stronglyLumpable_of_interior_gain`): **to have an inside is to pay —
+now as a sandwich, not a slogan.** -/
+
+/-- **The lower bound.** Any tolerance `ε` certified for the canonical
+readout dominates every blanket state's external gain — provided the
+blanket has something to screen (an internal state) and an environment to
+lose to (an external state). -/
+theorem boundary_readout_lower_bound (B : SGC.BlanketPartition V)
+    (L : Matrix V V ℝ) (hL : SGC.RespectsBlank L B)
+    (hcons : ∀ x, ∑ z, L x z = 0)
+    {ε : ℝ} (hε : SGC.IsRowSumApproxLumpable L (readoutPartition B) ε)
+    {x u e : V} (hx : x ∈ B.internal) (hu : u ∈ B.blanket)
+    (he : e ∈ B.external) :
+    extGain L B u ≤ ε := by
+  have hxne : x ∉ B.external := Finset.disjoint_left.mp B.disjoint_ie hx
+  have hune : u ∉ B.external := Finset.disjoint_left.mp B.disjoint_be hu
+  have hrel : (u ∈ B.external) ↔ (x ∈ B.external) :=
+    iff_of_false hune hxne
+  have hkey := hε u x hrel ((readoutPartition B).quot_map e)
+  have hout : Quotient.out ((readoutPartition B).quot_map e) ∈ B.external := by
+    have hq : (readoutPartition B).quot_map
+        (Quotient.out ((readoutPartition B).quot_map e))
+        = (readoutPartition B).quot_map e := by
+      exact Quotient.out_eq _
+    have := (readout_quot_map_eq_iff B
+      (Quotient.out ((readoutPartition B).quot_map e))
+      ((readoutPartition B).quot_map e)).mp hq
+    -- `this : out ∈ ext ↔ out(out-block) ∈ ext`; use the representative `e`
+    have he' := (readout_quot_map_eq_iff B e
+      ((readoutPartition B).quot_map e)).mp rfl
+    exact this.mpr (he'.mp he)
+  rw [readout_block_sum_eq L B hcons u, readout_block_sum_eq L B hcons x,
+    if_pos hout, if_pos hout] at hkey
+  have hx0 : extGain L B x = 0 := extGain_internal_eq_zero L B hL hx
+  rw [hx0, sub_zero] at hkey
+  exact le_trans (le_abs_self _) hkey
+
+/-- **Interiority prices the readout (the two-sided headline).** A blanket
+with a screened interior and strictly positive throughput through any
+blanket state admits NO exact canonical readout: the particle/environment
+coarse-graining necessarily carries defect at least that gain. The `ε = 0`
+pole (`readout_strongly_lumpable_of_zero_gain`) and this theorem are the
+two jaws of the sandwich. -/
+theorem not_stronglyLumpable_of_interior_gain (B : SGC.BlanketPartition V)
+    (L : Matrix V V ℝ) (hL : SGC.RespectsBlank L B)
+    (hcons : ∀ x, ∑ z, L x z = 0)
+    {x u e : V} (hx : x ∈ B.internal) (hu : u ∈ B.blanket)
+    (he : e ∈ B.external)
+    (hgain : 0 < extGain L B u) :
+    ¬ SGC.IsStronglyLumpable L (readoutPartition B) := by
+  intro hstrong
+  have h0 : SGC.IsRowSumApproxLumpable L (readoutPartition B) 0 :=
+    SGC.strong_implies_approx_zero L _ hstrong
+  have := boundary_readout_lower_bound B L hL hcons h0 hx hu he
+  linarith
+
 end SGC.Topology.BoundaryReadout
