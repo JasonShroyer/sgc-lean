@@ -1,5 +1,6 @@
 import SGC.Renormalization.Lumpability
 import SGC.Renormalization.Approximate
+import SGC.Thermodynamics.LogSum
 
 /-!
 Copyright (c) 2024 SGC Project. All rights reserved.
@@ -241,17 +242,40 @@ lemma pushforward_sum {W : Type*} [Fintype W] [DecidableEq W]
     rw [sum_filter]
   simp only [sum_comm (γ := W), sum_ite_eq, mem_univ, ↓reduceIte]
 
+/-- The `p x = 0` guard in `KLDiv` is redundant (Lean's `0 * log = 0`
+convention), so KL is the plain sum. -/
+lemma KLDiv_eq_sum_mul_log (p q : V → ℝ) :
+    KLDiv p q = ∑ x, p x * Real.log (p x / q x) := by
+  unfold KLDiv
+  refine Finset.sum_congr rfl fun x _ => ?_
+  by_cases h : p x = 0
+  · rw [if_pos h, h, zero_mul]
+  · rw [if_neg h]
+
 /-- **Data Processing Inequality**: Coarse-graining cannot increase KL divergence.
 
     D_KL(f_# p ‖ f_# q) ≤ D_KL(p ‖ q)
 
-    This is the fundamental monotonicity of information under processing.
+    This is the fundamental monotonicity of information under processing —
+    the **informational arrow** of coarse-graining.
 
-    **Axiomatized**: Standard result in information theory (log-sum inequality). -/
-axiom data_processing_inequality {W : Type*} [Fintype W] [DecidableEq W]
+    **PROVED** (2026-08-18, Three Arrows sprint — formerly axiomatised):
+    the log-sum inequality (`LogSum.log_sum_inequality`, Jensen for
+    `x·log x`) applied fiberwise along the deterministic pushforward. -/
+theorem data_processing_inequality {W : Type*} [Fintype W] [DecidableEq W]
     (f : V → W) (p q : V → ℝ)
     (hp : ∀ x, 0 ≤ p x) (hq : ∀ x, 0 < q x) :
-    KLDiv (pushforward f p) (pushforward f q) ≤ KLDiv p q
+    KLDiv (pushforward f p) (pushforward f q) ≤ KLDiv p q := by
+  rw [KLDiv_eq_sum_mul_log, KLDiv_eq_sum_mul_log]
+  have hfiber : ∑ x : V, p x * Real.log (p x / q x)
+      = ∑ w : W, ∑ x ∈ univ.filter (fun x => f x = w),
+          p x * Real.log (p x / q x) :=
+    (Finset.sum_fiberwise_of_maps_to (fun x _ => Finset.mem_univ (f x)) _).symm
+  rw [hfiber]
+  refine Finset.sum_le_sum fun w _ => ?_
+  have hls := LogSum.log_sum_inequality (univ.filter (fun x => f x = w)) p q
+    (fun i _ => hp i) (fun i _ => hq i)
+  simpa [pushforward] using hls
 
 /-! ### 3. Entropy Production Rate for CTMC -/
 
@@ -439,19 +463,219 @@ noncomputable def HiddenEntropyProduction (L : Matrix V V ℝ) (P : Partition V)
     (pi_dist : V → ℝ) : ℝ :=
   EntropyProductionRate L pi_dist - CoarseEntropyProduction L P pi_dist
 
-/-- **Second Law of Coarse-Graining**: Hidden entropy production is non-negative.
+/-- The aggregated `π`-weighted rate between two blocks:
+`S(ā,b̄) = Σ_{x∈ā, y∈b̄} π_x L_{xy}`. The coarse Schnakenberg terms are
+Gibbs terms of these aggregates (`pi_bar_mul_coarseGenerator`). -/
+noncomputable def BlockRate (L : Matrix V V ℝ) (P : Partition V)
+    (pi_dist : V → ℝ) (a_bar b_bar : P.Quot) : ℝ :=
+  ∑ x : V, ∑ y : V,
+    if P.quot_map x = a_bar ∧ P.quot_map y = b_bar then pi_dist x * L x y else 0
+
+/-- The `π̄` weight cancels: `π̄(ā) · L̄(ā,b̄) = S(ā,b̄)`. -/
+lemma pi_bar_mul_coarseGenerator (L : Matrix V V ℝ) (P : Partition V)
+    {pi_dist : V → ℝ} (hπ : ∀ x, 0 < pi_dist x) (a_bar b_bar : P.Quot) :
+    CoarseStationaryDist P pi_dist a_bar * CoarseGenerator L P pi_dist a_bar b_bar
+      = BlockRate L P pi_dist a_bar b_bar := by
+  have hpos : 0 < CoarseStationaryDist P pi_dist a_bar := pi_bar_pos P hπ a_bar
+  unfold CoarseGenerator BlockRate
+  rw [if_neg hpos.ne']
+  field_simp
+
+/-- With positive `π̄`, the coarse generator vanishes iff the block rate does. -/
+lemma coarseGenerator_eq_zero_iff (L : Matrix V V ℝ) (P : Partition V)
+    {pi_dist : V → ℝ} (hπ : ∀ x, 0 < pi_dist x) (a_bar b_bar : P.Quot) :
+    CoarseGenerator L P pi_dist a_bar b_bar = 0 ↔
+      BlockRate L P pi_dist a_bar b_bar = 0 := by
+  have hpos : 0 < CoarseStationaryDist P pi_dist a_bar := pi_bar_pos P hπ a_bar
+  constructor
+  · intro h
+    rw [← pi_bar_mul_coarseGenerator L P hπ, h, mul_zero]
+  · intro h
+    unfold CoarseGenerator
+    rw [if_neg hpos.ne']
+    unfold BlockRate at h
+    rw [h, mul_zero]
+
+/-- Reindexing the reverse block rate over the forward fiber:
+`S(b̄,ā) = Σ_{x∈ā, y∈b̄} π_y L_{yx}`. -/
+lemma blockRate_swap (L : Matrix V V ℝ) (P : Partition V)
+    (pi_dist : V → ℝ) (a_bar b_bar : P.Quot) :
+    BlockRate L P pi_dist b_bar a_bar
+      = ∑ x : V, ∑ y : V,
+          if P.quot_map x = a_bar ∧ P.quot_map y = b_bar
+          then pi_dist y * L y x else 0 := by
+  unfold BlockRate
+  rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl fun x _ => Finset.sum_congr rfl fun y _ => ?_
+  exact if_congr and_comm rfl rfl
+
+/-- **Second Law of Coarse-Graining**: Hidden entropy production is
+non-negative.
 
     σ_hid = σ(L, π) - σ(L̄, π̄) ≥ 0
 
-    Coarse-graining cannot increase observed entropy production.
-    Follows from DPI on path-space KL divergence.
+    Coarse-graining cannot increase observed entropy production — the
+    **thermodynamic arrow** of coarse-graining, companion to the geometric
+    arrow (`RicciCurvatureBound_quotient`) and the informational arrow
+    (`data_processing_inequality`).
 
-    **Axiomatized**: Coarse-graining monotonicity via DPI. -/
-axiom hidden_entropy_nonneg (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
+    **PROVED** (2026-08-18, Three Arrows sprint — formerly axiomatised):
+    group the fine Schnakenberg sum by coarse block pairs; intra-block and
+    guarded terms are nonnegative (`gibbs_term_nonneg`); each inter-block
+    group dominates the corresponding coarse Gibbs term by superadditivity
+    (`LogSum.gibbs_superadditive`), since the coarse weighted rates are the
+    block aggregates of the fine ones (`pi_bar_mul_coarseGenerator`). -/
+theorem hidden_entropy_nonneg (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ)
     (hπ : ∀ x, 0 < pi_dist x)
     (hL_gen : ∀ x y, x ≠ y → 0 ≤ L x y)
     (hL_pos : ∀ x y, x ≠ y → L x y > 0 → L y x > 0) :
-    0 ≤ HiddenEntropyProduction L P pi_dist
+    0 ≤ HiddenEntropyProduction L P pi_dist := by
+  classical
+  unfold HiddenEntropyProduction CoarseEntropyProduction
+  rw [sub_nonneg]
+  unfold EntropyProductionRate
+  refine mul_le_mul_of_nonneg_left ?_ (by norm_num : (0:ℝ) ≤ 1/2)
+  -- notation
+  set q : V → P.Quot := P.quot_map with hq
+  set t : V → V → ℝ := fun x y =>
+    if x = y ∨ L x y = 0 then 0
+    else (pi_dist x * L x y - pi_dist y * L y x) *
+         log (pi_dist x * L x y / (pi_dist y * L y x)) with ht
+  -- the fine sum refines over block pairs
+  have hcollapse : ∀ x y, (∑ a_bar : P.Quot, ∑ b_bar : P.Quot,
+      if q x = a_bar ∧ q y = b_bar then t x y else 0) = t x y := by
+    intro x y
+    have h1 : ∀ a_bar : P.Quot,
+        (∑ b_bar : P.Quot, if q x = a_bar ∧ q y = b_bar then t x y else 0)
+        = if q x = a_bar then t x y else 0 := by
+      intro a_bar
+      by_cases hx : q x = a_bar
+      · simp only [hx, true_and]
+        simp
+      · simp [hx]
+    simp only [h1]
+    simp
+  have hrefine : ∑ x, ∑ y, t x y
+      = ∑ a_bar : P.Quot, ∑ b_bar : P.Quot, ∑ x, ∑ y,
+          if q x = a_bar ∧ q y = b_bar then t x y else 0 := by
+    calc ∑ x, ∑ y, t x y
+        = ∑ x, ∑ y, ∑ a_bar : P.Quot, ∑ b_bar : P.Quot,
+            (if q x = a_bar ∧ q y = b_bar then t x y else 0) :=
+          Finset.sum_congr rfl fun x _ => Finset.sum_congr rfl fun y _ =>
+            (hcollapse x y).symm
+      _ = ∑ x, ∑ a_bar : P.Quot, ∑ y, ∑ b_bar : P.Quot,
+            (if q x = a_bar ∧ q y = b_bar then t x y else 0) :=
+          Finset.sum_congr rfl fun x _ => Finset.sum_comm
+      _ = ∑ a_bar : P.Quot, ∑ x, ∑ y, ∑ b_bar : P.Quot,
+            (if q x = a_bar ∧ q y = b_bar then t x y else 0) :=
+          Finset.sum_comm
+      _ = ∑ a_bar : P.Quot, ∑ x, ∑ b_bar : P.Quot, ∑ y,
+            (if q x = a_bar ∧ q y = b_bar then t x y else 0) :=
+          Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun x _ =>
+            Finset.sum_comm
+      _ = ∑ a_bar : P.Quot, ∑ b_bar : P.Quot, ∑ x, ∑ y,
+            (if q x = a_bar ∧ q y = b_bar then t x y else 0) :=
+          Finset.sum_congr rfl fun a _ => Finset.sum_comm
+  rw [hrefine]
+  -- per block pair: the fine group dominates the coarse Gibbs term
+  refine Finset.sum_le_sum fun a_bar _ => Finset.sum_le_sum fun b_bar _ => ?_
+  -- nonnegativity of every fine term in the group
+  have ht_nonneg : ∀ x y, 0 ≤ (if q x = a_bar ∧ q y = b_bar then t x y else 0) := by
+    intro x y
+    by_cases hg : q x = a_bar ∧ q y = b_bar
+    · rw [if_pos hg]
+      simp only [ht]
+      by_cases hguard : x = y ∨ L x y = 0
+      · rw [if_pos hguard]
+      · rw [if_neg hguard]
+        push_neg at hguard
+        obtain ⟨hxy, hL0⟩ := hguard
+        have hLxy : 0 < L x y := lt_of_le_of_ne (hL_gen x y hxy) (Ne.symm hL0)
+        have hLyx : 0 < L y x := hL_pos x y hxy hLxy
+        exact gibbs_term_nonneg (mul_pos (hπ x) hLxy) (mul_pos (hπ y) hLyx)
+    · rw [if_neg hg]
+  by_cases hab : a_bar = b_bar
+  · -- diagonal coarse term is guarded to zero
+    rw [if_pos (Or.inl hab)]
+    exact Finset.sum_nonneg fun x _ => Finset.sum_nonneg fun y _ => ht_nonneg x y
+  by_cases hS : CoarseGenerator L P pi_dist a_bar b_bar = 0
+  · rw [if_pos (Or.inr hS)]
+    exact Finset.sum_nonneg fun x _ => Finset.sum_nonneg fun y _ => ht_nonneg x y
+  -- live inter-block pair: superadditivity
+  rw [if_neg (by push_neg; exact ⟨hab, hS⟩)]
+  rw [pi_bar_mul_coarseGenerator L P hπ, pi_bar_mul_coarseGenerator L P hπ]
+  -- move to the product fiber restricted to the support
+  set s₀ : Finset (V × V) :=
+    Finset.univ.filter (fun pr : V × V =>
+      (q pr.1 = a_bar ∧ q pr.2 = b_bar) ∧ L pr.1 pr.2 ≠ 0) with hs₀
+  have hne : ∀ pr : V × V, pr ∈ s₀ → pr.1 ≠ pr.2 := by
+    intro pr hpr
+    obtain ⟨⟨h1, h2⟩, -⟩ := Finset.mem_filter.mp hpr |>.2
+    intro hcontra
+    exact hab (h1 ▸ hcontra ▸ h2 ▸ rfl)
+  have ha_pos : ∀ pr ∈ s₀, 0 < pi_dist pr.1 * L pr.1 pr.2 := by
+    intro pr hpr
+    obtain ⟨-, hL0⟩ := (Finset.mem_filter.mp hpr).2
+    exact mul_pos (hπ pr.1)
+      (lt_of_le_of_ne (hL_gen pr.1 pr.2 (hne pr hpr)) (Ne.symm hL0))
+  have hb_pos : ∀ pr ∈ s₀, 0 < pi_dist pr.2 * L pr.2 pr.1 := by
+    intro pr hpr
+    obtain ⟨-, hL0⟩ := (Finset.mem_filter.mp hpr).2
+    exact mul_pos (hπ pr.2)
+      (hL_pos pr.1 pr.2 (hne pr hpr)
+        (lt_of_le_of_ne (hL_gen pr.1 pr.2 (hne pr hpr)) (Ne.symm hL0)))
+  -- the aggregates over the support are the block rates
+  have hSa : ∑ pr ∈ s₀, pi_dist pr.1 * L pr.1 pr.2
+      = BlockRate L P pi_dist a_bar b_bar := by
+    unfold BlockRate
+    rw [← Finset.sum_product']
+    rw [Finset.sum_filter]
+    simp only [← hq]
+    refine Finset.sum_congr rfl fun pr _ => ?_
+    by_cases hg : q pr.1 = a_bar ∧ q pr.2 = b_bar
+    · by_cases hL0 : L pr.1 pr.2 = 0
+      · simp [hg, hL0]
+      · simp [hg, hL0]
+    · simp [hg]
+  have hSb : ∑ pr ∈ s₀, pi_dist pr.2 * L pr.2 pr.1
+      = BlockRate L P pi_dist b_bar a_bar := by
+    rw [blockRate_swap, ← Finset.sum_product', Finset.sum_filter]
+    simp only [← hq]
+    refine Finset.sum_congr rfl fun pr _ => ?_
+    by_cases hg : q pr.1 = a_bar ∧ q pr.2 = b_bar
+    · by_cases hL0 : L pr.1 pr.2 = 0
+      · -- reverse rate also vanishes: L pr.2 pr.1 = 0
+        have hyx : L pr.2 pr.1 = 0 := by
+          by_contra hne0
+          by_cases hxy : pr.1 = pr.2
+          · exact hne0 (hxy ▸ hL0)
+          · have := hL_pos pr.2 pr.1 (Ne.symm hxy)
+              (lt_of_le_of_ne (hL_gen pr.2 pr.1 (Ne.symm hxy)) (Ne.symm hne0))
+            rw [hL0] at this
+            exact lt_irrefl 0 this
+        simp [hg, hL0, hyx]
+      · simp [hg, hL0]
+    · simp [hg]
+  -- the fine group equals the support sum of Gibbs terms
+  have hgroup : ∑ x, ∑ y, (if q x = a_bar ∧ q y = b_bar then t x y else 0)
+      = ∑ pr ∈ s₀, (pi_dist pr.1 * L pr.1 pr.2 - pi_dist pr.2 * L pr.2 pr.1) *
+          log (pi_dist pr.1 * L pr.1 pr.2 / (pi_dist pr.2 * L pr.2 pr.1)) := by
+    rw [← Finset.sum_product', Finset.sum_filter]
+    refine Finset.sum_congr rfl fun pr _ => ?_
+    by_cases hg : q pr.1 = a_bar ∧ q pr.2 = b_bar
+    · rw [if_pos hg]
+      simp only [ht]
+      by_cases hL0 : L pr.1 pr.2 = 0
+      · rw [if_pos (Or.inr hL0), if_neg (fun h => h.2 hL0)]
+      · have hxy : pr.1 ≠ pr.2 := by
+          intro hcontra
+          exact hab (hg.1 ▸ hcontra ▸ hg.2 ▸ rfl)
+        have hguard : ¬(pr.1 = pr.2 ∨ L pr.1 pr.2 = 0) := by
+          push_neg; exact ⟨hxy, hL0⟩
+        rw [if_neg hguard, if_pos ⟨hg, hL0⟩]
+    · rw [if_neg hg, if_neg (fun h => hg h.1)]
+  rw [hgroup, ← hSa, ← hSb]
+  exact LogSum.gibbs_superadditive s₀ _ _ ha_pos hb_pos
 
 /-! ### 6. Phase D: Connecting Hidden Entropy to Leakage Defect
 
