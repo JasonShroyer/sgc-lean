@@ -82,6 +82,6 @@ Apache 2.0 — see [LICENSE](LICENSE).
 
 ## Citation
 
-> Shroyer, J. *et al.* (2026). *SGC: The Spectral Geometry of Consolidation —
+> Shroyer, J. (2026). *SGC: The Spectral Geometry of Consolidation —
 > Lean 4 formalization.* GitHub: `JasonShroyer/sgc-lean`, branch
 > `formalization`.
