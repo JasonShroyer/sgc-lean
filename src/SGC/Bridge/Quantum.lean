@@ -272,10 +272,10 @@ theorem adjoint_defect_orthogonal (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dis
   -- The adjoint of P E P using composition rule
   have h_comp1 : adjoint_pi pi_dist (E ∘ₗ proj) =
       (adjoint_pi pi_dist proj) ∘ₗ (adjoint_pi pi_dist E) :=
-    SGC.Axioms.GeometryGeneral.adjoint_pi_comp pi_dist E proj
+    SGC.Axioms.GeometryGeneral.adjoint_pi_comp pi_dist hπ E proj
   have h_comp2 : adjoint_pi pi_dist (proj ∘ₗ E ∘ₗ proj) =
       (adjoint_pi pi_dist (E ∘ₗ proj)) ∘ₗ (adjoint_pi pi_dist proj) :=
-    SGC.Axioms.GeometryGeneral.adjoint_pi_comp pi_dist proj (E ∘ₗ proj)
+    SGC.Axioms.GeometryGeneral.adjoint_pi_comp pi_dist hπ proj (E ∘ₗ proj)
   -- Substitute P† = P
   simp only [h_P_sa] at h_comp1 h_comp2
   -- (P E P)† = (E P)† ∘ P = (P ∘ E†) ∘ P = P ∘ E† ∘ P
@@ -291,12 +291,13 @@ theorem adjoint_defect_orthogonal (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dis
     This is standard: ⟨E†E ψ, ψ⟩ = ⟨Eψ, Eψ⟩ = ‖Eψ‖².
 
     **PROVEN** from adjoint_pi_spec: ⟨A†u, v⟩ = ⟨u, Av⟩, setting u = Eψ, v = ψ. -/
-theorem inner_adjoint_self (pi_dist : V → ℝ) (E : (V → ℂ) →ₗ[ℂ] (V → ℂ)) (ψ : V → ℂ) :
+theorem inner_adjoint_self (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (E : (V → ℂ) →ₗ[ℂ] (V → ℂ)) (ψ : V → ℂ) :
     SGC.Axioms.GeometryGeneral.inner_pi pi_dist (adjoint_pi pi_dist E (E ψ)) ψ =
     SGC.Axioms.GeometryGeneral.inner_pi pi_dist (E ψ) (E ψ) := by
   -- Use adjoint_pi_spec: ⟨A†u, v⟩ = ⟨u, Av⟩
   -- With A = E, u = Eψ, v = ψ: ⟨E†(Eψ), ψ⟩ = ⟨Eψ, Eψ⟩
-  exact SGC.Axioms.GeometryGeneral.adjoint_pi_spec pi_dist E (E ψ) ψ
+  exact SGC.Axioms.GeometryGeneral.adjoint_pi_spec pi_dist hπ E (E ψ) ψ
 
 /-- **THEOREM** (was axiom): An operator is zero iff its norm squared is zero on all inputs.
     More precisely: E = 0 ↔ ∀ ψ, ⟨Eψ, Eψ⟩ = 0.
@@ -438,7 +439,7 @@ theorem KL_gives_norm_sq_proportional (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi
     rw [codeSubspace_proj_selfAdjoint pi_dist hπ P (adjoint_pi pi_dist E (E ψ)) ψ]
     rw [h_codeword]
   -- By inner_adjoint_self: ⟨E† E ψ, ψ⟩ = ⟨Eψ, Eψ⟩
-  have h_adj_self := inner_adjoint_self pi_dist E ψ
+  have h_adj_self := inner_adjoint_self pi_dist hπ E ψ
   -- Chain: ⟨P E† E ψ, ψ⟩ = ⟨E† E ψ, ψ⟩ = ⟨Eψ, Eψ⟩ = α⟨ψ, ψ⟩
   calc SGC.Axioms.GeometryGeneral.inner_pi pi_dist (E ψ) (E ψ)
     = SGC.Axioms.GeometryGeneral.inner_pi pi_dist (adjoint_pi pi_dist E (E ψ)) ψ := h_adj_self.symm
@@ -779,8 +780,8 @@ theorem knill_laflamme_implies_lumpability (pi_dist : V → ℝ) (hπ : ∀ v, 0
           (adjoint_pi pi_dist (complexifyDefect pi_dist hπ L P) ∘ₗ
            complexifyDefect pi_dist hπ L P) := by
         unfold SGC.Axioms.GeometryGeneral.IsSelfAdjoint_pi
-        rw [SGC.Axioms.GeometryGeneral.adjoint_pi_comp]
-        rw [SGC.Axioms.GeometryGeneral.adjoint_pi_involutive]
+        rw [SGC.Axioms.GeometryGeneral.adjoint_pi_comp pi_dist hπ]
+        rw [SGC.Axioms.GeometryGeneral.adjoint_pi_involutive pi_dist hπ]
       -- Extract the KL condition in the right form
       have hKL_form : ∀ f, (partitionToCodeSubspace pi_dist P).proj
           ((adjoint_pi pi_dist (complexifyDefect pi_dist hπ L P))

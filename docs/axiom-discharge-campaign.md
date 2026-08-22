@@ -1,4 +1,31 @@
-# Axiom Discharge Campaign — machine inventory (2026-08-22)
+# Axiom Discharge Campaign
+
+## SOUNDNESS HOLE FOUND AND REPAIRED (2026-08-22)
+
+During the ranked-discharge recon, the adjoint family in
+SGC/Axioms/GeometryGeneral.lean was found INCONSISTENT as stated:
+adjoint_pi_spec was quantified over ALL pi with no positivity hypothesis,
+and for degenerate pi (e.g. (1,0) on Fin 2) no adjoint can satisfy it.
+False was mechanically derived (scratch/InconsistencyCheck.lean, now a
+tombstone; the derivation compiled and #print axioms confirmed it closed
+over the two adjoint axioms plus the classical trio). Until the repair,
+ANY file importing GeometryGeneral could in principle prove anything.
+
+REPAIR (same day): adjoint_pi_spec / adjoint_pi_involutive /
+adjoint_pi_comp now require (hpi : forall v, 0 < pi_dist v); with hpi the
+weighted adjoint D^-1 A* D is a model, so the family is satisfiable.
+adjoint_pi (construction) and adjoint_pi_zero remain hypothesis-free
+(jointly satisfiable). Call sites threaded: GeometryGeneral (1 lemma),
+Bridge/Recovery.lean (4 sites), Bridge/Quantum.lean (5 sites) - all
+enclosing theorems already carried hpi. Full build + audit gate green.
+
+LESSON: unused axioms are a liability, but USED-and-FALSE axioms are the
+emergency. The campaign now audits remaining axioms for SATISFIABILITY
+(degenerate-parameter check), not just usage. Full definitional discharge
+of the adjoint family (def + 4 theorems, retiring 5 axioms / ~58 refs) is
+the top-ranked next discharge.
+
+# Machine inventory (2026-08-22, pre-pruning)
 
 Total `axiom` declarations under src/: **210**
 - Referenced somewhere (must be discharged or defended): **110**

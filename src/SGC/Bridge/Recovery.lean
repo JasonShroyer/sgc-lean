@@ -84,24 +84,24 @@ def PetzRecoveryMap (pi_dist : V → ℝ)
   adjoint_pi pi_dist forward
 
 /-- The Petz map satisfies the adjoint property. -/
-theorem PetzRecoveryMap_spec (pi_dist : V → ℝ)
+theorem PetzRecoveryMap_spec (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (forward : (V → ℂ) →ₗ[ℂ] (V → ℂ)) (ρ σ : V → ℂ) :
     SGC.Axioms.GeometryGeneral.inner_pi pi_dist ((PetzRecoveryMap pi_dist forward) ρ) σ =
     SGC.Axioms.GeometryGeneral.inner_pi pi_dist ρ (forward σ) :=
-  adjoint_pi_spec (𝕜 := ℂ) pi_dist forward ρ σ
+  adjoint_pi_spec (𝕜 := ℂ) pi_dist hπ forward ρ σ
 
 /-- The Petz map is an involution: ℛ(ℛ(𝒩)) = 𝒩. -/
-theorem PetzRecoveryMap_involutive (pi_dist : V → ℝ)
+theorem PetzRecoveryMap_involutive (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (forward : (V → ℂ) →ₗ[ℂ] (V → ℂ)) :
     PetzRecoveryMap pi_dist (PetzRecoveryMap pi_dist forward) = forward :=
-  adjoint_pi_involutive pi_dist forward
+  adjoint_pi_involutive pi_dist hπ forward
 
 /-- Composition rule: ℛ(𝒩₁ ∘ 𝒩₂) = ℛ(𝒩₂) ∘ ℛ(𝒩₁). -/
-theorem PetzRecoveryMap_comp (pi_dist : V → ℝ)
+theorem PetzRecoveryMap_comp (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (N₁ N₂ : (V → ℂ) →ₗ[ℂ] (V → ℂ)) :
     PetzRecoveryMap pi_dist (N₁ ∘ₗ N₂) =
     PetzRecoveryMap pi_dist N₂ ∘ₗ PetzRecoveryMap pi_dist N₁ :=
-  adjoint_pi_comp pi_dist N₁ N₂
+  adjoint_pi_comp pi_dist hπ N₁ N₂
 
 /-! ## 2. Relative Entropy (KL Divergence)
 
@@ -215,7 +215,7 @@ theorem recovery_defect_selfadjoint (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_d
     IsSelfAdjoint_pi pi_dist
       (SGCRecoveryChannel pi_dist hπ L P ∘ₗ complexifyDefect pi_dist hπ L P) := by
   unfold IsSelfAdjoint_pi SGCRecoveryChannel PetzRecoveryMap
-  rw [adjoint_pi_comp, adjoint_pi_involutive]
+  rw [adjoint_pi_comp pi_dist hπ, adjoint_pi_involutive pi_dist hπ]
 
 /-! ## 6. Landauer's Principle: The Cost of Recovery
 

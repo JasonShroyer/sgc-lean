@@ -70,16 +70,30 @@ observables must be self-adjoint (A† = A).
     We axiomatize the construction; the defining property is `adjoint_pi_spec`. -/
 axiom adjoint_pi (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)
 
-/-- Defining property of the adjoint: ⟨A† u, v⟩_π = ⟨u, A v⟩_π. -/
-axiom adjoint_pi_spec (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) (u v : V → 𝕜) :
+/-- Defining property of the adjoint: ⟨A† u, v⟩_π = ⟨u, A v⟩_π.
+
+    **SOUNDNESS REPAIR (2026-08-22)**: the positivity hypothesis `hπ` is
+    REQUIRED. The unhypothesized version is false: for degenerate `π`
+    (e.g. `π = (1,0)` on `Fin 2`) no adjoint can satisfy it, and `False`
+    was mechanically derived from the old axiom
+    (see `docs/axiom-discharge-campaign.md`, soundness section). With
+    `hπ` the weighted adjoint `D_π⁻¹ A* D_π` is a model, so the axiom
+    family is satisfiable. Full definitional discharge is the recorded
+    next step. -/
+axiom adjoint_pi_spec (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) (u v : V → 𝕜) :
     inner_pi pi_dist (adjoint_pi pi_dist A u) v = inner_pi pi_dist u (A v)
 
-/-- The adjoint is an involution: (A†)† = A. -/
-axiom adjoint_pi_involutive (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
+/-- The adjoint is an involution: (A†)† = A. Requires positive `π`
+    (soundness repair 2026-08-22; see `adjoint_pi_spec`). -/
+axiom adjoint_pi_involutive (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
     adjoint_pi pi_dist (adjoint_pi pi_dist A) = A
 
-/-- The adjoint of a composition: (AB)† = B†A†. -/
-axiom adjoint_pi_comp (pi_dist : V → ℝ) (A B : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
+/-- The adjoint of a composition: (AB)† = B†A†. Requires positive `π`
+    (soundness repair 2026-08-22; see `adjoint_pi_spec`). -/
+axiom adjoint_pi_comp (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (A B : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
     adjoint_pi pi_dist (A ∘ₗ B) = adjoint_pi pi_dist B ∘ₗ adjoint_pi pi_dist A
 
 /-- The adjoint of zero is zero. -/
@@ -111,13 +125,13 @@ lemma isSelfAdjoint_pi_iff (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     IsSelfAdjoint_pi pi_dist A ↔ ∀ u v, inner_pi pi_dist (A u) v = inner_pi pi_dist u (A v) := by
   constructor
   · intro hA u v
-    rw [← adjoint_pi_spec pi_dist A u v, hA]
+    rw [← adjoint_pi_spec pi_dist hπ A u v, hA]
   · intro h
     -- Show A† = A using linearMap_ext_inner
     apply linearMap_ext_inner pi_dist hπ
     intro u v
     -- ⟨A†u, v⟩ = ⟨u, Av⟩ (by adjoint_pi_spec) = ⟨Au, v⟩ (by hypothesis h)
-    rw [adjoint_pi_spec, h]
+    rw [adjoint_pi_spec pi_dist hπ, h]
 
 /-- An operator A is positive w.r.t. the weighted inner product if ⟨Au, u⟩ ≥ 0 for all u.
     Combined with self-adjointness, this gives a positive semidefinite operator. -/
