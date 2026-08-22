@@ -602,11 +602,6 @@ def LGamma2Commutator (L : Matrix V V ℝ) (f : V → ℝ) : V → ℝ := fun v 
 axiom CommutatorNorm (L : Matrix V V ℝ) (pi_dist : V → ℝ)
     (hpi : ∀ v, 0 < pi_dist v) : ℝ
 
-/-- The commutator norm is non-negative. -/
-axiom commutator_norm_nonneg (L : Matrix V V ℝ) (pi_dist : V → ℝ)
-    (hpi : ∀ v, 0 < pi_dist v) :
-    CommutatorNorm L pi_dist hpi ≥ 0
-
 /-- **Geometric Commutator Constraint**: The deviation from frame tightness
     is bounded by the commutator norm.
 

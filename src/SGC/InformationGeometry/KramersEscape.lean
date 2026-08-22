@@ -226,17 +226,6 @@ def InferredBarrierHeight (speedup D : ℝ) (hD : 0 < D) (hS : 1 < speedup) : �
 def SGCMasterEquation (L : Matrix V V ℝ) (ρ : V → ℝ) : V → ℝ :=
   fun v => -∑ w, L v w * ρ w
 
-/-- **Fokker-Planck Limit**: As the graph becomes dense, the SGC master equation
-    converges to the Fokker-Planck equation:
-
-    ∂ρ/∂t = ∇·(∇V ρ) + D∇²ρ
-
-    This is the continuum limit where Kramers theory applies. -/
-axiom fokker_planck_limit :
-  ∀ (L : LossLandscape V) (D : ℝ),
-    -- In the continuum limit, SGC dynamics → Fokker-Planck dynamics
-    True  -- Placeholder for the precise statement
-
 /-! ### 7. The Diffusion-RG Isomorphism -/
 
 /-- **The Diffusion-RG Isomorphism** (Main Theorem):

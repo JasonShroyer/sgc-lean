@@ -300,25 +300,6 @@ def IsPersistentBoundary (q : ℝ) (p : V → ℝ) (hZ : EscortNormalization q p
     (P : HeatSemigroup V) (Part : StatePartition V) (threshold T : ℝ) : Prop :=
   Conductance q p hZ (P.at_scale T) Part < threshold
 
-/-- **Boundary Persistence Theorem**: If a partition has low conductance at
-    scale T, it had low conductance at all earlier scales.
-
-    This follows from RG-Monotonicity: h(t) is non-decreasing, so if
-    φ(S,T) is low, φ(S,t) was also low for t < T.
-
-    **Contrapositive**: High conductance at early times can become low
-    conductance at late times, but not vice versa.
-
-    **Status**: Axiomatized. Follows from rg_monotonicity_of_cheeger. -/
-axiom boundary_persistence {V : Type*} [Fintype V] [DecidableEq V]
-    {q : ℝ} [NonExtensiveSystem q]
-    (p : V → ℝ) (hp : ∀ v, 0 < p v) (hZ : EscortNormalization q p ≠ 0)
-    (P : HeatSemigroup V) (Part : StatePartition V)
-    (threshold t T : ℝ) (_ht : 0 ≤ t) (_htT : t ≤ T)
-    (_h_persist : IsPersistentBoundary q p hZ P Part threshold T) :
-    Conductance q p hZ (P.at_scale t) Part ≤
-    Conductance q p hZ (P.at_scale T) Part
-
 /-! ## Summary
 
 This module establishes the **Escort Conductance Framework**:

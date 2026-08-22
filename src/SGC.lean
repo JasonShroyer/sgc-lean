@@ -435,6 +435,23 @@ import SGC.Renormalization.MeasureReentry
 -- gives eternal closure. Continuous-time bridge deliberately deferred.
 import SGC.Renormalization.KernelHorizon
 
+-- The Physical-Time Horizon (2026-08-22, marathon leg): the causal chain
+-- D_pi => ||C||inf => T_eta lands in PHYSICAL TIME, exactly. Key discovery:
+-- coarse-graining is affine in the generator, so the canonical macro-kernel
+-- of the Euler step IS the Euler step of the canonical macro-generator
+-- (coarseGenerator_eulerStep) and the closure commutator scales EXACTLY:
+-- C(1 + dt*L) = dt * C(L) — no O(dt^2) term (closureCommutator_eulerStep).
+-- With the CFL-type step bound the Euler step is stochastic, and composing
+-- with the Kernel Horizon Theorem gives error(t = n*dt) <= t * ||C_L||
+-- UNIFORMLY in the discretization (physical_time_closure_error). The
+-- norm-conversion theorem (commutator_linfty_le_sqrt_defect, via row-wise
+-- Cauchy-Schwarz under a stationary lower bound p_min) unifies the defect
+-- faces: ||C||inf <= sqrt(|Quot| * D_pi^2 / p_min) — constant exact, not
+-- claimed tight; rare states are the honest gap. End-to-end corollary:
+-- error(t) <= t * sqrt(|Quot| * D_pi^2 / p_min). Exponential propagator
+-- e^{tL} remains the recorded open bridge.
+import SGC.Renormalization.PhysicalHorizon
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════

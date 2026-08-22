@@ -260,23 +260,6 @@ def InformationLoss (L : Matrix V V ℝ) (t : ℝ) (p q : V → ℝ) : ℝ :=
   (RelativeEntropy p q).toReal -
   (RelativeEntropy (applyChannel (HeatKernel L t) p) (applyChannel (HeatKernel L t) q)).toReal
 
-/-- Information loss is non-negative (consequence of DPI). -/
-axiom InformationLoss_nonneg (L : Matrix V V ℝ) (t : ℝ) (p q : V → ℝ)
-    (hT : IsStochasticChannel (HeatKernel L t))
-    (hp : ∀ x, 0 ≤ p x) (hq : ∀ x, 0 ≤ q x) :
-    0 ≤ InformationLoss L t p q
-
-/-- **Defect Bounds Information Loss Rate** (Schema): Small defect implies
-    small information loss per unit time.
-
-    ΔD/Δt ≤ C · ‖D‖ where D is the leakage defect. -/
-axiom defect_bounds_info_loss_rate (L : Matrix V V ℝ) (P : Partition V)
-    (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (ε : ℝ) (hε : IsApproxLumpable L P pi_dist hπ ε)
-    (p q : V → ℝ) (hp : ∀ x, 0 < p x) (hq : ∀ x, 0 < q x)
-    (t : ℝ) (ht : 0 < t) :
-    ∃ C > 0, InformationLoss L t p q / t ≤ C * ε
-
 /-! ## 6. Three-Way Closure Structure -/
 
 /-- **Three-Way Closure Triangle**: The fundamental structure connecting

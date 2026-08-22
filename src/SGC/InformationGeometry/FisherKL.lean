@@ -356,16 +356,6 @@ structure RegularizedFisher (n : ℕ) where
 def RegularizedFisher.regularized (RF : RegularizedFisher n) : Matrix (Fin n) (Fin n) ℝ :=
   RF.F + RF.regParam • (1 : Matrix (Fin n) (Fin n) ℝ)
 
-/-- **AXIOM: Regularized Fisher is Positive Definite**
-
-    For F positive semidefinite and λ > 0, (F + λI) is positive definite.
-    This is standard linear algebra: ⟨v, (F + λI)v⟩ = ⟨v, Fv⟩ + λ‖v‖² > 0 for v ≠ 0.
-
-    **Note**: This could be proven using Mathlib's PosDef theory, but we axiomatize
-    it to avoid deep dependencies on matrix positivity infrastructure. -/
-axiom RegularizedFisher.posDef (RF : RegularizedFisher n) :
-    ∀ v : Fin n → ℝ, v ≠ 0 → 0 < ∑ i, ∑ j, v i * RF.regularized i j * v j
-
 /-! ## TWO PROJECTORS: EUCLIDEAN VS FISHER
 
 **Critical Distinction** (addressing the "one projector, two contracts" issue):
@@ -640,23 +630,6 @@ theorem fisher_orthogonal_projection_optimal (RF : RegularizedFisher n)
         FisherObjective RF g Δθ_opt ≤ FisherObjective RF g Δθ) :=
   ⟨fisher_orthogonal_projection_feasibility RF S g F_reg_inv Gram_inv h_F_inv h_Gram_inv,
    fisher_orthogonal_projection_optimality RF S g F_reg_inv Gram_inv h_F_inv h_Gram_inv⟩
-
-/-- **AXIOM: Projector Idempotence**
-
-    The projector P_⊥ is idempotent: P² = P.
-
-    **Proof sketch**: P_⊥² = (I - A)(I - A) = I - 2A + A² where A = F⁻¹Sᵀ Gram⁻¹ S.
-    Since A² = F⁻¹Sᵀ Gram⁻¹ (SF⁻¹Sᵀ) Gram⁻¹ S = F⁻¹Sᵀ Gram⁻¹ S = A,
-    we have P² = I - 2A + A = I - A = P. -/
-axiom FisherOrthogonalProjector_idempotent (RF : RegularizedFisher n)
-    (S : ConsolidatedSubspace n k)
-    (F_reg_inv : Matrix (Fin n) (Fin n) ℝ)
-    (Gram_inv : Matrix (Fin k) (Fin k) ℝ)
-    (h_F_inv : F_reg_inv * RF.regularized = 1)
-    (h_Gram_inv : let S_mat := SubspaceMatrix S
-                  Gram_inv * (S_mat * F_reg_inv * S_matᵀ) = 1) :
-    let P := FisherOrthogonalProjector RF S F_reg_inv Gram_inv
-    P * P = P
 
 /-- **AXIOM: Projected Vectors are Fisher-Orthogonal**
 

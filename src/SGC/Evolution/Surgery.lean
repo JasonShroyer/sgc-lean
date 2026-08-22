@@ -102,15 +102,6 @@ def IsCandidateEdge (G : WeightedGraph V) (u v : V) : Prop :=
     solving an optimization problem (which edges maximize global curvature?). -/
 axiom SurgerySew (G : WeightedGraph V) (threshold : ℝ) : WeightedGraph V
 
-/-- Sew only adds edges, never removes them. -/
-axiom sew_preserves_edges (G : WeightedGraph V) (threshold : ℝ) :
-  ∀ u v, G.adj u v → (SurgerySew G threshold).adj u v
-
-/-- Sew adds edges where curvature would be above threshold. -/
-axiom sew_adds_good_edges (G : WeightedGraph V) (threshold : ℝ) :
-  ∀ u v, (SurgerySew G threshold).adj u v → ¬G.adj u v →
-    FormanRicci (SurgerySew G threshold) u v ≥ threshold
-
 /-! ### 3. Combined Surgery Operator -/
 
 /-- **Full Surgery**: Cut then Sew.

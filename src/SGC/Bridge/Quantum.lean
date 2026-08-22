@@ -138,11 +138,6 @@ def embedClassical (pi_dist : V → ℝ) (s : ClassicalState V) :
     map_add' := fun u v => by ext x; simp [mul_add]
     map_smul' := fun c v => by ext x; simp [mul_comm, mul_assoc] }
 
-/-- The embedding of a classical state is a valid quantum state. -/
-axiom embedClassical_isDensityMatrix (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (s : ClassicalState V) :
-    IsDensityMatrix pi_dist (embedClassical pi_dist s)
-
 /-- Convert a classical partition to a code subspace projector.
     Each partition block becomes a basis vector in the code subspace. -/
 axiom partitionToCodeSubspace (pi_dist : V → ℝ) (P : Partition V) :
@@ -277,10 +272,10 @@ theorem adjoint_defect_orthogonal (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dis
   -- The adjoint of P E P using composition rule
   have h_comp1 : adjoint_pi pi_dist (E ∘ₗ proj) =
       (adjoint_pi pi_dist proj) ∘ₗ (adjoint_pi pi_dist E) :=
-    SGC.Axioms.GeometryGeneral.adjoint_pi_comp pi_dist E proj
+    SGC.Axioms.GeometryGeneral.adjoint_pi_comp pi_dist hπ E proj
   have h_comp2 : adjoint_pi pi_dist (proj ∘ₗ E ∘ₗ proj) =
       (adjoint_pi pi_dist (E ∘ₗ proj)) ∘ₗ (adjoint_pi pi_dist proj) :=
-    SGC.Axioms.GeometryGeneral.adjoint_pi_comp pi_dist proj (E ∘ₗ proj)
+    SGC.Axioms.GeometryGeneral.adjoint_pi_comp pi_dist hπ proj (E ∘ₗ proj)
   -- Substitute P† = P
   simp only [h_P_sa] at h_comp1 h_comp2
   -- (P E P)† = (E P)† ∘ P = (P ∘ E†) ∘ P = P ∘ E† ∘ P
@@ -296,12 +291,13 @@ theorem adjoint_defect_orthogonal (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dis
     This is standard: ⟨E†E ψ, ψ⟩ = ⟨Eψ, Eψ⟩ = ‖Eψ‖².
 
     **PROVEN** from adjoint_pi_spec: ⟨A†u, v⟩ = ⟨u, Av⟩, setting u = Eψ, v = ψ. -/
-theorem inner_adjoint_self (pi_dist : V → ℝ) (E : (V → ℂ) →ₗ[ℂ] (V → ℂ)) (ψ : V → ℂ) :
+theorem inner_adjoint_self (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (E : (V → ℂ) →ₗ[ℂ] (V → ℂ)) (ψ : V → ℂ) :
     SGC.Axioms.GeometryGeneral.inner_pi pi_dist (adjoint_pi pi_dist E (E ψ)) ψ =
     SGC.Axioms.GeometryGeneral.inner_pi pi_dist (E ψ) (E ψ) := by
   -- Use adjoint_pi_spec: ⟨A†u, v⟩ = ⟨u, Av⟩
   -- With A = E, u = Eψ, v = ψ: ⟨E†(Eψ), ψ⟩ = ⟨Eψ, Eψ⟩
-  exact SGC.Axioms.GeometryGeneral.adjoint_pi_spec pi_dist E (E ψ) ψ
+  exact SGC.Axioms.GeometryGeneral.adjoint_pi_spec pi_dist hπ E (E ψ) ψ
 
 /-- **THEOREM** (was axiom): An operator is zero iff its norm squared is zero on all inputs.
     More precisely: E = 0 ↔ ∀ ψ, ⟨Eψ, Eψ⟩ = 0.
@@ -443,7 +439,7 @@ theorem KL_gives_norm_sq_proportional (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi
     rw [codeSubspace_proj_selfAdjoint pi_dist hπ P (adjoint_pi pi_dist E (E ψ)) ψ]
     rw [h_codeword]
   -- By inner_adjoint_self: ⟨E† E ψ, ψ⟩ = ⟨Eψ, Eψ⟩
-  have h_adj_self := inner_adjoint_self pi_dist E ψ
+  have h_adj_self := inner_adjoint_self pi_dist hπ E ψ
   -- Chain: ⟨P E† E ψ, ψ⟩ = ⟨E† E ψ, ψ⟩ = ⟨Eψ, Eψ⟩ = α⟨ψ, ψ⟩
   calc SGC.Axioms.GeometryGeneral.inner_pi pi_dist (E ψ) (E ψ)
     = SGC.Axioms.GeometryGeneral.inner_pi pi_dist (adjoint_pi pi_dist E (E ψ)) ψ := h_adj_self.symm
@@ -784,8 +780,8 @@ theorem knill_laflamme_implies_lumpability (pi_dist : V → ℝ) (hπ : ∀ v, 0
           (adjoint_pi pi_dist (complexifyDefect pi_dist hπ L P) ∘ₗ
            complexifyDefect pi_dist hπ L P) := by
         unfold SGC.Axioms.GeometryGeneral.IsSelfAdjoint_pi
-        rw [SGC.Axioms.GeometryGeneral.adjoint_pi_comp]
-        rw [SGC.Axioms.GeometryGeneral.adjoint_pi_involutive]
+        rw [SGC.Axioms.GeometryGeneral.adjoint_pi_comp pi_dist hπ]
+        rw [SGC.Axioms.GeometryGeneral.adjoint_pi_involutive pi_dist hπ]
       -- Extract the KL condition in the right form
       have hKL_form : ∀ f, (partitionToCodeSubspace pi_dist P).proj
           ((adjoint_pi pi_dist (complexifyDefect pi_dist hπ L P))
@@ -828,17 +824,6 @@ theorem knill_laflamme_iff_lumpability (pi_dist : V → ℝ) (hπ : ∀ v, 0 < p
 
 For approximate lumpability, we get approximate QEC with error bounds. -/
 
-/-- The defect norm in classical lumpability bounds the trace distance error
-    in the quantum channel simulation. -/
-axiom approximate_qec_bound (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (L : Matrix V V ℝ) (P : Partition V) (t : ℝ) (ht : 0 ≤ t) :
-    let ε := opNorm_pi pi_dist hπ (DefectOperator L P pi_dist hπ)
-    let code := partitionToCodeSubspace pi_dist P
-    ∀ (ρ : (V → ℂ) →ₗ[ℂ] (V → ℂ)) (hρ : IsDensityMatrix pi_dist ρ),
-      traceDistance_pi pi_dist
-        (code.proj ∘ₗ ρ ∘ₗ code.proj)
-        ρ ≤ ε * t
-
 /-! ## Quantum Validity Horizon
 
 The validity horizon bounds how long coarse-grained dynamics remain accurate.
@@ -849,15 +834,6 @@ def quantumValidityHorizon (pi_dist : V → ℝ) (ℒ : Lindbladian V pi_dist)
     (code : CodeSubspace V pi_dist) (δ : ℝ) : ℝ :=
   sInf { t : ℝ | t > 0 ∧ ∀ (ρ : (V → ℂ) →ₗ[ℂ] (V → ℂ)) (hρ : IsDensityMatrix pi_dist ρ),
     traceDistance_pi pi_dist (code.proj ∘ₗ ρ ∘ₗ code.proj) ρ > δ }
-
-/-- **Quantum Validity Horizon Theorem**:
-    The validity horizon is bounded in terms of the spectral gap and code quality. -/
-axiom quantum_validity_horizon_bound (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (L : Matrix V V ℝ) (P : Partition V) (δ : ℝ) (hδ : 0 < δ) :
-    let ε := opNorm_pi pi_dist hπ (DefectOperator L P pi_dist hπ)
-    let code := partitionToCodeSubspace pi_dist P
-    ε > 0 → ∃ (ℒ : Lindbladian V pi_dist),
-      quantumValidityHorizon pi_dist ℒ code δ ≥ δ / ε
 
 end Quantum
 end Bridge

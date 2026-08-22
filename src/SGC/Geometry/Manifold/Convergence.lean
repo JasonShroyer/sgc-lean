@@ -246,16 +246,6 @@ This is a substantial but well-defined project for future contributors. -/
     **Status**: Axiomatized — accepting this enables verified downstream consequences -/
 axiom manifold_hypothesis (d : ℕ) (Δ : LaplaceBeltrami d) : PointwiseConvergence Δ
 
-/-- **Spectral Convergence** (Axiom):
-    
-    Eigenvalues of the graph Laplacian converge: λₖ(Lε) → λₖ(Δ).
-    
-    This ensures spectral gap estimates transfer between scales.
-    
-    **Proof Path**: Follows from Mosco convergence via Kuwae-Shioya (2003) -/
-axiom spectral_convergence_axiom (d : ℕ) (Δ : LaplaceBeltrami d) (k : ℕ) :
-    ∀ δ > 0, ∃ (ε₀ : ℝ) (N₀ : ℕ), ε₀ > 0 ∧ N₀ > 0
-
 /-! ### 8. Verified Consequences
 
 Given the axiom, these derivations ARE machine-checked. -/

@@ -142,16 +142,6 @@ def triangles (K : AbstractSimplicialComplex V) : Set (Simplex V) :=
 def IsPure (K : AbstractSimplicialComplex V) (n : ℕ) : Prop :=
   ∀ σ ∈ K.simplices, (∀ τ ∈ K.simplices, ¬σ.IsProperFace τ) → σ.dimension = n
 
-/-- The **Euler characteristic** χ = Σ (-1)^k f_k where f_k = # of k-simplices.
-
-    Structural definition: sum over all simplices σ of (-1)^(dim σ).
-    This avoids grouping by dimension while computing the same quantity.
-
-    **Axiomatized**: The computation requires converting the finite set to a Finset,
-    which depends on choice. We axiomatize the characteristic directly. -/
-axiom eulerCharacteristic [Fintype V] (K : AbstractSimplicialComplex V)
-    (hfin : Set.Finite K.simplices) : ℤ
-
 /-- A complex is **connected** if any two vertices are linked by edges. -/
 def IsConnected (K : AbstractSimplicialComplex V) : Prop :=
   ∀ u, u ∈ K.vertices → ∀ v, v ∈ K.vertices →
@@ -160,23 +150,6 @@ def IsConnected (K : AbstractSimplicialComplex V) : Prop :=
 end AbstractSimplicialComplex
 
 /-! ### 3. Constructors -/
-
-/-- Build a simplicial complex from a graph (1-skeleton).
-
-    Every edge {u,v} becomes a 1-simplex, with vertices as 0-simplices.
-
-    **Axiomatized**: Full construction requires careful face closure. -/
-axiom complexFromGraph {V : Type*} [DecidableEq V] [Fintype V]
-    (adj : V → V → Prop) [DecidableRel adj]
-    (adj_symm : ∀ u v, adj u v → adj v u)
-    (adj_irrefl : ∀ v, ¬adj v v) : AbstractSimplicialComplex V
-
-/-- Build a simplicial complex from triangulation data.
-
-    **Axiomatized**: Full construction requires enumerating all faces. -/
-axiom complexFromTriangles {V : Type*} [DecidableEq V]
-    (triangles : Set (Finset V))
-    (h_card : ∀ t ∈ triangles, Finset.card t = 3) : AbstractSimplicialComplex V
 
 /-! ### 4. Summary
 

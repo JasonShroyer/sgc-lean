@@ -139,12 +139,6 @@ structure FloquetGap where
 def MonodromyPropagator (M : MonodromyOperator V) (n : ℕ) (f : V → ℝ) : V → ℝ :=
   M.matrix ^ n *ᵥ f
 
-axiom floquet_decay_bound (M : MonodromyOperator V) (γ_F : FloquetGap)
-    (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) :
-    ∃ C : ℝ, C > 0 ∧ ∀ (n : ℕ) (f : V → ℝ),
-        norm_pi pi_dist (MonodromyPropagator M n f) ≤
-        C * Real.exp (-γ_F.gap * (n * M.period)) * norm_pi pi_dist f
-
 /-! ## Section 5: The Linearity Ratio -/
 
 /-- The **linearity ratio**: γ_linear / γ_F.

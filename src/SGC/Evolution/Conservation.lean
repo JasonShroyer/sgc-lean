@@ -59,23 +59,6 @@ variable {V : Type*} [Fintype V] [DecidableEq V] [Nonempty V]
     - b₁(G) = |E| - |V| + b₀(G)     (first Betti number) -/
 axiom BettiNumber (G : WeightedGraph V) (k : ℕ) : ℕ
 
-/-- b₀ counts connected components. -/
-axiom betti_zero_components (G : WeightedGraph V) :
-  BettiNumber G 0 ≥ 1
-
-/-- b₀ = 1 iff graph is connected. -/
-axiom betti_zero_connected (G : WeightedGraph V) :
-  BettiNumber G 0 = 1 ↔ ∀ u v : V, ∃ path : List V, path.head? = some u ∧ path.getLast? = some v
-
-/-- Higher Betti numbers are zero for graphs (1-complexes). -/
-axiom betti_higher_zero (G : WeightedGraph V) (k : ℕ) (hk : k ≥ 2) :
-  BettiNumber G k = 0
-
-/-- Euler characteristic: χ = b₀ - b₁ + b₂ - ... = V - E for graphs. -/
-axiom euler_characteristic (G : WeightedGraph V) :
-  (BettiNumber G 0 : ℤ) - (BettiNumber G 1 : ℤ) =
-    (Fintype.card V : ℤ) - (edgeCount G : ℤ)
-
 /-! ### 2. Safe Surgery Predicates -/
 
 /-- **Connected Surgery**: Surgery preserves connectedness (b₀ = 1). -/
@@ -115,17 +98,6 @@ def IsIdentityPreservingSurgery (G G' : WeightedGraph V) : Prop :=
     **Note**: This is a constrained version of SurgeryCut. -/
 axiom SafeSurgeryCut (G : WeightedGraph V) (threshold : ℝ) : WeightedGraph V
 
-/-- Safe cut produces safe surgery. -/
-axiom safe_cut_is_safe (G : WeightedGraph V) (threshold : ℝ) :
-  IsSafeSurgery G (SafeSurgeryCut G threshold)
-
-/-- Safe cut still removes high-stress non-bridge edges. -/
-axiom safe_cut_removes_stressed (G : WeightedGraph V) (threshold : ℝ) :
-  ∀ u v, G.adj u v → FormanRicci G u v < threshold →
-    -- If removing (u,v) keeps the graph connected, it's removed
-    (BettiNumber G 0 = BettiNumber (SurgeryCut G threshold) 0) →
-    ¬(SafeSurgeryCut G threshold).adj u v
-
 /-- **Constrained Surgery**: Full surgery with topological constraints.
 
     S_safe(G, θ_cut, θ_sew) applies surgery only if it's safe.
@@ -134,10 +106,6 @@ axiom safe_cut_removes_stressed (G : WeightedGraph V) (threshold : ℝ) :
     **Axiomatized**: Requires decidability of IsSafeSurgery which depends on
     Betti number computation. -/
 axiom ConstrainedSurgery (G : WeightedGraph V) (cutThreshold sewThreshold : ℝ) : WeightedGraph V
-
-/-- Constrained surgery is safe by construction. -/
-axiom constrained_surgery_is_safe (G : WeightedGraph V) (cutTh sewTh : ℝ) :
-  IsSafeSurgery G (ConstrainedSurgery G cutTh sewTh) ∨ ConstrainedSurgery G cutTh sewTh = G
 
 /-! ### 4. The Markov Blanket as Topological Feature -/
 
@@ -195,31 +163,6 @@ def IsMinimalStructure (G : WeightedGraph V) : Prop :=
       weight_symm := G.weight_symm }
 
 /-! ### 6. Conservation Laws -/
-
-/-- **First Conservation Law**: Safe surgery can only decrease b₁.
-
-    You can destroy blankets (merge inside with outside) but
-    safe surgery prevents this from happening completely. -/
-axiom betti_one_non_increasing (G : WeightedGraph V) (threshold : ℝ) :
-  BettiNumber (SurgeryCut G threshold) 1 ≤ BettiNumber G 1
-
-/-- **Second Conservation Law**: Sewing can increase b₁.
-
-    Adding edges can create new cycles (new blankets).
-    This is how new organizational levels emerge. -/
-axiom betti_one_sewing (G : WeightedGraph V) (threshold : ℝ) :
-  BettiNumber G 1 ≤ BettiNumber (SurgerySew G threshold) 1
-
-/-- **Self-Preservation Theorem**: Systems with blankets that undergo
-    constrained surgery maintain their self-environment distinction.
-
-    This is the topological foundation of the Free Energy Principle:
-    systems that persist are those whose evolution preserves b₁ ≥ 1.
-
-    **Axiomatized**: The if-then-else requires decidability of IsSafeSurgery. -/
-axiom self_preservation (G : WeightedGraph V) (cutTh sewTh : ℝ)
-    (hblanket : HasMarkovBlanket G) :
-    HasMarkovBlanket (ConstrainedSurgery G cutTh sewTh)
 
 /-! ### 7. Summary
 

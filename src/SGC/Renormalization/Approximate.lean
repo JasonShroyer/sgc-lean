@@ -960,12 +960,6 @@ theorem NCD_slow_defect_bound (L_slow : Matrix V V ℝ) (P : Partition V) (pi_di
 
 /-! ### 7c. NCD Uniform Error Bound -/
 
-/-- **NCD Semigroup Bound**: The fast semigroup has bounded operator norm uniformly in time.
-    This follows from L_fast being a generator of a contraction semigroup. -/
-axiom NCD_semigroup_bound (L_fast : Matrix V V ℝ) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) :
-    ∃ B : ℝ, B ≥ 1 ∧ ∀ t : ℝ, 0 ≤ t →
-      opNorm_pi pi_dist hπ (matrixToLinearMap (HeatKernel L_fast t)) ≤ B
-
 /-- **NCD Integral Bound** (Generalized): The key integral bound for uniform-in-time error control.
 
     For NCD systems, the Duhamel integral takes the form:

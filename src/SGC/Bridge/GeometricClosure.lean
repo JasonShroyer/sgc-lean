@@ -201,16 +201,6 @@ axiom exponential_decay_from_convexity (L : Matrix V V ℝ) (rho : ℝ) (h_rho :
     (p₀ pi_stat : V → ℝ) (t : ℝ) (ht : t ≥ 0) :
     EnergyFunctional L p₀ pi_stat t ≤ EnergyFunctional L p₀ pi_stat 0 * Real.exp (-2 * rho * t)
 
-/-- **Spectral Gap from Ricci Bound**: Positive Ricci curvature implies
-    a positive spectral gap.
-
-    Ric ≥ rho > 0 ⟹ gap ≥ 2*rho
-
-    where gap is the spectral gap of the generator L. -/
-axiom spectral_gap_from_ricci (L : Matrix V V ℝ) (rho : ℝ)
-    (h_rho_pos : rho > 0) (h_rho_bound : RicciCurvatureBound L rho) :
-    ∃ gap > 0, gap ≥ 2 * rho
-
 /-! ## 5. Defect Bound from Ricci Curvature
 
 The key result: positive Ricci curvature implies bounded defect. -/
@@ -322,22 +312,6 @@ theorem geometric_implies_first_order (L : Matrix V V ℝ) (P : Partition V)
 
 The Ricci constant ρ appears in multiple equivalent formulations. -/
 
-/-- **Geometric Uncertainty Principle**: The precision of the effective theory
-    is bounded by the inverse Ricci curvature.
-
-    ‖D‖ · tau_mix ≥ C
-
-    where tau_mix ~ 1/(2*rho) is the mixing time. This is analogous to dx*dp ≥ hbar.
-
-    **Physical Meaning**: You cannot have both a precise coarse-graining (small ‖D‖)
-    AND slow dynamics (large tau_mix). The geometry sets a fundamental trade-off. -/
-axiom geometric_uncertainty_principle (L : Matrix V V ℝ) (P : Partition V)
-    (pi_dist : V → ℝ) (hpi : ∀ v, 0 < pi_dist v)
-    (rho : ℝ) (h_rho_pos : rho > 0) (h_rho_bound : RicciCurvatureBound L rho) :
-    ∃ C > 0, ∀ tau_mix > 0,
-      (tau_mix ≥ 1 / (2 * rho)) →
-      opNorm_pi pi_dist hpi (DefectOperator L P pi_dist hpi) * tau_mix ≥ C
-
 /-! ## Summary: The Second-Order Story
 
 The upgrade from first-order to second-order is:
@@ -437,27 +411,6 @@ The Gamma operator's π-weighted sum equals the Dirichlet form. -/
 def Gamma_pi (L : Matrix V V ℝ) (pi_dist : V → ℝ) (f : V → ℝ) : ℝ :=
   ∑ x, pi_dist x * Gamma L f f x
 
-/-- **Gamma-Dirichlet Connection**: The fundamental identity.
-
-    Σ_x π(x) Γ(f,f)(x) = -⟨f, Lf⟩_π
-
-    For generators with L*π = 0 (detailed balance), the RHS equals DirichletForm(f).
-
-    **Proof Idea**: Expand Γ(f,f) = (1/2)(L(f²) - 2f·Lf), integrate against π,
-    use that Σ π(x) (Lf)(x) = 0 for probability-preserving generators.
-
-    **Physical Meaning**: The total "gradient energy" (Gamma) equals the
-    energy dissipation rate (Dirichlet form). -/
-axiom Gamma_eq_DirichletForm (L : Matrix V V ℝ) (pi_dist : V → ℝ)
-    (h_stationary : Matrix.vecMul pi_dist L = 0)
-    (hπ_pos : ∀ v, 0 < pi_dist v) (f : V → ℝ) :
-    Gamma_pi L pi_dist f = -DirichletForm L pi_dist f
-
-/-- **Gamma is non-negative**: Γ(f,f) ≥ 0 pointwise for valid generators. -/
-axiom Gamma_nonneg (L : Matrix V V ℝ) (f : V → ℝ) (v : V)
-    (hL_valid : ∀ i j, i ≠ j → L i j ≥ 0) :
-    Gamma L f f v ≥ 0
-
 /-! ### 8.3 Variance Derivative (Constructive!)
 
 Unlike the entropy derivative (which is an axiom), the variance derivative
@@ -505,22 +458,6 @@ structure VarianceStabilityInequality (L : Matrix V V ℝ) (pi_dist : V → ℝ)
 /-- **π-weighted sum of Γ₂**: Integrate Γ₂(f,f) against π. -/
 def Gamma2_pi (L : Matrix V V ℝ) (pi_dist : V → ℝ) (f : V → ℝ) : ℝ :=
   ∑ x, pi_dist x * Gamma2 L f f x
-
-/-- **Bochner Identity** (Key to the proof):
-    The derivative of DirichletForm along heat flow equals -2 times the π-weighted Γ₂.
-
-    d/dt DirichletForm(f_t) = -2 Σ_x π(x) Γ₂(f_t)(x)
-
-    This is the "engine" of the Bochner technique. It says that Γ₂ controls
-    how fast the Dirichlet form is decreasing.
-
-    **Physical Meaning**: Γ₂ measures the "acceleration" of energy dissipation. -/
-axiom DirichletForm_deriv_eq_Gamma2 (L : Matrix V V ℝ) (pi_dist : V → ℝ) (f : V → ℝ)
-    (h_stationary : Matrix.vecMul pi_dist L = 0)
-    (hπ_pos : ∀ v, 0 < pi_dist v) :
-    -- The derivative of DirichletForm(e^{tL}f) at t=0 equals -2 Gamma2_pi
-    deriv (fun t => DirichletForm L pi_dist (Spectral.HeatKernel L t *ᵥ f)) 0 =
-    -2 * Gamma2_pi L pi_dist f
 
 /-- **Spectral gap from integrated curvature bound** (The Limiting Argument).
 
@@ -743,20 +680,6 @@ lemma ChiSquared_eq_Variance (pi_dist : V → ℝ) (f : V → ℝ)
   -- Step 3: Show Σ π f² = VarianceEnergy (for centered f)
   rw [VarianceEnergy_of_centered pi_dist f hf_centered]
 
-/-- **Linear Bridge Lemma**: Entropy is bounded by Variance near equilibrium.
-
-    For p close to π (specifically p = π(1 + εf) with small ε):
-    D(p ‖ π) ≤ (1/2) χ²(p ‖ π) + O(ε³)
-
-    **Impact**: Variance decay results imply entropy decay in the linear regime.
-    This validates thermodynamic predictions for systems operating
-    near their stationary distributions. -/
-axiom RelativeEntropy_bounded_by_ChiSquared (p pi_dist : V → ℝ)
-    (hπ_pos : ∀ v, 0 < pi_dist v)
-    (hp_pos : ∀ v, 0 ≤ p v)
-    (hp_sum : ∑ v, p v = 1) :
-    (RelativeEntropy p pi_dist).toReal ≤ (1/2) * ChiSquared p pi_dist
-
 end VarianceBakryEmery
 
 /-! ## 9. Tensorization of Ricci Curvature Bounds
@@ -838,17 +761,6 @@ def GammaProduct (L_A : Matrix V V ℝ) (L_B : Matrix W W ℝ)
            f (v, w) * ((L_A ⊗ₛ L_B) h) (v, w) -
            h (v, w) * ((L_A ⊗ₛ L_B) f) (v, w))
 
-/-- **Γ Additivity on Tensor Products**: The fundamental decomposition.
-
-    Γ_{A×B}(f⊗g, f⊗g) = Γ_A(f,f) ⊗ g² + f² ⊗ Γ_B(g,g)
-
-    This shows that the "energy" of a tensor product observable decomposes
-    into contributions from each subsystem. -/
-axiom Gamma_tensorProduct_additivity (L_A : Matrix V V ℝ) (L_B : Matrix W W ℝ)
-    (f : V → ℝ) (g : W → ℝ) (p : V × W) :
-    GammaProduct L_A L_B (f ⊗ₜ g) (f ⊗ₜ g) p =
-    ((GammaSq L_A f) ⊗ₜ (fun w => (g w)^2)) p + ((fun v => (f v)^2) ⊗ₜ (GammaSq L_B g)) p
-
 /-! ### 8.4 Γ₂ on Product Space -/
 
 /-- **Gamma2 on Product Space**: The iterated carré du champ for the product generator. -/
@@ -862,19 +774,6 @@ def Gamma2Product (L_A : Matrix V V ℝ) (L_B : Matrix W W ℝ)
 def Gamma2ProductSq (L_A : Matrix V V ℝ) (L_B : Matrix W W ℝ) (f : V × W → ℝ) :
     V × W → ℝ :=
   Gamma2Product L_A L_B f f
-
-/-- **Γ₂ Additivity on Tensor Products**: The curvature decomposes.
-
-    Γ₂_{A×B}(f⊗g) = Γ₂_A(f) ⊗ g² + f² ⊗ Γ₂_B(g) + 2·Γ_A(f) ⊗ Γ_B(g)
-
-    The cross-term 2·Γ_A(f)⊗Γ_B(g) is always ≥ 0, which is why the
-    minimum curvature bound is achieved. -/
-axiom Gamma2_tensorProduct_additivity (L_A : Matrix V V ℝ) (L_B : Matrix W W ℝ)
-    (f : V → ℝ) (g : W → ℝ) (p : V × W) :
-    Gamma2ProductSq L_A L_B (f ⊗ₜ g) p =
-    ((Gamma2Sq L_A f) ⊗ₜ (fun w => (g w)^2)) p +
-    ((fun v => (f v)^2) ⊗ₜ (Gamma2Sq L_B g)) p +
-    2 * GammaSq L_A f p.1 * GammaSq L_B g p.2
 
 /-! ### 8.5 Ricci Curvature Bound on Product Space -/
 

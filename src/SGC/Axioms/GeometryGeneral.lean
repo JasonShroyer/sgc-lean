@@ -70,21 +70,31 @@ observables must be self-adjoint (A† = A).
     We axiomatize the construction; the defining property is `adjoint_pi_spec`. -/
 axiom adjoint_pi (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)
 
-/-- Defining property of the adjoint: ⟨A† u, v⟩_π = ⟨u, A v⟩_π. -/
-axiom adjoint_pi_spec (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) (u v : V → 𝕜) :
+/-- Defining property of the adjoint: ⟨A† u, v⟩_π = ⟨u, A v⟩_π.
+
+    **SOUNDNESS REPAIR (2026-08-22)**: the positivity hypothesis `hπ` is
+    REQUIRED. The unhypothesized version is false: for degenerate `π`
+    (e.g. `π = (1,0)` on `Fin 2`) no adjoint can satisfy it, and `False`
+    was mechanically derived from the old axiom
+    (see `docs/axiom-discharge-campaign.md`, soundness section). With
+    `hπ` the weighted adjoint `D_π⁻¹ A* D_π` is a model, so the axiom
+    family is satisfiable. Full definitional discharge is the recorded
+    next step. -/
+axiom adjoint_pi_spec (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) (u v : V → 𝕜) :
     inner_pi pi_dist (adjoint_pi pi_dist A u) v = inner_pi pi_dist u (A v)
 
-/-- The adjoint is an involution: (A†)† = A. -/
-axiom adjoint_pi_involutive (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
+/-- The adjoint is an involution: (A†)† = A. Requires positive `π`
+    (soundness repair 2026-08-22; see `adjoint_pi_spec`). -/
+axiom adjoint_pi_involutive (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
     adjoint_pi pi_dist (adjoint_pi pi_dist A) = A
 
-/-- The adjoint of a composition: (AB)† = B†A†. -/
-axiom adjoint_pi_comp (pi_dist : V → ℝ) (A B : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
+/-- The adjoint of a composition: (AB)† = B†A†. Requires positive `π`
+    (soundness repair 2026-08-22; see `adjoint_pi_spec`). -/
+axiom adjoint_pi_comp (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+    (A B : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
     adjoint_pi pi_dist (A ∘ₗ B) = adjoint_pi pi_dist B ∘ₗ adjoint_pi pi_dist A
-
-/-- The adjoint of the identity is the identity. -/
-axiom adjoint_pi_id (pi_dist : V → ℝ) :
-    adjoint_pi pi_dist (LinearMap.id : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) = LinearMap.id
 
 /-- The adjoint of zero is zero. -/
 axiom adjoint_pi_zero (pi_dist : V → ℝ) :
@@ -96,11 +106,6 @@ For quantum applications, we need operators that are self-adjoint with respect t
 the weighted Hermitian inner product. Over ℂ, this corresponds to Hermitian matrices;
 over ℝ, this reduces to symmetric matrices.
 -/
-
-/-- The weighted inner product is non-degenerate: if ⟨x, y⟩ = 0 for all y, then x = 0.
-    This holds when all weights π(v) > 0. -/
-axiom inner_pi_nondegenerate (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v) (x : V → 𝕜) :
-    (∀ y, inner_pi pi_dist x y = 0) → x = 0
 
 /-- Two operators are equal if they produce equal inner products for all vectors.
     Follows from non-degeneracy: if ⟨(A-B)u, v⟩ = 0 for all u,v, then A = B. -/
@@ -120,13 +125,13 @@ lemma isSelfAdjoint_pi_iff (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     IsSelfAdjoint_pi pi_dist A ↔ ∀ u v, inner_pi pi_dist (A u) v = inner_pi pi_dist u (A v) := by
   constructor
   · intro hA u v
-    rw [← adjoint_pi_spec pi_dist A u v, hA]
+    rw [← adjoint_pi_spec pi_dist hπ A u v, hA]
   · intro h
     -- Show A† = A using linearMap_ext_inner
     apply linearMap_ext_inner pi_dist hπ
     intro u v
     -- ⟨A†u, v⟩ = ⟨u, Av⟩ (by adjoint_pi_spec) = ⟨Au, v⟩ (by hypothesis h)
-    rw [adjoint_pi_spec, h]
+    rw [adjoint_pi_spec pi_dist hπ, h]
 
 /-- An operator A is positive w.r.t. the weighted inner product if ⟨Au, u⟩ ≥ 0 for all u.
     Combined with self-adjointness, this gives a positive semidefinite operator. -/
@@ -179,10 +184,6 @@ axiom traceNorm_pi (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → �
 axiom traceNorm_pi_nonneg (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
     0 ≤ traceNorm_pi pi_dist A
 
-/-- Trace norm of zero is zero. -/
-axiom traceNorm_pi_zero (pi_dist : V → ℝ) :
-    traceNorm_pi pi_dist (0 : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) = 0
-
 /-- Triangle inequality for trace norm. -/
 axiom traceNorm_pi_add (pi_dist : V → ℝ) (A B : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
     traceNorm_pi pi_dist (A + B) ≤ traceNorm_pi pi_dist A + traceNorm_pi pi_dist B
@@ -223,11 +224,6 @@ lemma traceDistance_pi_triangle (pi_dist : V → ℝ) (ρ σ τ : (V → 𝕜) �
         apply mul_le_mul_of_nonneg_left (traceNorm_pi_add _ _ _) (by norm_num : (0:ℝ) ≤ 1/2)
     _ = (1/2) * traceNorm_pi pi_dist (ρ - σ) + (1/2) * traceNorm_pi pi_dist (σ - τ) := by ring
 
-/-- Trace distance is bounded by 1 for density matrices. -/
-axiom traceDistance_pi_le_one (pi_dist : V → ℝ) (ρ σ : (V → 𝕜) →ₗ[𝕜] (V → 𝕜))
-    (hρ : IsDensityMatrix pi_dist ρ) (hσ : IsDensityMatrix pi_dist σ) :
-    traceDistance_pi pi_dist ρ σ ≤ 1
-
 /-! ## Fidelity
 
 Fidelity measures the closeness of quantum states. F(ρ,σ) = 1 iff ρ = σ.
@@ -236,27 +232,6 @@ Fidelity measures the closeness of quantum states. F(ρ,σ) = 1 iff ρ = σ.
 /-- The fidelity between density matrices: F(ρ,σ) = (Tr√(√ρ σ √ρ))².
     For pure states |ψ⟩⟨ψ| and |φ⟩⟨φ|, this equals |⟨ψ|φ⟩|². -/
 axiom fidelity_pi (pi_dist : V → ℝ) (ρ σ : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) : ℝ
-
-/-- Fidelity is between 0 and 1 for density matrices. -/
-axiom fidelity_pi_bounds (pi_dist : V → ℝ) (ρ σ : (V → 𝕜) →ₗ[𝕜] (V → 𝕜))
-    (hρ : IsDensityMatrix pi_dist ρ) (hσ : IsDensityMatrix pi_dist σ) :
-    0 ≤ fidelity_pi pi_dist ρ σ ∧ fidelity_pi pi_dist ρ σ ≤ 1
-
-/-- Fidelity is symmetric. -/
-axiom fidelity_pi_symm (pi_dist : V → ℝ) (ρ σ : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
-    fidelity_pi pi_dist ρ σ = fidelity_pi pi_dist σ ρ
-
-/-- Fidelity equals 1 iff the states are equal. -/
-axiom fidelity_pi_eq_one_iff (pi_dist : V → ℝ) (ρ σ : (V → 𝕜) →ₗ[𝕜] (V → 𝕜))
-    (hρ : IsDensityMatrix pi_dist ρ) (hσ : IsDensityMatrix pi_dist σ) :
-    fidelity_pi pi_dist ρ σ = 1 ↔ ρ = σ
-
-/-- Fuchs-van de Graaf inequality: relates trace distance and fidelity.
-    1 - √F(ρ,σ) ≤ D(ρ,σ) ≤ √(1 - F(ρ,σ)) -/
-axiom fuchs_van_de_graaf (pi_dist : V → ℝ) (ρ σ : (V → 𝕜) →ₗ[𝕜] (V → 𝕜))
-    (hρ : IsDensityMatrix pi_dist ρ) (hσ : IsDensityMatrix pi_dist σ) :
-    1 - Real.sqrt (fidelity_pi pi_dist ρ σ) ≤ traceDistance_pi pi_dist ρ σ ∧
-    traceDistance_pi pi_dist ρ σ ≤ Real.sqrt (1 - fidelity_pi pi_dist ρ σ)
 
 /-! ## Classical-Quantum Bridge
 
@@ -269,15 +244,6 @@ For diagonal (classical) density matrices, trace distance equals TV distance.
 def IsClassical_pi (pi_dist : V → ℝ) (ρ : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) : Prop :=
   ∀ x : V, ∀ u : V → 𝕜, ρ (fun y => if y = x then u x else 0) =
     fun y => if y = x then ρ u x else 0
-
-/-- For classical (diagonal) density matrices, trace distance equals total variation.
-    This is the key bridge lemma connecting quantum and classical information theory. -/
-axiom traceDistance_classical_eq_TV (pi_dist : V → ℝ) (ρ σ : (V → 𝕜) →ₗ[𝕜] (V → 𝕜))
-    (hρ_dm : IsDensityMatrix pi_dist ρ) (hσ_dm : IsDensityMatrix pi_dist σ)
-    (hρ_cl : IsClassical_pi pi_dist ρ) (hσ_cl : IsClassical_pi pi_dist σ) :
-    traceDistance_pi pi_dist ρ σ =
-      (1/2) * ∑ x, |RCLike.re (ρ (fun y => if y = x then 1 else 0) x) -
-                   RCLike.re (σ (fun y => if y = x then 1 else 0) x)|
 
 /-! ## Complex Specialization via WeightedSpace
 

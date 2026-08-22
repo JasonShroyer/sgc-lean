@@ -381,47 +381,11 @@ theorem subcritical_iff_not_critical (G : WeightedGraph V) :
     apply hncrit
     exact ⟨u, v, hadj, hsat⟩
 
-/-- **The Emergence Conjecture**: Geometric flow accumulates stress.
-
-    As the system evolves via Yamabe/Ricci flow on a fixed topology,
-    curvature stress accumulates until it exceeds the information cost
-    of breaking bonds. This is when **emergence** happens.
-
-    **Axiomatized**: Full proof requires coupling the flow equations
-    to the thermodynamic cost function. -/
-axiom emergence_conjecture (G : WeightedGraph V) (t : ℕ) :
-  let flow := surgeryFlow G 0 0  -- Trivial surgery (no cutting)
-  -- After sufficient time, the system becomes critical
-  ∃ T, ∀ t' ≥ T, IsCritical (flow t') ∨ IsSurgeryEquilibrium (flow t') 0 0
-
 end EmergencePhaseTransition
 
 /-! ### The Complete Engine -/
 
 section CompleteEngine
-
-/-- **The First Law of Topology**: Energy is conserved across surgery.
-
-    The Engine of Creation - the complete evolutionary cycle:
-    1. Thermodynamics drives Flow (L updates)
-    2. Flow creates Curvature (geometric stress)
-    3. Curvature accumulates Stress
-    4. Stress pays for Surgery (when > Cost)
-    5. Surgery changes Topology
-    6. New Topology resets Thermodynamics
-
-    ΔE_system = ΔE_Yamabe + Q_heat
-
-    The geometric relief (curvature smoothing) pays for the
-    entropy cost (information erasure).
-
-    **Axiomatized**: The full proof requires coupling thermodynamic
-    and geometric flow equations. -/
-axiom first_law_of_topology (G G' : WeightedGraph V) :
-  let ΔE_struct := StructuralEnergy G' - StructuralEnergy G
-  let ΔE_yamabe := totalFormanRicci G' - totalFormanRicci G
-  let Q_heat := SurgeryCost G G'
-  ΔE_struct = ΔE_yamabe + Q_heat
 
 end CompleteEngine
 

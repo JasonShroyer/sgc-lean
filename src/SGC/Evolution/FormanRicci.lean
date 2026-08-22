@@ -156,20 +156,6 @@ theorem forman_ricci_symm (G : WeightedGraph V) (u v : V) :
   · have h' : ¬G.adj v u := fun hvu => h (G.adj_symm v u hvu)
     simp [h, h']
 
-/-- Forman-Ricci identifies bottlenecks: high-degree endpoints → negative curvature.
-
-    **Axiomatized**: The full proof requires careful handling of Nat → ℝ coercions. -/
-axiom forman_ricci_bottleneck (G : WeightedGraph V) (u v : V) (h : G.adj u v)
-    (hdeg : G.degree u + G.degree v > 4) :
-    FormanRicci G u v < 0
-
-/-- Forman-Ricci identifies clusters: low-degree endpoints → positive curvature.
-
-    **Axiomatized**: The full proof requires careful handling of Nat → ℝ coercions. -/
-axiom forman_ricci_cluster (G : WeightedGraph V) (u v : V) (h : G.adj u v)
-    (hdeg : G.degree u + G.degree v < 4) :
-    FormanRicci G u v > 0
-
 /-! ### 4. Curvature Statistics -/
 
 /-- Total Forman-Ricci curvature of a graph.
@@ -179,16 +165,6 @@ axiom forman_ricci_cluster (G : WeightedGraph V) (u v : V) (h : G.adj u v)
     This is related to the Euler characteristic for simplicial complexes. -/
 noncomputable def totalFormanRicci (G : WeightedGraph V) : ℝ :=
   (1/2) * ∑ u : V, ∑ v : V, FormanRicci G u v
-
-/-- Minimum edge curvature (most stressed edge).
-
-    **Axiomatized**: Requires Nonempty V for inf'. -/
-axiom minFormanRicci (G : WeightedGraph V) : ℝ
-
-/-- Maximum edge curvature (most stable edge).
-
-    **Axiomatized**: Requires Nonempty V for sup'. -/
-axiom maxFormanRicci (G : WeightedGraph V) : ℝ
 
 /-! ### 5. Summary
 

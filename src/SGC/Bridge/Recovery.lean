@@ -84,24 +84,24 @@ def PetzRecoveryMap (pi_dist : V → ℝ)
   adjoint_pi pi_dist forward
 
 /-- The Petz map satisfies the adjoint property. -/
-theorem PetzRecoveryMap_spec (pi_dist : V → ℝ)
+theorem PetzRecoveryMap_spec (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (forward : (V → ℂ) →ₗ[ℂ] (V → ℂ)) (ρ σ : V → ℂ) :
     SGC.Axioms.GeometryGeneral.inner_pi pi_dist ((PetzRecoveryMap pi_dist forward) ρ) σ =
     SGC.Axioms.GeometryGeneral.inner_pi pi_dist ρ (forward σ) :=
-  adjoint_pi_spec (𝕜 := ℂ) pi_dist forward ρ σ
+  adjoint_pi_spec (𝕜 := ℂ) pi_dist hπ forward ρ σ
 
 /-- The Petz map is an involution: ℛ(ℛ(𝒩)) = 𝒩. -/
-theorem PetzRecoveryMap_involutive (pi_dist : V → ℝ)
+theorem PetzRecoveryMap_involutive (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (forward : (V → ℂ) →ₗ[ℂ] (V → ℂ)) :
     PetzRecoveryMap pi_dist (PetzRecoveryMap pi_dist forward) = forward :=
-  adjoint_pi_involutive pi_dist forward
+  adjoint_pi_involutive pi_dist hπ forward
 
 /-- Composition rule: ℛ(𝒩₁ ∘ 𝒩₂) = ℛ(𝒩₂) ∘ ℛ(𝒩₁). -/
-theorem PetzRecoveryMap_comp (pi_dist : V → ℝ)
+theorem PetzRecoveryMap_comp (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (N₁ N₂ : (V → ℂ) →ₗ[ℂ] (V → ℂ)) :
     PetzRecoveryMap pi_dist (N₁ ∘ₗ N₂) =
     PetzRecoveryMap pi_dist N₂ ∘ₗ PetzRecoveryMap pi_dist N₁ :=
-  adjoint_pi_comp pi_dist N₁ N₂
+  adjoint_pi_comp pi_dist hπ N₁ N₂
 
 /-! ## 2. Relative Entropy (KL Divergence)
 
@@ -134,11 +134,6 @@ theorem RelativeEntropy_self (p : V → ℝ) (hp : ∀ x, 0 < p x) :
   have hpx := hp x
   simp only [ne_of_gt hpx, ↓reduceIte, div_self (ne_of_gt hpx), Real.log_one, mul_zero,
              ENNReal.ofReal_zero]
-
-/-- D(p‖q) = 0 implies p = q. -/
-axiom RelativeEntropy_eq_zero_iff (p q : V → ℝ)
-    (hp : ∀ x, 0 < p x) (hq : ∀ x, 0 < q x) :
-    RelativeEntropy p q = 0 ↔ p = q
 
 /-! ## 3. Data Processing Inequality
 
@@ -188,21 +183,6 @@ theorem ClassicalFidelity_symm (p q : V → ℝ) :
   intro x _
   rw [mul_comm]
 
-/-- **Approximate Recovery Bound**: Recovery fidelity is bounded by entropy loss.
-
-    If D(p‖q) - D(Mp‖Mq) = ε (small entropy loss), then the Petz map achieves
-    F(ℛ(Mp), p) ≥ 1 - ε.
-
-    This is the classical version of the Fawzi-Renner bound.
-
-    Note: Uses `ENNReal.toReal` for the bound since ε is finite when supports are compatible. -/
-axiom ApproximateRecoveryBound (M : Matrix V V ℝ) (p q : V → ℝ)
-    (hM_stoch : ∀ y, ∑ x, M y x = 1) (hM_nonneg : ∀ y x, 0 ≤ M y x)
-    (hp : ∀ x, 0 < p x) (hq : ∀ x, 0 < q x) :
-    let ε := (RelativeEntropy p q - RelativeEntropy (applyChannel M p) (applyChannel M q)).toReal
-    ∃ (R : Matrix V V ℝ),
-      ClassicalFidelity (applyChannel R (applyChannel M p)) p ≥ 1 - 2 * Real.sqrt ε
-
 /-! ## 5. Connection to the Coherence Obstruction
 
 The Petz map resolves the paradox from CoherenceObstruction.lean:
@@ -235,7 +215,7 @@ theorem recovery_defect_selfadjoint (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_d
     IsSelfAdjoint_pi pi_dist
       (SGCRecoveryChannel pi_dist hπ L P ∘ₗ complexifyDefect pi_dist hπ L P) := by
   unfold IsSelfAdjoint_pi SGCRecoveryChannel PetzRecoveryMap
-  rw [adjoint_pi_comp, adjoint_pi_involutive]
+  rw [adjoint_pi_comp pi_dist hπ, adjoint_pi_involutive pi_dist hπ]
 
 /-! ## 6. Landauer's Principle: The Cost of Recovery
 

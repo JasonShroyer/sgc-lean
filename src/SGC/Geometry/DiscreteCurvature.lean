@@ -158,16 +158,6 @@ noncomputable def DiscreteScalarCurvature2D {V : Type*} [DecidableEq V] [Fintype
     (triangles_at_v : Finset (V × V)) : ℝ :=
   2 * π - angleSum g v triangles_at_v
 
-/-- **Solid angle** at vertex v in an n-simplex (generalization of interior angle).
-
-    For a tetrahedron with vertex v and opposite face (a,b,c), the solid angle
-    is the area of the spherical triangle on the unit sphere at v.
-
-    We axiomatize this for general n, as the explicit formula is complex. -/
-axiom solidAngle {V : Type*} [DecidableEq V] [Fintype V]
-    {K : SimplicialComplex V} (g : PLMetric V K) (v : V) (σ : Simplex V)
-    (hv : v ∈ σ.vertices) : ℝ
-
 /-- The total solid angle of the (n-1)-sphere: ω_n = 2π^(n/2) / Γ(n/2).
 
     For n=2 (circle): ω_2 = 2π
@@ -175,12 +165,6 @@ axiom solidAngle {V : Type*} [DecidableEq V] [Fintype V]
 
     We axiomatize this as the explicit formula requires the Gamma function. -/
 axiom totalSolidAngle (n : ℕ) : ℝ
-
-/-- The total solid angle of a circle is 2π. -/
-axiom totalSolidAngle_two : totalSolidAngle 2 = 2 * π
-
-/-- The total solid angle of a sphere is 4π. -/
-axiom totalSolidAngle_three : totalSolidAngle 3 = 4 * π
 
 /-- **Discrete Scalar Curvature** (general n-dimensions):
 
@@ -324,18 +308,6 @@ def DiscreteYamabeProblem {V : Type*} [DecidableEq V] [Fintype V]
     (K : SimplicialComplex V) (_g : PLMetric V K) : Prop :=
   ∃ _u : ConformalFactor V, ∃ _κ₀ : ℝ, True -- placeholder for constant curvature
 
-/-- **Yamabe Flow Long-Time Existence** (Luo 2004, Theorem 1.1):
-
-    The discrete Yamabe flow exists for all geometric scale λ ∈ [0, ∞).
-    Unlike smooth PDE flows, the discrete flow never develops singularities.
-
-    **Note**: λ is geometric/consolidation time, not dynamical time t.
-
-    **Axiomatized**: Luo, "Combinatorial Yamabe Flow on Surfaces" (2004) -/
-axiom yamabe_flow_exists_all_time {V : Type*} [DecidableEq V] [Fintype V]
-    (K : SimplicialComplex V) (g : PLMetric V K) (u₀ : ConformalFactor V) :
-    ∀ scale : ℝ, scale ≥ 0 → ∃ _u_scale : ConformalFactor V, True  -- solution at scale λ
-
 /-- **Yamabe Flow Convergence** (Luo 2004, Theorem 1.2):
 
     For closed surfaces with χ(K) ≤ 0, the normalized Yamabe flow converges
@@ -353,19 +325,6 @@ axiom yamabe_flow_convergence {V : Type*} [DecidableEq V] [Fintype V]
     (K : SimplicialComplex V) (g : PLMetric V K)
     (h_nonpositive_euler : True) : -- χ(K) ≤ 0
     DiscreteYamabeProblem K g
-
-/-- **Exponential Convergence Rate** (Luo 2004):
-
-    The curvature converges exponentially in geometric scale:
-    ‖κ(λ) - κ̄‖ ≤ C·e^{-r·λ}·‖κ(0) - κ̄‖
-    where r > 0 depends on the spectral gap of the Laplacian, and λ is geometric time.
-
-    **Note**: λ here is consolidation/learning time, not dynamical time t.
-
-    **Axiomatized**: Follows from the gradient flow structure. -/
-axiom yamabe_exponential_convergence {V : Type*} [DecidableEq V] [Fintype V]
-    (K : SimplicialComplex V) (g : PLMetric V K) :
-    ∃ (C rate : ℝ), C > 0 ∧ rate > 0 ∧ True  -- placeholder for exponential bound
 
 /-! ### 8. Summary: Pure Discrete Geometry
 

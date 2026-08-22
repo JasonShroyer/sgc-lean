@@ -150,15 +150,6 @@ theorem redundancy_monotonic (G₁ G₂ : WeightedGraph V)
   unfold redundancy_buffer
   omega
 
-/-- **Survival Theorem**: A system survives k surgery events if b₁ > k.
-
-    This gives a lower bound on the number of destructive events a system
-    can withstand while maintaining its Markov blanket.
-
-    Axiomatized: Full proof requires formalization of iterated surgery. -/
-axiom survival_bound (G : WeightedGraph V) (k : ℕ) (hk : BettiNumber G 1 > k) :
-    ∃ G' : WeightedGraph V, (∀ _i : Fin k, ∃ G_i : WeightedGraph V, IsCyclePreservingSurgery G_i G') ∧ HasMarkovBlanket G'
-
 /-! ### 5. Complexity-Persistence Tradeoff -/
 
 /-- **Maintenance Cost**: Higher b₁ requires more energy to maintain.
@@ -207,18 +198,6 @@ theorem persistence_cost_ratio_constant (G₁ G₂ : WeightedGraph V)
   field_simp
 
 /-! ### 6. Connection to Validity Horizon -/
-
-/-- **Topological Validity Horizon**: The validity horizon T* relates to persistence.
-
-    For systems where leakage defect ε scales with 1/b₁ (more cycles = better
-    self-model), the validity horizon T* = 1/ε scales with b₁.
-
-    This connects topological persistence to predictive validity:
-    more robust systems (high b₁) also have longer-valid effective theories. -/
-axiom defect_betti_scaling (G : WeightedGraph V) (L : Matrix V V ℝ)
-    (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (ε : ℝ) (hε : 0 < ε) :
-    ∃ C : ℝ, C > 0 ∧ ε * (BettiNumber G 1 : ℝ) ≤ C
 
 /-! ## 7. The Generalization Boundary Theorem
 
@@ -275,21 +254,6 @@ topologies (cycles) over curvature-singular ones (trees).
 -/
 
 /-! ### 7.1 Cycle Existence from b₁ -/
-
-/-- **Cycle Existence**: A graph with b₁ ≥ 1 contains at least one cycle.
-
-    This is the fundamental fact from algebraic topology:
-    b₁ = dim(H₁) = number of independent cycles.
-
-    For graphs: b₁ = |E| - |V| + b₀ (Euler characteristic).
-    b₁ ≥ 1 iff the graph has more edges than a spanning forest. -/
-axiom cycle_exists_from_betti (G : WeightedGraph V)
-    (hb : HasMarkovBlanket G) :
-    ∃ (cycle : List V), cycle.length ≥ 3 ∧
-      ∀ i, i + 1 < cycle.length →
-        match cycle[i]?, cycle[i+1]? with
-        | some u, some v => G.adj u v
-        | _, _ => True
 
 /-! ### 7.2 Cycle Induces Blanket Partition -/
 
