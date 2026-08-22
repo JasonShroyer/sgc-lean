@@ -421,6 +421,20 @@ import SGC.Bridge.ThreeArrows
 -- canonical and representative-free.
 import SGC.Renormalization.MeasureReentry
 
+-- The Kernel Horizon Theorem (2026-08-22, same-day continuation): the
+-- measure-reentry program's first genuine DYNAMIC statement, in physical
+-- (discrete-step) time. For a row-stochastic kernel T, the canonical
+-- coarse kernel T-hat = CoarseGenerator T P pi is stochastic
+-- (coarseKernel_isStochastic: the conditional exit average of a
+-- probability kernel is a probability kernel); all propagators are
+-- non-expansive in the Linfty operator norm; and the n-step closure error
+-- obeys ||T^n K - K T-hat^n|| <= n * ||C|| (kernel_closure_error_le) —
+-- linear in steps, rate constant EXACTLY one re-entry event. Corollaries:
+-- the tolerance-eta horizon contains every n with n*||C|| <= eta
+-- (inverse-defect horizon scaling as a theorem), and zero commutator
+-- gives eternal closure. Continuous-time bridge deliberately deferred.
+import SGC.Renormalization.KernelHorizon
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════
