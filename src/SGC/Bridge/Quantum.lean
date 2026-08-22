@@ -138,11 +138,6 @@ def embedClassical (pi_dist : V → ℝ) (s : ClassicalState V) :
     map_add' := fun u v => by ext x; simp [mul_add]
     map_smul' := fun c v => by ext x; simp [mul_comm, mul_assoc] }
 
-/-- The embedding of a classical state is a valid quantum state. -/
-axiom embedClassical_isDensityMatrix (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (s : ClassicalState V) :
-    IsDensityMatrix pi_dist (embedClassical pi_dist s)
-
 /-- Convert a classical partition to a code subspace projector.
     Each partition block becomes a basis vector in the code subspace. -/
 axiom partitionToCodeSubspace (pi_dist : V → ℝ) (P : Partition V) :
@@ -828,17 +823,6 @@ theorem knill_laflamme_iff_lumpability (pi_dist : V → ℝ) (hπ : ∀ v, 0 < p
 
 For approximate lumpability, we get approximate QEC with error bounds. -/
 
-/-- The defect norm in classical lumpability bounds the trace distance error
-    in the quantum channel simulation. -/
-axiom approximate_qec_bound (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (L : Matrix V V ℝ) (P : Partition V) (t : ℝ) (ht : 0 ≤ t) :
-    let ε := opNorm_pi pi_dist hπ (DefectOperator L P pi_dist hπ)
-    let code := partitionToCodeSubspace pi_dist P
-    ∀ (ρ : (V → ℂ) →ₗ[ℂ] (V → ℂ)) (hρ : IsDensityMatrix pi_dist ρ),
-      traceDistance_pi pi_dist
-        (code.proj ∘ₗ ρ ∘ₗ code.proj)
-        ρ ≤ ε * t
-
 /-! ## Quantum Validity Horizon
 
 The validity horizon bounds how long coarse-grained dynamics remain accurate.
@@ -849,15 +833,6 @@ def quantumValidityHorizon (pi_dist : V → ℝ) (ℒ : Lindbladian V pi_dist)
     (code : CodeSubspace V pi_dist) (δ : ℝ) : ℝ :=
   sInf { t : ℝ | t > 0 ∧ ∀ (ρ : (V → ℂ) →ₗ[ℂ] (V → ℂ)) (hρ : IsDensityMatrix pi_dist ρ),
     traceDistance_pi pi_dist (code.proj ∘ₗ ρ ∘ₗ code.proj) ρ > δ }
-
-/-- **Quantum Validity Horizon Theorem**:
-    The validity horizon is bounded in terms of the spectral gap and code quality. -/
-axiom quantum_validity_horizon_bound (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (L : Matrix V V ℝ) (P : Partition V) (δ : ℝ) (hδ : 0 < δ) :
-    let ε := opNorm_pi pi_dist hπ (DefectOperator L P pi_dist hπ)
-    let code := partitionToCodeSubspace pi_dist P
-    ε > 0 → ∃ (ℒ : Lindbladian V pi_dist),
-      quantumValidityHorizon pi_dist ℒ code δ ≥ δ / ε
 
 end Quantum
 end Bridge

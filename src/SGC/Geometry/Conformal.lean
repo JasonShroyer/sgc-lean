@@ -111,18 +111,6 @@ noncomputable def triangleEdges (r : CirclePacking V) (t : PackingTriangle V) : 
     **Axiomatized**: Full computation requires careful trigonometry. -/
 axiom CornerAngle (r : CirclePacking V) (t : PackingTriangle V) (corner : Fin 3) : ℝ
 
-/-- Corner angles are positive. -/
-axiom corner_angle_pos (r : CirclePacking V) (t : PackingTriangle V) (corner : Fin 3) :
-  0 < CornerAngle r t corner
-
-/-- Corner angles are less than π. -/
-axiom corner_angle_lt_pi (r : CirclePacking V) (t : PackingTriangle V) (corner : Fin 3) :
-  CornerAngle r t corner < Real.pi
-
-/-- Sum of angles in a triangle equals π. -/
-axiom triangle_angle_sum (r : CirclePacking V) (t : PackingTriangle V) :
-  CornerAngle r t 0 + CornerAngle r t 1 + CornerAngle r t 2 = Real.pi
-
 /-! ### 4. Discrete Curvature -/
 
 /-- A **Triangulation** specifies which triangles are in the complex. -/
@@ -193,14 +181,6 @@ def IsPlanar (T : Triangulation V) : Prop :=
 axiom KAT_existence (T : Triangulation V) (hplanar : IsPlanar T) :
   ∃ r : CirclePacking V, True -- Packing exists with prescribed combinatorics
 
-/-- **KAT Theorem** (Uniqueness up to Möbius):
-    The circle packing is unique up to Möbius transformations.
-
-    **Axiomatized**: Uniqueness follows from rigidity of packings. -/
-axiom KAT_uniqueness (T : Triangulation V) (hplanar : IsPlanar T)
-    (r₁ r₂ : CirclePacking V) :
-  ∃ (a b c d : ℝ), True -- Möbius transformation relating r₁ and r₂
-
 /-! ### 6. Curvature from Combinatorics -/
 
 /-- **Target Curvature**: The desired curvature at each vertex.
@@ -215,13 +195,6 @@ structure TargetCurvature (V : Type*) [Fintype V] where
 noncomputable def CurvatureError (r : CirclePacking V) (T : Triangulation V)
     (K_target : TargetCurvature V) : ℝ :=
   ∑ v : V, (DiscreteScalarCurvature r T v - K_target.target v)^2
-
-/-- **Flat Target**: Zero curvature everywhere (Euclidean).
-
-    Only achievable if χ = 0 (torus or Klein bottle).
-
-    **Axiomatized**: The Gauss-Bonnet constraint requires χ = 0. -/
-axiom flatTarget : TargetCurvature V
 
 /-! ### 7. Connection to SGC
 

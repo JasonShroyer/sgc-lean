@@ -67,17 +67,6 @@ def ThermodynamicLength (P : ParametricFamily n V)
   -- Simplified: discrete approximation with single step
   Real.sqrt (FisherQuadForm P (γ 0) (γ' 0))
 
-/-- **Thermodynamic Uncertainty Relation**:
-    The product of thermodynamic length and time bounds the entropy production.
-
-    L² · τ ≥ ΔS_irr
-
-    This is a consequence of the Cramér-Rao bound applied to thermodynamics. -/
-axiom thermodynamic_uncertainty (P : ParametricFamily n V)
-    (γ : ℝ → (Fin n → ℝ)) (γ' : ℝ → (Fin n → ℝ)) (τ : ℝ) (hτ : 0 < τ)
-    (ΔS_irr : ℝ) :
-    (ThermodynamicLength P γ γ')^2 * τ ≥ ΔS_irr
-
 /-! ### 2. Jarzynski Equality (Finite-Dimensional) -/
 
 /-- **Work** done on the system during a parameter change.
@@ -92,26 +81,6 @@ def thermodynamicWork (P : ParametricFamily n V) (θ Δθ : Fin n → ℝ) : ℝ
 
     For exponential families: ΔF = -log(Z(θ+Δθ)/Z(θ)) -/
 axiom freeEnergyDiff (P : ParametricFamily n V) (θ Δθ : Fin n → ℝ) : ℝ
-
-/-- **Jarzynski Equality** (finite-dimensional version):
-
-    ⟨e^{-W}⟩ = e^{-ΔF}
-
-    Or equivalently: ⟨W⟩ ≥ ΔF (second law)
-
-    This connects thermodynamic work to free energy via exponential averaging.
-    The equality holds for any driving protocol, not just quasi-static. -/
-axiom jarzynski_equality (P : ParametricFamily n V) (θ Δθ : Fin n → ℝ) :
-    thermodynamicWork P θ Δθ ≥ freeEnergyDiff P θ Δθ
-
-/-- **Crooks Fluctuation Theorem** connection:
-    The ratio of forward/reverse work distributions is exponential in work.
-
-    P_F(W) / P_R(-W) = e^{W - ΔF}
-
-    This is the detailed fluctuation theorem that implies Jarzynski. -/
-axiom crooks_fluctuation (P : ParametricFamily n V) (θ Δθ : Fin n → ℝ) (W : ℝ) :
-    True  -- Placeholder; full statement requires probability measures
 
 /-! ### 3. Fisher-Jarzynski Bridge -/
 
@@ -145,24 +114,6 @@ structure SpikeTrain where
     F_θ = ∫ (∂_θ log λ)² λ dt -/
 axiom FiringRateModel (n : ℕ) (V : Type*) [Fintype V] : ParametricFamily n V
 
-/-- **Spike Timing Precision**: The inverse of timing jitter variance.
-    σ_t² ≥ 1/F where F is the Fisher information about timing.
-
-    This is the neural Cramér-Rao bound. -/
-axiom spike_timing_precision (θ : Fin n → ℝ) :
-    ∃ σ_t : ℝ, σ_t^2 ≥ 1 / (∑ i, ∑ j, (FisherMatrix (FiringRateModel n V) θ) i j)
-
-/-- **STDP as Fisher-Orthogonal Learning**:
-    Spike-timing dependent plasticity (STDP) implements updates that are
-    approximately Fisher-orthogonal to consolidated spike patterns.
-
-    The STDP window function W(Δt) corresponds to the score function s(θ, spike). -/
-axiom STDP_Fisher_orthogonal {k : ℕ} (θ : Fin n → ℝ)
-    (consolidated : ConsolidatedSubspace n k) (Δθ_STDP : Fin n → ℝ) :
-    -- STDP updates preserve consolidated patterns approximately
-    LearningDefect (FiringRateModel n V) θ consolidated Δθ_STDP ≤
-      paramNormSq Δθ_STDP  -- Defect is at most O(‖Δθ‖²)
-
 /-! ### 5. Information Transfer in Neural Circuits -/
 
 /-- **Mutual Information Rate**: Information transmitted per spike.
@@ -173,17 +124,6 @@ axiom STDP_Fisher_orthogonal {k : ℕ} (θ : Fin n → ℝ)
 def mutualInfoRate (P : ParametricFamily n V) (θ : Fin n → ℝ) : ℝ :=
   -- Simplified: trace of log Fisher (proportional to mutual info)
   (1/2) * Real.log (∑ i, (FisherMatrix P θ) i i + 1)
-
-/-- **Efficient Coding Principle**: Neural systems maximize mutual information
-    subject to metabolic constraints.
-
-    max I(stimulus; response) subject to ⟨firing rate⟩ ≤ r_max
-
-    Solution: Fisher-optimal encoding where F_ii ∝ p(stimulus_i) -/
-axiom efficient_coding_principle (P : ParametricFamily n V) (θ : Fin n → ℝ)
-    (prior : Fin n → ℝ) (h_prior : ∀ i, 0 < prior i) :
-    -- Optimal encoding has Fisher proportional to prior
-    True  -- Full statement requires optimization framework
 
 /-! ## Part III: Unified Validity Horizon -/
 

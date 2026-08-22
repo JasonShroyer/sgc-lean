@@ -296,20 +296,6 @@ def FunctionalBlanketConstrainedUpdate
 
 /-! ### 9. Chentsov's Theorem Connection -/
 
-/-- **Chentsov's Theorem** (Axiom): The Fisher metric is the unique (up to scale)
-    Riemannian metric on statistical manifolds that is invariant under
-    sufficient statistics.
-
-    This is why the Information Gradient (natural gradient) is geometrically
-    privileged: it respects the intrinsic geometry of probability space.
-
-    **Consequence**: Learning systems that follow the information gradient
-    will find structural solutions faster than those following only the
-    energy gradient. -/
-axiom chentsov_uniqueness :
-  -- The Fisher metric is the unique invariant metric on statistical manifolds
-  True  -- Placeholder for the precise category-theoretic statement
-
 /-- **Corollary**: Natural gradient descent is geometrically optimal.
     It is the unique learning rule that respects the statistical manifold structure. -/
 theorem natural_gradient_geometric_optimality :

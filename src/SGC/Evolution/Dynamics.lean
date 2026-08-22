@@ -208,11 +208,6 @@ def minCriticalCurvature (G : WeightedGraph V) : ℝ :=
     **Axiomatized**: Full implementation requires decidable IsCritical. -/
 axiom SurgeryStep (s : EvolutionaryState V) : EvolutionaryState V
 
-/-- Surgery is idempotent when subcritical. -/
-axiom surgery_step_idempotent_subcritical (s : EvolutionaryState V)
-    (hsub : IsSubcritical s.G) :
-    SurgeryStep s = s
-
 /-! ### 4. The Evolution Loop -/
 
 /-- **Evolution Step**: One complete cycle of the hybrid system.
@@ -239,10 +234,6 @@ def EvolutionTrajectory (s₀ : EvolutionaryState V) (dt : ℝ) (hdt : 0 ≤ dt)
   | 0 => s₀
   | n + 1 => EvolutionStep (EvolutionTrajectory s₀ dt hdt n) dt hdt
 
-/-- Time advances monotonically along trajectory. -/
-axiom trajectory_time_monotone (s₀ : EvolutionaryState V) (dt : ℝ) (hdt : 0 ≤ dt) (n : ℕ) :
-    (EvolutionTrajectory s₀ dt hdt n).t ≤ (EvolutionTrajectory s₀ dt hdt (n + 1)).t
-
 /-! ### 5. Conservation Laws -/
 
 /-- **Probability Conservation**: Evolution preserves total probability mass.
@@ -256,18 +247,6 @@ theorem evolution_preserves_probability (s : EvolutionaryState V) (dt : ℝ) (hd
     ∑ v : V, (EvolutionStep s dt hdt).π v = 1 :=
   (EvolutionStep s dt hdt).π_sum
 
-/-- **Entropy Production**: Evolution increases entropy (second law).
-
-    This is the thermodynamic consistency condition:
-    S(t + dt) ≥ S(t) - (heat dissipated) / T
-
-    **Axiomatized**: Full proof requires detailed balance analysis. -/
-axiom evolution_entropy_production (s : EvolutionaryState V) (dt : ℝ) (hdt : 0 ≤ dt) :
-  let s' := EvolutionStep s dt hdt
-  -- Shannon entropy of the distribution
-  let H := fun π => -∑ v : V, π v * Real.log (π v)
-  H s'.π ≥ H s.π  -- Entropy doesn't decrease
-
 /-! ### 6. Equilibrium and Stability -/
 
 /-- **Evolutionary Equilibrium**: A state where neither flow nor surgery acts.
@@ -279,12 +258,6 @@ axiom evolution_entropy_production (s : EvolutionaryState V) (dt : ℝ) (hdt : 0
     This is the "attractor" of the hybrid dynamics. -/
 def IsEvolutionaryEquilibrium (s : EvolutionaryState V) : Prop :=
   s.π = StationaryDistribution s.G ∧ IsSubcritical s.G
-
-/-- Equilibrium is a fixed point of the evolution step. -/
-axiom equilibrium_is_fixed_point (s : EvolutionaryState V) (dt : ℝ) (hdt : 0 < dt)
-    (heq : IsEvolutionaryEquilibrium s) :
-    (EvolutionStep s dt (le_of_lt hdt)).G = s.G ∧
-    (EvolutionStep s dt (le_of_lt hdt)).π = StationaryDistribution s.G
 
 /-! ### 7. The Life Cycle Summary -/
 

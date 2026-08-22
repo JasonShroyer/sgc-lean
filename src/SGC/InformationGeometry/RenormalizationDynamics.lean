@@ -340,11 +340,6 @@ This is invariant to global scaling of F while preserving relative geometry.
     require eigenvalue computation which is beyond current Mathlib scope. -/
 axiom FisherOperatorNorm (F : Matrix (Fin n) (Fin n) ℝ) : ℝ
 
-/-- Operator norm is non-negative for PSD matrices. -/
-axiom FisherOperatorNorm_nonneg (F : Matrix (Fin n) (Fin n) ℝ)
-    (h_psd : ∀ v : Fin n → ℝ, 0 ≤ ∑ i, ∑ j, v i * F i j * v j) :
-    0 ≤ FisherOperatorNorm F
-
 /-- **Operator norm scales linearly**: ‖αF‖ = α·‖F‖ for α > 0.
     This is essential for the scale-invariance theorem to be non-vacuous.
     For symmetric PSD matrices, the operator norm equals the maximum eigenvalue,
@@ -366,23 +361,6 @@ axiom FisherOperatorNorm_smul (F : Matrix (Fin n) (Fin n) ℝ) (α : ℝ) (h_α 
 def FisherSpectralCriterionRel (F : Matrix (Fin n) (Fin n) ℝ) (v : Fin n → ℝ)
     (tau_rel : ℝ) : Prop :=
   v ≠ 0 ∧ FisherRayleighQuotient F v > tau_rel * FisherOperatorNorm F
-
-/-- **Scale Invariance Theorem**: Relative criterion is invariant under positive scaling.
-
-    If we scale F → αF for α > 0, the criterion FisherSpectralCriterionRel is unchanged.
-
-    **Note on terminology:** This is SCALE-INVARIANCE, not full Fisher-Rao invariance.
-    Fisher-Rao invariance would require invariance under arbitrary reparameterizations
-    of the statistical model. What we have here is the weaker (but still useful) property
-    that the criterion is invariant to global rescaling of F (a "temperature" rescaling).
-
-    **Proof sketch (why this axiom holds):**
-    - RayleighQuotient(αF, v) = α · RayleighQuotient(F, v)  [numerator scales, denominator doesn't]
-    - FisherOperatorNorm(αF) = α · FisherOperatorNorm(F)    [by FisherOperatorNorm_smul]
-    - Therefore: RQ(αF, v) > τ · ‖αF‖ ↔ α·RQ(F,v) > τ·α·‖F‖ ↔ RQ(F,v) > τ·‖F‖ -/
-axiom FisherSpectralCriterionRel_scale_invariant
-    (F : Matrix (Fin n) (Fin n) ℝ) (v : Fin n → ℝ) (tau_rel α : ℝ) (h_α : 0 < α) :
-    FisherSpectralCriterionRel F v tau_rel ↔ FisherSpectralCriterionRel (α • F) v tau_rel
 
 /-! ## Part III-C: The Renormalization Trigger
 
@@ -639,30 +617,6 @@ def ComplexityCost (_state : RenormalizedState n k) : ℕ := k
 noncomputable def VariationalObjective (state : RenormalizedState n k) (lambda_cost : ℝ) : ℝ :=
   FisherRigidity state - lambda_cost * (k : ℝ)
 
-/-- **AXIOM: Spectral Selection Approximates Variational Optimum**
-
-    The spectral thresholding rule (S = top eigenspace of F) is the unique
-    solution to the variational problem: max_S { Rigidity(S) - λ·Cost(S) }.
-
-    **Why This Matters:**
-    This axiom says that our "spectral S-update" is not arbitrary - it is the
-    SOLUTION to a well-posed optimization problem with information-theoretic
-    justification (MDL/AIC).
-
-    **Proof Sketch:**
-    For symmetric F with eigenvalues λ₁ ≥ ... ≥ λₙ, the contribution of
-    including eigenvector vᵢ in S is (λᵢ - λ_cost). This is positive iff
-    λᵢ > λ_cost. QED. -/
-axiom spectral_is_variational_optimum (F : Matrix (Fin n) (Fin n) ℝ)
-    (S : ConsolidatedSubspace n k) (lambda_cost : ℝ)
-    (h_F_symm : F.IsSymm)
-    (h_spectral : IsSpectrallyOptimal F S lambda_cost) :
-    -- S maximizes the variational objective among all k-dimensional subspaces
-    ∀ S' : ConsolidatedSubspace n k,
-      let state := { θ := fun _ => 0, S := S, F := F, reg := 1, h_reg_pos := one_pos }
-      let state' := { θ := fun _ => 0, S := S', F := F, reg := 1, h_reg_pos := one_pos }
-      VariationalObjective state lambda_cost ≥ VariationalObjective state' lambda_cost
-
 /-! ### Basic Properties of ConflictRatio (Proven, Not Axiomatized)
 
 **Colleague's Suggestion:**
@@ -726,26 +680,6 @@ axiom spectral_s_update (state : RenormalizedState n k) (field : GradientField n
       IsSpectrallyOptimal state.F S_new tau_stiff ∧
       ConflictRatio S_new (field state.θ) < ConflictRatio state.S (field state.θ)
 
-/-- **THEOREM: Recoverability Increases Under Spectral Update**
-
-    If we update S to the spectral eigenspace, recoverability does not decrease.
-
-    **Intuition:**
-    The spectral eigenspace is, by definition, the subspace that captures
-    the most Fisher information. Any other S of the same dimension captures less.
-
-    **Proof Sketch:**
-    Recoverability = Tr(P_S F P_S) / Tr(F)
-    For fixed dimension k, this is maximized when S = top-k eigenspace.
-    (This is the Eckart-Young theorem for symmetric matrices.) -/
-axiom spectral_update_increases_recoverability (state : RenormalizedState n k)
-    (field : GradientField n) (tau_stiff P_crit : ℝ)
-    (h_trigger : RenormalizationTrigger state field P_crit)
-    (S_new : ConsolidatedSubspace n k)
-    (h_spectral : IsSpectrallyOptimal state.F S_new tau_stiff) :
-    let state_new : RenormalizedState n k := { state with S := S_new }
-    RecoverabilityScore state_new ≥ RecoverabilityScore state
-
 /-! ## Part IV: The Joint Update Law -/
 
 /-- **UpdateStructure**: The "Discovery" step of SGC.
@@ -763,13 +697,6 @@ axiom spectral_update_increases_recoverability (state : RenormalizedState n k)
 
     The axiom states: the update preserves the consolidation invariant. -/
 axiom update_structure : RenormalizedState n k → GradientField n → ConsolidatedSubspace n k
-
-/-- **UpdateStructure preserves consolidation**: Directions in S' satisfy the criterion.
-
-    This is the key invariant: we only add "mature" directions to S. -/
-axiom update_structure_preserves_criterion (state : RenormalizedState n k)
-    (field : GradientField n) (crit : ℝ) :
-    ∀ i : Fin k, ConsolidationCriterion state.F ((update_structure state field).basis i) crit
 
 /-- **State Fisher Symmetry**: The Fisher matrix in a RenormalizedState is symmetric.
     This is a basic property of Fisher information matrices. -/
@@ -817,9 +744,6 @@ noncomputable def project_and_step (state : RenormalizedState n k)
     The axiom states: the updated Fisher is positive semi-definite. -/
 axiom update_metric : (Fin n → ℝ) → Matrix (Fin n) (Fin n) ℝ
 
-axiom update_metric_psd (θ : Fin n → ℝ) :
-    Matrix.PosSemidef (update_metric θ)
-
 /-! ## Part V: The Complete Joint Update -/
 
 /-- **JointUpdate**: The complete SGC renormalization step.
@@ -851,63 +775,6 @@ noncomputable def joint_update (state : RenormalizedState n k)
 
 /-! ## Part VI: Intrinsic Defect Dynamics (The Main Theorem) -/
 
-/-- **AXIOM: Intrinsic Defect Lyapunov Stability**
-
-    The joint update law does not increase intrinsic defect:
-      D_intrinsic(θ', S') ≤ D_intrinsic(θ, S)
-
-    **This is the non-tautological emergence criterion.**
-
-    Unlike DefectAtPoint (which measures the projected update), IntrinsicDefect
-    measures the RAW gradient field. The theorem says: after the joint update,
-    the new gradient field is MORE aligned with the new structure.
-
-    **Mathematical Content:**
-    1. The structure S evolves to "capture" high-information directions
-    2. The parameters θ evolve to make the gradient more compatible with S
-    3. The combined effect is non-increasing intrinsic defect
-
-    **Domain of Validity:**
-    - Small learning rate η (thermodynamic limit)
-    - Smooth gradient field (no discontinuities)
-    - Non-degenerate Fisher matrix (full rank after regularization)
-
-    **Why This Isn't Tautological:**
-    - S' ≠ S in general (structure evolves)
-    - g(θ') ≠ g(θ) in general (gradient changes)
-    - The theorem claims these changes CONSPIRE to reduce defect -/
-axiom intrinsic_defect_lyapunov (state : RenormalizedState n k)
-    (field : GradientField n)
-    (F_reg_inv : Matrix (Fin n) (Fin n) ℝ)
-    (Gram_inv : Matrix (Fin k) (Fin k) ℝ)
-    (eta : ℝ)
-    (h_eta_small : 0 < eta ∧ eta < 1) :
-    let state' := joint_update state field F_reg_inv Gram_inv eta
-    IntrinsicDefectAtState state' field ≤ IntrinsicDefectAtState state field
-
-/-- **AXIOM: Intrinsic Defect Exponential Decay**
-
-    Under favorable conditions, intrinsic defect decays exponentially:
-      D'_intrinsic ≤ (1 - α) · D_intrinsic + O(η²)
-
-    where α > 0 is the "consolidation rate."
-
-    **Interpretation:**
-    - α measures how quickly the system discovers and locks in structure
-    - The O(η²) term is unavoidable discretization error
-    - For emergence: choose η small enough that decay dominates error -/
-axiom intrinsic_defect_exponential_decay (state : RenormalizedState n k)
-    (field : GradientField n)
-    (F_reg_inv : Matrix (Fin n) (Fin n) ℝ)
-    (Gram_inv : Matrix (Fin k) (Fin k) ℝ)
-    (eta alpha C : ℝ)
-    (h_alpha_pos : 0 < alpha) (h_alpha_bound : alpha < 1)
-    (h_eta_small : 0 < eta) :
-    let state' := joint_update state field F_reg_inv Gram_inv eta
-    let D := IntrinsicDefectAtState state field
-    let D' := IntrinsicDefectAtState state' field
-    D' ≤ (1 - alpha) * D + C * eta^2
-
 /-! ## Part VII: Observable-Based Constraints (Primal/Dual Unification) -/
 
 /-- **Observable**: A function from parameters to a scalar "macro-observable."
@@ -937,49 +804,7 @@ def ObservablePreservationConstraint (O : Observable n) (theta : Fin n → ℝ) 
   let gradO := ObservableGradient O theta
   ∑ i, gradO i * dtheta i = 0
 
-/-- **Primal Freezing is a Special Case** (axiomatized for simplicity)
-
-    When O_i(θ) = θ_i (coordinate projection), the observable preservation
-    constraint reduces to the primal constraint S Δθ = 0.
-
-    This unifies the primal/dual perspectives: we work with observables (dual),
-    and primal freezing is recovered when observables are coordinates. -/
-axiom primal_freezing_is_special_case (S : ConsolidatedSubspace n k) (theta dtheta : Fin n → ℝ)
-    (h_k_le_n : k ≤ n)
-    (h_S_is_coordinates : ∀ i : Fin k, ∀ j : Fin n, S.basis i j = if j.val = i.val then 1 else 0) :
-    -- If S represents coordinate projections onto first k coordinates...
-    (∀ i : Fin k, S.basis i ⬝ᵥ dtheta = 0) ↔
-    -- ...then observable preservation = coordinate freezing
-    (∀ i : Fin k, dtheta ⟨i.val, Nat.lt_of_lt_of_le i.isLt h_k_le_n⟩ = 0)
-
 /-! ## Part VIII: The SGC Closure Principle -/
-
-/-- **SGC Closure Principle**: Structure emerges from defect measurements.
-
-    The "right" consolidated subspace S is the one that:
-    1. Captures all high-Fisher directions (certainty)
-    2. Is compatible with the gradient field (alignment)
-    3. Minimizes intrinsic defect in the limit
-
-    **Formally:** S* = argmin_S lim_{t→∞} D_intrinsic(θ_t, S_t)
-
-    This is the variational characterization of emergent structure.
-
-    **Connection to SGC Coarse-Graining:**
-    - SGC: Coarse space = image of projector that minimizes defect operator norm
-    - Here: Consolidated subspace = kernel of projector that minimizes intrinsic defect
-
-    The duality (image vs kernel) reflects the complementary perspectives:
-    - SGC: "What macro-dynamics are preserved?"
-    - Learning: "What directions are frozen?" -/
-axiom sgc_closure_principle (state₀ : RenormalizedState n k)
-    (field : GradientField n)
-    (trajectory : ℕ → RenormalizedState n k)
-    (h_trajectory : ∀ t, ∃ F_inv Gram_inv eta, trajectory (t + 1) = joint_update (trajectory t) field F_inv Gram_inv eta)
-    (h_init : trajectory 0 = state₀) :
-    -- The intrinsic defect converges
-    ∃ D_limit : ℝ, ∀ ε > 0, ∃ T, ∀ t ≥ T,
-      |IntrinsicDefectAtState (trajectory t) field - D_limit| < ε
 
 /-! ## Part IX: Connection to Python Demo -/
 
@@ -1007,26 +832,5 @@ S = identify_low_entropy_outputs(probabilities)
 S = identify_high_fisher_hidden_directions(model.attention_weights)
 ```
 -/
-
-/-- **EmergencePhaseTransition**: The predicted behavior in Python.
-
-    The theory predicts a PHASE TRANSITION in the defect plot:
-    1. **Chaotic Phase:** High intrinsic defect, gradient fights against structure
-    2. **Critical Point:** Defect drops sharply as structure aligns with dynamics
-    3. **Emergent Phase:** Low, stable defect plateau (the "Aha!" moment)
-
-    **Falsification Criterion:** If Fisher-orthogonal updates do NOT produce
-    this phase transition (defect remains high or fluctuates wildly), the
-    theory is WRONG (or the learning rate is too high). -/
-axiom emergence_phase_transition (state₀ : RenormalizedState n k)
-    (field : GradientField n)
-    (trajectory : ℕ → RenormalizedState n k)
-    (h_trajectory : ∀ t, ∃ F_inv Gram_inv eta, trajectory (t + 1) = joint_update (trajectory t) field F_inv Gram_inv eta)
-    (h_init : trajectory 0 = state₀)
-    (D₀ : ℝ) (h_D₀ : D₀ = IntrinsicDefectAtState state₀ field)
-    (h_D₀_high : D₀ > 0.5) :  -- Start in chaotic phase
-    -- There exists a time T and threshold eps such that defect drops and stays low
-    ∃ T : ℕ, ∃ eps : ℝ, eps < 0.1 ∧ ∀ t ≥ T,
-      IntrinsicDefectAtState (trajectory t) field < eps
 
 end SGC.InformationGeometry.RenormalizationDynamics

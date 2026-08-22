@@ -226,19 +226,6 @@ lemma TsallisDivergence_nonneg {q : ℝ} (hq : 1 < q) (hq' : q < 2)
   · -- Denominator: q - 1 > 0
     linarith
 
-/-- Tsallis divergence is zero iff p = ref.
-
-    **Status**: Axiomatized. The proof requires:
-    1. D_q = 0 iff numerator = 0 (since q ≠ 1)
-    2. Numerator = 0 iff Σ p^(2-q)·ref^(q-1) = 1
-    3. By Young's equality condition, this holds iff p = ref pointwise
-
-    This is a standard characterization of divergence equality. -/
-axiom TsallisDivergence_eq_zero_iff {V : Type*} [Fintype V] {q : ℝ} (hq : q ≠ 1)
-    (p ref : V → ℝ) (hp_pos : ∀ v, 0 < p v) (href_pos : ∀ v, 0 < ref v)
-    (hp_sum : ∑ v, p v = 1) (href_sum : ∑ v, ref v = 1) :
-    TsallisDivergence q p ref = 0 ↔ p = ref
-
 /-! ### 4. Non-Extensive System Class -/
 
 /-- **Non-Extensive System**: A system with q-parameter in the range (1, 2).
@@ -434,25 +421,6 @@ theorem tsallis_extropy_nonneg (q : ℝ) (hq : 1 < q)
     in the q-deformed statistical mechanics framework. -/
 def EscortEntropyGap (q : ℝ) (p : V → ℝ) (hZ : EscortNormalization q p ≠ 0) : ℝ :=
   TsallisEntropy q p - TsallisEntropy q (EscortDistribution q p hZ)
-
-/-- **Escort Entropy Gap is Non-Negative**: Irr_q(p) ≥ 0.
-
-    The escort map p ↦ P_q(p) is a deterministic channel (stochastic map).
-    By the Tsallis Data Processing Inequality (TsallisDPI), applying a
-    stochastic map cannot increase divergence from any reference.
-
-    In particular, the escort concentrates probability, which reduces entropy:
-    S_q(P_q(p)) ≤ S_q(p) for q > 1 (the escort emphasizes high-probability states).
-
-    Therefore EscortEntropyGap = S_q(p) - S_q(P_q) ≥ 0.
-
-    For q = 1, P_q = p and the gap is exactly 0 (no irreversibility).
-    For q > 1, the gap measures how much the escort concentrates —
-    this IS the irreversibility of the nonlinear dynamics. -/
-axiom escort_entropy_gap_nonneg {q : ℝ} [NonExtensiveSystem q]
-    (p : V → ℝ) (hp_pos : ∀ v, 0 < p v) (hp_sum : ∑ v, p v = 1)
-    (hZ : EscortNormalization q p ≠ 0) :
-    0 ≤ EscortEntropyGap q p hZ
 
 /-! ### 9. q-Deformed Generator (Nonlinear SGC) -/
 

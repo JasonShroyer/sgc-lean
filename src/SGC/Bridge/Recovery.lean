@@ -135,11 +135,6 @@ theorem RelativeEntropy_self (p : V → ℝ) (hp : ∀ x, 0 < p x) :
   simp only [ne_of_gt hpx, ↓reduceIte, div_self (ne_of_gt hpx), Real.log_one, mul_zero,
              ENNReal.ofReal_zero]
 
-/-- D(p‖q) = 0 implies p = q. -/
-axiom RelativeEntropy_eq_zero_iff (p q : V → ℝ)
-    (hp : ∀ x, 0 < p x) (hq : ∀ x, 0 < q x) :
-    RelativeEntropy p q = 0 ↔ p = q
-
 /-! ## 3. Data Processing Inequality
 
 The fundamental theorem: channels can only destroy information. -/
@@ -187,21 +182,6 @@ theorem ClassicalFidelity_symm (p q : V → ℝ) :
   apply Finset.sum_congr rfl
   intro x _
   rw [mul_comm]
-
-/-- **Approximate Recovery Bound**: Recovery fidelity is bounded by entropy loss.
-
-    If D(p‖q) - D(Mp‖Mq) = ε (small entropy loss), then the Petz map achieves
-    F(ℛ(Mp), p) ≥ 1 - ε.
-
-    This is the classical version of the Fawzi-Renner bound.
-
-    Note: Uses `ENNReal.toReal` for the bound since ε is finite when supports are compatible. -/
-axiom ApproximateRecoveryBound (M : Matrix V V ℝ) (p q : V → ℝ)
-    (hM_stoch : ∀ y, ∑ x, M y x = 1) (hM_nonneg : ∀ y x, 0 ≤ M y x)
-    (hp : ∀ x, 0 < p x) (hq : ∀ x, 0 < q x) :
-    let ε := (RelativeEntropy p q - RelativeEntropy (applyChannel M p) (applyChannel M q)).toReal
-    ∃ (R : Matrix V V ℝ),
-      ClassicalFidelity (applyChannel R (applyChannel M p)) p ≥ 1 - 2 * Real.sqrt ε
 
 /-! ## 5. Connection to the Coherence Obstruction
 

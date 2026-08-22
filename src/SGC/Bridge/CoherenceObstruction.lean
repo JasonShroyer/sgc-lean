@@ -227,19 +227,6 @@ def Partition.toSoft (P : Partition V) [Fintype P.Quot] :
   nonneg := fun v k => by split_ifs <;> norm_num
   normalized := fun v => partition_membership_sum_one P v
 
-/-- **Conjecture (Fuzzy KL)**: For soft partitions with small fuzziness ε,
-    the KL coefficient α is bounded by O(ε).
-
-    This would connect:
-    - Approximate classical symmetries
-    - Approximate quantum error correction
-    - Stability of emergent phenomena under perturbation -/
-axiom fuzzy_KL_bound (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
-    (L : Matrix V V ℝ) (P : SoftPartition V n) (α : ℂ) :
-    -- If "soft KL" holds with coefficient α
-    -- then |α| ≤ C · fuzziness(P) for some universal C
-    True  -- Placeholder for the precise statement
-
 /-! ## 4. The Inverse Bridge: Quantum → Classical -/
 
 /-- **Topological Code**: A quantum code with topological protection.
@@ -276,39 +263,6 @@ structure AnyonRandomWalk (code : TopologicalCode V) where
   stationary : config_space → ℝ
   stat_pos : ∀ c, 0 < stationary c
 
-/-- **Spectral Gap of Anyon Walk**: The mixing rate of anyon diffusion.
-    Axiomatized to avoid technical issues with DecidableEq propagation. -/
-axiom AnyonRandomWalk.spectralGap {V : Type*} [Fintype V] [DecidableEq V] [Nonempty V]
-    {code : TopologicalCode V} (walk : AnyonRandomWalk code) : ℝ
-
-/-- **The Inverse Bridge Theorem** (Conjectured):
-
-    For topological codes, there exists a classical Markov chain (the anyon walk)
-    such that:
-    1. The quantum validity horizon equals the classical mixing time
-    2. The error threshold equals the spectral gap
-    3. Logical error rate decays exponentially with system size
-
-    This would prove: **Topological quantum codes ARE classical Markov chains.** -/
-axiom inverse_bridge_topological (code : TopologicalCode V) :
-    ∃ (walk : AnyonRandomWalk code),
-      -- The spectral gap bounds the error threshold
-      ∀ (noise_rate : ℝ), noise_rate < walk.spectralGap →
-        -- Logical error time grows exponentially with protection length
-        ∃ (c : ℝ), c > 0 ∧
-          True  -- validity_horizon ≥ exp(c * code.protection_length) / noise_rate
-
-/-- **Toric Code Specific**: The 2D toric code has anyon spectral gap γ ~ 1/L².
-
-    Combined with the inverse bridge, this gives:
-    T_logical ≥ exp(cL) / p
-
-    which is the known exponential protection of the toric code. -/
-axiom toric_code_spectral_gap (L : ℕ) (hL : 0 < L) :
-    haveI : Nonempty (Fin (L * L)) := ⟨⟨0, Nat.mul_pos hL hL⟩⟩
-    ∃ (code : TopologicalCode (Fin (L * L))) (walk : AnyonRandomWalk code),
-      walk.spectralGap = 1 / (L : ℝ)^2  -- Diffusive scaling
-
 /-! ## 5. The Classification Problem -/
 
 /-- **The Grand Question**: Which quantum codes have classical descriptions?
@@ -327,11 +281,5 @@ inductive CodeClassification where
   | topological_classical : CodeClassification    -- α = 0, exponential T*
   | stabilizer_quantum : CodeClassification       -- α ≠ 0, syndrome-based
   | general_quantum : CodeClassification          -- α ≠ 0, general
-
-/-- **Open Problem**: Classify a given code into the hierarchy.
-
-    This would be the "grand unification" of classical emergence and quantum error correction. -/
-axiom classify_code (pi_dist : V → ℝ) (code : CodeSubspace V pi_dist)
-    (errors : ErrorOperators V n) : CodeClassification
 
 end SGC.Bridge.Coherence

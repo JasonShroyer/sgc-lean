@@ -764,21 +764,6 @@ The leakage defect ε measures prediction error. These are related via Pinsker's
 noncomputable def TotalVariation (p q : V → ℝ) : ℝ :=
   (1/2 : ℝ) * ∑ x, |p x - q x|
 
-/-- **Pinsker's Inequality**: KL divergence lower-bounds total variation squared.
-
-    D_KL(p ‖ q) ≥ 2 · TV(p, q)²
-
-    Equivalently: D_KL(p ‖ q) ≥ (1/2) ‖p - q‖₁²
-
-    This is a fundamental inequality in information theory, connecting
-    entropy (information) to distance (geometry).
-
-    **Axiomatized**: Standard result (Csiszár-Kullback-Pinsker). -/
-axiom pinsker_inequality (p q : V → ℝ)
-    (hp : ∀ x, 0 ≤ p x) (hq : ∀ x, 0 < q x)
-    (hp_sum : ∑ x, p x = 1) (hq_sum : ∑ x, q x = 1) :
-    2 * (TotalVariation p q)^2 ≤ KLDiv p q
-
 /-- **L¹-L² Norm Equivalence** (finite dimension):
 
     ‖v‖₁ ≤ √N · ‖v‖₂

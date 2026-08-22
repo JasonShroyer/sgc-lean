@@ -88,11 +88,6 @@ optimal transport (Wasserstein distance) between transition distributions.
     We axiomatize existence; actual computation uses linear programming. -/
 axiom OllivierRicciCurvature (L : Matrix V V ℝ) (x y : V) : ℝ
 
-/-- Ollivier-Ricci curvature exists and is bounded for any generator. -/
-axiom ollivier_ricci_exists (L : Matrix V V ℝ)
-    (hL_gen : ∀ x y, x ≠ y → 0 ≤ L x y) :
-    ∀ x y, -2 ≤ OllivierRicciCurvature L x y ∧ OllivierRicciCurvature L x y ≤ 1
-
 /-- **Vertex Curvature from Edge Curvature**: Average Ollivier-Ricci over incident edges.
 
     κ(v) = (1/deg(v)) Σ_{u~v} κ(v,u)

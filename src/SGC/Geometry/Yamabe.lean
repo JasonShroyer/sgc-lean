@@ -182,14 +182,6 @@ axiom YamabeFlow (r₀ : CirclePacking V) (T : Triangulation V)
     (dt : ℝ) (hdt : 0 < dt) (K_max : ℝ) (hK_max : 0 < K_max) (h_dt : dt * K_max < 1)
     (h_bound : UniformCurvatureBound r₀ T K_max) : ℕ → CirclePacking V
 
-/-- **Flow preserves CFL**: The uniform bound is maintained along the flow.
-
-    **Axiomatized**: Requires showing curvature doesn't blow up. -/
-axiom yamabe_flow_preserves_bound (r₀ : CirclePacking V) (T : Triangulation V)
-    (dt K_max : ℝ) (hdt : 0 < dt) (hK_max : 0 < K_max) (h_dt : dt * K_max < 1)
-    (h_bound : UniformCurvatureBound r₀ T K_max) (n : ℕ) :
-  UniformCurvatureBound (YamabeFlow r₀ T dt hdt K_max hK_max h_dt h_bound n) T K_max
-
 /-- **Energy Monotonicity**: Yamabe energy decreases along the flow.
 
     E(r_{n+1}) ≤ E(r_n)
@@ -201,17 +193,6 @@ axiom yamabe_energy_decreasing (r₀ : CirclePacking V) (T : Triangulation V)
   YamabeEnergy (YamabeFlow r₀ T dt hdt K_max hK_max h_dt h_bound (n + 1)) T ≤
   YamabeEnergy (YamabeFlow r₀ T dt hdt K_max hK_max h_dt h_bound n) T
 
-/-- **Variance Monotonicity**: Curvature variance decreases along the flow.
-
-    Var(K_{n+1}) ≤ Var(K_n)
-
-    **Axiomatized**: Requires detailed computation. -/
-axiom variance_decreasing (r₀ : CirclePacking V) (T : Triangulation V)
-    (dt K_max : ℝ) (hdt : 0 < dt) (hK_max : 0 < K_max) (h_dt : dt * K_max < 1)
-    (h_bound : UniformCurvatureBound r₀ T K_max) (n : ℕ) :
-  CurvatureVariance (YamabeFlow r₀ T dt hdt K_max hK_max h_dt h_bound (n + 1)) T ≤
-  CurvatureVariance (YamabeFlow r₀ T dt hdt K_max hK_max h_dt h_bound n) T
-
 /-! ### 4. Convergence -/
 
 /-- **Equilibrium**: A packing where the flow is stationary.
@@ -219,33 +200,6 @@ axiom variance_decreasing (r₀ : CirclePacking V) (T : Triangulation V)
     Equilibrium ↔ K is constant everywhere. -/
 def IsYamabeEquilibrium (r : CirclePacking V) (T : Triangulation V) : Prop :=
   ∃ K₀ : ℝ, ∀ v, DiscreteScalarCurvature r T v = K₀
-
-/-- **Uniformization Conjecture**: The flow converges to constant curvature.
-
-    For closed surfaces, the Yamabe flow converges to a metric of
-    constant curvature (determined by the Euler characteristic).
-
-    **Axiomatized**: This is the discrete uniformization theorem. -/
-axiom yamabe_convergence (r₀ : CirclePacking V) (T : Triangulation V)
-    (dt K_max : ℝ) (hdt : 0 < dt) (hK_max : 0 < K_max) (h_dt : dt * K_max < 1)
-    (h_bound : UniformCurvatureBound r₀ T K_max) :
-  ∃ r_eq : CirclePacking V, IsYamabeEquilibrium r_eq T ∧
-    ∀ eps : ℝ, eps > 0 → ∃ N : ℕ, ∀ n : ℕ, n ≥ N →
-      CurvatureVariance (YamabeFlow r₀ T dt hdt K_max hK_max h_dt h_bound n) T < eps
-
-/-- **Convergence Rate**: Exponential convergence to equilibrium.
-
-    Var(K_n) ≤ Var(K_0) · e^{-λn}
-
-    where λ depends on the spectral gap of the Laplacian.
-
-    **Axiomatized**: Requires spectral analysis. -/
-axiom exponential_convergence (r₀ : CirclePacking V) (T : Triangulation V)
-    (dt K_max : ℝ) (hdt : 0 < dt) (hK_max : 0 < K_max) (h_dt : dt * K_max < 1)
-    (h_bound : UniformCurvatureBound r₀ T K_max) :
-  ∃ rate > 0, ∀ n,
-    CurvatureVariance (YamabeFlow r₀ T dt hdt K_max hK_max h_dt h_bound n) T ≤
-    CurvatureVariance r₀ T * Real.exp (-rate * n)
 
 /-! ### 5. Connection to Consolidation -/
 
@@ -267,18 +221,6 @@ noncomputable def PredictionError (r : CirclePacking V) (T : Triangulation V) (v
     This equals the Yamabe energy (up to scaling). -/
 noncomputable def TotalPredictionError (r : CirclePacking V) (T : Triangulation V) : ℝ :=
   ∑ v : V, (PredictionError r T v)^2
-
-/-- **Consolidation Theorem**: Yamabe flow minimizes prediction error.
-
-    The geometric flow (curvature smoothing) is equivalent to
-    the statistical flow (error minimization).
-
-    **Axiomatized**: This is the core SGC correspondence. -/
-axiom consolidation_is_yamabe (r₀ : CirclePacking V) (T : Triangulation V)
-    (dt K_max : ℝ) (hdt : 0 < dt) (hK_max : 0 < K_max) (h_dt : dt * K_max < 1)
-    (h_bound : UniformCurvatureBound r₀ T K_max) (n : ℕ) :
-  TotalPredictionError (YamabeFlow r₀ T dt hdt K_max hK_max h_dt h_bound (n + 1)) T ≤
-  TotalPredictionError (YamabeFlow r₀ T dt hdt K_max hK_max h_dt h_bound n) T
 
 /-! ### 6. The Complete Picture
 
