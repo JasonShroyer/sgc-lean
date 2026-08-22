@@ -22,6 +22,7 @@ import SGC.Renormalization.SymmetryLumpability
 import SGC.Renormalization.CurvatureQuotient
 import SGC.Thermodynamics.EntropyProduction
 import SGC.Bridge.ThreeArrows
+import SGC.Renormalization.MeasureReentry
 
 /-- info: 'SGC.Topology.PadicPathSpace.pathSpace_homeo_padicInt' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
@@ -122,6 +123,22 @@ import SGC.Bridge.ThreeArrows
 /-- info: 'SGC.Renormalization.SymmetryLumpability.counterexample_lumpable_not_symmetric' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms SGC.Renormalization.SymmetryLumpability.counterexample_lumpable_not_symmetric
+
+/-- info: 'SGC.Renormalization.MeasureReentry.defectSq_eq_zero_iff_stronglyLumpable' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Renormalization.MeasureReentry.defectSq_eq_zero_iff_stronglyLumpable
+
+/-- info: 'SGC.Renormalization.MeasureReentry.defectSq_eq_weighted_commutator_frobenius' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Renormalization.MeasureReentry.defectSq_eq_weighted_commutator_frobenius
+
+/-- info: 'SGC.Renormalization.MeasureReentry.power_closure_telescoping' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Renormalization.MeasureReentry.power_closure_telescoping
+
+/-- info: 'SGC.Renormalization.MeasureReentry.defectSq_Lnl_pos' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Renormalization.MeasureReentry.defectSq_Lnl_pos
 
 /-- info: 'SGC.Thermodynamics.coarseGenerator_eq_quotientGeneratorSimple' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
