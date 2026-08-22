@@ -23,6 +23,7 @@ import SGC.Renormalization.CurvatureQuotient
 import SGC.Thermodynamics.EntropyProduction
 import SGC.Bridge.ThreeArrows
 import SGC.Renormalization.MeasureReentry
+import SGC.Renormalization.KernelHorizon
 
 /-- info: 'SGC.Topology.PadicPathSpace.pathSpace_homeo_padicInt' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
@@ -123,6 +124,18 @@ import SGC.Renormalization.MeasureReentry
 /-- info: 'SGC.Renormalization.SymmetryLumpability.counterexample_lumpable_not_symmetric' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms SGC.Renormalization.SymmetryLumpability.counterexample_lumpable_not_symmetric
+
+/-- info: 'SGC.Renormalization.KernelHorizon.kernel_closure_error_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Renormalization.KernelHorizon.kernel_closure_error_le
+
+/-- info: 'SGC.Renormalization.KernelHorizon.coarseKernel_isStochastic' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Renormalization.KernelHorizon.coarseKernel_isStochastic
+
+/-- info: 'SGC.Renormalization.KernelHorizon.within_tolerance_of_defect_small' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Renormalization.KernelHorizon.within_tolerance_of_defect_small
 
 /-- info: 'SGC.Renormalization.MeasureReentry.defectSq_eq_zero_iff_stronglyLumpable' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
