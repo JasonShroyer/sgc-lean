@@ -393,6 +393,18 @@ import SGC.Topology.BoundaryReadout
 -- is where SGC's theory of emergence exceeds the symmetry-first program.
 import SGC.Renormalization.SymmetryLumpability
 
+-- The Three Arrows capstone (2026-08-22): one operation, one quotient
+-- operator, three one-way laws, ONE THEOREM. The Unification Lemma
+-- (coarseGenerator_eq_quotientGeneratorSimple, in EntropyProduction) fuses
+-- the physical pi-weighted coarse generator with the structural quotient at
+-- exact lumpability — the pi-average of a block-constant row sum is that
+-- row sum, so the measure drops out. Consequently the SAME quotient chain
+-- is at least as curved (geometric arrow), at most as dissipative
+-- (thermodynamic arrow), and at most as informative (informational arrow)
+-- as the fine chain: three_arrows. The eps = 0 skeleton of the SGC theory
+-- of emergence, packaged as a single kernel theorem.
+import SGC.Bridge.ThreeArrows
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════

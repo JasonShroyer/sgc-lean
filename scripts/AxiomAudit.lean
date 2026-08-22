@@ -21,6 +21,7 @@ import SGC.Topology.BoundaryReadout
 import SGC.Renormalization.SymmetryLumpability
 import SGC.Renormalization.CurvatureQuotient
 import SGC.Thermodynamics.EntropyProduction
+import SGC.Bridge.ThreeArrows
 
 /-- info: 'SGC.Topology.PadicPathSpace.pathSpace_homeo_padicInt' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
@@ -121,6 +122,14 @@ import SGC.Thermodynamics.EntropyProduction
 /-- info: 'SGC.Renormalization.SymmetryLumpability.counterexample_lumpable_not_symmetric' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms SGC.Renormalization.SymmetryLumpability.counterexample_lumpable_not_symmetric
+
+/-- info: 'SGC.Thermodynamics.coarseGenerator_eq_quotientGeneratorSimple' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Thermodynamics.coarseGenerator_eq_quotientGeneratorSimple
+
+/-- info: 'SGC.Bridge.ThreeArrows.three_arrows' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Bridge.ThreeArrows.three_arrows
 
 /-- info: 'SGC.Thermodynamics.data_processing_inequality' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in

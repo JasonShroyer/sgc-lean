@@ -496,6 +496,73 @@ lemma coarseGenerator_eq_zero_iff (L : Matrix V V ℝ) (P : Partition V)
     unfold BlockRate at h
     rw [h, mul_zero]
 
+/-- Under strong lumpability the block rate factors: the aggregate of a
+constant block row sum is the row sum times the block mass. -/
+lemma blockRate_eq_quotient_mul_pi_bar (L : Matrix V V ℝ) (P : Partition V)
+    (hL : IsStronglyLumpable L P) (pi_dist : V → ℝ) (a_bar b_bar : P.Quot) :
+    BlockRate L P pi_dist a_bar b_bar
+      = QuotientGeneratorSimple L P a_bar b_bar
+          * CoarseStationaryDist P pi_dist a_bar := by
+  unfold BlockRate
+  have hstep : ∀ x : V,
+      (∑ y : V, if P.quot_map x = a_bar ∧ P.quot_map y = b_bar
+        then pi_dist x * L x y else 0)
+      = (if P.quot_map x = a_bar
+          then pi_dist x * QuotientGeneratorSimple L P a_bar b_bar else 0) := by
+    intro x
+    by_cases hx : P.quot_map x = a_bar
+    · simp only [hx, true_and, if_pos]
+      have h1 : (∑ y : V, if P.quot_map y = b_bar then pi_dist x * L x y else 0)
+          = pi_dist x * row_sum_block L P x b_bar := by
+        unfold row_sum_block
+        rw [Finset.mul_sum]
+        refine Finset.sum_congr rfl fun y _ => ?_
+        by_cases hy : P.quot_map y = b_bar <;> simp [hy]
+      have h2 : QuotientGeneratorSimple L P a_bar b_bar
+          = row_sum_block L P x b_bar := by
+        rw [← hx]
+        exact quot_gen_eq_row_sum L P hL x b_bar
+      rw [h1, h2]
+    · simp [hx]
+  rw [Finset.sum_congr rfl fun x _ => hstep x]
+  unfold CoarseStationaryDist pi_bar
+  rw [Finset.mul_sum]
+  refine Finset.sum_congr rfl fun x _ => ?_
+  by_cases hx : P.quot_map x = a_bar <;> simp [hx, mul_comm]
+
+/-- **The Unification Lemma.** At exact lumpability, the physical
+(`π`-weighted) coarse generator and the structural quotient generator are
+the SAME operator: the `π`-average of a block-constant row sum is that row
+sum, so the measure drops out. Thermodynamic renormalization and dynamical
+renormalization coincide at ε = 0 — the two halves of the defect zoo fuse. -/
+theorem coarseGenerator_eq_quotientGeneratorSimple (L : Matrix V V ℝ)
+    (P : Partition V) (hL : IsStronglyLumpable L P)
+    {pi_dist : V → ℝ} (hπ : ∀ x, 0 < pi_dist x) :
+    CoarseGenerator L P pi_dist = QuotientGeneratorSimple L P := by
+  funext a_bar b_bar
+  have hpos : 0 < CoarseStationaryDist P pi_dist a_bar := pi_bar_pos P hπ a_bar
+  unfold CoarseGenerator
+  rw [if_neg hpos.ne']
+  have hS : (∑ x : V, ∑ y : V,
+      if P.quot_map x = a_bar ∧ P.quot_map y = b_bar then pi_dist x * L x y else 0)
+      = QuotientGeneratorSimple L P a_bar b_bar
+          * CoarseStationaryDist P pi_dist a_bar :=
+    blockRate_eq_quotient_mul_pi_bar L P hL pi_dist a_bar b_bar
+  rw [hS]
+  field_simp
+
+/-- At exact lumpability, the coarse entropy production is the entropy
+production of the structural quotient chain: the trinity's thermodynamic
+arrow speaks about the SAME quotient operator as the geometric arrow. -/
+theorem coarse_ep_eq_quotient_ep (L : Matrix V V ℝ) (P : Partition V)
+    (hL : IsStronglyLumpable L P)
+    {pi_dist : V → ℝ} (hπ : ∀ x, 0 < pi_dist x) :
+    CoarseEntropyProduction L P pi_dist
+      = EntropyProductionRate (QuotientGeneratorSimple L P) (pi_bar P pi_dist) := by
+  unfold CoarseEntropyProduction
+  rw [coarseGenerator_eq_quotientGeneratorSimple L P hL hπ]
+  rfl
+
 /-- Reindexing the reverse block rate over the forward fiber:
 `S(b̄,ā) = Σ_{x∈ā, y∈b̄} π_y L_{yx}`. -/
 lemma blockRate_swap (L : Matrix V V ℝ) (P : Partition V)
