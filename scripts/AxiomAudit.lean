@@ -24,6 +24,7 @@ import SGC.Thermodynamics.EntropyProduction
 import SGC.Bridge.ThreeArrows
 import SGC.Renormalization.MeasureReentry
 import SGC.Renormalization.KernelHorizon
+import SGC.Renormalization.PhysicalHorizon
 
 /-- info: 'SGC.Topology.PadicPathSpace.pathSpace_homeo_padicInt' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
@@ -124,6 +125,22 @@ import SGC.Renormalization.KernelHorizon
 /-- info: 'SGC.Renormalization.SymmetryLumpability.counterexample_lumpable_not_symmetric' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms SGC.Renormalization.SymmetryLumpability.counterexample_lumpable_not_symmetric
+
+/-- info: 'SGC.Renormalization.PhysicalHorizon.closureCommutator_eulerStep' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Renormalization.PhysicalHorizon.closureCommutator_eulerStep
+
+/-- info: 'SGC.Renormalization.PhysicalHorizon.physical_time_closure_error' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Renormalization.PhysicalHorizon.physical_time_closure_error
+
+/-- info: 'SGC.Renormalization.PhysicalHorizon.commutator_linfty_le_sqrt_defect' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Renormalization.PhysicalHorizon.commutator_linfty_le_sqrt_defect
+
+/-- info: 'SGC.Renormalization.PhysicalHorizon.end_to_end_physical_horizon' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Renormalization.PhysicalHorizon.end_to_end_physical_horizon
 
 /-- info: 'SGC.Renormalization.KernelHorizon.kernel_closure_error_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
