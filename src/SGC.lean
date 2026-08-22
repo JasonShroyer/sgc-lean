@@ -405,6 +405,22 @@ import SGC.Renormalization.SymmetryLumpability
 -- of emergence, packaged as a single kernel theorem.
 import SGC.Bridge.ThreeArrows
 
+-- Measure Re-entry (2026-08-22): the canonical language of approximate
+-- emergence — the eps > 0 theory born with its foundation theorems. The
+-- residual field (exit-rate deviation from the conditional-pi block
+-- average), the measure-reentry defect D_pi^2, and the closure commutator
+-- C = L*K - K*Q^pi are THREE FACES OF ONE OBJECT: commutator entries ARE
+-- the residuals (closureCommutator_entry), D_pi^2 IS the pi-weighted
+-- Frobenius norm^2 of C (an identity, not a bound), and D_pi = 0 iff the
+-- coarse-graining is exactly strongly lumpable (the Trinity is the zero
+-- set). The discrete Duhamel identity (power_closure_telescoping) expands
+-- every finite-time closure error as a sum of single re-entry events —
+-- the exact algebraic bridge from instantaneous defect to validity
+-- horizon. Toy models witness both regimes (defect zero / provably
+-- positive). Q^pi is proven to be the conditional exit average:
+-- canonical and representative-free.
+import SGC.Renormalization.MeasureReentry
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════
