@@ -25,6 +25,24 @@ emergency. The campaign now audits remaining axioms for SATISFIABILITY
 of the adjoint family (def + 4 theorems, retiring 5 axioms / ~58 refs) is
 the top-ranked next discharge.
 
+## Overnight sweep ledger (2026-08-22, night)
+
+- inner_self_adjoint_real: DISCHARGED as theorem, no hypothesis change
+  needed - the concrete adjoint makes it true WITHOUT positivity (self-
+  adjointness kills degenerate rows AND columns; new stronger lemma
+  isSelfAdjoint_inner_symm proven hypothesis-free). Surface 102 -> 101.
+- InformationGeometry/RenormalizationDynamics (20 axioms, 2 sorries):
+  ZERO consumers import it (verified by grep over src/). Classification:
+  WIP quarantine candidate - not on any central theorem path; propose
+  removal from build roots or deletion next session (owner call).
+- Bridge/GeometricClosure (15 axioms): CENTRAL (imported by
+  CurvatureQuotient); headliners provably do NOT depend on its axioms
+  (audit certificates pin exact axiom sets). Next satisfiability-sweep
+  target; not rushed tonight.
+- Satisfiability pattern to test everywhere: axioms quantified over
+  parameters admitting degenerate instances (zero measures, empty types,
+  zero matrices) - the adjoint lesson.
+
 # Machine inventory (2026-08-22, pre-pruning)
 
 Total `axiom` declarations under src/: **210**

@@ -1,0 +1,1 @@
+﻿-- Promoted to src/SGC/Renormalization/ExpBridge.lean (2026-08-22 overnight).

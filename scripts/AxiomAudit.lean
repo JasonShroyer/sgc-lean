@@ -25,6 +25,7 @@ import SGC.Bridge.ThreeArrows
 import SGC.Renormalization.MeasureReentry
 import SGC.Renormalization.KernelHorizon
 import SGC.Renormalization.PhysicalHorizon
+import SGC.Renormalization.ExpBridge
 
 /-- info: 'SGC.Topology.PadicPathSpace.pathSpace_homeo_padicInt' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
@@ -125,6 +126,30 @@ import SGC.Renormalization.PhysicalHorizon
 /-- info: 'SGC.Renormalization.SymmetryLumpability.counterexample_lumpable_not_symmetric' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms SGC.Renormalization.SymmetryLumpability.counterexample_lumpable_not_symmetric
+
+/-- info: 'SGC.Axioms.GeometryGeneral.inner_self_adjoint_real' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Axioms.GeometryGeneral.inner_self_adjoint_real
+
+/-- info: 'SGC.Axioms.GeometryGeneral.isSelfAdjoint_inner_symm' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Axioms.GeometryGeneral.isSelfAdjoint_inner_symm
+
+/-- info: 'SGC.Renormalization.KernelHorizon.commutator_columns_centered' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Renormalization.KernelHorizon.commutator_columns_centered
+
+/-- info: 'SGC.Renormalization.KernelHorizon.kernel_closure_error_le_uniform' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Renormalization.KernelHorizon.kernel_closure_error_le_uniform
+
+/-- info: 'SGC.Renormalization.ExpBridge.exp_intertwine' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Renormalization.ExpBridge.exp_intertwine
+
+/-- info: 'SGC.Renormalization.ExpBridge.exp_closure_of_zero_commutator' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Renormalization.ExpBridge.exp_closure_of_zero_commutator
 
 /-- info: 'SGC.Axioms.GeometryGeneral.adjoint_pi_spec' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
