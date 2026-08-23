@@ -25,6 +25,119 @@ emergency. The campaign now audits remaining axioms for SATISFIABILITY
 of the adjoint family (def + 4 theorems, retiring 5 axioms / ~58 refs) is
 the top-ranked next discharge.
 
+## GeometricClosure satisfiability sweep (2026-08-22, late night)
+
+7 axioms examined; zero external consumers of the repaired ones. Findings:
+
+1. **SECOND UNSATISFIABLE FAMILY FOUND AND REPAIRED (same disease as the
+   adjoint case: vacuous hypotheses at degenerate instances).**
+   EnergyDerivative / EnergySecondDerivative were opaque and UNLINKED to
+   the concrete EnergyFunctional; CD(rho,inf) holds vacuously at L = 0
+   for EVERY rho (Gamma = Gamma_2 = 0); BakryEmery_implies_stability then
+   forced IntrinsicStabilityInequality(0, rho), and
+   exponential_decay_from_convexity bounded the CONCRETE constant-positive
+   energy (L = 0: heat kernel = identity, E(t) = KL(p0||pi) = const) by
+   E(0)*exp(-2*rho*t) -> jointly unsatisfiable as stated. Additionally the
+   second-order convexity premise E-prime-prime >= -2*rho*E-prime does NOT
+   mathematically imply exponential decay of E even in benign cases.
+   No in-Lean False derivation was constructed this time (unlike the
+   adjoint case): the repair was applied first; the argument above is the
+   evidence of record.
+   REPAIR: BakryEmery_implies_stability now requires generator hypotheses
+   (nonneg off-diagonals, zero row sums) and explicit HasDerivAt linkage
+   of the opaque derivatives to EnergyFunctional;
+   exponential_decay_from_convexity now takes the mathematically correct
+   first-order Gronwall premise (E-prime <= -2*rho*E) plus linkage.
+   Both remain axioms (Bakry-Emery and Gronwall not yet formalized) but
+   are now satisfiable under the intended reading (true-derivative model).
+   geometric_closure_from_ricci threads the new hypotheses.
+
+   OLD STATEMENTS (preserved verbatim per archive-not-delete policy):
+   `lean
+   axiom BakryEmery_implies_stability (L : Matrix V V R) (rho : R)
+       (h_rho : RicciCurvatureBound L rho) :
+       IntrinsicStabilityInequality L rho
+   axiom exponential_decay_from_convexity (L : Matrix V V R) (rho : R) (h_rho : rho > 0)
+       (hL : IntrinsicStabilityInequality L rho)
+       (p0 pi_stat : V -> R) (t : R) (ht : t >= 0) :
+       EnergyFunctional L p0 pi_stat t <= EnergyFunctional L p0 pi_stat 0 * Real.exp (-2 * rho * t)
+   `
+
+2. **defect_bounded_by_ricci: DISCHARGED as a theorem with an honesty
+   warning.** The per-instance existential (exists C > 0, ||D|| <= C/rho)
+   is vacuously satisfiable for ANY operator (C := rho*(max ||D|| 0 + 1));
+   the Ricci hypothesis does no work. The MEANINGFUL open conjecture:
+   a UNIFORM constant over generator families, or explicit C(||L||).
+   Surface: -1 (axiom -> theorem, content honestly labeled vacuous).
+
+3. EnergyDerivative / EnergySecondDerivative (opaque functions): now
+   constrained via linkage hypotheses at use sites; trivially satisfiable
+   alone; classified DEFINITIONAL PLACEHOLDERS (future: define as deriv
+   of EnergyFunctional and discharge the linkage).
+
+4. Poincare_from_integrated_curvature, Ricci_tensor_min: examined
+   signatures carry explicit positivity; deeper satisfiability audit
+   deferred to next session (classified: PENDING SWEEP).
+
+Counts after sweep: 100 total (81 ACTIVE + 19 RESEARCH ARCHIVE).
+
+## Tiered trusted-surface ledger (2026-08-22, archive-not-delete policy)
+
+Policy (owner directive): NOTHING is deleted going forward; dormant research
+branches are TIERED, labeled, and excluded from the active count — never
+discarded. (The 2026-08-22 morning purge of 102 unreferenced axioms remains
+fully recoverable: docs/retired-axioms.md + git history + checkpoint tag.)
+
+Per-theorem certificates: the 52 audit-gated core theorems each pin their
+exact dependency cone; all close over [propext, Classical.choice, Quot.sound]
+ONLY — no tier below affects them.
+
+### ACTIVE tier (reachable from SGC.lean root): 82 axioms
+
+| module | axioms | sorries | importers |
+|---|---|---|---|
+| SGC.InformationGeometry.FisherKL | 9 | 0 | 5 |
+| SGC.Bridge.GeometricClosure | 7 | 0 | 3 |
+| SGC.Axioms.GeometryGeneral | 5 | 0 | 3 |
+| SGC.Evolution.Dynamics | 5 | 0 | 1 |
+| SGC.Geometry.CurvatureBridge | 5 | 0 | 3 |
+| SGC.Bridge.CoherenceObstruction | 4 | 0 | 2 |
+| SGC.Bridge.Quantum | 4 | 0 | 3 |
+| SGC.Geometry.DiscreteCurvature | 4 | 0 | 2 |
+| SGC.Observables.ThermodynamicBounds | 4 | 0 | 1 |
+| SGC.Renormalization.Approximate | 4 | 0 | 16 |
+| SGC.Bridge.CanonicalWavelet | 3 | 0 | 2 |
+| SGC.Bridge.Recovery | 3 | 0 | 2 |
+| SGC.Evolution.Conservation | 3 | 0 | 2 |
+| SGC.Geometry.Conformal | 3 | 0 | 2 |
+| SGC.Thermodynamics.Evolution | 3 | 0 | 2 |
+| SGC.Bridge.RennerSGC | 2 | 0 | 1 |
+| SGC.Geometry.Yamabe | 2 | 0 | 1 |
+| SGC.InformationGeometry.TsallisStatistics | 2 | 0 | 7 |
+| SGC.Observables.TopologicalPersistence | 2 | 0 | 1 |
+| SGC.Thermodynamics.EntropyProduction | 2 | 0 | 13 |
+| SGC.Dynamics.EscortConductance | 1 | 0 | 1 |
+| SGC.Evolution.Surgery | 1 | 0 | 4 |
+| SGC.Geometry.Manifold.Convergence | 1 | 0 | 1 |
+| SGC.Geometry.Simplicial | 1 | 0 | 2 |
+| SGC.Symbiosis | 1 | 0 | 2 |
+| SGC.Thermodynamics.FluxDecomposition | 1 | 0 | 9 |
+
+### RESEARCH ARCHIVE tier (not reachable from root): 19 axioms
+
+| module | axioms | sorries | importers |
+|---|---|---|---|
+| SGC.InformationGeometry.RenormalizationDynamics | 9 | 2 | 0 |
+| SGC.EmergenceCapacity | 4 | 0 | 1 |
+| SGC.InformationGeometry.ThermodynamicBridge | 2 | 0 | 0 |
+| SGC.NonlinearEmergence | 2 | 1 | 2 |
+| SGC.Bridge.SingularLearning | 1 | 0 | 0 |
+| SGC.Spectral.FloquetTheory | 1 | 0 | 2 |
+
+**Totals: 82 active + 19 archived = 101 declarations in src/.**
+Archive axioms are provisional research interfaces — not deleted, not solved,
+not part of any active certificate.
+
 ## Overnight sweep ledger (2026-08-22, night)
 
 - inner_self_adjoint_real: DISCHARGED as theorem, no hypothesis change

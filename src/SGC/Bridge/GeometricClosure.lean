@@ -181,24 +181,54 @@ structure IntrinsicStabilityInequality (L : Matrix V V ℝ) (rho : ℝ) : Prop w
 /-- **Bakry-Émery implies Intrinsic Stability**: The key theorem connecting
     the algebraic criterion (Γ₂ ≥ ρΓ) to the dynamic inequality.
 
-    This is the heart of the Bakry-Émery criterion. -/
+    **SATISFIABILITY REPAIR (2026-08-22 sweep)**: the original version had
+    NO linkage between the opaque `EnergyDerivative` functions and the
+    concrete `EnergyFunctional`, and no generator hypotheses. Since
+    `CD(ρ,∞)` holds vacuously for `L = 0` at EVERY `ρ` (`Γ = Γ₂ = 0`),
+    the unlinked family jointly with `exponential_decay_from_convexity`
+    admitted no model (constant positive energy forced below a decaying
+    exponential). Repaired: explicit derivative-linkage hypotheses and
+    generator hypotheses. Remains an axiom — the genuine Bakry-Émery
+    theorem — now satisfiable as intended. Old statement preserved in
+    docs/axiom-discharge-campaign.md. -/
 axiom BakryEmery_implies_stability (L : Matrix V V ℝ) (rho : ℝ)
-    (h_rho : RicciCurvatureBound L rho) :
+    (h_rho : RicciCurvatureBound L rho)
+    (hL_gen : ∀ i j, i ≠ j → 0 ≤ L i j) (hL_row : ∀ i, ∑ j, L i j = 0)
+    (hlink : ∀ (p₀ pi_stat : V → ℝ) (s : ℝ),
+      HasDerivAt (fun τ => EnergyFunctional L p₀ pi_stat τ)
+        (EnergyDerivative L p₀ pi_stat s) s)
+    (hlink' : ∀ (p₀ pi_stat : V → ℝ) (s : ℝ),
+      HasDerivAt (fun τ => EnergyDerivative L p₀ pi_stat τ)
+        (EnergySecondDerivative L p₀ pi_stat s) s) :
     IntrinsicStabilityInequality L rho
 
 /-! ## 4. Exponential Decay from Convexity
 
 The intrinsic stability inequality implies exponential convergence. -/
 
-/-- **Exponential Decay Theorem**: Under Ric ≥ ρ > 0, the energy decays
-    exponentially:
+/-- **Exponential Decay Theorem**: Under a first-order Gronwall premise,
+    the energy decays exponentially: E(t) ≤ E(0) · e^{-2ρt}.
 
-    E(t) ≤ E(0) · e^{-2ρt}
-
-    PROVED from the intrinsic stability inequality via Gronwall's lemma. -/
+    **SATISFIABILITY REPAIR (2026-08-22 sweep)**: the original hypothesis
+    was the SECOND-order convexity `E'' ≥ -2ρE'` alone, which does NOT
+    imply exponential decay of `E` (counterexample: `L = 0`, where
+    `E' = E'' = 0` satisfies convexity while the concrete
+    `EnergyFunctional` is a positive constant — the stated bound then
+    fails for every `t > 0`; jointly with the vacuous `CD(ρ,∞)` at
+    `L = 0`, the old family admitted no model). The mathematically
+    correct premise for this conclusion is the first-order dissipation
+    inequality `E' ≤ -2ρE` (entropy-entropy-production), together with
+    the derivative linkage. Remains an axiom (Gronwall not yet
+    formalized here) — now true under its hypotheses. Old statement
+    preserved in docs/axiom-discharge-campaign.md. -/
 axiom exponential_decay_from_convexity (L : Matrix V V ℝ) (rho : ℝ) (h_rho : rho > 0)
-    (hL : IntrinsicStabilityInequality L rho)
-    (p₀ pi_stat : V → ℝ) (t : ℝ) (ht : t ≥ 0) :
+    (p₀ pi_stat : V → ℝ)
+    (hlink : ∀ s : ℝ, HasDerivAt (fun τ => EnergyFunctional L p₀ pi_stat τ)
+      (EnergyDerivative L p₀ pi_stat s) s)
+    (hdiss : ∀ s : ℝ, 0 ≤ s →
+      EnergyDerivative L p₀ pi_stat s
+        ≤ -(2 * rho) * EnergyFunctional L p₀ pi_stat s)
+    (t : ℝ) (ht : t ≥ 0) :
     EnergyFunctional L p₀ pi_stat t ≤ EnergyFunctional L p₀ pi_stat 0 * Real.exp (-2 * rho * t)
 
 /-! ## 5. Defect Bound from Ricci Curvature
@@ -215,10 +245,26 @@ The key result: positive Ricci curvature implies bounded defect. -/
 
     This is the "geometric source" of the defect bound - no longer an axiom,
     but a consequence of geometry. -/
-axiom defect_bounded_by_ricci (L : Matrix V V ℝ) (P : Partition V)
+theorem defect_bounded_by_ricci (L : Matrix V V ℝ) (P : Partition V)
     (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (ρ : ℝ) (hρ_pos : ρ > 0) (hρ_bound : RicciCurvatureBound L ρ) :
-    ∃ C > 0, opNorm_pi pi_dist hπ (DefectOperator L P pi_dist hπ) ≤ C / ρ
+    ∃ C > 0, opNorm_pi pi_dist hπ (DefectOperator L P pi_dist hπ) ≤ C / ρ := by
+  -- **DISCHARGED with an honesty warning (2026-08-22 sweep)**: as stated,
+  -- the per-instance existential is vacuously satisfiable for ANY
+  -- operator and ANY ρ > 0 (choose C := ρ·(max ‖D‖ 0 + 1)). The Ricci
+  -- hypothesis does no work here. The MEANINGFUL statement — a uniform
+  -- constant C over a family of generators/partitions, or an explicit
+  -- C(‖L‖) — is a genuine open conjecture recorded in
+  -- docs/axiom-discharge-campaign.md; do not cite this theorem as
+  -- geometric content.
+  refine ⟨ρ * (max (opNorm_pi pi_dist hπ (DefectOperator L P pi_dist hπ)) 0 + 1),
+    by positivity, ?_⟩
+  rw [mul_comm, mul_div_assoc, div_self hρ_pos.ne', mul_one]
+  calc opNorm_pi pi_dist hπ (DefectOperator L P pi_dist hπ)
+      ≤ max (opNorm_pi pi_dist hπ (DefectOperator L P pi_dist hπ)) 0 :=
+        le_max_left _ _
+    _ ≤ max (opNorm_pi pi_dist hπ (DefectOperator L P pi_dist hπ)) 0 + 1 := by
+        linarith
 
 /-- **Approximate Lumpability from Ricci**: Positive Ricci curvature implies
     approximate lumpability with tolerance inversely proportional to curvature. -/
@@ -281,14 +327,25 @@ structure GeometricThreeWayClosure (L : Matrix V V ℝ) (P : Partition V)
     Given a generator with Ric ≥ rho > 0, we get the full geometric closure. -/
 theorem geometric_closure_from_ricci (L : Matrix V V ℝ) (P : Partition V)
     (pi_dist : V → ℝ) (hpi : ∀ v, 0 < pi_dist v)
-    (rho : ℝ) (h_rho_pos : rho > 0) (h_rho_bound : RicciCurvatureBound L rho) :
+    (rho : ℝ) (h_rho_pos : rho > 0) (h_rho_bound : RicciCurvatureBound L rho)
+    (hL_gen : ∀ i j, i ≠ j → 0 ≤ L i j) (hL_row : ∀ i, ∑ j, L i j = 0)
+    (hlink : ∀ (p₀ pi_stat : V → ℝ) (s : ℝ),
+      HasDerivAt (fun τ => EnergyFunctional L p₀ pi_stat τ)
+        (EnergyDerivative L p₀ pi_stat s) s)
+    (hlink' : ∀ (p₀ pi_stat : V → ℝ) (s : ℝ),
+      HasDerivAt (fun τ => EnergyDerivative L p₀ pi_stat τ)
+        (EnergySecondDerivative L p₀ pi_stat s) s)
+    (hdiss : ∀ (p₀ pi_stat : V → ℝ) (s : ℝ), 0 ≤ s →
+      EnergyDerivative L p₀ pi_stat s
+        ≤ -(2 * rho) * EnergyFunctional L p₀ pi_stat s) :
     GeometricThreeWayClosure L P pi_dist hpi rho where
   ricci_bound := h_rho_bound
   ricci_positive := h_rho_pos
-  stability := BakryEmery_implies_stability L rho h_rho_bound
+  stability := BakryEmery_implies_stability L rho h_rho_bound hL_gen hL_row
+    hlink hlink'
   exponential_decay := fun p₀ pi_stat t ht =>
-    exponential_decay_from_convexity L rho h_rho_pos
-      (BakryEmery_implies_stability L rho h_rho_bound) p₀ pi_stat t ht
+    exponential_decay_from_convexity L rho h_rho_pos p₀ pi_stat
+      (hlink p₀ pi_stat) (hdiss p₀ pi_stat) t ht
   recovery_char := fun t hT p q hp hq =>
     RG_preservation_iff_recovery L t p q hT hp hq
 

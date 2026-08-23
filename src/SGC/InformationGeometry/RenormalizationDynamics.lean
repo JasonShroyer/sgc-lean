@@ -14,6 +14,24 @@ import SGC.InformationGeometry.DefectDynamics
 /-!
 # SGC Renormalization Dynamics
 
+**STATUS: RESEARCH ARCHIVE / INACTIVE INTERFACE (tiered 2026-08-22).**
+Not imported by the active SGC core (verified mechanically: zero importers,
+not reachable from the `SGC.lean` root import graph — its 20 axioms and
+2 sorries never enter any active theorem's environment). No theorem in
+the audited core (Trinity, Measure Reentry, Kernel Horizon, PhysicalHorizon,
+ExpBridge — all certified per-theorem over exactly
+`[propext, Classical.choice, Quot.sound]`) depends on this file.
+
+PRESERVED, NOT DELETED (owner policy: archive aggressively, certify
+narrowly). This module encodes the variational / Fisher-metric research
+direction — dynamic co-evolution of state and structure — which may
+reconnect to: (a) optimal partition selection, (b) information-geometric
+objectives for the Closure Atlas, (c) measure-reentry minimization,
+(d) the Approximate Trinity. Promotion back to the active frontier
+requires: discharging or ledgering its axioms with satisfiability
+evidence and eliminating its sorries. See `docs/axiom-discharge-campaign.md`
+(tier ledger) for the current classification of every declaration.
+
 This module formalizes the **Dynamic SGC Update Law** where both the state (θ) and
 the structure (S) co-evolve. This is the heart of "Self-Guided Constructivism":
 the system constructs its own guide.
