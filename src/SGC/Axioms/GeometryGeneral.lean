@@ -63,55 +63,201 @@ The adjoint A† of an operator A w.r.t. the weighted inner product satisfies
 observables must be self-adjoint (A† = A).
 -/
 
-/-- The adjoint of an operator w.r.t. the weighted inner product.
-    Satisfies ⟨A† u, v⟩_π = ⟨u, A v⟩_π.
+/-- Standard basis vector `δ_x`. -/
+def basisVec (x : V) : V → 𝕜 := fun z => if z = x then 1 else 0
 
-    For finite-dimensional spaces, this always exists and is unique.
-    We axiomatize the construction; the defining property is `adjoint_pi_spec`. -/
-axiom adjoint_pi (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)
+/-- Basis expansion of a linear map's action: `(A v) y = Σ_x v x · (A δ_x) y`. -/
+lemma linearMap_apply_eq_sum (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) (v : V → 𝕜) (y : V) :
+    A v y = ∑ x, v x * A (basisVec x) y := by
+  have hv : v = ∑ x, v x • basisVec x := by
+    funext z
+    rw [Finset.sum_apply]
+    simp [basisVec, smul_eq_mul, mul_ite, mul_one, mul_zero]
+  conv_lhs => rw [hv]
+  rw [map_sum]
+  rw [Finset.sum_apply]
+  refine Finset.sum_congr rfl fun x _ => ?_
+  rw [map_smul]
+  simp [smul_eq_mul]
+
+/-- **The adjoint, constructed** (DEFINITIONALLY DISCHARGED 2026-08-22;
+was: axiom). The weighted conjugate transpose:
+`(A†u)(x) = π(x)⁻¹ · Σ_y π(y) · u(y) · star((A δ_x)(y))`.
+At zero-weight coordinates the junk value `0⁻¹ = 0` applies — harmless,
+since such coordinates are invisible to `inner_pi`, and the property
+theorems below carry the positivity hypotheses that the soundness
+counterexample (see `docs/axiom-discharge-campaign.md`) proved necessary. -/
+noncomputable def adjoint_pi (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
+    (V → 𝕜) →ₗ[𝕜] (V → 𝕜) where
+  toFun u := fun x => ((pi_dist x : 𝕜))⁻¹ *
+    ∑ y, (pi_dist y : 𝕜) * u y * star (A (basisVec x) y)
+  map_add' u v := by
+    funext x
+    simp only [Pi.add_apply]
+    rw [← mul_add, ← Finset.sum_add_distrib]
+    congr 1
+    refine Finset.sum_congr rfl fun y _ => ?_
+    ring
+  map_smul' c u := by
+    funext x
+    simp only [Pi.smul_apply, smul_eq_mul, RingHom.id_apply]
+    have hs : (∑ y, (pi_dist y : 𝕜) * (c * u y) * star (A (basisVec x) y))
+        = c * ∑ y, (pi_dist y : 𝕜) * u y * star (A (basisVec x) y) := by
+      rw [Finset.mul_sum]
+      exact Finset.sum_congr rfl fun y _ => by ring
+    rw [hs]
+    ring
+
+lemma adjoint_pi_apply (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜))
+    (u : V → 𝕜) (x : V) :
+    adjoint_pi pi_dist A u x = ((pi_dist x : 𝕜))⁻¹ *
+      ∑ y, (pi_dist y : 𝕜) * u y * star (A (basisVec x) y) := rfl
+
+/-- Nonzero real weights stay nonzero after the cast into `𝕜`. -/
+lemma cast_pi_ne_zero {pi_dist : V → ℝ} (hπ : ∀ v, 0 < pi_dist v) (x : V) :
+    ((pi_dist x : ℝ) : 𝕜) ≠ 0 :=
+  RCLike.ofReal_ne_zero.mpr (hπ x).ne'
 
 /-- Defining property of the adjoint: ⟨A† u, v⟩_π = ⟨u, A v⟩_π.
-
-    **SOUNDNESS REPAIR (2026-08-22)**: the positivity hypothesis `hπ` is
-    REQUIRED. The unhypothesized version is false: for degenerate `π`
-    (e.g. `π = (1,0)` on `Fin 2`) no adjoint can satisfy it, and `False`
-    was mechanically derived from the old axiom
-    (see `docs/axiom-discharge-campaign.md`, soundness section). With
-    `hπ` the weighted adjoint `D_π⁻¹ A* D_π` is a model, so the axiom
-    family is satisfiable. Full definitional discharge is the recorded
-    next step. -/
-axiom adjoint_pi_spec (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+**THEOREM** (was axiom; discharged 2026-08-22). The positivity hypothesis
+is genuinely required — `False` was derivable from the unhypothesized
+version (soundness repair, same day). -/
+theorem adjoint_pi_spec (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) (u v : V → 𝕜) :
-    inner_pi pi_dist (adjoint_pi pi_dist A u) v = inner_pi pi_dist u (A v)
+    inner_pi pi_dist (adjoint_pi pi_dist A u) v = inner_pi pi_dist u (A v) := by
+  unfold inner_pi
+  have hterm : ∀ x, (pi_dist x : 𝕜) * star (adjoint_pi pi_dist A u x) * v x
+      = ∑ y, (pi_dist y : 𝕜) * star (u y) * (A (basisVec x) y * v x) := by
+    intro x
+    rw [adjoint_pi_apply, star_mul', star_inv₀, star_sum]
+    have hstar : ∀ y, star ((pi_dist y : 𝕜) * u y * star (A (basisVec x) y))
+        = (pi_dist y : 𝕜) * star (u y) * A (basisVec x) y := by
+      intro y
+      rw [star_mul', star_mul', star_star]
+      simp only [RCLike.star_def, RCLike.conj_ofReal]
+    rw [Finset.sum_congr rfl fun y _ => hstar y]
+    rw [show star ((pi_dist x : 𝕜)) = (pi_dist x : 𝕜) by
+      simp [RCLike.star_def, RCLike.conj_ofReal]]
+    rw [← mul_assoc, mul_inv_cancel₀ (cast_pi_ne_zero hπ x), one_mul,
+      Finset.sum_mul]
+    exact Finset.sum_congr rfl fun y _ => by ring
+  rw [Finset.sum_congr rfl fun x _ => hterm x, Finset.sum_comm]
+  refine Finset.sum_congr rfl fun y _ => ?_
+  rw [← Finset.mul_sum]
+  congr 1
+  rw [linearMap_apply_eq_sum A v y]
+  refine Finset.sum_congr rfl fun x _ => ?_
+  ring
 
-/-- The adjoint is an involution: (A†)† = A. Requires positive `π`
-    (soundness repair 2026-08-22; see `adjoint_pi_spec`). -/
-axiom adjoint_pi_involutive (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+/-- Adjoint on a basis vector: the weighted transposed entry. -/
+lemma adjoint_pi_basisVec (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜))
+    (w x : V) :
+    adjoint_pi pi_dist A (basisVec w) x
+      = ((pi_dist x : 𝕜))⁻¹ * ((pi_dist w : 𝕜) * star (A (basisVec x) w)) := by
+  rw [adjoint_pi_apply]
+  congr 1
+  rw [Finset.sum_eq_single w]
+  · simp [basisVec]
+  · intro y _ hy
+    simp [basisVec, hy]
+  · intro h
+    exact absurd (Finset.mem_univ _) h
+
+/-- The adjoint is an involution: (A†)† = A. **THEOREM** (was axiom;
+discharged 2026-08-22). Requires positive `π`. -/
+theorem adjoint_pi_involutive (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
-    adjoint_pi pi_dist (adjoint_pi pi_dist A) = A
+    adjoint_pi pi_dist (adjoint_pi pi_dist A) = A := by
+  apply LinearMap.ext
+  intro u
+  funext x
+  rw [adjoint_pi_apply]
+  have hentry : ∀ y, (pi_dist y : 𝕜) * u y
+        * star (adjoint_pi pi_dist A (basisVec x) y)
+      = (pi_dist x : 𝕜) * (u y * A (basisVec y) x) := by
+    intro y
+    rw [adjoint_pi_basisVec, star_mul', star_mul', star_inv₀, star_star]
+    simp only [RCLike.star_def, RCLike.conj_ofReal]
+    have h1 : ((pi_dist y : ℝ) : 𝕜) ≠ 0 := cast_pi_ne_zero hπ y
+    field_simp
+  rw [Finset.sum_congr rfl fun y _ => hentry y, ← Finset.mul_sum]
+  have h2 : ((pi_dist x : ℝ) : 𝕜) ≠ 0 := cast_pi_ne_zero hπ x
+  rw [← mul_assoc, inv_mul_cancel₀ h2, one_mul]
+  rw [linearMap_apply_eq_sum A u x]
 
-/-- The adjoint of a composition: (AB)† = B†A†. Requires positive `π`
-    (soundness repair 2026-08-22; see `adjoint_pi_spec`). -/
-axiom adjoint_pi_comp (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+/-- The adjoint of a composition: (AB)† = B†A†. **THEOREM** (was axiom;
+discharged 2026-08-22). Requires positive `π`. -/
+theorem adjoint_pi_comp (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (A B : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
-    adjoint_pi pi_dist (A ∘ₗ B) = adjoint_pi pi_dist B ∘ₗ adjoint_pi pi_dist A
+    adjoint_pi pi_dist (A ∘ₗ B) = adjoint_pi pi_dist B ∘ₗ adjoint_pi pi_dist A := by
+  apply LinearMap.ext
+  intro u
+  funext x
+  rw [LinearMap.comp_apply, adjoint_pi_apply, adjoint_pi_apply]
+  have hAB : ∀ y, star ((A ∘ₗ B) (basisVec x) y)
+      = ∑ z, star (B (basisVec x) z) * star (A (basisVec z) y) := by
+    intro y
+    rw [LinearMap.comp_apply, linearMap_apply_eq_sum A (B (basisVec x)) y,
+      star_sum]
+    exact Finset.sum_congr rfl fun z _ => by rw [star_mul']
+  have hAdj : ∀ z, (pi_dist z : 𝕜) * adjoint_pi pi_dist A u z
+      = ∑ y, (pi_dist y : 𝕜) * u y * star (A (basisVec z) y) := by
+    intro z
+    rw [adjoint_pi_apply, ← mul_assoc,
+      mul_inv_cancel₀ (cast_pi_ne_zero hπ z), one_mul]
+  congr 1
+  calc (∑ y, (pi_dist y : 𝕜) * u y * star ((A ∘ₗ B) (basisVec x) y))
+      = ∑ y, ∑ z, (pi_dist y : 𝕜) * u y
+          * (star (B (basisVec x) z) * star (A (basisVec z) y)) := by
+        refine Finset.sum_congr rfl fun y _ => ?_
+        rw [hAB y, Finset.mul_sum]
+    _ = ∑ z, ∑ y, (pi_dist y : 𝕜) * u y
+          * star (A (basisVec z) y) * star (B (basisVec x) z) := by
+        rw [Finset.sum_comm]
+        refine Finset.sum_congr rfl fun z _ => Finset.sum_congr rfl fun y _ => by ring
+    _ = ∑ z, (pi_dist z : 𝕜) * adjoint_pi pi_dist A u z
+          * star (B (basisVec x) z) := by
+        refine Finset.sum_congr rfl fun z _ => ?_
+        rw [hAdj z, Finset.sum_mul]
+    _ = ∑ z, (pi_dist z : 𝕜) * adjoint_pi pi_dist A u z
+          * star (B (basisVec x) z) := rfl
 
-/-- The adjoint of zero is zero. -/
-axiom adjoint_pi_zero (pi_dist : V → ℝ) :
-    adjoint_pi pi_dist (0 : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) = 0
+/-- The adjoint of zero is zero. **THEOREM** (was axiom; discharged
+2026-08-22). No positivity needed. -/
+theorem adjoint_pi_zero (pi_dist : V → ℝ) :
+    adjoint_pi pi_dist (0 : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) = 0 := by
+  apply LinearMap.ext
+  intro u
+  funext x
+  rw [adjoint_pi_apply]
+  simp
 
-/-! ## Hermitian (Self-Adjoint) Operators
-
-For quantum applications, we need operators that are self-adjoint with respect to
-the weighted Hermitian inner product. Over ℂ, this corresponds to Hermitian matrices;
-over ℝ, this reduces to symmetric matrices.
--/
-
-/-- Two operators are equal if they produce equal inner products for all vectors.
-    Follows from non-degeneracy: if ⟨(A-B)u, v⟩ = 0 for all u,v, then A = B. -/
-axiom linearMap_ext_inner (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
+/-- Two operators are equal if they produce equal inner products for all
+vectors. **THEOREM** (was axiom; discharged 2026-08-22): non-degeneracy
+of `inner_pi` for positive `π`, via testing against basis vectors. -/
+theorem linearMap_ext_inner (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (A B : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) :
-    (∀ u v, inner_pi pi_dist (A u) v = inner_pi pi_dist (B u) v) → A = B
+    (∀ u v, inner_pi pi_dist (A u) v = inner_pi pi_dist (B u) v) → A = B := by
+  intro h
+  apply LinearMap.ext
+  intro u
+  funext x
+  have hcol : ∀ (w : V → 𝕜),
+      inner_pi pi_dist w (basisVec x) = (pi_dist x : 𝕜) * star (w x) := by
+    intro w
+    unfold inner_pi
+    rw [Finset.sum_eq_single x]
+    · simp [basisVec]
+    · intro z _ hz
+      simp [basisVec, hz]
+    · intro hx
+      exact absurd (Finset.mem_univ _) hx
+  have hx := h u (basisVec x)
+  rw [hcol (A u), hcol (B u)] at hx
+  have hstar : star (A u x) = star (B u x) :=
+    mul_left_cancel₀ (cast_pi_ne_zero hπ x) hx
+  have := congrArg star hstar
+  simpa [star_star] using this
 
 /-- An operator A is self-adjoint w.r.t. the weighted inner product if A† = A.
     Equivalently, ⟨Au, v⟩ = ⟨u, Av⟩ for all u, v.
