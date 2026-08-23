@@ -126,6 +126,22 @@ import SGC.Renormalization.PhysicalHorizon
 #guard_msgs (whitespace := lax) in
 #print axioms SGC.Renormalization.SymmetryLumpability.counterexample_lumpable_not_symmetric
 
+/-- info: 'SGC.Axioms.GeometryGeneral.adjoint_pi_spec' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Axioms.GeometryGeneral.adjoint_pi_spec
+
+/-- info: 'SGC.Axioms.GeometryGeneral.adjoint_pi_involutive' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Axioms.GeometryGeneral.adjoint_pi_involutive
+
+/-- info: 'SGC.Axioms.GeometryGeneral.adjoint_pi_comp' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Axioms.GeometryGeneral.adjoint_pi_comp
+
+/-- info: 'SGC.Axioms.GeometryGeneral.linearMap_ext_inner' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Axioms.GeometryGeneral.linearMap_ext_inner
+
 /-- info: 'SGC.Renormalization.PhysicalHorizon.closureCommutator_eulerStep' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms SGC.Renormalization.PhysicalHorizon.closureCommutator_eulerStep
