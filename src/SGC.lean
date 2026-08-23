@@ -452,6 +452,18 @@ import SGC.Renormalization.KernelHorizon
 -- e^{tL} remains the recorded open bridge.
 import SGC.Renormalization.PhysicalHorizon
 
+-- The Exponential Bridge (2026-08-22, overnight): rectangular exponential
+-- intertwining — L*K = K*Q propagates through the genuine matrix
+-- exponential, exp(L)*K = K*exp(Q) (exp as summable series; fixed-matrix
+-- multiplication is a continuous linear map, so it passes through the
+-- tsum; power intertwining does the rest termwise). Corollary
+-- exp_closure_of_zero_commutator: ZERO CLOSURE COMMUTATOR GIVES ETERNAL
+-- EXACT CLOSURE OF THE TRUE CTMC SEMIGROUP at every physical time t —
+-- the eps = 0 pole of the continuous-time bridge, kernel-proven. The
+-- eps > 0 Duhamel integral remains the recorded design target (module
+-- docstring lists the exact missing assembly).
+import SGC.Renormalization.ExpBridge
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════

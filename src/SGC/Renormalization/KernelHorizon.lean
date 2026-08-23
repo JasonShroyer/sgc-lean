@@ -244,6 +244,125 @@ theorem within_tolerance_of_defect_small (T : Matrix V V ℝ) (P : Partition V)
       - lift_matrix P * (CoarseGenerator T P pi_dist) ^ n‖ ≤ η :=
   le_trans (kernel_closure_error_le T P hπ hT n) h
 
+/-! ## §4. Centered commutator and geometric accumulation -/
+
+/-- **The commutator's columns are π-centered**: for every target block,
+the `π`-weighted total of the residual field vanishes — pure algebra, no
+stationarity of `π` required (the block-mass weighting cancels exactly).
+This is why mixing hypotheses on centered observables are the natural
+route to sub-linear error accumulation: the closure commutator lives in
+exactly the subspace that mixing contracts. -/
+theorem commutator_columns_centered (T : Matrix V V ℝ) (P : Partition V)
+    {pi_dist : V → ℝ} (hπ : ∀ x, 0 < pi_dist x) (B : P.Quot) :
+    ∑ x : V, pi_dist x * closureCommutator T P pi_dist x B = 0 := by
+  have hsplit : ∀ (f : V → ℝ), (∑ x : V, f x)
+      = ∑ A : P.Quot, ∑ x : V, if P.quot_map x = A then f x else 0 := by
+    intro f
+    rw [Finset.sum_comm]
+    refine Finset.sum_congr rfl fun x _ => ?_
+    simp
+  simp_rw [closureCommutator_entry, MeasureReentry.residual, mul_sub]
+  rw [Finset.sum_sub_distrib]
+  have h1 : (∑ x : V, pi_dist x * row_sum_block T P x B)
+      = ∑ A : P.Quot, BlockRate T P pi_dist A B := by
+    rw [hsplit (fun x => pi_dist x * row_sum_block T P x B)]
+    exact Finset.sum_congr rfl fun A _ =>
+      (blockRate_eq_sum_pi_mul_exit T P pi_dist A B).symm
+  have h2 : (∑ x : V, pi_dist x
+        * CoarseGenerator T P pi_dist (P.quot_map x) B)
+      = ∑ A : P.Quot, BlockRate T P pi_dist A B := by
+    rw [hsplit (fun x => pi_dist x
+      * CoarseGenerator T P pi_dist (P.quot_map x) B)]
+    refine Finset.sum_congr rfl fun A _ => ?_
+    have hstep : (∑ x : V, if P.quot_map x = A
+        then pi_dist x * CoarseGenerator T P pi_dist (P.quot_map x) B else 0)
+        = CoarseGenerator T P pi_dist A B
+          * ∑ x : V, (if P.quot_map x = A then pi_dist x else 0) := by
+      rw [Finset.mul_sum]
+      refine Finset.sum_congr rfl fun x _ => ?_
+      by_cases hx : P.quot_map x = A
+      · simp [hx, mul_comm]
+      · simp [hx]
+    rw [hstep]
+    have hpos : 0 < CoarseStationaryDist P pi_dist A := pi_bar_pos P hπ A
+    have hQ : CoarseGenerator T P pi_dist A B
+        = (1 / CoarseStationaryDist P pi_dist A) * BlockRate T P pi_dist A B := by
+      unfold CoarseGenerator BlockRate
+      rw [if_neg hpos.ne']
+    have hmass : (∑ x : V, if P.quot_map x = A then pi_dist x else 0)
+        = CoarseStationaryDist P pi_dist A := rfl
+    rw [hQ, hmass]
+    field_simp
+  rw [h1, h2, sub_self]
+
+/-- **Geometric accumulation** under an abstract mixing hypothesis: if the
+fine dynamics contracts the commutator geometrically
+(`‖T^m·𝒞‖ ≤ α^m·‖𝒞‖`), the closure error is bounded by the geometric
+series instead of `n·‖𝒞‖`. The hypothesis is NOT claimed for arbitrary
+stochastic kernels — `commutator_columns_centered` is exactly why mixing
+chains satisfy it on the relevant subspace, but that spectral argument is
+future work. -/
+theorem kernel_closure_error_le_geom (T : Matrix V V ℝ) (P : Partition V)
+    {pi_dist : V → ℝ} (hπ : ∀ x, 0 < pi_dist x) (hT : IsStochastic T)
+    {α : ℝ}
+    (hmix : ∀ m : ℕ, ‖T ^ m * closureCommutator T P pi_dist‖
+      ≤ α ^ m * ‖closureCommutator T P pi_dist‖) (n : ℕ) :
+    ‖T ^ n * lift_matrix P
+      - lift_matrix P * (CoarseGenerator T P pi_dist) ^ n‖
+      ≤ (∑ k ∈ Finset.range n, α ^ k)
+        * ‖closureCommutator T P pi_dist‖ := by
+  rw [power_closure_telescoping]
+  calc ‖∑ k ∈ Finset.range n,
+        T ^ (n - 1 - k) * closureCommutator T P pi_dist
+          * (CoarseGenerator T P pi_dist) ^ k‖
+      ≤ ∑ k ∈ Finset.range n,
+        ‖T ^ (n - 1 - k) * closureCommutator T P pi_dist
+          * (CoarseGenerator T P pi_dist) ^ k‖ := norm_sum_le _ _
+    _ ≤ ∑ k ∈ Finset.range n,
+        α ^ (n - 1 - k) * ‖closureCommutator T P pi_dist‖ := by
+        refine Finset.sum_le_sum fun k _ => ?_
+        calc ‖T ^ (n - 1 - k) * closureCommutator T P pi_dist
+              * (CoarseGenerator T P pi_dist) ^ k‖
+            ≤ ‖T ^ (n - 1 - k) * closureCommutator T P pi_dist‖
+              * ‖(CoarseGenerator T P pi_dist) ^ k‖ :=
+              Matrix.linfty_opNorm_mul _ _
+          _ ≤ ‖T ^ (n - 1 - k) * closureCommutator T P pi_dist‖ * 1 := by
+              refine mul_le_mul_of_nonneg_left
+                (stochastic_pow_norm_le_one _
+                  (coarseKernel_isStochastic T P hπ hT) k)
+                (norm_nonneg _)
+          _ = ‖T ^ (n - 1 - k) * closureCommutator T P pi_dist‖ := by ring
+          _ ≤ α ^ (n - 1 - k) * ‖closureCommutator T P pi_dist‖ :=
+              hmix (n - 1 - k)
+    _ = (∑ k ∈ Finset.range n, α ^ k)
+        * ‖closureCommutator T P pi_dist‖ := by
+        rw [Finset.sum_mul]
+        exact Finset.sum_range_reflect
+          (fun k => α ^ k * ‖closureCommutator T P pi_dist‖) n
+    _ = (∑ k ∈ Finset.range n, α ^ k)
+        * ‖closureCommutator T P pi_dist‖ := rfl
+
+/-- **UNIFORM-IN-TIME APPROXIMATE CLOSURE.** Under geometric mixing with
+rate `α < 1`, the macro-law's closure error NEVER exceeds `‖𝒞‖/(1−α)` —
+at any time horizon. Imperfect emergence with mixing is eternally
+approximately valid: the leak is bounded, not cumulative. -/
+theorem kernel_closure_error_le_uniform (T : Matrix V V ℝ) (P : Partition V)
+    {pi_dist : V → ℝ} (hπ : ∀ x, 0 < pi_dist x) (hT : IsStochastic T)
+    {α : ℝ} (hα0 : 0 ≤ α) (hα1 : α < 1)
+    (hmix : ∀ m : ℕ, ‖T ^ m * closureCommutator T P pi_dist‖
+      ≤ α ^ m * ‖closureCommutator T P pi_dist‖) (n : ℕ) :
+    ‖T ^ n * lift_matrix P
+      - lift_matrix P * (CoarseGenerator T P pi_dist) ^ n‖
+      ≤ (1 / (1 - α)) * ‖closureCommutator T P pi_dist‖ := by
+  refine le_trans (kernel_closure_error_le_geom T P hπ hT hmix n) ?_
+  refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
+  have h1α : (0:ℝ) < 1 - α := by linarith
+  rw [geom_sum_eq hα1.ne n]
+  have hrw : (α ^ n - 1) / (α - 1) = (1 - α ^ n) / (1 - α) := by
+    rw [← neg_sub (1:ℝ) (α ^ n), ← neg_sub (1:ℝ) α, neg_div_neg_eq]
+  rw [hrw]
+  gcongr <;> linarith [pow_nonneg hα0 n]
+
 /-- At zero defect the macro-law is eternally exact — the `ε = 0` pole of
 the horizon theorem, recovering the intertwining/eternal-closure regime. -/
 theorem eternal_closure_of_zero_commutator (T : Matrix V V ℝ)

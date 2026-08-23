@@ -284,11 +284,83 @@ lemma isSelfAdjoint_pi_iff (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
 def IsPositive_pi (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) : Prop :=
   ∀ u, 0 ≤ RCLike.re (inner_pi pi_dist (A u) u)
 
-/-- For self-adjoint operators, ⟨Au, u⟩ is real-valued (imaginary part is zero).
-    Proof: ⟨Au,u⟩ = star⟨u,Au⟩ = star⟨Au,u⟩ by self-adjointness, so z = star z. -/
-axiom inner_self_adjoint_real (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜))
+/-- Concrete self-adjointness forces the weighted symmetry of matrix
+entries, with NO positivity hypothesis: `π_x·M_xy = π_y·star(M_yx)` where
+`M_xy = (A δ_y)(x)`. At degenerate weights, `A† = A` (for the concrete
+junk-robust adjoint) forces the corresponding rows AND columns of `A` to
+vanish, so both sides are zero. -/
+lemma isSelfAdjoint_entry_symm (pi_dist : V → ℝ)
+    (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) (hA : IsSelfAdjoint_pi pi_dist A) (x y : V) :
+    (pi_dist x : 𝕜) * A (basisVec y) x
+      = (pi_dist y : 𝕜) * star (A (basisVec x) y) := by
+  have hxy : adjoint_pi pi_dist A (basisVec y) x = A (basisVec y) x := by
+    rw [hA]
+  have hyx : adjoint_pi pi_dist A (basisVec x) y = A (basisVec x) y := by
+    rw [hA]
+  rw [adjoint_pi_basisVec] at hxy hyx
+  by_cases hx : (pi_dist x : ℝ) = 0
+  · have hx𝕜 : ((pi_dist x : ℝ) : 𝕜) = 0 := by exact_mod_cast hx
+    rw [hx𝕜, zero_mul]
+    rw [← hyx, hx𝕜]
+    simp
+  · have hx𝕜 : ((pi_dist x : ℝ) : 𝕜) ≠ 0 := by exact_mod_cast hx
+    rw [← hxy, ← mul_assoc, mul_inv_cancel₀ hx𝕜, one_mul]
+
+/-- **Self-adjoint operators have symmetric weighted forms** — with no
+positivity hypothesis, thanks to the concrete adjoint: `⟨Au, v⟩_π = ⟨u, Av⟩_π`.
+(The unhypothesized *spec* is false for general `A`; self-adjointness is
+exactly the extra rigidity that kills the degenerate-weight columns.) -/
+theorem isSelfAdjoint_inner_symm (pi_dist : V → ℝ)
+    (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜)) (hA : IsSelfAdjoint_pi pi_dist A)
+    (u v : V → 𝕜) :
+    inner_pi pi_dist (A u) v = inner_pi pi_dist u (A v) := by
+  unfold inner_pi
+  have hL : ∀ x, (pi_dist x : 𝕜) * star (A u x) * v x
+      = ∑ y, star (u y) * v x * ((pi_dist x : 𝕜) * star (A (basisVec y) x)) := by
+    intro x
+    rw [linearMap_apply_eq_sum A u x, star_sum, Finset.mul_sum, Finset.sum_mul]
+    refine Finset.sum_congr rfl fun y _ => ?_
+    rw [star_mul']
+    ring
+  have hR : ∀ y, (pi_dist y : 𝕜) * star (u y) * A v y
+      = ∑ x, star (u y) * v x * ((pi_dist y : 𝕜) * A (basisVec x) y) := by
+    intro y
+    rw [linearMap_apply_eq_sum A v y, Finset.mul_sum]
+    refine Finset.sum_congr rfl fun x _ => ?_
+    ring
+  rw [Finset.sum_congr rfl fun x _ => hL x, Finset.sum_comm]
+  rw [Finset.sum_congr rfl fun y _ => hR y]
+  refine Finset.sum_congr rfl fun y _ => Finset.sum_congr rfl fun x _ => ?_
+  congr 1
+  have h := isSelfAdjoint_entry_symm pi_dist A hA y x
+  calc (pi_dist x : 𝕜) * star (A (basisVec y) x)
+      = star ((pi_dist x : 𝕜) * A (basisVec y) x) := by
+        rw [star_mul']
+        congr 1
+        simp [RCLike.star_def, RCLike.conj_ofReal]
+    _ = star ((pi_dist y : 𝕜) * star (A (basisVec x) y)) := by
+        rw [isSelfAdjoint_entry_symm pi_dist A hA x y]
+    _ = (pi_dist y : 𝕜) * A (basisVec x) y := by
+        rw [star_mul', star_star]
+        congr 1
+        simp [RCLike.star_def, RCLike.conj_ofReal]
+
+/-- For self-adjoint operators, ⟨Au, u⟩ is real-valued (imaginary part is
+zero). **THEOREM** (was axiom; discharged 2026-08-22 overnight): from
+`isSelfAdjoint_inner_symm` and conjugate symmetry, `z = star z`. Requires
+no positivity — the concrete adjoint construction supplies the rigidity. -/
+theorem inner_self_adjoint_real (pi_dist : V → ℝ) (A : (V → 𝕜) →ₗ[𝕜] (V → 𝕜))
     (hA : IsSelfAdjoint_pi pi_dist A) (u : V → 𝕜) :
-    RCLike.im (inner_pi pi_dist (A u) u) = 0
+    RCLike.im (inner_pi pi_dist (A u) u) = 0 := by
+  have hsymm := isSelfAdjoint_inner_symm pi_dist A hA u u
+  have hconj : inner_pi pi_dist (A u) u
+      = star (inner_pi pi_dist (A u) u) := by
+    calc inner_pi pi_dist (A u) u
+        = inner_pi pi_dist u (A u) := hsymm
+      _ = star (inner_pi pi_dist (A u) u) := inner_pi_conj_symm pi_dist u (A u)
+  have him := congrArg RCLike.im hconj
+  rw [RCLike.star_def, RCLike.conj_im] at him
+  linarith
 
 /-! ## Spectral Gap (Generalized)
 
