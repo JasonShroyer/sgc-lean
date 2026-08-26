@@ -464,6 +464,25 @@ import SGC.Renormalization.PhysicalHorizon
 -- docstring lists the exact missing assembly).
 import SGC.Renormalization.ExpBridge
 
+-- Topological Sensing (2026-08-26): Primitive 22, formalized honestly after
+-- rejecting the proposed spectral-gap exponential horizon (false: gap ~ 1/L^2
+-- on a cycle; unconfined defects wind in diffusive time). The true ladder:
+-- (1) GAUGE PROTECTION IS EXACT AND ETERNAL — winding sums of exact edge-
+-- forms telescope to g(end) - g(start) on EVERY sample path; loop closures
+-- cancel all local sensor clutter (windingSum_exact, cycleSum_gauge_invariant).
+-- (2) SILENCE THEOREMS — stationarity kills gauge flux; detailed balance
+-- kills the mean drift of EVERY antisymmetric loop observable: systematic
+-- winding certifies irreversibility. (3) THE DISSIPATION BOUND
+-- (flux_sq_le_killingDefect): (2*flux)^2 <= KillingDefect * ||xi||^2 —
+-- mean topological drift is priced by the probability current's Frobenius
+-- mass (elementary finite cousin of the mean-current half of thermodynamic
+-- uncertainty relations; full TUR not claimed). (4) Linear drift law:
+-- E[winding](t) = t * flux from stationary start. Winding is the path-space
+-- face of the affinity charge; a drifting interferometric closure is a
+-- thermometer for entropy production. Exponential-in-L lifetime remains
+-- CONDITIONAL future work (extensive barrier hypothesis, beta*kappa*dE > h).
+import SGC.Bridge.TopologicalSensing
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════

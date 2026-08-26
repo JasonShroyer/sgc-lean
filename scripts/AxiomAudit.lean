@@ -26,6 +26,7 @@ import SGC.Renormalization.MeasureReentry
 import SGC.Renormalization.KernelHorizon
 import SGC.Renormalization.PhysicalHorizon
 import SGC.Renormalization.ExpBridge
+import SGC.Bridge.TopologicalSensing
 
 /-- info: 'SGC.Topology.PadicPathSpace.pathSpace_homeo_padicInt' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
@@ -126,6 +127,22 @@ import SGC.Renormalization.ExpBridge
 /-- info: 'SGC.Renormalization.SymmetryLumpability.counterexample_lumpable_not_symmetric' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms SGC.Renormalization.SymmetryLumpability.counterexample_lumpable_not_symmetric
+
+/-- info: 'SGC.Bridge.TopologicalSensing.windingSum_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Bridge.TopologicalSensing.windingSum_exact
+
+/-- info: 'SGC.Bridge.TopologicalSensing.flux_eq_zero_of_detailedBalance' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Bridge.TopologicalSensing.flux_eq_zero_of_detailedBalance
+
+/-- info: 'SGC.Bridge.TopologicalSensing.flux_sq_le_killingDefect' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Bridge.TopologicalSensing.flux_sq_le_killingDefect
+
+/-- info: 'SGC.Bridge.TopologicalSensing.expectedWinding_eq_time_mul_flux' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Bridge.TopologicalSensing.expectedWinding_eq_time_mul_flux
 
 /-- info: 'SGC.Axioms.GeometryGeneral.inner_self_adjoint_real' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
