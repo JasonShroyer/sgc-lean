@@ -483,6 +483,21 @@ import SGC.Renormalization.ExpBridge
 -- CONDITIONAL future work (extensive barrier hypothesis, beta*kappa*dE > h).
 import SGC.Bridge.TopologicalSensing
 
+-- The Hodge Decomposition (2026-08-26): THE HOLONOMY RING, FUSED. Every
+-- antisymmetric edge field splits explicitly and uniquely into an exact
+-- (gauge) part and a divergence-free (circulating) part — with a CLOSED-
+-- FORM potential g = div(xi)/|V| on the complete graph (no linear algebra
+-- machinery; Atlas-computable in O(n^2)). Kirchhoff formalized: the
+-- stationary probability current is divergence-free, so the Killing
+-- defect is a pure cycle-space quantity. Holonomy and drift both factor
+-- through the Hodge class (cycleSum_eq_cycleSum_harmonicPart,
+-- flux_eq_flux_harmonicPart). DISCOVERED EN ROUTE: the dissipation bound
+-- SHARPENS — (2*flux)^2 <= KillingDefect * ||harmonicPart||^2, improving
+-- the TopologicalSensing bound by exactly the gauge norm (Pythagoras).
+-- Capstone bundle: holonomy_ring_unification. Prior art credited:
+-- Eckmann 1944, Jiang-Lim-Yao-Ye 2011, Schnakenberg 1976.
+import SGC.Bridge.HodgeDecomposition
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════
