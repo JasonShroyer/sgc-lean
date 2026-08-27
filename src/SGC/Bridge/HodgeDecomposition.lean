@@ -298,6 +298,46 @@ lemma flux_add (P : Matrix V V ℝ) (pi_dist : V → ℝ) (ξ η : V → V → �
   rw [← Finset.sum_add_distrib]
   exact Finset.sum_congr rfl fun v _ => by ring
 
+/-- **Gauge flux is exactly the non-stationarity pairing**: for any
+row-stochastic kernel and ANY measure (stationary or not),
+`flux(dPot g) = Σ_v ((πP)(v) − π(v))·g(v)`.
+
+This makes the epistemics of the sharpened dissipation bound precise:
+`flux` is defined on raw edge fields (`TopologicalSensing.flux`), and the
+gauge component's contribution to drift is a THEOREM-level cancellation
+that happens exactly at stationarity — not a definitional restriction.
+Away from stationarity the gauge flux is nonzero in general and measures
+the one-step displacement of the measure; "projecting out gauge content is
+free noise reduction" is licensed AT stationarity and quantified off it. -/
+theorem flux_dPot_eq_stationarity_pairing (P : Matrix V V ℝ)
+    (pi_dist : V → ℝ) (g : V → ℝ) (hrow : ∀ u, ∑ v, P u v = 1) :
+    flux P pi_dist (dPot g)
+      = ∑ v : V, ((∑ u : V, pi_dist u * P u v) - pi_dist v) * g v := by
+  unfold flux dPot
+  have hsplit : (∑ u : V, ∑ v : V, pi_dist u * P u v * (g v - g u))
+      = (∑ u : V, ∑ v : V, pi_dist u * P u v * g v)
+        - ∑ u : V, ∑ v : V, pi_dist u * P u v * g u := by
+    rw [← Finset.sum_sub_distrib]
+    refine Finset.sum_congr rfl fun u _ => ?_
+    rw [← Finset.sum_sub_distrib]
+    exact Finset.sum_congr rfl fun v _ => by ring
+  rw [hsplit]
+  have h1 : (∑ u : V, ∑ v : V, pi_dist u * P u v * g v)
+      = ∑ v : V, (∑ u : V, pi_dist u * P u v) * g v := by
+    rw [Finset.sum_comm]
+    exact Finset.sum_congr rfl fun v _ => by rw [Finset.sum_mul]
+  have h2 : (∑ u : V, ∑ v : V, pi_dist u * P u v * g u)
+      = ∑ u : V, pi_dist u * g u := by
+    refine Finset.sum_congr rfl fun u _ => ?_
+    calc (∑ v : V, pi_dist u * P u v * g u)
+        = (pi_dist u * g u) * ∑ v : V, P u v := by
+          rw [Finset.mul_sum]
+          exact Finset.sum_congr rfl fun v _ => by ring
+      _ = pi_dist u * g u := by rw [hrow u, mul_one]
+  rw [h1, h2]
+  rw [← Finset.sum_sub_distrib]
+  exact Finset.sum_congr rfl fun v _ => by ring
+
 /-- Drift factors through the Hodge class: gauge flux is silenced by
 stationarity, so `flux ξ = flux (harmonicPart ξ)`. -/
 theorem flux_eq_flux_harmonicPart (P : Matrix V V ℝ) (pi_dist : V → ℝ)
