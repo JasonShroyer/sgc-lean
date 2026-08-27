@@ -138,6 +138,29 @@ ONLY — no tier below affects them.
 Archive axioms are provisional research interfaces — not deleted, not solved,
 not part of any active certificate.
 
+## Tsallis sweep (2026-08-26): THIRD false axiom found and repaired
+
+Stress-testing the nonlinear thread per the failure taxonomy (V1: identity
+on a wrong definition; V2: binary-case identity over-generalized to all n,
+both previously removed), the satisfiability audit found TsallisDPI itself
+FALSE AS STATED: its hypothesis required ROW sums of T to equal 1 while
+the action (Tp)(v) = sum_w T[v,w] p[w] conserves mass only under COLUMN
+sums = 1. Counterexample (numerically verified): q = 1.5, p = (0.9, 0.1),
+ref = (0.5, 0.5), T = [[0,1],[0,1]] (rows sum to 1): total mass of Tp is
+0.2 and D_q(Tp||Tref) = 1.106 > 0.211 = D_q(p||ref) - violation by 5x.
+Zero proof-term consumers (docstring mentions only) => no ripple. REPAIR:
+column-stochastic hypothesis (mass-conserving Markov convention); commit
+331e0bc, archive @ 6725871. Old statement preserved in module docstring.
+
+FAILURE TAXONOMY (three instances now): all three Tsallis failures are
+convention/range/generality over-extensions of claims true in a special
+case (binary n, q = 1, transposed matrix convention). Guards for the
+f-divergence constructive discharge: convexity carried as an explicit
+hypothesis (f_q(t) = (t - t^(2-q))/(q-1) is convex on t > 0 iff q < 2 -
+the module's own q = 2.5 grokking regime lies outside, correctly);
+stochasticity in the mass-conserving convention only; instance theorems
+claim exactly the proven range (1,2), never "all q".
+
 ## Overnight sweep ledger (2026-08-22, night)
 
 - inner_self_adjoint_real: DISCHARGED as theorem, no hypothesis change
