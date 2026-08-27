@@ -46,7 +46,8 @@ robocopy "$repo\src"  "$wt\src"  /MIR /NFL /NDL /NJH /NJS | Out-Null
 if ($LASTEXITCODE -ge 8) { throw "robocopy src failed" }
 robocopy "$repo\test" "$wt\test" /MIR /NFL /NDL /NJH /NJS | Out-Null
 if ($LASTEXITCODE -ge 8) { throw "robocopy test failed" }
-foreach ($f in 'lakefile.lean', 'lean-toolchain', 'lake-manifest.json', 'LICENSE') {
+foreach ($f in 'lakefile.lean', 'lean-toolchain', 'lake-manifest.json', 'LICENSE',
+               'THEORY.md') {
   Copy-Item (Join-Path $repo $f) $wt -Force
 }
 Copy-Item (Join-Path $repo 'scripts\AxiomAudit.lean') (Join-Path $wt 'scripts\AxiomAudit.lean') -Force
