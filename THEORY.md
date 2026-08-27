@@ -134,6 +134,17 @@ Everything below is the development of this subject.
   thermodynamic uncertainty relations; variance-form TUR NOT claimed).
   Linear drift law: E[winding](t) = t·flux
   (`expectedWinding_eq_time_mul_flux`).
+- **THE HODGE DECOMPOSITION** (`HodgeDecomposition`, the ring's capstone):
+  every antisymmetric edge field splits explicitly and uniquely into an
+  exact (gauge) part and a divergence-free (circulating) part, with
+  CLOSED-FORM potential `g_ξ = div(ξ)/|V|` (`div_harmonicPart_eq_zero`,
+  `hodge_pythagoras`, `hodge_unique`). **Kirchhoff formalized**
+  (`div_currentMatrix_eq_zero`): the stationary current is a pure
+  circulation — the Killing defect is a cycle-space quantity. Holonomy AND
+  drift factor through the Hodge class, and the dissipation bound SHARPENS
+  to the circulating norm alone (`flux_sq_le_killingDefect_sharp`); bundle:
+  `holonomy_ring_unification`. Prior art: Eckmann 1944, Jiang–Lim–Yao–Ye
+  2011, Schnakenberg 1976.
 
 ### Register E — boundaries of the knowable
 
@@ -193,9 +204,11 @@ Everything below is the development of this subject.
 
 ## 5. Open problems, ranked
 
-1. **Approximate Trinity**: quantified degradation of all three arrows in
+1. ~~Discrete Hodge decomposition~~ — **PROVEN 2026-08-26**
+   (`holonomy_ring_unification` + sharpened dissipation bound).
+2. **Approximate Trinity**: quantified degradation of all three arrows in
    𝔇_π (geometric/informational/thermodynamic leakage bounds).
-2. **BKM L0**: the abstract budget-continuation dichotomy for quadratic
+3. **BKM L0**: the abstract budget-continuation dichotomy for quadratic
    ODEs (`docs/bkm-formalization-design.md`) — the horizon family's
    continuum anchor; Galerkin NS as first instance.
 3. **Finite path-space expectation API** (retires trajectory-level

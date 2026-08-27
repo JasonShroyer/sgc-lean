@@ -27,6 +27,7 @@ import SGC.Renormalization.KernelHorizon
 import SGC.Renormalization.PhysicalHorizon
 import SGC.Renormalization.ExpBridge
 import SGC.Bridge.TopologicalSensing
+import SGC.Bridge.HodgeDecomposition
 
 /-- info: 'SGC.Topology.PadicPathSpace.pathSpace_homeo_padicInt' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
@@ -127,6 +128,26 @@ import SGC.Bridge.TopologicalSensing
 /-- info: 'SGC.Renormalization.SymmetryLumpability.counterexample_lumpable_not_symmetric' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms SGC.Renormalization.SymmetryLumpability.counterexample_lumpable_not_symmetric
+
+/-- info: 'SGC.Bridge.HodgeDecomposition.div_harmonicPart_eq_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Bridge.HodgeDecomposition.div_harmonicPart_eq_zero
+
+/-- info: 'SGC.Bridge.HodgeDecomposition.hodge_pythagoras' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Bridge.HodgeDecomposition.hodge_pythagoras
+
+/-- info: 'SGC.Bridge.HodgeDecomposition.div_currentMatrix_eq_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Bridge.HodgeDecomposition.div_currentMatrix_eq_zero
+
+/-- info: 'SGC.Bridge.HodgeDecomposition.flux_sq_le_killingDefect_sharp' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Bridge.HodgeDecomposition.flux_sq_le_killingDefect_sharp
+
+/-- info: 'SGC.Bridge.HodgeDecomposition.holonomy_ring_unification' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.Bridge.HodgeDecomposition.holonomy_ring_unification
 
 /-- info: 'SGC.Bridge.TopologicalSensing.windingSum_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
