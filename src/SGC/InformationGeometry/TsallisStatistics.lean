@@ -261,13 +261,26 @@ def TsallisFreeEnergy (q T : ℝ) (p : V → ℝ) (H : V → ℝ)
 
 /-- **Data Processing Inequality** for Tsallis Divergence:
 
-    For 1 < q < 2 and any stochastic map T:
+    For 1 < q < 2 and any mass-conserving stochastic map T:
     D_q(Tp ‖ Tref) ≤ D_q(p ‖ ref)
 
-    **Status**: Axiom. The proof requires convexity of x^(2-q). -/
+    **SOUNDNESS REPAIR (2026-08-26 sweep)**: the previous statement required
+    ROW sums of `T` to be 1 while acting by `(Tp)(v) = Σ_w T v w * p w` —
+    a transposed convention under which mass is NOT conserved and the
+    axiom is FALSE. Numerical counterexample (V = Fin 2, q = 3/2,
+    p = (9/10, 1/10), ref = (1/2, 1/2), T = ![![0,1],![0,1]]: every row
+    sums to 1, yet Σ(Tp) = 1/5 and D_q(Tp‖Tref) ≈ 1.106 > 0.211 ≈
+    D_q(p‖ref)). Repaired: `T` must be COLUMN-stochastic for this action
+    (Σ_v T v w = 1), the mass-conserving Markov convention. This is the
+    third false Tsallis axiom caught (see ERROR HISTORY above); pattern:
+    convention/range over-generalization. Constructive discharge via
+    f-divergence Jensen (convexity of t ↦ (t − t^{2−q})/(q−1) on t > 0
+    for q < 2) is the recorded next step — note the module's own
+    q ≈ 2.5 grokking regime lies OUTSIDE the convex range, correctly. -/
 axiom TsallisDPI {q : ℝ} [NonExtensiveSystem q]
     (p ref : V → ℝ) (hp : ∀ v, 0 < p v) (href : ∀ v, 0 < ref v)
-    (T : Matrix V V ℝ) (hT_stoch : ∀ v, (∀ w, 0 ≤ T v w) ∧ ∑ w, T v w = 1) :
+    (T : Matrix V V ℝ)
+    (hT_stoch : ∀ w, (∀ v, 0 ≤ T v w) ∧ ∑ v, T v w = 1) :
     TsallisDivergence q (fun v => ∑ w, T v w * p w) (fun v => ∑ w, T v w * ref w) ≤
     TsallisDivergence q p ref
 
