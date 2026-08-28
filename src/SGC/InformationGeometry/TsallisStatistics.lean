@@ -259,7 +259,7 @@ def TsallisFreeEnergy (q T : ℝ) (p : V → ℝ) (H : V → ℝ)
 
 /-! ### 6. Data Processing Inequality (DPI) -/
 
-/-- **Data Processing Inequality** for Tsallis Divergence:
+/-! ### **Data Processing Inequality** for Tsallis Divergence (RETIRED, see below):
 
     For 1 < q < 2 and any mass-conserving stochastic map T:
     D_q(Tp ‖ Tref) ≤ D_q(p ‖ ref)
@@ -273,16 +273,15 @@ def TsallisFreeEnergy (q T : ℝ) (p : V → ℝ) (H : V → ℝ)
     D_q(p‖ref)). Repaired: `T` must be COLUMN-stochastic for this action
     (Σ_v T v w = 1), the mass-conserving Markov convention. This is the
     third false Tsallis axiom caught (see ERROR HISTORY above); pattern:
-    convention/range over-generalization. Constructive discharge via
-    f-divergence Jensen (convexity of t ↦ (t − t^{2−q})/(q−1) on t > 0
-    for q < 2) is the recorded next step — note the module's own
-    q ≈ 2.5 grokking regime lies OUTSIDE the convex range, correctly. -/
-axiom TsallisDPI {q : ℝ} [NonExtensiveSystem q]
-    (p ref : V → ℝ) (hp : ∀ v, 0 < p v) (href : ∀ v, 0 < ref v)
-    (T : Matrix V V ℝ)
-    (hT_stoch : ∀ w, (∀ v, 0 ≤ T v w) ∧ ∑ v, T v w = 1) :
-    TsallisDivergence q (fun v => ∑ w, T v w * p w) (fun v => ∑ w, T v w * ref w) ≤
-    TsallisDivergence q p ref
+    convention/range over-generalization.
+
+    **RETIRED AS AXIOM (2026-08-26, same day)**: constructively PROVEN as
+    `TsallisDPI_proved` in `SGC.InformationGeometry.FDivergence` via
+    geometric-mean kernel superadditivity (per-edge weighted AM–GM — the
+    only q-dependent ingredient is the exponent α = 2 − q ∈ (0,1); no
+    q = 1 additivity enters, per the audit note in that module). The proof
+    is positively homogeneous: no normalization of p, ref needed. The
+    q ≈ 2.5 grokking regime lies OUTSIDE the proven range, correctly. -/
 
 /-! ### 7. The q ≈ 2.5 Grokking Discovery (February 2026) -/
 

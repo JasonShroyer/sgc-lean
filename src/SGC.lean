@@ -498,6 +498,20 @@ import SGC.Bridge.TopologicalSensing
 -- Eckmann 1944, Jiang-Lim-Yao-Ye 2011, Schnakenberg 1976.
 import SGC.Bridge.HodgeDecomposition
 
+-- Constructive Tsallis DPI (2026-08-26): the nonlinear informational arrow
+-- becomes a THEOREM. TsallisDPI (freshly repaired same day after its
+-- transposed-convention statement was numerically falsified) is retired:
+-- TsallisDPI_proved in InformationGeometry.FDivergence, via geometric-mean
+-- kernel superadditivity (per-edge weighted AM-GM). Only q-dependence:
+-- the exponent alpha = 2 - q in (0,1) — exactly q in (1,2), the convexity
+-- domain; the q ~ 2.5 grokking regime lies outside, correctly. No q = 1
+-- additivity enters (audited: measure pushforward + divergence-defining
+-- sum + probability-weighted AM-GM only). Positively homogeneous — no
+-- normalization assumptions. The Trinity's informational arrow now has
+-- its q-deformed sibling, kernel-checked. Pre-flight checklist applied
+-- (docs/axiom-preflight.md — now repo law via .devin/skills).
+import SGC.InformationGeometry.FDivergence
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════
