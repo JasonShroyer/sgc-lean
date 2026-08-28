@@ -28,6 +28,7 @@ import SGC.Renormalization.PhysicalHorizon
 import SGC.Renormalization.ExpBridge
 import SGC.Bridge.TopologicalSensing
 import SGC.Bridge.HodgeDecomposition
+import SGC.InformationGeometry.FDivergence
 
 /-- info: 'SGC.Topology.PadicPathSpace.pathSpace_homeo_padicInt' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
@@ -128,6 +129,14 @@ import SGC.Bridge.HodgeDecomposition
 /-- info: 'SGC.Renormalization.SymmetryLumpability.counterexample_lumpable_not_symmetric' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms SGC.Renormalization.SymmetryLumpability.counterexample_lumpable_not_symmetric
+
+/-- info: 'SGC.InformationGeometry.Tsallis.geomMean_kernel_superadditive' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.InformationGeometry.Tsallis.geomMean_kernel_superadditive
+
+/-- info: 'SGC.InformationGeometry.Tsallis.TsallisDPI_proved' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms SGC.InformationGeometry.Tsallis.TsallisDPI_proved
 
 /-- info: 'SGC.Bridge.HodgeDecomposition.div_harmonicPart_eq_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
