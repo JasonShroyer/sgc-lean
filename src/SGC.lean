@@ -512,6 +512,20 @@ import SGC.Bridge.HodgeDecomposition
 -- (docs/axiom-preflight.md — now repo law via .devin/skills).
 import SGC.InformationGeometry.FDivergence
 
+-- The Observation Stack, Phase I (2026-09-03): the measurement map as a
+-- first-class object — the "telescope theorem" layer, forced by the
+-- Kuramoto observation-ladder case study (a quantized readout of a
+-- Markov process manufactures memory; the latent process was closed).
+-- Deterministic readout pi : X -> Y with lifting kernel Lambda : Y ~> X;
+-- compatibility pi#Lambda = I; observation intertwining Lambda*P =
+-- Pbar*Lambda with defect D_obs. Kernel theorems: exact observation
+-- closure WITH its initial-condition condition (mu_X = mu_Y*Lambda);
+-- the observation Duhamel identity; the horizon bound
+-- ||Lambda*P^n - Pbar^n*Lambda|| <= n*||D_obs||. Memory can be a
+-- property of the world-plus-readout pair — now as kernel theorems.
+-- Phase II (stochastic channels, HMM/filtering) deliberately deferred.
+import SGC.Observation.DeterministicReadout
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════
