@@ -526,6 +526,18 @@ import SGC.InformationGeometry.FDivergence
 -- Phase II (stochastic channels, HMM/filtering) deliberately deferred.
 import SGC.Observation.DeterministicReadout
 
+-- The Composition Stack (2026-09-04, T0 of the entropic-bridge program):
+-- how defects add along the ladder world -> quotient -> data. The
+-- compositional law D_C = Lambda_O*D_Q + D_O*Lambda_Q (the Leibniz rule
+-- of the square calculus); exact closures compose; for stochastic lifts
+-- defects are additive currency ||D_C|| <= ||D_Q|| + ||D_O||; and the
+-- receipt-level budget ||Lambda_C*P_X^n - P_Z^n*Lambda_C|| <=
+-- n*(||D_Q|| + ||D_O||). "How much of an apparent discrepancy belongs
+-- to the world, and how much to the map by which the world became
+-- data?" - now a kernel theorem. Norm convention (L-infinity operator
+-- norm, row-stochastic contractivity) is part of the statements.
+import SGC.Observation.Composition
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════
