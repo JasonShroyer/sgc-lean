@@ -10,3 +10,6 @@ import SGC.Observation.EntropicSquare
 #print axioms SGC.Observation.macro_H_step
 #print axioms SGC.Observation.entropic_square_exact
 #print axioms SGC.Observation.epsilon_H_theorem
+
+#print axioms SGC.Observation.measuredKL_comp_le
+#print axioms SGC.Observation.observationalEntropy_comp_ge

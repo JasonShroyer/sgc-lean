@@ -340,4 +340,46 @@ theorem bayesLift_deterministic_compatible (pi_map : X → Y)
     unfold bayesLift detChannel
     rw [if_neg hne, mul_zero, zero_div]
 
+/-! ## §6. Static information-loss composition (G1)
+
+The Blackwell-flavored monotonicity: composing channels can only lose
+distinguishability, hence observational entropy is MONOTONE along the
+ladder — a coarser telescope reports more missing information. The
+static twin of `composite_observation_horizon`. -/
+
+variable {Z : Type*} [Fintype Z] [DecidableEq Z]
+
+lemma pushforward_comp (M : Matrix X Y ℝ) (N : Matrix Y Z ℝ)
+    (p : X → ℝ) :
+    pushforward (M * N) p = pushforward N (pushforward M p) := by
+  unfold pushforward
+  rw [Matrix.vecMul_vecMul]
+
+/-- **Static loss composes monotonically**: measuring through a longer
+ladder distinguishes less. `D_{M·N}(p‖τ) ≤ D_M(p‖τ)`. -/
+theorem measuredKL_comp_le (M : Matrix X Y ℝ) (N : Matrix Y Z ℝ)
+    (hM : IsKernel M) (hN : IsKernel N) {p τ : X → ℝ}
+    (hp : ∀ x, 0 ≤ p x) (hτM : ∀ y, 0 < pushforward M τ y)
+    (hτMN : ∀ z, 0 < pushforward N (pushforward M τ) z) :
+    measuredKL (M * N) p τ ≤ measuredKL M p τ := by
+  unfold measuredKL
+  rw [pushforward_comp, pushforward_comp]
+  exact klDiv_dpi N hN (pushforward M p) (pushforward M τ)
+    (pushforward_nonneg hM hp) hτM hτMN
+
+/-- **Observational entropy is monotone along the ladder**:
+`S_{M·N}^τ(p) ≥ S_M^τ(p)`. Every additional readout stage can only
+increase the reported missing information. (G1: the static composition
+law, completing the square calculus's Blackwell face at the level the
+finite theory supports.) -/
+theorem observationalEntropy_comp_ge (M : Matrix X Y ℝ)
+    (N : Matrix Y Z ℝ) (hM : IsKernel M) (hN : IsKernel N)
+    {p τ : X → ℝ} (hp : ∀ x, 0 ≤ p x)
+    (hτM : ∀ y, 0 < pushforward M τ y)
+    (hτMN : ∀ z, 0 < pushforward N (pushforward M τ) z) :
+    observationalEntropy M τ p ≤ observationalEntropy (M * N) τ p := by
+  unfold observationalEntropy
+  have := measuredKL_comp_le M N hM hN hp hτM hτMN
+  linarith
+
 end SGC.Observation
