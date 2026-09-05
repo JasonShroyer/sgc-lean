@@ -538,6 +538,34 @@ import SGC.Observation.DeterministicReadout
 -- norm, row-stochastic contractivity) is part of the statements.
 import SGC.Observation.Composition
 
+-- The Entropic Bridge, T1-T2 (2026-09-04): finite classical observational
+-- entropy with a MaxEnt prior (arXiv:2503.15612, classical spine). Gibbs'
+-- inequality; THE GENERAL CLASSICAL DATA-PROCESSING INEQUALITY (proven
+-- from Jensen via Real.convexOn_mul_log - the prerequisite FDivergence's
+-- Tsallis-specific machinery did not provide); the OE sandwich
+-- S(tau) - D(p||tau) <= S_M^tau(p) <= S(tau); the Bayes lift
+-- Lambda_tau(x|y) = tau(x)M(x,y)/(tauM)(y) with the reconstruction
+-- identity (tauM)*Lambda_tau = tau and the weld: for deterministic
+-- readouts the Bayes lift is Compatible - the entropic recovery object
+-- IS a lifting kernel of the observation intertwining stack.
+import SGC.Observation.ObservationalEntropy
+
+-- The Entropic Bridge, T3-T4 (2026-09-04): the summit. T3
+-- entropic_square_exact - the exact H-theorem for a commuting
+-- description square WITH its transfer conditions (macro-stationarity +
+-- DPI give contraction; exact closure licenses the physical reading -
+-- the review's hierarchy, formalized). T4 epsilon_H_theorem - THE
+-- DEFECT-PRICED SECOND LAW: for an epsilon-closed square the observed
+-- coarse relative entropy can violate monotonicity by at most
+-- (1 + |log c| + B) * (2n+1) * ||D|| under declared mass floors and
+-- log-bounded stationary reference. The constant is the honest product
+-- of horizon growth, the entropy continuity modulus (xlogx Lipschitz on
+-- [c,1] - unstable near vanishing mass, hence the floor), and the
+-- reference's support behavior. At D = 0 the exact H-theorem returns.
+-- "Second laws hold exactly on commuting squares; the closure defect
+-- prices their violation" - now a kernel theorem.
+import SGC.Observation.EntropicSquare
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Measurement & Control: Moved to proprietary veridion-core engine
 -- ═══════════════════════════════════════════════════════════════════════════
