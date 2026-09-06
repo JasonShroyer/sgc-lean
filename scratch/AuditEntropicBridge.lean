@@ -13,3 +13,6 @@ import SGC.Observation.EntropicSquare
 
 #print axioms SGC.Observation.measuredKL_comp_le
 #print axioms SGC.Observation.observationalEntropy_comp_ge
+
+#print axioms SGC.Observation.staticLoss_comp
+#print axioms SGC.Observation.staticLoss_nonneg

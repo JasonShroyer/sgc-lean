@@ -382,4 +382,38 @@ theorem observationalEntropy_comp_ge (M : Matrix X Y ℝ)
   have := measuredKL_comp_le M N hM hN hp hτM hτMN
   linarith
 
+/-! ## §7. The static ledger (Phase II, Workstream C)
+
+`staticLoss M τ p = D(p‖τ) − D(Mp‖Mτ)`: the distinguishability lost at
+one measurement stage. The STATIC LEDGER composes exactly — a chain
+rule, not a bound — pairing with the dynamic ledger's
+`composite_defect_identity`. Together a receipt can answer: what was
+LOST through each stage (static), and which stage stops commuting with
+evolution (dynamic). -/
+
+/-- Stage-wise information loss relative to a prior. -/
+noncomputable def staticLoss (M : Matrix X Y ℝ) (τ p : X → ℝ) : ℝ :=
+  klDiv p τ - measuredKL M p τ
+
+/-- Each stage's loss is nonnegative (DPI). -/
+theorem staticLoss_nonneg (M : Matrix X Y ℝ) (hM : IsKernel M)
+    {p τ : X → ℝ} (hp : ∀ x, 0 ≤ p x) (hτ : ∀ x, 0 < τ x)
+    (hτM : ∀ y, 0 < pushforward M τ y) :
+    0 ≤ staticLoss M τ p := by
+  unfold staticLoss
+  have := measuredKL_le_klDiv M hM hp hτ hτM
+  linarith
+
+/-- **The static composition law** (exact chain rule, not a bound):
+`Δ_{M·N}^τ(p) = Δ_M^τ(p) + Δ_N^{Mτ}(Mp)`. Losses along a ladder add
+stage by stage, each stage priced against the pushed-forward prior. -/
+theorem staticLoss_comp (M : Matrix X Y ℝ) (N : Matrix Y Z ℝ)
+    (τ p : X → ℝ) :
+    staticLoss (M * N) τ p
+      = staticLoss M τ p
+        + staticLoss N (pushforward M τ) (pushforward M p) := by
+  unfold staticLoss measuredKL
+  rw [pushforward_comp, pushforward_comp]
+  ring
+
 end SGC.Observation
