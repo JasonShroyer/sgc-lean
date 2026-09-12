@@ -227,6 +227,12 @@ import SGC.Bridge.PhaseClassifier
 -- Kernel-proven, no new axioms (2026-06-11).
 import SGC.Bridge.ValidityHorizon
 
+-- Abstract BKM (L0 of the BKM ladder): time-dependent Gronwall in a normed space,
+-- ‖x'‖ ≤ W‖x‖ ⇒ ‖x t‖ ≤ exp(∫₀ᵗ W)‖x 0‖; finite budget ⇒ bounded, excursion ⇒
+-- budget spent. No fluid claims; the Galerkin/BKM instantiation is L1-L3 and open.
+-- Kernel-proven, no new axioms (2026-09-12).
+import SGC.Bridge.AbstractBKM
+
 -- The Defect-Horizon Bridge: identifies ValidityHorizon's abstract leakage
 -- ε = ‖B‖ with Approximate's concrete defect ‖(I−Π)LΠ‖_π via the weighted
 -- operator algebra PiMat (π in the type, NormedRing/NormedAlgebra instances),

@@ -10,12 +10,17 @@ trajectory level; regularity-independence is conjecture, not theorem).
 
 ## Layer ladder
 
-L0 (provable NOW, target module SGC/Bridge/AbstractBKM.lean):
+L0 (PROVEN 2026-09-12, module SGC/Bridge/AbstractBKM.lean; kernel-clean per lean-triage):
   Abstract quadratic ODE u' = B(u,u) + nu*A u in a finite-dim/Banach space
   with a budget functional W(t) >= 0 satisfying d||u||/dt <= C*W*||u||:
-  - gronwall_budget: ||u(t)|| <= ||u_0|| * exp(C * INT_0^t W)
-  - continuation: INT W finite on [0,T) + Picard-Lindelof => extension
-  - bkm_dichotomy (finite-dim): maximal T* < inf => INT_0^{T*} W = inf
+  - norm_le_exp_budget: ||x'|| <= W ||x|| => ||x t|| <= exp(INT_0^t W) ||x 0||
+    (time-dependent W, any real normed space, via Mathlib's fencing lemma
+    image_norm_le_of_norm_deriv_right_lt_deriv_boundary)            [PROVEN]
+  - bounded_of_budget_le: INT_0^t W <= M on [0,T] => ||x|| <= e^M ||x 0||  [PROVEN]
+  - exists_budget_gt_of_norm_gt: norm excursion past e^M||x 0|| => budget > M
+    somewhere (abstract "blowup requires budget divergence")        [PROVEN]
+  - still open at L0: continuation via Picard-Lindelof (maximal-solution API),
+    and the constant-1 bound generalized to the BKM log-interpolation shape.
   Mathlib inventory: gronwallBound + norm_le_gronwallBound_of_norm_deriv_
   right_le (Analysis.ODE.Gronwall), Picard-Lindelof (Analysis.ODE.
   PicardLindelof). Risk: maximal-solution API is thin; may need our own
@@ -47,7 +52,16 @@ L3: Kato local existence (mild solutions/heat semigroup) + L2 + double-
   over 12 NAMED AXIOMS (incl. Picard-Lindelof and Gronwall, which Mathlib
   actually has — partial discharge opportunity). Frontier style today =
   verified reductions, not proofs.
-- BKM itself: formalized nowhere; L2 is the reason.
+- BKM itself (the continuation criterion, as an iff): formalized nowhere; L2 is
+  the reason. UPDATE 2026-09-12: a public self-assessed Lean formalization
+  (openai/NavierStokesAndEuler, toolchain 4.34.0-rc2, three standard axioms,
+  `Euler.exists_compact_smooth_euler_singularity`) claims a concrete Euler
+  finite-time singularity with BKM-shaped vorticity-budget divergence as a
+  proved conclusion. SGC has not independently replayed the artifact and does
+  not import its analytic infrastructure; it is an inventory target for L2/L3.
+  Status: External self-assessed artifact | Verification tier: public source
+  read, not locally replayed | Claim type: forced NS C/D; Euler singularity |
+  SGC implication: research target only unless a named bridge theorem is cited.
 
 ## SGC angle
 
