@@ -1,0 +1,645 @@
+{
+  "audited_commit": "0096f90e5e5b5fdbdb5209b51cf5c25825183ff9",
+  "tracked_file_count": 53,
+  "working_tree_status": "",
+  "no_project_code_executed": true,
+  "receipts": {
+    "opus-closure": {
+      "hash_self": "866a7700560fd5c9ac878b563061dec864e62131d0325614ddbfb0698af888bb",
+      "canonical_hashes_ensure_ascii": {
+        "False": "866a7700560fd5c9ac878b563061dec864e62131d0325614ddbfb0698af888bb",
+        "True": "d987d81e7882af37e1fa79240302a45fd391ecf473d113b9ccba778a78e3338b"
+      },
+      "self_hash_matches": true,
+      "candidate_count_excluding_baseline": 170,
+      "statement_hash_failures": [],
+      "candidate_names_absent_from_raw_probe": [],
+      "raw_probe_comparison_mismatches": [],
+      "axiom_closure_histogram": [
+        {
+          "axioms": [
+            "Classical.choice",
+            "Quot.sound",
+            "propext"
+          ],
+          "count": 151
+        },
+        {
+          "axioms": [
+            "Classical.choice",
+            "Quot.sound",
+            "SGC.Approximate.NCD_defect_split",
+            "SGC.Approximate.NCD_integral_bound",
+            "propext"
+          ],
+          "count": 1
+        },
+        {
+          "axioms": [
+            "Classical.choice",
+            "Quot.sound",
+            "SGC.Approximate.Weyl_inequality_pi",
+            "propext"
+          ],
+          "count": 1
+        },
+        {
+          "axioms": [
+            "Quot.sound",
+            "propext"
+          ],
+          "count": 8
+        },
+        {
+          "axioms": [],
+          "count": 6
+        },
+        {
+          "axioms": [
+            "propext"
+          ],
+          "count": 2
+        },
+        {
+          "axioms": [
+            "Classical.choice"
+          ],
+          "count": 1
+        }
+      ],
+      "beyond_standard_base": {
+        "SGC.Approximate.NCD_uniform_error_bound": [
+          "SGC.Approximate.NCD_defect_split",
+          "SGC.Approximate.NCD_integral_bound"
+        ],
+        "SGC.Approximate.spectral_stability_reversible": [
+          "SGC.Approximate.Weyl_inequality_pi"
+        ]
+      },
+      "inventory_count": 38,
+      "recorded_provenance": {
+        "dependencies": [
+          {
+            "inputRev": "v4.25.2",
+            "name": "mathlib",
+            "rev": "c98ae54af00eaefe79c51b2b278361ca94e59bfb",
+            "url": "https://github.com/leanprover-community/mathlib4"
+          },
+          {
+            "inputRev": "main",
+            "name": "plausible",
+            "rev": "0203092c2e5e26edf967000f0e177cf31c72e17a",
+            "url": "https://github.com/leanprover-community/plausible"
+          },
+          {
+            "inputRev": "main",
+            "name": "LeanSearchClient",
+            "rev": "2ed4ba69b6127de8f5c2af83cccacd3c988b06bf",
+            "url": "https://github.com/leanprover-community/LeanSearchClient"
+          },
+          {
+            "inputRev": "main",
+            "name": "importGraph",
+            "rev": "3611075024b3529e5798e53c733671039f06f0bd",
+            "url": "https://github.com/leanprover-community/import-graph"
+          },
+          {
+            "inputRev": "v0.0.80+lean-v4.25.2",
+            "name": "proofwidgets",
+            "rev": "45777338ffb69576c945dfe9466665b8023a8b8c",
+            "url": "https://github.com/leanprover-community/ProofWidgets4"
+          },
+          {
+            "inputRev": "master",
+            "name": "aesop",
+            "rev": "a2e4d9e9aebdbdce1ce6b6f0a19dd49e0120c990",
+            "url": "https://github.com/leanprover-community/aesop"
+          },
+          {
+            "inputRev": "master",
+            "name": "Qq",
+            "rev": "9bff22d64abde45944c7b1f55bce6c89dd8307e6",
+            "url": "https://github.com/leanprover-community/quote4"
+          },
+          {
+            "inputRev": "main",
+            "name": "batteries",
+            "rev": "ffad3f5b7ebe1ac3e09779ec8a863a5138c1246c",
+            "url": "https://github.com/leanprover-community/batteries"
+          },
+          {
+            "inputRev": "v4.25.1",
+            "name": "Cli",
+            "rev": "cd188c6ecfbf6c00cf639e4d4fb18bf773ce8c2c",
+            "url": "https://github.com/leanprover/lean4-cli"
+          }
+        ],
+        "git_branch": "cantor-layer-wip",
+        "git_commit": "0012a5a5b16f7e4e26465e84c3772627a17a5fd0",
+        "git_dirty": false,
+        "git_remote": "https://github.com/JasonShroyer/sgc-lean.git",
+        "lakefile_present": true,
+        "lean_toolchain": "leanprover/lean4:v4.25.2",
+        "repo_path": "C:\\Lean4 Projects",
+        "source_files_hashed": 243,
+        "source_tree_sha256": "71ef010b1b248ecf127c2efd5a11a4cedae21fda2fad56bd285c26f4b97c5703"
+      },
+      "recorded_checks_not_run": [
+        "lake build (skipped by request)",
+        "kernel replay from fresh environment (lean4checker not available or build unverified)",
+        "comparator / external checker (never run automatically)",
+        "human claim-map attestation (none supplied)"
+      ],
+      "recorded_triage_counts": {
+        "fail": 3,
+        "info": 367,
+        "warn": 29
+      },
+      "findings_counts_recomputed": {
+        "fail": 3,
+        "warn": 29,
+        "info": 367
+      },
+      "failed_findings": [
+        {
+          "code": "AXIOM_BEYOND_TRUSTED_BASE",
+          "theorem": "SGC.Approximate.NCD_uniform_error_bound",
+          "detail": "closure depends on axiom SGC.Approximate.NCD_defect_split (project, module SGC.Renormalization.Approximate)"
+        },
+        {
+          "code": "AXIOM_BEYOND_TRUSTED_BASE",
+          "theorem": "SGC.Approximate.NCD_uniform_error_bound",
+          "detail": "closure depends on axiom SGC.Approximate.NCD_integral_bound (project, module SGC.Renormalization.Approximate)"
+        },
+        {
+          "code": "AXIOM_BEYOND_TRUSTED_BASE",
+          "theorem": "SGC.Approximate.spectral_stability_reversible",
+          "detail": "closure depends on axiom SGC.Approximate.Weyl_inequality_pi (project, module SGC.Renormalization.Approximate)"
+        }
+      ],
+      "raw_probe_entry_count": 198
+    },
+    "abstract-bkm": {
+      "hash_self": "1bb8691f6e0826665fbf4072d700a26bec13b3ab481782e1dd0b4be031f290df",
+      "canonical_hashes_ensure_ascii": {
+        "False": "1bb8691f6e0826665fbf4072d700a26bec13b3ab481782e1dd0b4be031f290df",
+        "True": "f2c1f54a72b97f0b4340c7c828ffdfe860fcf2d72c3ce53522ef4987b634a1ee"
+      },
+      "self_hash_matches": true,
+      "candidate_count_excluding_baseline": 6,
+      "statement_hash_failures": [],
+      "candidate_names_absent_from_raw_probe": [],
+      "raw_probe_comparison_mismatches": [],
+      "axiom_closure_histogram": [
+        {
+          "axioms": [
+            "Classical.choice",
+            "Quot.sound",
+            "propext"
+          ],
+          "count": 6
+        }
+      ],
+      "beyond_standard_base": {},
+      "inventory_count": 0,
+      "recorded_provenance": {
+        "dependencies": [
+          {
+            "inputRev": "v4.25.2",
+            "name": "mathlib",
+            "rev": "c98ae54af00eaefe79c51b2b278361ca94e59bfb",
+            "url": "https://github.com/leanprover-community/mathlib4"
+          },
+          {
+            "inputRev": "main",
+            "name": "plausible",
+            "rev": "0203092c2e5e26edf967000f0e177cf31c72e17a",
+            "url": "https://github.com/leanprover-community/plausible"
+          },
+          {
+            "inputRev": "main",
+            "name": "LeanSearchClient",
+            "rev": "2ed4ba69b6127de8f5c2af83cccacd3c988b06bf",
+            "url": "https://github.com/leanprover-community/LeanSearchClient"
+          },
+          {
+            "inputRev": "main",
+            "name": "importGraph",
+            "rev": "3611075024b3529e5798e53c733671039f06f0bd",
+            "url": "https://github.com/leanprover-community/import-graph"
+          },
+          {
+            "inputRev": "v0.0.80+lean-v4.25.2",
+            "name": "proofwidgets",
+            "rev": "45777338ffb69576c945dfe9466665b8023a8b8c",
+            "url": "https://github.com/leanprover-community/ProofWidgets4"
+          },
+          {
+            "inputRev": "master",
+            "name": "aesop",
+            "rev": "a2e4d9e9aebdbdce1ce6b6f0a19dd49e0120c990",
+            "url": "https://github.com/leanprover-community/aesop"
+          },
+          {
+            "inputRev": "master",
+            "name": "Qq",
+            "rev": "9bff22d64abde45944c7b1f55bce6c89dd8307e6",
+            "url": "https://github.com/leanprover-community/quote4"
+          },
+          {
+            "inputRev": "main",
+            "name": "batteries",
+            "rev": "ffad3f5b7ebe1ac3e09779ec8a863a5138c1246c",
+            "url": "https://github.com/leanprover-community/batteries"
+          },
+          {
+            "inputRev": "v4.25.1",
+            "name": "Cli",
+            "rev": "cd188c6ecfbf6c00cf639e4d4fb18bf773ce8c2c",
+            "url": "https://github.com/leanprover/lean4-cli"
+          }
+        ],
+        "git_branch": "cantor-layer-wip",
+        "git_commit": "df242c3682f33f198bb70c3f892a124664188cda",
+        "git_dirty": true,
+        "git_remote": "https://github.com/JasonShroyer/sgc-lean.git",
+        "lakefile_present": true,
+        "lean_toolchain": "leanprover/lean4:v4.25.2",
+        "repo_path": "C:\\Lean4 Projects",
+        "source_files_hashed": 243,
+        "source_tree_sha256": "71ef010b1b248ecf127c2efd5a11a4cedae21fda2fad56bd285c26f4b97c5703"
+      },
+      "recorded_checks_not_run": [
+        "lake build (skipped by request)",
+        "kernel replay from fresh environment (lean4checker not available or build unverified)",
+        "comparator / external checker (never run automatically)",
+        "human claim-map attestation (none supplied)"
+      ],
+      "recorded_triage_counts": {
+        "fail": 0,
+        "info": 27,
+        "warn": 15
+      },
+      "findings_counts_recomputed": {
+        "warn": 15,
+        "info": 27
+      },
+      "failed_findings": [],
+      "raw_probe_entry_count": 10
+    },
+    "residual-horizon": {
+      "hash_self": "19ac344976d2c6d6c635f3ee4969004aa6e8ba9688d9d770b170d98fb6cb9ff4",
+      "canonical_hashes_ensure_ascii": {
+        "False": "19ac344976d2c6d6c635f3ee4969004aa6e8ba9688d9d770b170d98fb6cb9ff4",
+        "True": "dbb0bb647ef0a8748b1e1aa7908aa8f1be0ccb75ab7b706a30dc95e951472a6d"
+      },
+      "self_hash_matches": true,
+      "candidate_count_excluding_baseline": 4,
+      "statement_hash_failures": [],
+      "candidate_names_absent_from_raw_probe": [],
+      "raw_probe_comparison_mismatches": [],
+      "axiom_closure_histogram": [
+        {
+          "axioms": [
+            "Classical.choice",
+            "Quot.sound",
+            "propext"
+          ],
+          "count": 4
+        }
+      ],
+      "beyond_standard_base": {},
+      "inventory_count": 0,
+      "recorded_provenance": {
+        "dependencies": [
+          {
+            "inputRev": "v4.25.2",
+            "name": "mathlib",
+            "rev": "c98ae54af00eaefe79c51b2b278361ca94e59bfb",
+            "url": "https://github.com/leanprover-community/mathlib4"
+          },
+          {
+            "inputRev": "main",
+            "name": "plausible",
+            "rev": "0203092c2e5e26edf967000f0e177cf31c72e17a",
+            "url": "https://github.com/leanprover-community/plausible"
+          },
+          {
+            "inputRev": "main",
+            "name": "LeanSearchClient",
+            "rev": "2ed4ba69b6127de8f5c2af83cccacd3c988b06bf",
+            "url": "https://github.com/leanprover-community/LeanSearchClient"
+          },
+          {
+            "inputRev": "main",
+            "name": "importGraph",
+            "rev": "3611075024b3529e5798e53c733671039f06f0bd",
+            "url": "https://github.com/leanprover-community/import-graph"
+          },
+          {
+            "inputRev": "v0.0.80+lean-v4.25.2",
+            "name": "proofwidgets",
+            "rev": "45777338ffb69576c945dfe9466665b8023a8b8c",
+            "url": "https://github.com/leanprover-community/ProofWidgets4"
+          },
+          {
+            "inputRev": "master",
+            "name": "aesop",
+            "rev": "a2e4d9e9aebdbdce1ce6b6f0a19dd49e0120c990",
+            "url": "https://github.com/leanprover-community/aesop"
+          },
+          {
+            "inputRev": "master",
+            "name": "Qq",
+            "rev": "9bff22d64abde45944c7b1f55bce6c89dd8307e6",
+            "url": "https://github.com/leanprover-community/quote4"
+          },
+          {
+            "inputRev": "main",
+            "name": "batteries",
+            "rev": "ffad3f5b7ebe1ac3e09779ec8a863a5138c1246c",
+            "url": "https://github.com/leanprover-community/batteries"
+          },
+          {
+            "inputRev": "v4.25.1",
+            "name": "Cli",
+            "rev": "cd188c6ecfbf6c00cf639e4d4fb18bf773ce8c2c",
+            "url": "https://github.com/leanprover/lean4-cli"
+          }
+        ],
+        "git_branch": "cantor-layer-wip",
+        "git_commit": "0012a5a5b16f7e4e26465e84c3772627a17a5fd0",
+        "git_dirty": true,
+        "git_remote": "https://github.com/JasonShroyer/sgc-lean.git",
+        "lakefile_present": true,
+        "lean_toolchain": "leanprover/lean4:v4.25.2",
+        "repo_path": "C:\\Lean4 Projects",
+        "source_files_hashed": 244,
+        "source_tree_sha256": "e89d3677eb8e5f4786260c363c42abee52e585bdc414c8f76b8fe057b8fbdb1c"
+      },
+      "recorded_checks_not_run": [
+        "lake build (skipped by request)",
+        "kernel replay from fresh environment (lean4checker not available or build unverified)",
+        "comparator / external checker (never run automatically)",
+        "human claim-map attestation (none supplied)"
+      ],
+      "recorded_triage_counts": {
+        "fail": 0,
+        "info": 22,
+        "warn": 16
+      },
+      "findings_counts_recomputed": {
+        "warn": 16,
+        "info": 22
+      },
+      "failed_findings": [],
+      "raw_probe_entry_count": 8
+    }
+  },
+  "source_comparison": {
+    "recorded_commit": "0012a5a5b16f7e4e26465e84c3772627a17a5fd0",
+    "compared_count": 36,
+    "status_counts": {
+      "identical": 33,
+      "changed": 2,
+      "absent_at_recorded_commit": 1
+    },
+    "files": [
+      {
+        "path": "lake-manifest.json",
+        "audited_blob": "037406d204be9fdf7387d165c5cfe36b6dea6a09",
+        "recorded_commit_blob": "037406d204be9fdf7387d165c5cfe36b6dea6a09",
+        "status": "identical"
+      },
+      {
+        "path": "lakefile.lean",
+        "audited_blob": "2cb85b59e29ddecbb31a1423eeda67ec184c2fa8",
+        "recorded_commit_blob": "4cc84d986b36b0cf19fd38fc01121f63562cb861",
+        "status": "changed"
+      },
+      {
+        "path": "lean-toolchain",
+        "audited_blob": "370b26d9c7b99bdeb1176a9ff7f0e01a2d356ec1",
+        "recorded_commit_blob": "370b26d9c7b99bdeb1176a9ff7f0e01a2d356ec1",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC.lean",
+        "audited_blob": "7ebe0d7c6cd01372cb451caddf887002c38b5cf9",
+        "recorded_commit_blob": "c28d095fe8e04ba1dc8c2b4e4f90a4fc64e0d03e",
+        "status": "changed"
+      },
+      {
+        "path": "src/SGC/Axioms/Geometry.lean",
+        "audited_blob": "8225cfb73e2bcbc2b54919dbb50066cb4a2d8c25",
+        "recorded_commit_blob": "8225cfb73e2bcbc2b54919dbb50066cb4a2d8c25",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Axioms/GeometryGeneral.lean",
+        "audited_blob": "825c15a76275b9ccd17646c52dbe6ef4a7b00cfe",
+        "recorded_commit_blob": "825c15a76275b9ccd17646c52dbe6ef4a7b00cfe",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Axioms/WeightedSpace.lean",
+        "audited_blob": "118b922dceb88cdc40c8233cf86c56078fdb04eb",
+        "recorded_commit_blob": "118b922dceb88cdc40c8233cf86c56078fdb04eb",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Bridge/AbstractBKM.lean",
+        "audited_blob": "3ab7dedfd9a3bfb91bf16274fe948384bace8284",
+        "recorded_commit_blob": "3ab7dedfd9a3bfb91bf16274fe948384bace8284",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Bridge/CantorShiftTower.lean",
+        "audited_blob": "de895103959efb7e575e8595805cabd3bd74ffb0",
+        "recorded_commit_blob": "de895103959efb7e575e8595805cabd3bd74ffb0",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Bridge/CoherenceObstruction.lean",
+        "audited_blob": "34bbf9bfdfcf7c47a428e203c4d54b098164d25c",
+        "recorded_commit_blob": "34bbf9bfdfcf7c47a428e203c4d54b098164d25c",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Bridge/Consolidation.lean",
+        "audited_blob": "347fca2b02a6ebf6a9ea512dcb1c6ad505958318",
+        "recorded_commit_blob": "347fca2b02a6ebf6a9ea512dcb1c6ad505958318",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Bridge/CurvatureUndecidability.lean",
+        "audited_blob": "5e3f1267a64f3dfaa20463c78937c5b4ff4fb9bc",
+        "recorded_commit_blob": "5e3f1267a64f3dfaa20463c78937c5b4ff4fb9bc",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Bridge/DefectHorizonBridge.lean",
+        "audited_blob": "d7922f97b24043ac0235e26125b178d9e691f965",
+        "recorded_commit_blob": "d7922f97b24043ac0235e26125b178d9e691f965",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Bridge/DiscreteFluidDynamics.lean",
+        "audited_blob": "b31cb0b39b5dd322d83a5988f1635fc2bc18067e",
+        "recorded_commit_blob": "b31cb0b39b5dd322d83a5988f1635fc2bc18067e",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Bridge/GeometricClosure.lean",
+        "audited_blob": "c79666ba48da9fe7065916f2c74f6d56ef8fc34c",
+        "recorded_commit_blob": "c79666ba48da9fe7065916f2c74f6d56ef8fc34c",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Bridge/HaltingCompiler.lean",
+        "audited_blob": "b28ecc23df445e73413fa629753ea9d2d375f6f4",
+        "recorded_commit_blob": "b28ecc23df445e73413fa629753ea9d2d375f6f4",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Bridge/PhaseClassifier.lean",
+        "audited_blob": "c170932c94fa97a09243415035910eeb30803acd",
+        "recorded_commit_blob": "c170932c94fa97a09243415035910eeb30803acd",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Bridge/Quantum.lean",
+        "audited_blob": "8b58e33bd776598747ce4606a58e6b764c99dbff",
+        "recorded_commit_blob": "8b58e33bd776598747ce4606a58e6b764c99dbff",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Bridge/Recovery.lean",
+        "audited_blob": "064c9115c1a52475afbfed36b4917d2c7f752fea",
+        "recorded_commit_blob": "064c9115c1a52475afbfed36b4917d2c7f752fea",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Bridge/ResidualHorizon.lean",
+        "audited_blob": "d9570cd4db6bdd2548354ceea91528c3808de7e5",
+        "recorded_commit_blob": null,
+        "status": "absent_at_recorded_commit"
+      },
+      {
+        "path": "src/SGC/Bridge/TrajectoryClosure.lean",
+        "audited_blob": "3c57d6a86da4cb0ce0e83e74872374a0aa7125d4",
+        "recorded_commit_blob": "3c57d6a86da4cb0ce0e83e74872374a0aa7125d4",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Bridge/ValidityHorizon.lean",
+        "audited_blob": "e085915ae59261dcdd94c44978c520eccf3f85d1",
+        "recorded_commit_blob": "e085915ae59261dcdd94c44978c520eccf3f85d1",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Geometry/CurvatureBridge.lean",
+        "audited_blob": "1586a895bc0c8e56c069858378139b960cbb2357",
+        "recorded_commit_blob": "1586a895bc0c8e56c069858378139b960cbb2357",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Geometry/DiscreteCurvature.lean",
+        "audited_blob": "000e4ccfbd7ff12945b24d0126a05d2cca971142",
+        "recorded_commit_blob": "000e4ccfbd7ff12945b24d0126a05d2cca971142",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Renormalization/Approximate.lean",
+        "audited_blob": "6e72ccfa796f4a3a3779e47a7fbd8bfc94415ca0",
+        "recorded_commit_blob": "6e72ccfa796f4a3a3779e47a7fbd8bfc94415ca0",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Renormalization/CurvatureQuotient.lean",
+        "audited_blob": "bb769e0b8c3df7c8c3216d915481aded5fdaa7be",
+        "recorded_commit_blob": "bb769e0b8c3df7c8c3216d915481aded5fdaa7be",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Renormalization/KernelHorizon.lean",
+        "audited_blob": "f201486176af317fc52955d2056128c0b8e6f204",
+        "recorded_commit_blob": "f201486176af317fc52955d2056128c0b8e6f204",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Renormalization/Lumpability.lean",
+        "audited_blob": "c497f61c0ee759661f64e1f7f25e98ea96259120",
+        "recorded_commit_blob": "c497f61c0ee759661f64e1f7f25e98ea96259120",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Renormalization/MeasureReentry.lean",
+        "audited_blob": "0e4c58dce0ab1f0511e6e76e537acf6b0e142e1a",
+        "recorded_commit_blob": "0e4c58dce0ab1f0511e6e76e537acf6b0e142e1a",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Spectral/Core/Assumptions.lean",
+        "audited_blob": "fe647c6c63bd7b2164970b376b38d8dd5b0087a2",
+        "recorded_commit_blob": "fe647c6c63bd7b2164970b376b38d8dd5b0087a2",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Spectral/Core/Projector.lean",
+        "audited_blob": "d271674d738332cf28c24d922ef08b9aaf244a1b",
+        "recorded_commit_blob": "d271674d738332cf28c24d922ef08b9aaf244a1b",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Spectral/Envelope.lean",
+        "audited_blob": "83230f65e8724f42e8da84b1fd5069b6626a0f7c",
+        "recorded_commit_blob": "83230f65e8724f42e8da84b1fd5069b6626a0f7c",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Thermodynamics/EntropyProduction.lean",
+        "audited_blob": "be2850b8587f83e3c4b67b293c2f2a9fbc454b8f",
+        "recorded_commit_blob": "be2850b8587f83e3c4b67b293c2f2a9fbc454b8f",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Thermodynamics/FluxDecomposition.lean",
+        "audited_blob": "df31a7242ae1e3662529a7d3b10e49222e4ea217",
+        "recorded_commit_blob": "df31a7242ae1e3662529a7d3b10e49222e4ea217",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Thermodynamics/LogSum.lean",
+        "audited_blob": "a2b75a7a8e8348500d9be35f194a337ccdb1328f",
+        "recorded_commit_blob": "a2b75a7a8e8348500d9be35f194a337ccdb1328f",
+        "status": "identical"
+      },
+      {
+        "path": "src/SGC/Topology/PadicPathSpace.lean",
+        "audited_blob": "7396ba16d5b2c69bac86d6bfb3e5c4d10f7ef659",
+        "recorded_commit_blob": "7396ba16d5b2c69bac86d6bfb3e5c4d10f7ef659",
+        "status": "identical"
+      }
+    ]
+  },
+  "manually_confirmed_statement_drift": [
+    {
+      "receipt": "residual-horizon",
+      "theorem": "SGC.Bridge.ResidualHorizon.within_tolerance_of_residual_small",
+      "recorded_hypothesis": "hT : 0 ≤ T",
+      "recorded_unused_hypotheses": [
+        "hT"
+      ],
+      "pinned_source": "src/SGC/Bridge/ResidualHorizon.lean:132-145",
+      "issue": "Pinned source omits the explicit hT hypothesis present in both the receipt statement and raw probe output."
+    }
+  ],
+  "limitations": [
+    "Receipt self-hashes authenticate internal consistency, not an external signature.",
+    "Statement hashes validate stored text only; no fresh elaboration or kernel replay was performed.",
+    "Raw-probe comparisons check stored statements, binders, unused hypotheses, definition cones and axiom names; they do not rerun the probe.",
+    "Git blob comparisons establish source equality only; they do not authenticate recorded olean provenance.",
+    "A dirty worktree in receipt provenance cannot be reconstructed from its Git commit alone."
+  ]
+}
