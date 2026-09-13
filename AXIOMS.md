@@ -5,17 +5,20 @@ the import graph of the file it lives in. This ledger records both, so that a re
 can see exactly which declared assumptions exist in this tree and which theorems, if
 any, consume them.
 
-Source of the numbers: `lean-triage` receipt `docs/receipts/opus-closure/receipt.json`
-(kernel `collectAxioms` per theorem; repo-wide inventory with consumer counts over the
-loaded closure), taken at `sgc-lean` commit `0012a5a` on toolchain
-`leanprover/lean4:v4.25.2`.
+Source of the numbers: `lean-triage` receipt `docs/receipts/opus-closure/receipt.json`,
+taken **on this branch** (worktree commit `e871fac`, toolchain `leanprover/lean4:v4.25.2`):
+kernel `collectAxioms` per theorem; repo-wide inventory with consumer counts over the
+loaded closure of the twelve headline modules.
 
-## Headline theorems: closure is the standard three axioms
+## Headline theorems: closure within the standard base
 
-All 170 theorems in the ten headline modules named in `README.md` have kernel closure
-contained in `{propext, Classical.choice, Quot.sound}`, **with two exceptions**, both in
-`SGC.Bridge.TrajectoryClosure` and both documented in that file as belonging to
-separate, unfinished retirement campaigns:
+Of the **185** theorems in the twelve headline modules named in `README.md`:
+
+- **183** have kernel closure *contained in* `{propext, Classical.choice, Quot.sound}`;
+- of those, **166** have closure *equal to* all three, and the remainder use a proper
+  subset (e.g. `rfl`-proved lemmas with empty closure);
+- **2** consume declared project axioms, both in `SGC.Bridge.TrajectoryClosure` and both
+  documented in that file as belonging to separate, unfinished retirement campaigns:
 
 | Theorem | Declared axioms consumed |
 |---|---|
@@ -32,7 +35,7 @@ These live in *supporting* modules pulled in by the import graph (chiefly
 `CurvatureQuotient -> GeometricClosure -> Consolidation/Recovery/Quantum/CurvatureBridge`
 and `ValidityHorizon -> PhaseClassifier`). "Consumers" counts declarations in the
 loaded closure whose type or value mentions the axiom. A consumer count of 0 means
-the axiom is dead weight here.
+the axiom is dead weight here. **None is consumed by any headline theorem.**
 
 | Axiom | Module | Consumers | Unconstrained numeric params |
 |---|---|---|---|
@@ -91,4 +94,6 @@ the axiom is dead weight here.
 Every number here is machine-derived from the elaborated environment (`Lean.collectAxioms`,
 `Expr.getUsedConstants`), never from source text. The receipt also records the verbatim
 kernel-printed statement of each headline theorem with a SHA-256, unused hypotheses,
-and the project-local definition cone of each statement.
+and the project-local definition cone of each statement. An external reviewer verified
+the receipts' self-hashes, statement hashes, and raw-probe fields on 2026-09-12
+(`docs/reviews/2026-09-12-review-2-receipt-verification.json`).

@@ -7,8 +7,8 @@
  ],
  "counts": {
   "fail": 3,
-  "info": 367,
-  "warn": 29
+  "info": 386,
+  "warn": 24
  },
  "findings": [
   {
@@ -62,86 +62,16 @@
   {
    "basis": "heuristic",
    "code": "CITED_DECLARATION_MISSING",
-   "detail": "cited in reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md but no such declaration exists in the loaded environment or in project sources",
+   "detail": "cited in docs/reviews/2026-09-12-review-2-redirected.md but no such declaration exists in the loaded environment or in project sources",
    "evidence": {
     "files": [
-     "reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md"
+     "docs/reviews/2026-09-12-review-2-redirected.md"
     ]
    },
    "id": "F10",
    "remedy": "classify: moved / renamed / local-only / planned / deleted; then repair the citation",
    "severity": "warn",
-   "theorem": "SGC.DiscreteFluidDynamics"
-  },
-  {
-   "basis": "heuristic",
-   "code": "CITED_DECLARATION_MISSING",
-   "detail": "cited in demos/README.md but no such declaration exists in the loaded environment or in project sources",
-   "evidence": {
-    "files": [
-     "demos/README.md"
-    ]
-   },
-   "id": "F10",
-   "remedy": "classify: moved / renamed / local-only / planned / deleted; then repair the citation",
-   "severity": "warn",
-   "theorem": "SGC.Measurement.Interfaces.TightnessAudit"
-  },
-  {
-   "basis": "heuristic",
-   "code": "CITED_DECLARATION_MISSING",
-   "detail": "cited in demos/README.md but no such declaration exists in the loaded environment or in project sources",
-   "evidence": {
-    "files": [
-     "demos/README.md"
-    ]
-   },
-   "id": "F10",
-   "remedy": "classify: moved / renamed / local-only / planned / deleted; then repair the citation",
-   "severity": "warn",
-   "theorem": "SGC.Measurement.Interfaces.tightness_ratio_nonneg"
-  },
-  {
-   "basis": "heuristic",
-   "code": "CITED_DECLARATION_MISSING",
-   "detail": "cited in demos/README.md but no such declaration exists in the loaded environment or in project sources",
-   "evidence": {
-    "files": [
-     "demos/README.md"
-    ]
-   },
-   "id": "F10",
-   "remedy": "classify: moved / renamed / local-only / planned / deleted; then repair the citation",
-   "severity": "warn",
-   "theorem": "SGC.Measurement.Wavelets"
-  },
-  {
-   "basis": "heuristic",
-   "code": "CITED_DECLARATION_MISSING",
-   "detail": "cited in demos/README.md but no such declaration exists in the loaded environment or in project sources",
-   "evidence": {
-    "files": [
-     "demos/README.md"
-    ]
-   },
-   "id": "F10",
-   "remedy": "classify: moved / renamed / local-only / planned / deleted; then repair the citation",
-   "severity": "warn",
-   "theorem": "SGC.Measurement.Wavelets.DiffusionWavelet"
-  },
-  {
-   "basis": "heuristic",
-   "code": "CITED_DECLARATION_MISSING",
-   "detail": "cited in reports/BROWNIAN_MOTION_LEAN_EXPLORATION.md but no such declaration exists in the loaded environment or in project sources",
-   "evidence": {
-    "files": [
-     "reports/BROWNIAN_MOTION_LEAN_EXPLORATION.md"
-    ]
-   },
-   "id": "F10",
-   "remedy": "classify: moved / renamed / local-only / planned / deleted; then repair the citation",
-   "severity": "warn",
-   "theorem": "SGC.Stochastic.KramersEscape"
+   "theorem": "SGC.Approximate"
   },
   {
    "basis": "heuristic",
@@ -330,13 +260,25 @@
    "theorem": null
   },
   {
+   "basis": "process",
+   "code": "DIRTY_TREE",
+   "detail": "working tree has uncommitted changes; audited bytes may differ from the recorded commit",
+   "evidence": {
+    "commit": "e871facc628f39b8f8e439fe3cb6304ecc94b6ae"
+   },
+   "id": "F12",
+   "remedy": "commit or stash, then re-run so the receipt names one revision",
+   "severity": "warn",
+   "theorem": null
+  },
+  {
    "basis": "heuristic",
    "code": "NARRATIVE_CLAIM_NEEDS_HUMAN_MAP",
-   "detail": "strong-claim vocabulary 'Millennium' appears 2x (THEORY.md:175, docs/bkm-formalization-design.md:46); a human must map the formal statements to it",
+   "detail": "strong-claim vocabulary 'Millennium' appears 2x (docs/bkm-ladder.md:46, docs/reviews/2026-09-12-adversarial-review.md:332); a human must map the formal statements to it",
    "evidence": {
     "locations": [
-     "THEORY.md:175",
-     "docs/bkm-formalization-design.md:46"
+     "docs/bkm-ladder.md:46",
+     "docs/reviews/2026-09-12-adversarial-review.md:332"
     ]
    },
    "id": "F10",
@@ -347,71 +289,42 @@
   {
    "basis": "heuristic",
    "code": "NARRATIVE_CLAIM_NEEDS_HUMAN_MAP",
-   "detail": "strong-claim vocabulary 'Navier-Stokes' appears 5x (PRIORITY_CLAIMS.md:93, PRIORITY_CLAIMS.md:95, PRIORITY_CLAIMS.md:99, ...); a human must map the formal statements to it",
+   "detail": "strong-claim vocabulary 'Navier-Stokes' appears 33x (README.md:33, README.md:37, docs/bkm-ladder.md:51, ...); a human must map the formal statements to it",
    "evidence": {
     "locations": [
-     "PRIORITY_CLAIMS.md:93",
-     "PRIORITY_CLAIMS.md:95",
-     "PRIORITY_CLAIMS.md:99",
-     "docs/bkm-formalization-design.md:51",
-     "reports/PHASE_DIAGRAM_UNIFICATION.md:67"
-    ]
-   },
-   "id": "F10",
-   "remedy": "supply --claim-map with attested entries or soften the prose",
-   "severity": "warn",
-   "theorem": null
-  },
-  {
-   "basis": "heuristic",
-   "code": "NARRATIVE_CLAIM_NEEDS_HUMAN_MAP",
-   "detail": "strong-claim vocabulary 'Riemann' appears 26x (CHANGELOG.md:164, RESEARCH_JOURNAL.md:90, VERIFIED_CORE_MANIFEST.md:381, ...); a human must map the formal statements to it",
-   "evidence": {
-    "locations": [
-     "CHANGELOG.md:164",
-     "RESEARCH_JOURNAL.md:90",
-     "VERIFIED_CORE_MANIFEST.md:381",
-     "VERIFIED_CORE_MANIFEST.md:385",
-     "decisions/0013-affinity-protection-conserved-charge.md:40",
-     "docs/retired-axioms.md:871",
-     "docs/SGC_CANONICAL_GROKKING_THEORY.md:148",
-     "docs/SGC_CANONICAL_GROKKING_THEORY.md:298",
-     "docs/SGC_CONTROL_ARCHITECTURE.md:646",
-     "docs/sgc_theory_roadmap.md:90",
-     "docs/sgc_theory_roadmap.md:95",
-     "docs/sgc_theory_roadmap.md:136",
-     "docs/SGC_THRML_EXPERIMENT_PROPOSAL_local.md:220",
-     "reports/BROWNIAN_MOTION_LEAN_EXPLORATION.md:454",
-     "reports/phase1c_implementation_summary.md:71",
-     "reports/PHASE_DIAGRAM_UNIFICATION.md:243",
-     "reports/SGC_GROKKING_RESEARCH_REPORT.md:216",
-     "reports/SGC_GROKKING_RESEARCH_REPORT.md:465",
-     "reports/UNIVERSAL_INDUCTION_SYNTHESIS.md:141",
-     "theory_context/Native Encoding Architecture.md:345",
-     "theory_context/sg.md:430",
-     "theory_context/SGC Theory  Deep Dive & Methods.md:464",
-     "theory_context/SGC UPAT Methods Deep Dive.md:343",
-     "theory_context/SGC UPAT Methods Deep Dive.md:474",
-     "theory_context/SGC-ARC Agent Deep Dive.md:313",
-     "theory_context/UPAT_SGC_mapping.md:58"
-    ]
-   },
-   "id": "F10",
-   "remedy": "supply --claim-map with attested entries or soften the prose",
-   "severity": "warn",
-   "theorem": null
-  },
-  {
-   "basis": "heuristic",
-   "code": "NARRATIVE_CLAIM_NEEDS_HUMAN_MAP",
-   "detail": "strong-claim vocabulary 'fully verified' appears 5x (README.md:37, VERIFIED_CORE_MANIFEST.md:52, VERIFIED_CORE_MANIFEST.md:117, ...); a human must map the formal statements to it",
-   "evidence": {
-    "locations": [
+     "README.md:33",
      "README.md:37",
-     "VERIFIED_CORE_MANIFEST.md:52",
-     "VERIFIED_CORE_MANIFEST.md:117",
-     "VERIFIED_CORE_MANIFEST.md:417",
-     "WINDSURF_ARCHIVE_MISSION.md:273"
+     "docs/bkm-ladder.md:51",
+     "docs/REVIEWER-COMMISSION.md:90",
+     "docs/REVIEWER-COMMISSION.md:113",
+     "docs/REVIEWER-COMMISSION.md:164",
+     "docs/REVIEWER-COMMISSION.md:196",
+     "docs/REVIEWER-REDIRECT-2.md:153",
+     "docs/REVIEWER-REDIRECT-2.md:160",
+     "docs/two-horizons.md:3",
+     "docs/two-horizons.md:3",
+     "docs/two-horizons.md:24",
+     "docs/two-horizons.md:39",
+     "docs/two-horizons.md:44",
+     "docs/two-horizons.md:48",
+     "docs/two-horizons.md:52",
+     "docs/two-horizons.md:57",
+     "docs/two-horizons.md:95",
+     "docs/two-horizons.md:97",
+     "docs/two-horizons.md:101",
+     "docs/two-horizons.md:198",
+     "docs/two-horizons.md:257",
+     "docs/two-horizons.md:306",
+     "docs/two-horizons.md:316",
+     "docs/two-horizons.md:395",
+     "docs/two-horizons.md:413",
+     "docs/two-horizons.md:448",
+     "docs/two-horizons.md:562",
+     "docs/two-horizons.md:605",
+     "docs/two-horizons.md:609",
+     "docs/two-horizons.md:613",
+     "docs/reviews/2026-09-12-adversarial-review.md:334",
+     "docs/reviews/2026-09-12-adversarial-review.md:345"
     ]
    },
    "id": "F10",
@@ -422,12 +335,10 @@
   {
    "basis": "heuristic",
    "code": "NARRATIVE_CLAIM_NEEDS_HUMAN_MAP",
-   "detail": "strong-claim vocabulary 'settles' appears 3x (decisions/0016-curvature-descends-along-lumpable-quotients.md:50, reports/PHASE_4A_CANONICAL_WAVELET_FISHER_RAO_INTEGRATION.md:249, theory_context/SGC UPAT Methods Deep Dive.md:211); a human must map the formal statements to it",
+   "detail": "strong-claim vocabulary 'Riemann' appears 1x (docs/reviews/2026-09-12-adversarial-review.md:243); a human must map the formal statements to it",
    "evidence": {
     "locations": [
-     "decisions/0016-curvature-descends-along-lumpable-quotients.md:50",
-     "reports/PHASE_4A_CANONICAL_WAVELET_FISHER_RAO_INTEGRATION.md:249",
-     "theory_context/SGC UPAT Methods Deep Dive.md:211"
+     "docs/reviews/2026-09-12-adversarial-review.md:243"
     ]
    },
    "id": "F10",
@@ -438,19 +349,28 @@
   {
    "basis": "heuristic",
    "code": "NARRATIVE_CLAIM_NEEDS_HUMAN_MAP",
-   "detail": "strong-claim vocabulary 'unconditional' appears 10x (RESEARCH_JOURNAL.md:285, RESEARCH_JOURNAL.md:567, RESEARCH_JOURNAL.md:816, ...); a human must map the formal statements to it",
+   "detail": "strong-claim vocabulary 'settles' appears 3x (docs/REVIEWER-COMMISSION.md:53, docs/REVIEWER-REDIRECT-2.md:14, docs/two-horizons.md:503); a human must map the formal statements to it",
    "evidence": {
     "locations": [
-     "RESEARCH_JOURNAL.md:285",
-     "RESEARCH_JOURNAL.md:567",
-     "RESEARCH_JOURNAL.md:816",
-     "docs/operator-strain-design.md:26",
-     "docs/operator-strain-design.md:59",
-     "reports/EMERGENCE_THEORY_FROM_FIRST_PRINCIPLES.md:98",
-     "reports/EMERGENCE_THEORY_FROM_FIRST_PRINCIPLES.md:379",
-     "reports/ITERATION_SUMMARY_V3_V5.md:24",
-     "reports/SPRINT_PLAN_POST_4C.md:24",
-     "reports/SPRINT_PLAN_POST_4C.md:255"
+     "docs/REVIEWER-COMMISSION.md:53",
+     "docs/REVIEWER-REDIRECT-2.md:14",
+     "docs/two-horizons.md:503"
+    ]
+   },
+   "id": "F10",
+   "remedy": "supply --claim-map with attested entries or soften the prose",
+   "severity": "warn",
+   "theorem": null
+  },
+  {
+   "basis": "heuristic",
+   "code": "NARRATIVE_CLAIM_NEEDS_HUMAN_MAP",
+   "detail": "strong-claim vocabulary 'unconditional' appears 3x (docs/REVIEWER-REDIRECT-2.md:23, docs/ROADMAP.md:37, docs/reviews/2026-09-12-adversarial-review.md:316); a human must map the formal statements to it",
+   "evidence": {
+    "locations": [
+     "docs/REVIEWER-REDIRECT-2.md:23",
+     "docs/ROADMAP.md:37",
+     "docs/reviews/2026-09-12-adversarial-review.md:316"
     ]
    },
    "id": "F10",
@@ -519,6 +439,18 @@
    "remedy": "drop the hypothesis or check the statement",
    "severity": "warn",
    "theorem": "SGC.Bridge.DefectHorizonBridge.instFiniteDimensionalRealPiMat"
+  },
+  {
+   "basis": "witness",
+   "code": "AUTOMATION_CLOSES_TARGET_UNDER_POLICY",
+   "detail": "the configured automation policy closes the statement (`rfl`); legitimate, but weigh against any strong narrative",
+   "evidence": {
+    "tactic": "rfl"
+   },
+   "id": "F07",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "ContinuousLinearMap.ring.congr_simp"
   },
   {
    "basis": "witness",
@@ -783,158 +715,14 @@
    "theorem": null
   },
   {
-   "basis": "heuristic",
-   "code": "CITED_DECLARATION_UNLOADED",
-   "detail": "cited in reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md; a declaration with this final name exists in project sources but not in the audited modules",
-   "evidence": {
-    "files": [
-     "reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md"
-    ]
-   },
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
    "id": "F10",
-   "remedy": "audit the module that defines it to confirm the citation",
+   "remedy": "add a claim-map entry with human_attestation",
    "severity": "info",
-   "theorem": "SGC.Bridge.CelegansFloquetTsallis.celegans_anomalous_diffusion_value"
-  },
-  {
-   "basis": "heuristic",
-   "code": "CITED_DECLARATION_UNLOADED",
-   "detail": "cited in reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md; a declaration with this final name exists in project sources but not in the audited modules",
-   "evidence": {
-    "files": [
-     "reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md"
-    ]
-   },
-   "id": "F10",
-   "remedy": "audit the module that defines it to confirm the citation",
-   "severity": "info",
-   "theorem": "SGC.Bridge.CelegansFloquetTsallis.celegans_scaling_lt_UGM"
-  },
-  {
-   "basis": "heuristic",
-   "code": "CITED_DECLARATION_UNLOADED",
-   "detail": "cited in reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md; a declaration with this final name exists in project sources but not in the audited modules",
-   "evidence": {
-    "files": [
-     "reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md"
-    ]
-   },
-   "id": "F10",
-   "remedy": "audit the module that defines it to confirm the citation",
-   "severity": "info",
-   "theorem": "SGC.Bridge.CelegansFloquetTsallis.predicted_alpha_eq_r_half"
-  },
-  {
-   "basis": "heuristic",
-   "code": "CITED_DECLARATION_UNLOADED",
-   "detail": "cited in reports/SECOND_LAW_FORMALIZATION_2026-05-25.md; a declaration with this final name exists in project sources but not in the audited modules",
-   "evidence": {
-    "files": [
-     "reports/SECOND_LAW_FORMALIZATION_2026-05-25.md"
-    ]
-   },
-   "id": "F10",
-   "remedy": "audit the module that defines it to confirm the citation",
-   "severity": "info",
-   "theorem": "SGC.ComplexityRelativity.complexity_is_relational"
-  },
-  {
-   "basis": "heuristic",
-   "code": "CITED_DECLARATION_UNLOADED",
-   "detail": "cited in demos/README.md; a declaration with this final name exists in project sources but not in the audited modules",
-   "evidence": {
-    "files": [
-     "demos/README.md"
-    ]
-   },
-   "id": "F10",
-   "remedy": "audit the module that defines it to confirm the citation",
-   "severity": "info",
-   "theorem": "SGC.Evolution.Dynamics.EvolutionStep"
-  },
-  {
-   "basis": "heuristic",
-   "code": "CITED_DECLARATION_UNLOADED",
-   "detail": "cited in reports/PHASE_R2_R4_OPEN_DISCOVERY_FINDINGS.md; a declaration with this final name exists in project sources but not in the audited modules",
-   "evidence": {
-    "files": [
-     "reports/PHASE_R2_R4_OPEN_DISCOVERY_FINDINGS.md"
-    ]
-   },
-   "id": "F10",
-   "remedy": "audit the module that defines it to confirm the citation",
-   "severity": "info",
-   "theorem": "SGC.Markov.StationaryDistribution.lean"
-  },
-  {
-   "basis": "heuristic",
-   "code": "CITED_DECLARATION_UNLOADED",
-   "detail": "cited in reports/PHASE_R2_R4_OPEN_DISCOVERY_FINDINGS.md; a declaration with this final name exists in project sources but not in the audited modules",
-   "evidence": {
-    "files": [
-     "reports/PHASE_R2_R4_OPEN_DISCOVERY_FINDINGS.md"
-    ]
-   },
-   "id": "F10",
-   "remedy": "audit the module that defines it to confirm the citation",
-   "severity": "info",
-   "theorem": "SGC.Quantum.KnillLaflamme.lean"
-  },
-  {
-   "basis": "heuristic",
-   "code": "CITED_DECLARATION_UNLOADED",
-   "detail": "cited in reports/SPINGLASS_GAUGE_AUDIT.md; a declaration with this final name exists in project sources but not in the audited modules",
-   "evidence": {
-    "files": [
-     "reports/SPINGLASS_GAUGE_AUDIT.md"
-    ]
-   },
-   "id": "F10",
-   "remedy": "audit the module that defines it to confirm the citation",
-   "severity": "info",
-   "theorem": "SGC.Spectral.Floquet.PeriodicGeneratorFamily"
-  },
-  {
-   "basis": "heuristic",
-   "code": "CITED_DECLARATION_UNLOADED",
-   "detail": "cited in reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md; a declaration with this final name exists in project sources but not in the audited modules",
-   "evidence": {
-    "files": [
-     "reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md"
-    ]
-   },
-   "id": "F10",
-   "remedy": "audit the module that defines it to confirm the citation",
-   "severity": "info",
-   "theorem": "SGC.Stochastic.conjecture_C2_hard_half"
-  },
-  {
-   "basis": "heuristic",
-   "code": "CITED_DECLARATION_UNLOADED",
-   "detail": "cited in demos/README.md; a declaration with this final name exists in project sources but not in the audited modules",
-   "evidence": {
-    "files": [
-     "demos/README.md"
-    ]
-   },
-   "id": "F10",
-   "remedy": "audit the module that defines it to confirm the citation",
-   "severity": "info",
-   "theorem": "SGC.Thermodynamics.Evolution.CanEvolve"
-  },
-  {
-   "basis": "heuristic",
-   "code": "CITED_DECLARATION_UNLOADED",
-   "detail": "cited in demos/README.md; a declaration with this final name exists in project sources but not in the audited modules",
-   "evidence": {
-    "files": [
-     "demos/README.md"
-    ]
-   },
-   "id": "F10",
-   "remedy": "audit the module that defines it to confirm the citation",
-   "severity": "info",
-   "theorem": "SGC.Thermodynamics.Evolution.SatisfiesEvolutionInequality"
+   "theorem": "ContinuousLinearMap.ring.congr_simp"
   },
   {
    "basis": "attestation",
@@ -2255,6 +2043,146 @@
    "remedy": "add a claim-map entry with human_attestation",
    "severity": "info",
    "theorem": "SGC.Bridge.HaltingCompiler.step_spinRight"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.ResidualHorizon.exact_tracking_of_zero_residual"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.ResidualHorizon.residual_horizon"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.ResidualHorizon.residual_horizon_explicit"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.ResidualHorizon.within_tolerance_of_residual_small"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.StatisticalHorizon.errorOp_succ"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.StatisticalHorizon.exact_forecast_of_defect_zero"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.StatisticalHorizon.fourCycle_K1_rows"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.StatisticalHorizon.fourCycle_K2_ne_K1_sq"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.StatisticalHorizon.norm_coarsePredictor_le_one"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.StatisticalHorizon.norm_pow_predictor_mul_proj_le_one"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.StatisticalHorizon.proj_mul_pow_predictor_mul_proj"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.StatisticalHorizon.statistical_forecast_horizon"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.StatisticalHorizon.statistical_horizon"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.StatisticalHorizon.sub_predictor_mul"
   },
   {
    "basis": "attestation",
@@ -5627,6 +5555,208 @@
    "remedy": "",
    "severity": "info",
    "theorem": "SGC.Bridge.HaltingCompiler.step_spinRight"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "1 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.ResidualHorizon.residual"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.ResidualHorizon.exact_tracking_of_zero_residual"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "1 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.ResidualHorizon.residual"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.ResidualHorizon.residual_horizon"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "1 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.ResidualHorizon.residual"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.ResidualHorizon.residual_horizon_explicit"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "1 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.ResidualHorizon.residual"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.ResidualHorizon.within_tolerance_of_residual_small"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "2 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.StatisticalHorizon.errorOp",
+     "SGC.Bridge.StatisticalHorizon.coarsePredictor"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.StatisticalHorizon.errorOp_succ"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "2 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.StatisticalHorizon.closureDefect",
+     "SGC.Bridge.StatisticalHorizon.coarsePredictor"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.StatisticalHorizon.exact_forecast_of_defect_zero"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "1 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.StatisticalHorizon.K\u2081"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.StatisticalHorizon.fourCycle_K1_rows"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "2 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.StatisticalHorizon.K\u2082",
+     "SGC.Bridge.StatisticalHorizon.K\u2081"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.StatisticalHorizon.fourCycle_K2_ne_K1_sq"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "1 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.StatisticalHorizon.coarsePredictor"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.StatisticalHorizon.norm_coarsePredictor_le_one"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "1 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.StatisticalHorizon.coarsePredictor"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.StatisticalHorizon.norm_pow_predictor_mul_proj_le_one"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "1 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.StatisticalHorizon.coarsePredictor"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.StatisticalHorizon.proj_mul_pow_predictor_mul_proj"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "2 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.StatisticalHorizon.coarsePredictor",
+     "SGC.Bridge.StatisticalHorizon.closureDefect"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.StatisticalHorizon.statistical_forecast_horizon"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "3 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.StatisticalHorizon.errorOp",
+     "SGC.Bridge.StatisticalHorizon.closureDefect",
+     "SGC.Bridge.StatisticalHorizon.coarsePredictor"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.StatisticalHorizon.statistical_horizon"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "1 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.StatisticalHorizon.coarsePredictor"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.StatisticalHorizon.sub_predictor_mul"
   },
   {
    "basis": "kernel",

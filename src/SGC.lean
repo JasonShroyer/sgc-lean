@@ -43,6 +43,7 @@ import SGC.Bridge.CantorShiftTower
 import SGC.Bridge.DiscreteFluidDynamics
 import SGC.Bridge.AbstractBKM
 import SGC.Bridge.ResidualHorizon
+import SGC.Bridge.StatisticalHorizon
 
 /-!
 # SGC - Two Horizons
@@ -68,8 +69,10 @@ axiom closures are recorded in `AXIOMS.md` and in the `lean-triage` receipts und
 * `SGC.Bridge.CurvatureUndecidability`, `SGC.Bridge.HaltingCompiler` - a global
   curvature bound on a compiled generator family is equivalent to non-halting of
   Mathlib's `Turing.TM0` machines.
-* `SGC.Bridge.CantorShiftTower` - Moore's shift is an exact (`epsilon = 0`) strongly
-  lumpable renormalization tower.
+* `SGC.Bridge.CantorShiftTower` - the uniform fresh-symbol (Bernoulli) shift kernels form
+  an exact (`epsilon = 0`) strongly lumpable tower under deletion of the oldest symbol.
+  Identification with Moore's generalized shifts is framing, not theorem (re-scoped
+  after external review).
 * `SGC.Bridge.DiscreteFluidDynamics` - finite-state current / cycle / lift facts and
   the viscous time budget; the continuum dictionary is framing, stated as such.
 * `SGC.Bridge.AbstractBKM` - L0 of the BKM ladder: time-dependent Gronwall budget
@@ -77,6 +80,9 @@ axiom closures are recorded in `AXIOMS.md` and in the `lean-triage` receipts und
 * `SGC.Bridge.ResidualHorizon` - the nonlinear Kernel Horizon: coarse-law error is
   controlled by the accumulated residual (re-entry / closure term); zero residual
   forces exact tracking.
+* `SGC.Bridge.StatisticalHorizon` - Kernel Horizon in an abstract operator setting
+  (Koopman operator + conditional expectation): `||P U^m P - A^m P|| <= m delta`; the
+  four-cycle regression test `K2 != K1^2`.
 
 ## Supporting modules
 

@@ -7,15 +7,36 @@ import SGC.Renormalization.Lumpability
 import SGC.Topology.PadicPathSpace
 
 /-!
-# The Cantor Shift Tower: symbolic dynamics as an exact SGC renormalization tower
+# The Cantor Shift Tower: a uniform fresh-symbol shift kernel is an exact SGC renormalization tower
 
-The missing third leg of the fluid-computation triangle. `DiscreteFluidDynamics`
-formalizes the Miranda-program dictionary (currents, h-principle, viscous budget);
-`PadicPathSpace` formalizes the Cantor-set substrate (`PathSpace (Fin p) ≃ₜ ℤ_[p]`).
-This module formalizes the **Moore leg**: the dynamics that fluid computers actually
-embed — the shift map of symbolic dynamics [Moore 1990/1991] — and proves that its
-finite cylinder truncations form an **exact (ε = 0) strongly-lumpable tower** of SGC
-coarse-grainings whose renormalization maps ARE the shift itself.
+## Scope (re-stated after external review, 2026-09-12)
+
+What this module proves: the **uniform fresh-symbol (Bernoulli) shift kernels**
+`shiftKernel p n` on depth-`n` cylinder words `Word p n` form an **exactly lumpable
+(ε = 0) tower** under deletion of the oldest symbol (`tailPartition`), the quotient of
+the depth-`(n+1)` kernel is the depth-`n` kernel (`shiftTower_quotient_realizes`), and the
+truncation maps intertwine the one-sided shift on the `p`-adic path space
+(`truncate_pathShift`, which uses a depth-`(n+1)` input to produce the next depth-`n`
+window).
+
+What this module does NOT prove: anything about Moore's *generalized shifts* or their
+Turing-machine simulation. `shiftKernel` is a stochastic one-sided shift with i.i.d.
+uniform input; Moore's construction involves finite-window rewriting, variable shifts,
+and an explicit simulation relation, none of which follows from the lumpability of a
+Bernoulli kernel. Finite-window observation of a deterministic bilateral shift is not
+an autonomous factor at fixed depth. The dictionary below is therefore a research
+framing; the theorem names are accurate, the identification with fluid computers is not
+established here. The separate `HaltingCompiler` result (curvature bound ↔ `TM0`
+non-halting) is unaffected.
+
+## Original framing (kept for the record; read with the scope note above)
+
+`DiscreteFluidDynamics` formalizes the Miranda-program dictionary (currents, h-principle,
+viscous budget); `PadicPathSpace` formalizes the Cantor-set substrate
+(`PathSpace (Fin p) ≃ₜ ℤ_[p]`). This module was written as the **Moore leg**: the shift
+map of symbolic dynamics, whose finite cylinder truncations form an exact (ε = 0)
+strongly-lumpable tower of SGC coarse-grainings whose renormalization maps are the
+shift itself.
 
 ## The Dictionary (computation ↔ dynamics ↔ SGC)
 
@@ -31,7 +52,7 @@ coarse-grainings whose renormalization maps ARE the shift itself.
 | renormalized machine = same machine                | `shiftTower_quotient_realizes`            |
 | unbounded faithful simulation (Turing completeness)| `shiftTower_defect_zero` (ε = 0 exactly)  |
 
-## Why this closes the triangle
+## Why this was thought to close the triangle (framing, not theorem)
 
 [CMPP] embed a Turing machine in a Reeb/Euler flow through Moore's construction:
 machine configurations are encoded as points of a Cantor set in a Poincaré section,

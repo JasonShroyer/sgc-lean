@@ -2,7 +2,7 @@
 
 ## A position paper on the SGC -> Miranda-Moore -> Navier-Stokes program, written the week forced Navier-Stokes blowup was formalized
 
-**Jason Shroyer** (SGC project), with drafting assistance. Version 0.1.3, 2026-09-12 (6.1'', 6.2 retraction and 6.1''' added after external review).
+**Jason Shroyer** (SGC project), with drafting assistance. Version 0.2, 2026-09-13. Two rounds of external adversarial review applied; see the change log at the end.
 Status: internal preprint. Every mathematical claim carries one of four labels:
 **[KERNEL]** kernel-checked in Lean 4 in `sgc-lean` (declaration named);
 **[EXTERNAL]** published or publicly released by others, cited;
@@ -27,21 +27,23 @@ acquired a public, self-assessed, kernel-checked Lean artifact establishing forc
 finite-time breakdown (Clay alternatives C and D) and unforced Euler blowup with
 divergent Beale-Kato-Majda budget.
 
-Our thesis is that these are governed by two *horizon functionals* that must be kept
-distinct: a **validity horizon** `T* ~ 1/epsilon` governed by the lumpability defect
-`epsilon` of a coarse-graining (finite iff the coarse description eventually fails;
-infinite exactly at the `epsilon = 0` pole where symbolic computation lives), and a
-**continuation budget** `B(T) = int_0^T W` governed by a regularity density `W`
-(finite iff the fine description continues). SGC has kernel-proven the discrete
-validity-horizon theorem, the `epsilon = 0` renormalization transparency of Moore's
-shift, the undecidability of a global curvature bound via a compiler against Mathlib's
-Turing machines, and - as of today - the abstract continuation-budget theorem (L0 of a
-four-level ladder toward Navier-Stokes). We state precisely what is proven, propose
-the Galerkin-level theorem that would make the two horizons interact (we observe that
-the SGC defect of Fourier truncation is the spectral energy flux across the cutoff), and
-formulate a conjecture - *no renormalization-transparent blowup* - that would give
-Tao's "computational blowup" idea a quantitative obstruction. We claim no result about
-the unforced Navier-Stokes regularity problem.
+Our thesis is that these involve two *horizon functionals* that must be kept distinct:
+a **validity horizon** - a certified time over which a coarse description tracks the
+projected fine dynamics, bounded below by an inverse power of a closure defect
+(sufficient, not iff) - and a **continuation budget** `B(T) = int_0^T W` whose
+finiteness is *necessary* for continuation in the Beale-Kato-Majda sense (again not an
+equivalence). SGC has kernel-proven the discrete validity-horizon theorem, exact
+lumpability of a Bernoulli shift tower, the undecidability of a global curvature bound
+via a compiler against Mathlib's Turing machines, an abstract continuation-budget
+theorem (L0), a residual-controlled tracking theorem, and - new in v0.2 - a statistical
+horizon theorem for Koopman-type operators with a conditional-expectation projection.
+Two rounds of adversarial review removed from this paper every unproved equivalence
+between these objects: the identification of the defect with energy flux, the
+fixed-cutoff collapse conjecture, and the identification of the shift tower with
+Moore's Turing simulation. What remains is a set of kernel-checked theorems, a
+specification for the first Galerkin-level result (residual-controlled, with prior art
+cited), and a statistical bridge with its first regression test. We claim no result
+about the unforced Navier-Stokes regularity problem.
 
 ---
 
@@ -156,12 +158,31 @@ compiler places that edge at the halting step. Pointwise curvature stays computa
 (Cushing - Kamtue - Liu - Peyerimhoff **[EXTERNAL]**); the *global* bound is
 equivalent to non-halting.
 
-**Theorem 2.5 (Moore's shift is renormalization-transparent) [KERNEL]**
+**Theorem 2.5 (Bernoulli shift tower is exactly lumpable) [KERNEL; re-scoped v0.2]**
 `SGC.Bridge.CantorShiftTower.shiftTower_defect_zero`, `shiftTower_stronglyLumpable`,
-`shiftTower_quotient_realizes`, `truncate_pathShift`. The depth-`n` cylinder
-truncations of the shift on `A^Z` (`PathSpace (Fin p) ~ Z_p`) form an exact
-(`epsilon = 0`) strongly lumpable tower whose quotient dynamics is the shift again and
-whose tower maps intertwine the Cantor-set shift.
+`shiftTower_quotient_realizes`, `truncate_pathShift`. The **uniform fresh-symbol
+(Bernoulli) shift kernels** `shiftKernel p n` on depth-`n` cylinder words form an exact
+(`epsilon = 0`) strongly lumpable tower under deletion of the oldest symbol; the quotient
+of the depth-`(n+1)` kernel is the depth-`n` kernel; the truncation maps intertwine the
+one-sided shift on `p`-adic path space (using a depth-`(n+1)` input for the next
+depth-`n` window). *Not established:* any relation to Moore's generalized shifts
+(finite-window rewriting, variable shifts, an explicit simulation relation) or to their
+embedding in fluid flows. v0.1 called this "Moore's shift is renormalization-
+transparent"; the definitions do not support that description (external review).
+
+**Theorem 2.8 (Residual Horizon) [KERNEL, v0.1.3]** see Section 6.1'''.
+
+**Theorem 2.9 (Statistical Horizon) [KERNEL, v0.2]**
+`SGC.Bridge.StatisticalHorizon.statistical_forecast_horizon`. Normed space `E`,
+operator `U` with `||U|| <= 1`, projection `P` with `P * P = P`, `||P|| <= 1`, coarse
+predictor `A = P U P`, closure defect `delta = ||(1 - P) U P||`. Then
+`||U^m P - A^m P|| <= m delta` and `||P U^m P - A^m P|| <= m delta`; `delta = 0`
+forces exact forecasting. Intended instance: `E = L^2(mu)` for an invariant measure,
+`U` the Koopman operator, `P` conditional expectation onto a finite partition. The
+regression test `fourCycle_K2_ne_K1_sq` records that averaged one-step statistics of a
+measure-preserving system need not compose (`K_2 != K_1^2` for the four-cycle over two
+cells), which is exactly what `delta > 0` quantifies. Statement and counterexample were
+supplied by the external reviewer; the formalization is ours.
 
 **Theorem 2.6 (Discrete fluid dictionary, B1-B7) [KERNEL]**
 `SGC.Bridge.DiscreteFluidDynamics`: for the probability current
@@ -195,17 +216,24 @@ Cardona, Miranda, Peralta-Salas, and Presas (PNAS 2021) embedded such shifts as
 return maps of steady Euler flows on `S^3` via the contact mirror (Etnyre - Ghrist:
 Beltrami fields are Reeb fields), producing Turing-complete steady Euler flows in
 dimension 3; Dyhr, Gonzalez-Prieto, Miranda, Peralta-Salas (2026) extended this to
-stationary Navier-Stokes states for any viscosity on manifolds with `H^1 != 0`. The
+stationary Navier-Stokes states for any viscosity on manifolds carrying a
+nowhere-vanishing harmonic field, with a generally deformed metric and Hodge-Laplacian
+viscosity (the hypothesis is stronger than `H^1 != 0`). The
 damped Beltrami flow `u(.,t) = M X0 e^{-nu t}` simulates the same computation with
 total simulated-time budget `M/nu` (PNAS 2021, pp. 8-9).
 
 ### 3.2 SGC's reading
 
-The Moore leg is the one SGC has actually formalized (Theorem 2.5). The point is
-structural: the shift has **zero lumpability defect at every truncation depth**. In
-SGC vocabulary the validity horizon `T* ~ 1/epsilon` is therefore *infinite*: no
-coarse-graining barrier obstructs unbounded faithful computation. We call this the
-**sealed-crystal pole** `epsilon = 0`. Two finite budgets bound it from the physical
+What SGC has formalized on this axis is Theorem 2.5 in its re-scoped form: a
+*Bernoulli* shift tower with zero lumpability defect at every depth. This is a
+statement about i.i.d.-input symbolic dynamics, not about Moore's machines; the
+inference "therefore computation lives at `epsilon = 0`" made in v0.1 is withdrawn. Two
+facts survive: exact lumpability gives an infinite validity horizon for *that* tower
+(`exact_forecast_of_defect_zero` is the general form), and the `HaltingCompiler`
+result (Theorem 2.4) is independent of the tower. The correct SGC object for a
+deterministic generalized shift is open (a Markov partition or sofic coding is not an
+automatic repair - external review). We keep the phrase **sealed-crystal pole** for
+`epsilon = 0` as a name for exact closure, not as a claim about where computation lives. Two finite budgets bound it from the physical
 side, both kernel-proven at the identity level: viscosity cuts simulated time to
 `1/nu` (`viscous_time_budget`), and a nonzero lumpability defect cuts it to
 `1/(nu epsilon)` (`damped_validity_budget`; the positivity of `epsilon` is an
@@ -243,7 +271,7 @@ concrete datum.
 |---|---|---|
 | `1/nu` | attenuation scale of a damped computational carrier | [KERNEL] identity, [FRAMING] interpretation |
 | `int_0^T ||omega||_Linf dt` | Euler regularity-continuation budget | [EXTERNAL] target |
-| `int_0^T D_pi(t) dt` | SGC closure-leakage / validity-horizon budget | [KERNEL] at the abstract level (Theorem 2.7); [CONJECTURE] as a fluid quantity |
+| `int_0^T D_pi(t) dt` | SGC closure-leakage / validity-horizon budget | [FRAMING]: Theorem 2.7 bounds a norm under a *given* differential inequality; identifying its density `W` with any closure defect requires a further inequality that is not proved |
 
 They share a name and a shape - a scalar density whose integral must stay finite for a
 description to continue - and nothing else has been proved.
@@ -285,11 +313,14 @@ The unifying claim of this paper is **[FRAMING]**, stated so it can be attacked:
 > It can fail *vertically*: the fine description itself ceases to exist because a
 > regularity budget is spent (continuation budget `int W`, Theorem 2.7, BKM).
 
-The Miranda - Moore axis lives at `epsilon = 0` and is about the horizontal direction
-(nothing leaks; computation is eternal; the fine dynamics is stationary so no budget is
-spent). The blowup axis lives at the other corner: the fine dynamics spends its budget
-in finite time by collapsing scale, and - we will argue - cannot do so while any fixed
-coarse description remains valid.
+The Miranda - Moore axis concerns steady or stationary flows: nothing leaks from the
+symbolic layer in the constructions, but a nonzero steady field still accrues
+`T ||omega||_inf` of BKM budget over time `T` - stationarity does not make the density
+zero (v0.1 said otherwise; corrected). The blowup axis concerns flows that spend a
+continuation budget in finite time by collapsing scale. v0.1 argued this "cannot happen
+while any fixed coarse description remains valid"; that is false for bounded energy
+(Section 6.1'''), and the two axes are now presented as *distinct*, not as two ends of
+one phase diagram.
 
 Both are *horizon theorems of the same logical shape*, "finite budget implies bounded
 evolution, excursion implies budget spent", which is why one Lean module (Theorem 2.7)
@@ -311,15 +342,12 @@ part of the fine dynamics that leaves the coarse subspace when started inside it
 D_N(u) := (I - P_N) F(P_N u)  =  -(I - P_N) P (P_N u . grad) P_N u .
 ```
 
-Its `L^2` pairing with the fine field is exactly the **energy flux across the cutoff
-`N`**, the quantity `Pi_N` of Kolmogorov - Onsager cascade phenomenology. Thus the
-Kernel-Horizon theorem, instantiated on Galerkin Navier-Stokes, would read:
-
-> *the `N`-mode macro-law's validity horizon is inverse in the energy flux through
-> wavenumber `N`.*
-
-This gives the SGC defect a name every fluid dynamicist knows. A finite-time
-singularity is, in this language, the event in which flux reaches every finite `N` in
+Its `L^2` pairing with the fine field is *related to* the **energy flux across the
+cutoff `N`** (`Pi_N`), but the exact flux identity contains a further term, and a vector
+residual norm is not a signed scalar flux (v0.1 said "exactly"; corrected). v0.1 then
+read the Kernel-Horizon theorem as "validity horizon inverse in the flux through `N`";
+that reading is withdrawn in 6.1''. A finite-time singularity was described in v0.1 as
+the event in which flux reaches every finite `N` in
 finite time, so that **every finite-`N` validity horizon closes before `T*`** - a
 statement about a family of coarse descriptions, not about the fine solution alone. We
 propose this as the L1 definition of `D_{pi,N}`.
@@ -366,8 +394,11 @@ Consequences for the program:
 
 ### 6.1' The Beltrami check, and why the budget is not `||omega||_inf` **[elementary, KERNEL-ready]**
 
-For a Beltrami field (`curl u = lambda u`) one has `(u . grad) u = grad(|u|^2 / 2)`, so
-the Leray-projected nonlinearity vanishes and `D_N(u) = 0` for every `N`. The
+For a Beltrami field with *constant* `lambda` on the flat torus, `(u . grad) u =
+grad(|u|^2 / 2)`, so the Leray-projected nonlinearity vanishes; `D_N(u) = 0` for every
+`N` then requires that truncation preserve the Beltrami property (a curl-commuting
+cutoff, as for Fourier truncation of an eigenfield). A manifold or contact realization
+is not automatically a flat Fourier realization. The
 Turing-complete steady Euler flows of Cardona - Miranda - Peralta-Salas are Beltrami.
 Hence the fluids that compute sit *exactly* at the `epsilon = 0` pole of Theorem 2.5 -
 a consistency check between the two axes that we did not design and that should be
@@ -376,15 +407,15 @@ Galerkin setting is formalized).
 
 The same fact corrects a natural but wrong L1 target: Beltrami fields have arbitrary
 vorticity and zero defect, so no inequality `D_N >= c ||omega_N||_inf - r_N` can hold.
-Vorticity measures *stretching*; the defect measures *transfer across scale*. The
-correct continuum partner of the validity horizon is therefore a scale-transfer
-criterion. The closest existing theory we know is Cheskidov - Shvydkoy's determining
-wavenumber `Lambda(t)` (the wavenumber at which nonlinear flux is balanced by
-dissipation / where Bernstein-type bounds close) and their regularity criterion
-`int_0^T Lambda(t)^2 dt < inf` **[EXTERNAL, to be confirmed by review]**. In SGC
-language `Lambda(t)` is the smallest `N` whose coarse description is currently valid,
-and `int Lambda^2 dt` is the horizon budget. Conjecture 6.2 below is stated in these
-terms.
+Vorticity measures local rotation (stretching is `(omega . grad) u`); the defect
+measures transfer across scale. Cheskidov - Shvydkoy's dissipation wavenumber
+`Lambda(t)` **[EXTERNAL, arXiv:1102.1944, confirmed by review]**: `Lambda in L^1`
+always (Lemma 3.1); `Lambda in L^{5/2}` implies regularity unconditionally (Theorem
+3.2); the `Lambda in L^2` criterion (Corollary 3.4) additionally requires
+`u in L^inf B^{-1}_{inf,inf}`; and different determining cutoffs are different objects
+and must be treated separately. v0.1's sentence "their criterion `int Lambda^2 < inf`"
+was imprecise. No equivalence between a wavenumber criterion, a defect norm, and an
+approximation horizon has been proved, and none is asserted below.
 
 ### 6.1''' Bounded energy bounds every fixed-resolution quantity; the residual theorem **[KERNEL + reviewer correction]**
 
@@ -426,16 +457,22 @@ characterizes breakdown". That object is the determining wavenumber of 6.1'.
 every fixed `N`." False by the energy bound of 6.1''' whenever kinetic energy is bounded,
 which is the case of interest.
 
-**Replacement [CONJECTURE, possibly a corollary of known results]:** Let `u` be a smooth
-solution on `[0, T*)` with `int_0^{T*} ||omega||_inf dt = inf` and bounded energy. For
-every tolerance `eta > 0`, the minimal resolution `N_eta(t)` at which the Galerkin coarse
-law tracks `P_N u` within `eta` on `[0, t]` satisfies `N_eta(t) -> inf` as `t -> T*`.
-In determining-wavenumber language, `Lambda(t) -> inf`. If Cheskidov - Shvydkoy's
-criterion already gives this, the SGC content is only the reading: *a singularity is
-the closing of every finite validity horizon, while every fixed-resolution observable
-stays bounded*. That reading is, we think, the correct intuition to carry into the
-computation axis (Q2 of the commission): a fluid computer at fixed resolution sees
-nothing of its own singularity.
+**Successor attempted in v0.1.3, also retracted:** "for every tolerance `eta`, the
+minimal resolution `N_eta(t)` tracking `P_N u` within `eta` in `L^2` tends to infinity".
+False: if both trajectories have `L^2` norm at most `M` then `||P_N u - v_N||_2 <= 2M`, so
+sufficiently large tolerances never require increasing resolution (external review).
+Any correct successor must use full-state approximation in a *continuation-controlling*
+norm, and must distinguish computable validated endpoints from an ideal supremal one.
+
+**What replaces it - the certified horizon [EXTERNAL, corollary of CCRT Theorem 8]:**
+Chernyshenko - Constantin - Robinson - Titi prove that whenever a strong solution exists on
+`[0, T]`, every sufficiently large Galerkin approximation passes their a posteriori test.
+Define `T_N^CCRT` as the supremum of times passing the test; soundness plus eventual
+success on every `T < T*` give `T_N^CCRT -> T*`. Monotonicity in `N` is not automatic
+(a running maximum supplies it by construction). This is the rigorous form of a
+*validity horizon* for fluids: a **specified certified guarantee**, not an intrinsic
+phase boundary. SGC's contribution can only be formal verification and possibly sharper
+computable constants, not the discovery of residual-based error control.
 
 ### 6.2 (original text, kept for the record)
 
@@ -459,7 +496,7 @@ These are incompatible at the level of coarse-grainings:
 
 If true, this is a quantitative obstruction to the naive form of Tao's
 "computational blowup" idea (build a fluid computer that programs its own
-singularity): the computation, which requires `epsilon = 0` transparency across the
+singularity): the computation, which (v0.1 asserted, without proof) requires `epsilon = 0` transparency across the
 scales it uses, must *terminate* before the singularity, because the singularity
 destroys transparency at every scale. It does not obstruct a computer that runs for a
 finite time and then hands off to a purely analytic collapse - which is, in effect, what
@@ -523,6 +560,20 @@ sentence not backed by one is labelled.
 6. That the conjectures of Section 6 are more than precisely stated targets.
 7. That the mathematics of Theorem 2.3 is new (it is Pedrotti - Salez); the
    formalization and the witness are what is ours.
+8. That `CantorShiftTower` formalizes Moore's generalized shifts or a Turing simulation.
+9. That residual-controlled a posteriori error control for Galerkin Navier-Stokes is
+   new (Morosi - Pizzocchero, arXiv:1104.3832, eq. (6.20), (4.24)-(4.27), Section 7;
+   Chernyshenko - Constantin - Robinson - Titi, arXiv:math/0607181, Theorems 3, 8).
+10. That any of `D_N`, `R_N`, `r_N`, `Pi_N`, a determining wavenumber, or a certified
+    interval is equivalent to another; they are distinct objects and will be declared
+    separately.
+11. That a monotone "phase" quantity exists: time reversal excludes sign-even
+    instantaneous monotone functionals for unforced Euler; stationarity excludes
+    strictly decreasing averaged ones; deterministic Galerkin evolution has zero
+    carre-du-champ even with viscosity.
+12. That an invariant measure yields an autonomous finite-state Markov law: it yields a
+    transition matrix with the right stationary law, whose powers need not be the
+    multi-step statistics (Theorem 2.9's regression test).
 
 ---
 
@@ -548,10 +599,12 @@ audits, not from our own build.
 | `defect_horizon_bound` | `Bridge.DefectHorizonBridge` | explicit `O(t epsilon e^{...})` closure bound | anything about PDEs |
 | `RicciCurvatureBound_quotient` | `Renormalization.CurvatureQuotient` | `CD(rho,inf)` descends along exact quotients | novelty of the mathematics (Pedrotti-Salez) |
 | `cd0_compiled_iff` | `Bridge.HaltingCompiler` | global `CD(0,inf)` on compiled family <-> non-halting | undecidability of any fluid question |
-| `shiftTower_defect_zero` | `Bridge.CantorShiftTower` | shift truncations are exactly lumpable at every depth | that any fluid realizes this tower |
+| `shiftTower_defect_zero` | `Bridge.CantorShiftTower` | Bernoulli fresh-symbol shift kernels are exactly lumpable at every depth | Moore's generalized shifts; Turing simulation; any fluid realization |
 | `stationary_iff_current_divergence_free` et al. | `Bridge.DiscreteFluidDynamics` | finite-state current/cycle/lift facts | the continuum dictionary |
 | `viscous_time_budget`, `damped_validity_budget` | same | `int e^{-nu t} = 1/nu`; product identity | that `epsilon > 0` is needed (it is not used) |
 | `norm_le_exp_budget`, `bounded_of_budget_le`, `exists_budget_gt_of_norm_gt` | `Bridge.AbstractBKM` | time-dependent Gronwall budget theorems in a normed space | BKM; anything about Euler/NS |
+| `residual_horizon`, `exact_tracking_of_zero_residual` | `Bridge.ResidualHorizon` | homogeneous-Lipschitz residual-controlled tracking (wrapper of Mathlib) | the inhomogeneous energy estimate; any bound on a fluid residual |
+| `statistical_forecast_horizon`, `fourCycle_K2_ne_K1_sq` | `Bridge.StatisticalHorizon` | `||P U^m P - A^m P|| <= m delta`; averaged one-step statistics do not compose | that any fluid's invariant measure has small `delta`; a curvature theory |
 | `navier_stokes_breakdown_R3` (external) | `openai/NavierStokesAndEuler` | Clay (C), self-assessed, three axioms | replay by us; Clay (A)/(B) |
 
 ---
@@ -610,8 +663,39 @@ formalizers who want to help build L1 against a public, comparator-checkable tar
   equation*; `github.com/openai/NavierStokesAndEuler` (2026-09-08). Self-assessed.
 - Pedrotti, Salez, *A new cutoff criterion for non-negatively curved chains*,
   arXiv:2501.13079.
+- Morosi, Pizzocchero, *On approximate solutions of the incompressible Euler and
+  Navier-Stokes equations*, arXiv:1104.3832 (eq. 6.20; 4.24-4.27; Section 7).
+- Chernyshenko, Constantin, Robinson, Titi, *A posteriori regularity of the
+  three-dimensional Navier-Stokes equations from numerical computations*,
+  arXiv:math/0607181 (Theorems 3, 8; Corollary 5).
+- Cheskidov, Shvydkoy, *A unified approach to regularity problems for the 3D
+  Navier-Stokes and Euler equations: the use of Kolmogorov's dissipation range*,
+  arXiv:1102.1944 (Lemma 3.1, Theorem 3.2, Corollary 3.4).
+- Cheskidov, Dai, Kavlie, *Determining modes for the 3D Navier-Stokes equations*,
+  arXiv:1507.05908.
 - Tao, *Finite time blowup for an averaged three-dimensional Navier-Stokes equation*,
   JAMS 29 (2016).
 - Buckmaster, Alpoge, `tristanbuckmaster/fluid_lean` (2026-09-08) - secondary, via
   press audit; not read by us.
 - SGC Lean library `sgc-lean` (this project), modules as named; `lean-triage` v0.2.1.
+
+---
+
+## Change log
+
+- **v0.1 (2026-09-12).** Initial. Conjecture 6.2 (fixed-cutoff collapse); defect identified
+  with energy flux; `CantorShiftTower` described as Moore's shift.
+- **v0.1.1.** Beltrami check; determining-wavenumber budget; third reviewer question.
+- **v0.1.2.** Reviewer correction: error is driven by re-entry `R_N`, not leakage `D_N`
+  (6.1'').
+- **v0.1.3.** Reviewer correction: bounded energy bounds every fixed-cutoff quantity;
+  6.2 retracted; Residual Horizon theorem (2.8) added.
+- **v0.2 (2026-09-13).** Second review applied: abstract rewritten without "iff"s;
+  Theorem 2.5 re-scoped to the Bernoulli tower and the computation axis relabelled
+  [FRAMING]; 3.1 hypothesis corrected; 4.2 row relabelled; Section 5 stationarity
+  sentence corrected; 6.1 flux "exactly" withdrawn; 6.1' vorticity/stretching and
+  Cheskidov - Shvydkoy hypotheses corrected; Beltrami claim restricted; 6.2 successor
+  retracted with the `2M` argument and replaced by the CCRT certified horizon; Statistical
+  Horizon theorem (2.9) added with the four-cycle regression test; non-claims 8-12 added;
+  prior art (Morosi - Pizzocchero; CCRT) cited. Lean additions: `ResidualHorizon`,
+  `StatisticalHorizon`; `CantorShiftTower` docstring re-scoped.

@@ -19,12 +19,14 @@ conditional-expectation projector, `D = (I - Pi) L Pi` the **lumpability defect*
 | Defect-Horizon bound | `SGC.Bridge.DefectHorizonBridge.defect_horizon_bound` | `||e^{tL} f0 - e^{t L-bar} f0||_pi <= t ||D||_pi e^{t(...)} ||f0||_pi`, explicit constants |
 | Curvature descends | `SGC.Renormalization.CurvatureQuotient.RicciCurvatureBound_quotient` | Bakry-Emery `CD(rho, inf)` is preserved by exactly lumpable quotients; strict witness `curvature_hiding` |
 | Curvature bound is Pi^0_1-hard | `SGC.Bridge.HaltingCompiler.cd0_compiled_iff` | global `CD(0, inf)` on a compiled generator family `<->` non-halting of Mathlib `TM0` machines |
-| Moore's shift is renormalization-transparent | `SGC.Bridge.CantorShiftTower.shiftTower_defect_zero` | cylinder truncations of the shift form an exact (`epsilon = 0`) strongly lumpable tower |
+| Bernoulli shift tower is exactly lumpable | `SGC.Bridge.CantorShiftTower.shiftTower_defect_zero` | uniform fresh-symbol shift kernels form an exact (`epsilon = 0`) strongly lumpable tower under deletion of the oldest symbol (identification with Moore's generalized shifts is framing, not theorem) |
 | Discrete fluid dictionary | `SGC.Bridge.DiscreteFluidDynamics.*` | finite-state continuity / equilibrium / cycle / lift facts; `int_0^inf e^{-nu t} = 1/nu` |
 | Residual Horizon | `SGC.Bridge.ResidualHorizon.residual_horizon` | projected fine trajectory vs exact coarse trajectory: `dist <= eps (e^{Kt} - 1) / K` where `eps` bounds the residual (closure term); zero residual => exact tracking |
+| Statistical Horizon | `SGC.Bridge.StatisticalHorizon.statistical_forecast_horizon` | Koopman-type `U` (`||U|| <= 1`), projection `P`, `A = P U P`, `delta = ||(1-P) U P||`: `||P U^m P - A^m P|| <= m delta`; regression test `fourCycle_K2_ne_K1_sq` |
 | Abstract BKM (L0) | `SGC.Bridge.AbstractBKM.norm_le_exp_budget` | `||x'|| <= W ||x||  =>  ||x t|| <= exp(int_0^t W) ||x 0||`; finite budget => bounded; excursion => budget spent |
 
-All of these have kernel closure `{propext, Classical.choice, Quot.sound}`. See
+All of these have kernel closure contained in `{propext, Classical.choice, Quot.sound}`
+(183 of 185 theorems in the headline modules; 166 equal to all three). See
 [`AXIOMS.md`](AXIOMS.md) for the complete ledger, including the two non-headline
 theorems in `TrajectoryClosure` that still consume declared axioms.
 
@@ -33,6 +35,13 @@ theorems in `TrajectoryClosure` that still consume declared axioms.
 - No result about the Clay Navier-Stokes alternatives (A)/(B).
 - The continuum dictionary in `DiscreteFluidDynamics` (steady Euler, contact geometry)
   is a research framing stated as such in the file, not a theorem.
+- `CantorShiftTower` proves exact lumpability of a *Bernoulli* shift tower; it does not
+  formalize Moore's generalized shifts or a Turing simulation (external review,
+  2026-09-12; docstring re-scoped).
+- `ResidualHorizon` and `StatisticalHorizon` are Gronwall / telescoping statements in
+  abstract settings; residual-controlled a posteriori error control for Galerkin
+  Navier-Stokes is prior art (Morosi-Pizzocchero; Chernyshenko-Constantin-Robinson-Titi)
+  and is not claimed as new.
 - `AbstractBKM` proves an abstract budget theorem in a normed space; it does not
   instantiate Euler or Navier-Stokes. Levels L1-L3 of the ladder are open.
 - The mathematics of `RicciCurvatureBound_quotient` is due to Pedrotti-Salez
@@ -48,7 +57,7 @@ lake build
 ```
 
 Mathlib is pinned by `lake-manifest.json`. The build has been replayed from a clean
-checkout of this branch (3138 jobs, no errors).
+checkout of this branch (3141 jobs, no errors).
 
 ## Audit
 

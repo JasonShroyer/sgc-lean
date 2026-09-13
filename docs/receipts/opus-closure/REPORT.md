@@ -1,16 +1,16 @@
 # lean-triage report: FINDINGS
 
-- receipt: `lean-triage-71ef010b1b24-20260913T011932Z`  (hash_self `866a7700560fd5c9...`)
-- tool: lean-triage 0.2.1 (source `7e7d28e056e9`, probe `b070c71d2773`)
+- receipt: `lean-triage-9aeec390bad5-20260913T165135Z`  (hash_self `f9d9824ad9d6b5ef...`)
+- tool: lean-triage 0.2.1 (source `7e7d28e056e9`, probe `3e3738d8c0e0`)
 - repo: https://github.com/JasonShroyer/sgc-lean.git
-- commit: 0012a5a5b16f7e4e26465e84c3772627a17a5fd0  dirty=False
+- commit: e871facc628f39b8f8e439fe3cb6304ecc94b6ae  dirty=True
 - toolchain: leanprover/lean4:v4.25.2
-- source tree sha256: `71ef010b1b248ecf127c2efd5a11a4cedae21fda2fad56bd285c26f4b97c5703`
-- modules: SGC.Bridge.AbstractBKM, SGC.Bridge.DiscreteFluidDynamics, SGC.Bridge.CantorShiftTower, SGC.Bridge.HaltingCompiler, SGC.Bridge.CurvatureUndecidability, SGC.Renormalization.CurvatureQuotient, SGC.Renormalization.KernelHorizon, SGC.Bridge.DefectHorizonBridge, SGC.Bridge.TrajectoryClosure, SGC.Bridge.ValidityHorizon
+- source tree sha256: `9aeec390bad537a81968280b9b8860ae6ca24f732823c545cf99dfe19ae6554f`
+- modules: SGC.Bridge.AbstractBKM, SGC.Bridge.ResidualHorizon, SGC.Bridge.StatisticalHorizon, SGC.Bridge.DiscreteFluidDynamics, SGC.Bridge.CantorShiftTower, SGC.Bridge.HaltingCompiler, SGC.Bridge.CurvatureUndecidability, SGC.Renormalization.CurvatureQuotient, SGC.Renormalization.KernelHorizon, SGC.Bridge.DefectHorizonBridge, SGC.Bridge.TrajectoryClosure, SGC.Bridge.ValidityHorizon
 
 ## Verdict
 
-**FINDINGS** - 3 fail, 29 warn, 367 info.
+**FINDINGS** - 3 fail, 24 warn, 386 info.
 
 NO_BLOCKING_EVIDENCE = no configured blocking evidence found by the checks that ran. REVIEW = warn-level items need a human. FINDINGS = evidence the claim is not established as stated. None of these means 'correct' or 'important'.
 
@@ -28,12 +28,7 @@ basis: kernel = read from the kernel/elaborated environment; witness = a reprodu
 | fail | kernel | F03 | AXIOM_BEYOND_TRUSTED_BASE | SGC.Approximate.NCD_uniform_error_bound | closure depends on axiom SGC.Approximate.NCD_defect_split (project, module SGC.Renormalization.Approximate) |
 | fail | kernel | F03 | AXIOM_BEYOND_TRUSTED_BASE | SGC.Approximate.NCD_uniform_error_bound | closure depends on axiom SGC.Approximate.NCD_integral_bound (project, module SGC.Renormalization.Approximate) |
 | fail | kernel | F03 | AXIOM_BEYOND_TRUSTED_BASE | SGC.Approximate.spectral_stability_reversible | closure depends on axiom SGC.Approximate.Weyl_inequality_pi (project, module SGC.Renormalization.Approximate) |
-| warn | heuristic | F10 | CITED_DECLARATION_MISSING | SGC.DiscreteFluidDynamics | cited in reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md but no such declaration exists in the loaded environment or in project sources |
-| warn | heuristic | F10 | CITED_DECLARATION_MISSING | SGC.Measurement.Interfaces.TightnessAudit | cited in demos/README.md but no such declaration exists in the loaded environment or in project sources |
-| warn | heuristic | F10 | CITED_DECLARATION_MISSING | SGC.Measurement.Interfaces.tightness_ratio_nonneg | cited in demos/README.md but no such declaration exists in the loaded environment or in project sources |
-| warn | heuristic | F10 | CITED_DECLARATION_MISSING | SGC.Measurement.Wavelets | cited in demos/README.md but no such declaration exists in the loaded environment or in project sources |
-| warn | heuristic | F10 | CITED_DECLARATION_MISSING | SGC.Measurement.Wavelets.DiffusionWavelet | cited in demos/README.md but no such declaration exists in the loaded environment or in project sources |
-| warn | heuristic | F10 | CITED_DECLARATION_MISSING | SGC.Stochastic.KramersEscape | cited in reports/BROWNIAN_MOTION_LEAN_EXPLORATION.md but no such declaration exists in the loaded environment or in project sources |
+| warn | heuristic | F10 | CITED_DECLARATION_MISSING | SGC.Approximate | cited in docs/reviews/2026-09-12-review-2-redirected.md but no such declaration exists in the loaded environment or in project sources |
 | warn | heuristic | F08 | DEFINITION_REVIEW_CANDIDATE_IGNORED_ARGS | - | definition SGC.Approximate.CoarseProjectorMatrix ignores explicit argument(s) hπ |
 | warn | heuristic | F08 | DEFINITION_REVIEW_CANDIDATE_IGNORED_ARGS | - | definition SGC.Bridge.CurvatureUndecidability.unitW ignores explicit argument(s) x._@.SGC.Bridge.CurvatureUndecidability.3800758693._hygCtx._hyg.5 |
 | warn | heuristic | F08 | DEFINITION_REVIEW_CANDIDATE_IGNORED_ARGS | - | definition SGC.Bridge.DefectHorizonBridge.PiMat ignores explicit argument(s) pi_dist, _hπ |
@@ -46,17 +41,18 @@ basis: kernel = read from the kernel/elaborated environment; witness = a reprodu
 | warn | heuristic | F08 | DEFINITION_REVIEW_CANDIDATE_IGNORED_ARGS | - | definition SGC.Q_map ignores explicit argument(s) _hπ |
 | warn | heuristic | F08 | DEFINITION_REVIEW_CANDIDATE_IGNORED_ARGS | - | definition SGC.constant_vec_one ignores explicit argument(s) x._@.SGC.Axioms.Geometry.221746778._hygCtx._hyg.16 |
 | warn | heuristic | F08 | DEFINITION_REVIEW_CANDIDATE_IGNORED_ARGS | - | definition SGC.opNorm_set ignores explicit argument(s) _h_pos |
-| warn | heuristic | F10 | NARRATIVE_CLAIM_NEEDS_HUMAN_MAP | - | strong-claim vocabulary 'Millennium' appears 2x (THEORY.md:175, docs/bkm-formalization-design.md:46); a human must map the formal statements to it |
-| warn | heuristic | F10 | NARRATIVE_CLAIM_NEEDS_HUMAN_MAP | - | strong-claim vocabulary 'Navier-Stokes' appears 5x (PRIORITY_CLAIMS.md:93, PRIORITY_CLAIMS.md:95, PRIORITY_CLAIMS.md:99, ...); a human must map the formal statements to it |
-| warn | heuristic | F10 | NARRATIVE_CLAIM_NEEDS_HUMAN_MAP | - | strong-claim vocabulary 'Riemann' appears 26x (CHANGELOG.md:164, RESEARCH_JOURNAL.md:90, VERIFIED_CORE_MANIFEST.md:381, ...); a human must map the formal statements to it |
-| warn | heuristic | F10 | NARRATIVE_CLAIM_NEEDS_HUMAN_MAP | - | strong-claim vocabulary 'fully verified' appears 5x (README.md:37, VERIFIED_CORE_MANIFEST.md:52, VERIFIED_CORE_MANIFEST.md:117, ...); a human must map the formal statements to it |
-| warn | heuristic | F10 | NARRATIVE_CLAIM_NEEDS_HUMAN_MAP | - | strong-claim vocabulary 'settles' appears 3x (decisions/0016-curvature-descends-along-lumpable-quotients.md:50, reports/PHASE_4A_CANONICAL_WAVELET_FISHER_RAO_INTEGRATION.md:249, theory_context/SGC UPAT Methods Deep Dive.md:211); a human must map the formal statements to it |
-| warn | heuristic | F10 | NARRATIVE_CLAIM_NEEDS_HUMAN_MAP | - | strong-claim vocabulary 'unconditional' appears 10x (RESEARCH_JOURNAL.md:285, RESEARCH_JOURNAL.md:567, RESEARCH_JOURNAL.md:816, ...); a human must map the formal statements to it |
+| warn | process | F12 | DIRTY_TREE | - | working tree has uncommitted changes; audited bytes may differ from the recorded commit |
+| warn | heuristic | F10 | NARRATIVE_CLAIM_NEEDS_HUMAN_MAP | - | strong-claim vocabulary 'Millennium' appears 2x (docs/bkm-ladder.md:46, docs/reviews/2026-09-12-adversarial-review.md:332); a human must map the formal statements to it |
+| warn | heuristic | F10 | NARRATIVE_CLAIM_NEEDS_HUMAN_MAP | - | strong-claim vocabulary 'Navier-Stokes' appears 33x (README.md:33, README.md:37, docs/bkm-ladder.md:51, ...); a human must map the formal statements to it |
+| warn | heuristic | F10 | NARRATIVE_CLAIM_NEEDS_HUMAN_MAP | - | strong-claim vocabulary 'Riemann' appears 1x (docs/reviews/2026-09-12-adversarial-review.md:243); a human must map the formal statements to it |
+| warn | heuristic | F10 | NARRATIVE_CLAIM_NEEDS_HUMAN_MAP | - | strong-claim vocabulary 'settles' appears 3x (docs/REVIEWER-COMMISSION.md:53, docs/REVIEWER-REDIRECT-2.md:14, docs/two-horizons.md:503); a human must map the formal statements to it |
+| warn | heuristic | F10 | NARRATIVE_CLAIM_NEEDS_HUMAN_MAP | - | strong-claim vocabulary 'unconditional' appears 3x (docs/REVIEWER-REDIRECT-2.md:23, docs/ROADMAP.md:37, docs/reviews/2026-09-12-adversarial-review.md:316); a human must map the formal statements to it |
 | warn | process | F13 | TOOLCHAIN_ADVISORY | - | toolchain leanprover/lean4:v4.25.2 is below 4.32.2: Kernel soundness bug (nested inductive types with phantom parameters) allowed an axiom-free proof of False; #print axioms reported nothing. Fixed in Lean 4.32.2. |
 | warn | process | F13 | TOOLCHAIN_ADVISORY | - | toolchain leanprover/lean4:v4.25.2 is below 4.32.2: Runtime reference-count overflow path that could corrupt memory and yield False (reported in the 2026 soundness-bug hunt). |
 | warn | kernel | F09 | UNUSED_HYPOTHESIS | SGC.Approximate.trajectory_closure_bound | hypothesis `hε` never occurs in the proof term; the statement may be over-constrained or mis-stated |
 | warn | kernel | F09 | UNUSED_HYPOTHESIS | SGC.Approximate.vertical_error_bound | hypothesis `hε` never occurs in the proof term; the statement may be over-constrained or mis-stated |
 | warn | kernel | F09 | UNUSED_HYPOTHESIS | SGC.Bridge.DefectHorizonBridge.instFiniteDimensionalRealPiMat | hypothesis `hπ` never occurs in the proof term; the statement may be over-constrained or mis-stated |
+| info | witness | F07 | AUTOMATION_CLOSES_TARGET_UNDER_POLICY | ContinuousLinearMap.ring.congr_simp | the configured automation policy closes the statement (`rfl`); legitimate, but weigh against any strong narrative |
 | info | witness | F07 | AUTOMATION_CLOSES_TARGET_UNDER_POLICY | SGC.Bridge.AbstractBKM.budget_zero | the configured automation policy closes the statement (`simp`); legitimate, but weigh against any strong narrative |
 | info | witness | F07 | AUTOMATION_CLOSES_TARGET_UNDER_POLICY | SGC.Bridge.CantorShiftTower.truncate_pathShift | the configured automation policy closes the statement (`rfl`); legitimate, but weigh against any strong narrative |
 | info | witness | F07 | AUTOMATION_CLOSES_TARGET_UNDER_POLICY | SGC.Bridge.CurvatureUndecidability.wit_add_one | the configured automation policy closes the statement (`simp`); legitimate, but weigh against any strong narrative |
@@ -79,17 +75,7 @@ basis: kernel = read from the kernel/elaborated environment; witness = a reprodu
 | info | kernel | F16 | AXIOM_UNREFERENCED | - | axiom SGC.Geometry.yamabe_flow_convergence has no consumer in the loaded project modules; trust-surface bloat |
 | info | kernel | F16 | AXIOM_UNREFERENCED | - | axiom SGC.Thermodynamics.non_normality_from_flux has no consumer in the loaded project modules; trust-surface bloat |
 | info | process | F12 | BUILD_SKIPPED | - | build skipped by request; the probe ran against existing .olean files whose provenance is not established here |
-| info | heuristic | F10 | CITED_DECLARATION_UNLOADED | SGC.Bridge.CelegansFloquetTsallis.celegans_anomalous_diffusion_value | cited in reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md; a declaration with this final name exists in project sources but not in the audited modules |
-| info | heuristic | F10 | CITED_DECLARATION_UNLOADED | SGC.Bridge.CelegansFloquetTsallis.celegans_scaling_lt_UGM | cited in reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md; a declaration with this final name exists in project sources but not in the audited modules |
-| info | heuristic | F10 | CITED_DECLARATION_UNLOADED | SGC.Bridge.CelegansFloquetTsallis.predicted_alpha_eq_r_half | cited in reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md; a declaration with this final name exists in project sources but not in the audited modules |
-| info | heuristic | F10 | CITED_DECLARATION_UNLOADED | SGC.ComplexityRelativity.complexity_is_relational | cited in reports/SECOND_LAW_FORMALIZATION_2026-05-25.md; a declaration with this final name exists in project sources but not in the audited modules |
-| info | heuristic | F10 | CITED_DECLARATION_UNLOADED | SGC.Evolution.Dynamics.EvolutionStep | cited in demos/README.md; a declaration with this final name exists in project sources but not in the audited modules |
-| info | heuristic | F10 | CITED_DECLARATION_UNLOADED | SGC.Markov.StationaryDistribution.lean | cited in reports/PHASE_R2_R4_OPEN_DISCOVERY_FINDINGS.md; a declaration with this final name exists in project sources but not in the audited modules |
-| info | heuristic | F10 | CITED_DECLARATION_UNLOADED | SGC.Quantum.KnillLaflamme.lean | cited in reports/PHASE_R2_R4_OPEN_DISCOVERY_FINDINGS.md; a declaration with this final name exists in project sources but not in the audited modules |
-| info | heuristic | F10 | CITED_DECLARATION_UNLOADED | SGC.Spectral.Floquet.PeriodicGeneratorFamily | cited in reports/SPINGLASS_GAUGE_AUDIT.md; a declaration with this final name exists in project sources but not in the audited modules |
-| info | heuristic | F10 | CITED_DECLARATION_UNLOADED | SGC.Stochastic.conjecture_C2_hard_half | cited in reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md; a declaration with this final name exists in project sources but not in the audited modules |
-| info | heuristic | F10 | CITED_DECLARATION_UNLOADED | SGC.Thermodynamics.Evolution.CanEvolve | cited in demos/README.md; a declaration with this final name exists in project sources but not in the audited modules |
-| info | heuristic | F10 | CITED_DECLARATION_UNLOADED | SGC.Thermodynamics.Evolution.SatisfiesEvolutionInequality | cited in demos/README.md; a declaration with this final name exists in project sources but not in the audited modules |
+| info | attestation | F10 | CLAIM_MAP_UNATTESTED | ContinuousLinearMap.ring.congr_simp | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Approximate.CoarseGeneratorMatrix.congr_simp | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Approximate.NCD_uniform_error_bound | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Approximate.PropagatorDiff_eq_proj_trajectory_diff | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
@@ -222,6 +208,20 @@ basis: kernel = read from the kernel/elaborated environment; witness = a reprodu
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.HaltingCompiler.reaches_of_multistep | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.HaltingCompiler.step_haltNow | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.HaltingCompiler.step_spinRight | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
+| info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.ResidualHorizon.exact_tracking_of_zero_residual | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
+| info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.ResidualHorizon.residual_horizon | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
+| info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.ResidualHorizon.residual_horizon_explicit | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
+| info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.ResidualHorizon.within_tolerance_of_residual_small | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
+| info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.StatisticalHorizon.errorOp_succ | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
+| info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.StatisticalHorizon.exact_forecast_of_defect_zero | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
+| info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.StatisticalHorizon.fourCycle_K1_rows | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
+| info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.StatisticalHorizon.fourCycle_K2_ne_K1_sq | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
+| info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.StatisticalHorizon.norm_coarsePredictor_le_one | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
+| info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.StatisticalHorizon.norm_pow_predictor_mul_proj_le_one | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
+| info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.StatisticalHorizon.proj_mul_pow_predictor_mul_proj | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
+| info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.StatisticalHorizon.statistical_forecast_horizon | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
+| info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.StatisticalHorizon.statistical_horizon | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
+| info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.StatisticalHorizon.sub_predictor_mul | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.ValidityHorizon.current_driven_crystal | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.ValidityHorizon.drive_injects_vorticity | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.ValidityHorizon.exp_perturbation_bound | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
@@ -389,6 +389,20 @@ basis: kernel = read from the kernel/elaborated environment; witness = a reprodu
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.HaltingCompiler.reaches_of_multistep | 2 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.HaltingCompiler.step_haltNow | 1 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.HaltingCompiler.step_spinRight | 1 project-local definition(s) determine what this theorem is about; read them |
+| info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.ResidualHorizon.exact_tracking_of_zero_residual | 1 project-local definition(s) determine what this theorem is about; read them |
+| info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.ResidualHorizon.residual_horizon | 1 project-local definition(s) determine what this theorem is about; read them |
+| info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.ResidualHorizon.residual_horizon_explicit | 1 project-local definition(s) determine what this theorem is about; read them |
+| info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.ResidualHorizon.within_tolerance_of_residual_small | 1 project-local definition(s) determine what this theorem is about; read them |
+| info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.StatisticalHorizon.errorOp_succ | 2 project-local definition(s) determine what this theorem is about; read them |
+| info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.StatisticalHorizon.exact_forecast_of_defect_zero | 2 project-local definition(s) determine what this theorem is about; read them |
+| info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.StatisticalHorizon.fourCycle_K1_rows | 1 project-local definition(s) determine what this theorem is about; read them |
+| info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.StatisticalHorizon.fourCycle_K2_ne_K1_sq | 2 project-local definition(s) determine what this theorem is about; read them |
+| info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.StatisticalHorizon.norm_coarsePredictor_le_one | 1 project-local definition(s) determine what this theorem is about; read them |
+| info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.StatisticalHorizon.norm_pow_predictor_mul_proj_le_one | 1 project-local definition(s) determine what this theorem is about; read them |
+| info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.StatisticalHorizon.proj_mul_pow_predictor_mul_proj | 1 project-local definition(s) determine what this theorem is about; read them |
+| info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.StatisticalHorizon.statistical_forecast_horizon | 2 project-local definition(s) determine what this theorem is about; read them |
+| info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.StatisticalHorizon.statistical_horizon | 3 project-local definition(s) determine what this theorem is about; read them |
+| info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.StatisticalHorizon.sub_predictor_mul | 1 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.ValidityHorizon.current_driven_crystal | 2 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.ValidityHorizon.drive_injects_vorticity | 4 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.ValidityHorizon.killingDefect_driven_crystal | 3 project-local definition(s) determine what this theorem is about; read them |
@@ -426,6 +440,17 @@ basis: kernel = read from the kernel/elaborated environment; witness = a reprodu
 | info | kernel | F09 | UNUSED_HYPOTHESIS | SGC.Bridge.DiscreteFluidDynamics.damped_validity_budget | hypothesis `_hε` never occurs in the proof term; the statement may be over-constrained or mis-stated |
 
 ## Per-theorem receipt
+
+### `ContinuousLinearMap.ring.congr_simp`
+
+- statement (kernel-elaborated, sha256 `babc0737ceb79fb8`):
+
+      ∀ {R : Type u_1} [inst : Ring R] {M : Type u_4} [inst_1 : TopologicalSpace M] [inst_2 : AddCommGroup M] [inst_3 : _root_.Module R M] [inst_4 : IsTopologicalAddGroup M], ContinuousLinearMap.ring = ContinuousLinearMap.ring
+
+- axioms: Classical.choice [lean-core], Quot.sound [lean-core], propext [lean-core]
+- unused hypotheses: none
+- automation: trivial_by=rfl vacuous_by=None empty_domain=None
+- claim map: UNATTESTED
 
 ### `SGC.Approximate.CoarseGeneratorMatrix.congr_simp`
 
@@ -3580,6 +3605,222 @@ basis: kernel = read from the kernel/elaborated environment; witness = a reprodu
 - definitions to read (project-local, reachable from the statement):
 
     - `SGC.Bridge.HaltingCompiler.spinRight` (def, SGC.Bridge.HaltingCompiler): `{Γ : Type u_2} → {Λ : Type u_3} → [inst : Inhabited Λ] → Turing.TM0.Machine Γ Λ`  [ignores x._@.SGC.Bridge.HaltingCompiler.1318617077._hygCtx._hyg.17]
+
+### `SGC.Bridge.ResidualHorizon.exact_tracking_of_zero_residual`
+
+- statement (kernel-elaborated, sha256 `33b7a167896ffc63`):
+
+      ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {v : ℝ → E → E} {s : ℝ → Set E} {K : NNReal} {f f' g : ℝ → E} {T : ℝ}, (∀ t ∈ Set.Ico 0 T, LipschitzOnWith K (v t) (s t)) → ContinuousOn f (Set.Icc 0 T) → (∀ t ∈ Set.Ico 0 T, HasDerivWithinAt f (f' t) (Set.Ici t) t) → (∀ t ∈ Set.Ico 0 T, SGC.Bridge.ResidualHorizon.residual v f f' t = 0) → (∀ t ∈ Set.Ico 0 T, f t ∈ s t) → ContinuousOn g (Set.Icc 0 T) → (∀ t ∈ Set.Ico 0 T, HasDerivWithinAt g (v t (g t)) (Set.Ici t) t) → (∀ t ∈ Set.Ico 0 T, g t ∈ s t) → f 0 = g 0 → ∀ t ∈ Set.Icc 0 T, f t = g t
+
+- axioms: Classical.choice [lean-core], Quot.sound [lean-core], propext [lean-core]
+- unused hypotheses: none
+- automation: trivial_by=None vacuous_by=None empty_domain=None
+- claim map: UNATTESTED
+
+- definitions to read (project-local, reachable from the statement):
+
+    - `SGC.Bridge.ResidualHorizon.residual` (def, SGC.Bridge.ResidualHorizon): `{E : Type u_1} → [NormedAddCommGroup E] → (ℝ → E → E) → (ℝ → E) → (ℝ → E) → ℝ → E`
+
+### `SGC.Bridge.ResidualHorizon.residual_horizon`
+
+- statement (kernel-elaborated, sha256 `894fe5bd2922dbf8`):
+
+      ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {v : ℝ → E → E} {s : ℝ → Set E} {K : NNReal} {f f' g : ℝ → E} {T ε : ℝ}, (∀ t ∈ Set.Ico 0 T, LipschitzOnWith K (v t) (s t)) → ContinuousOn f (Set.Icc 0 T) → (∀ t ∈ Set.Ico 0 T, HasDerivWithinAt f (f' t) (Set.Ici t) t) → (∀ t ∈ Set.Ico 0 T, ‖SGC.Bridge.ResidualHorizon.residual v f f' t‖ ≤ ε) → (∀ t ∈ Set.Ico 0 T, f t ∈ s t) → ContinuousOn g (Set.Icc 0 T) → (∀ t ∈ Set.Ico 0 T, HasDerivWithinAt g (v t (g t)) (Set.Ici t) t) → (∀ t ∈ Set.Ico 0 T, g t ∈ s t) → f 0 = g 0 → ∀ t ∈ Set.Icc 0 T, dist (f t) (g t) ≤ gronwallBound 0 (↑K) ε t
+
+- axioms: Classical.choice [lean-core], Quot.sound [lean-core], propext [lean-core]
+- unused hypotheses: none
+- automation: trivial_by=None vacuous_by=None empty_domain=None
+- claim map: UNATTESTED
+
+- definitions to read (project-local, reachable from the statement):
+
+    - `SGC.Bridge.ResidualHorizon.residual` (def, SGC.Bridge.ResidualHorizon): `{E : Type u_1} → [NormedAddCommGroup E] → (ℝ → E → E) → (ℝ → E) → (ℝ → E) → ℝ → E`
+
+### `SGC.Bridge.ResidualHorizon.residual_horizon_explicit`
+
+- statement (kernel-elaborated, sha256 `0a4bcb4a9429691a`):
+
+      ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {v : ℝ → E → E} {s : ℝ → Set E} {K : NNReal} {f f' g : ℝ → E} {T ε : ℝ}, ↑K ≠ 0 → (∀ t ∈ Set.Ico 0 T, LipschitzOnWith K (v t) (s t)) → ContinuousOn f (Set.Icc 0 T) → (∀ t ∈ Set.Ico 0 T, HasDerivWithinAt f (f' t) (Set.Ici t) t) → (∀ t ∈ Set.Ico 0 T, ‖SGC.Bridge.ResidualHorizon.residual v f f' t‖ ≤ ε) → (∀ t ∈ Set.Ico 0 T, f t ∈ s t) → ContinuousOn g (Set.Icc 0 T) → (∀ t ∈ Set.Ico 0 T, HasDerivWithinAt g (v t (g t)) (Set.Ici t) t) → (∀ t ∈ Set.Ico 0 T, g t ∈ s t) → f 0 = g 0 → ∀ t ∈ Set.Icc 0 T, dist (f t) (g t) ≤ ε / ↑K * (Real.exp (↑K * t) - 1)
+
+- axioms: Classical.choice [lean-core], Quot.sound [lean-core], propext [lean-core]
+- unused hypotheses: none
+- automation: trivial_by=None vacuous_by=None empty_domain=None
+- claim map: UNATTESTED
+
+- definitions to read (project-local, reachable from the statement):
+
+    - `SGC.Bridge.ResidualHorizon.residual` (def, SGC.Bridge.ResidualHorizon): `{E : Type u_1} → [NormedAddCommGroup E] → (ℝ → E → E) → (ℝ → E) → (ℝ → E) → ℝ → E`
+
+### `SGC.Bridge.ResidualHorizon.within_tolerance_of_residual_small`
+
+- statement (kernel-elaborated, sha256 `da195273825bec63`):
+
+      ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {v : ℝ → E → E} {s : ℝ → Set E} {K : NNReal} {f f' g : ℝ → E} {T ε η : ℝ}, ↑K ≠ 0 → (∀ t ∈ Set.Ico 0 T, LipschitzOnWith K (v t) (s t)) → ContinuousOn f (Set.Icc 0 T) → (∀ t ∈ Set.Ico 0 T, HasDerivWithinAt f (f' t) (Set.Ici t) t) → (∀ t ∈ Set.Ico 0 T, ‖SGC.Bridge.ResidualHorizon.residual v f f' t‖ ≤ ε) → 0 ≤ ε → (∀ t ∈ Set.Ico 0 T, f t ∈ s t) → ContinuousOn g (Set.Icc 0 T) → (∀ t ∈ Set.Ico 0 T, HasDerivWithinAt g (v t (g t)) (Set.Ici t) t) → (∀ t ∈ Set.Ico 0 T, g t ∈ s t) → f 0 = g 0 → ε / ↑K * (Real.exp (↑K * T) - 1) ≤ η → ∀ t ∈ Set.Icc 0 T, dist (f t) (g t) ≤ η
+
+- axioms: Classical.choice [lean-core], Quot.sound [lean-core], propext [lean-core]
+- unused hypotheses: none
+- automation: trivial_by=None vacuous_by=None empty_domain=None
+- claim map: UNATTESTED
+
+- definitions to read (project-local, reachable from the statement):
+
+    - `SGC.Bridge.ResidualHorizon.residual` (def, SGC.Bridge.ResidualHorizon): `{E : Type u_1} → [NormedAddCommGroup E] → (ℝ → E → E) → (ℝ → E) → (ℝ → E) → ℝ → E`
+
+### `SGC.Bridge.StatisticalHorizon.errorOp_succ`
+
+- statement (kernel-elaborated, sha256 `6f78b8d816c65e0f`):
+
+      ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {U P : E →L[ℝ] E} (m : ℕ), SGC.Bridge.StatisticalHorizon.errorOp U P (m + 1) = U * SGC.Bridge.StatisticalHorizon.errorOp U P m + (U - SGC.Bridge.StatisticalHorizon.coarsePredictor U P) * (SGC.Bridge.StatisticalHorizon.coarsePredictor U P ^ m * P)
+
+- axioms: Classical.choice [lean-core], Quot.sound [lean-core], propext [lean-core]
+- unused hypotheses: none
+- automation: trivial_by=None vacuous_by=None empty_domain=None
+- claim map: UNATTESTED
+
+- definitions to read (project-local, reachable from the statement):
+
+    - `SGC.Bridge.StatisticalHorizon.errorOp` (def, SGC.Bridge.StatisticalHorizon): `{E : Type u_1} → [inst : NormedAddCommGroup E] → [inst_1 : NormedSpace ℝ E] → (E →L[ℝ] E) → (E →L[ℝ] E) → ℕ → E →L[ℝ] E`
+    - `SGC.Bridge.StatisticalHorizon.coarsePredictor` (def, SGC.Bridge.StatisticalHorizon): `{E : Type u_1} → [inst : NormedAddCommGroup E] → [inst_1 : NormedSpace ℝ E] → (E →L[ℝ] E) → (E →L[ℝ] E) → E →L[ℝ] E`
+
+### `SGC.Bridge.StatisticalHorizon.exact_forecast_of_defect_zero`
+
+- statement (kernel-elaborated, sha256 `36dde6c02d962a26`):
+
+      ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {U P : E →L[ℝ] E}, ‖U‖ ≤ 1 → ‖P‖ ≤ 1 → P * P = P → SGC.Bridge.StatisticalHorizon.closureDefect U P = 0 → ∀ (m : ℕ), P * (U ^ m * P) = SGC.Bridge.StatisticalHorizon.coarsePredictor U P ^ m * P
+
+- axioms: Classical.choice [lean-core], Quot.sound [lean-core], propext [lean-core]
+- unused hypotheses: none
+- automation: trivial_by=None vacuous_by=None empty_domain=None
+- claim map: UNATTESTED
+
+- definitions to read (project-local, reachable from the statement):
+
+    - `SGC.Bridge.StatisticalHorizon.closureDefect` (def, SGC.Bridge.StatisticalHorizon): `{E : Type u_1} → [inst : NormedAddCommGroup E] → [inst_1 : NormedSpace ℝ E] → (E →L[ℝ] E) → (E →L[ℝ] E) → ℝ`
+    - `SGC.Bridge.StatisticalHorizon.coarsePredictor` (def, SGC.Bridge.StatisticalHorizon): `{E : Type u_1} → [inst : NormedAddCommGroup E] → [inst_1 : NormedSpace ℝ E] → (E →L[ℝ] E) → (E →L[ℝ] E) → E →L[ℝ] E`
+
+### `SGC.Bridge.StatisticalHorizon.fourCycle_K1_rows`
+
+- statement (kernel-elaborated, sha256 `750d9f1f4f910db6`):
+
+      ∀ (i : Fin 2), SGC.Bridge.StatisticalHorizon.K₁ i 0 + SGC.Bridge.StatisticalHorizon.K₁ i 1 = 1
+
+- axioms: Classical.choice [lean-core], Quot.sound [lean-core], propext [lean-core]
+- unused hypotheses: none
+- automation: trivial_by=None vacuous_by=None empty_domain=None
+- claim map: UNATTESTED
+
+- definitions to read (project-local, reachable from the statement):
+
+    - `SGC.Bridge.StatisticalHorizon.K₁` (def, SGC.Bridge.StatisticalHorizon): `Matrix (Fin 2) (Fin 2) ℚ`
+
+### `SGC.Bridge.StatisticalHorizon.fourCycle_K2_ne_K1_sq`
+
+- statement (kernel-elaborated, sha256 `7f15c1bc27fffd96`):
+
+      SGC.Bridge.StatisticalHorizon.K₂ ≠ SGC.Bridge.StatisticalHorizon.K₁ * SGC.Bridge.StatisticalHorizon.K₁
+
+- axioms: Classical.choice [lean-core], Quot.sound [lean-core], propext [lean-core]
+- unused hypotheses: none
+- automation: trivial_by=None vacuous_by=None empty_domain=None
+- claim map: UNATTESTED
+
+- definitions to read (project-local, reachable from the statement):
+
+    - `SGC.Bridge.StatisticalHorizon.K₂` (def, SGC.Bridge.StatisticalHorizon): `Matrix (Fin 2) (Fin 2) ℚ`
+    - `SGC.Bridge.StatisticalHorizon.K₁` (def, SGC.Bridge.StatisticalHorizon): `Matrix (Fin 2) (Fin 2) ℚ`
+
+### `SGC.Bridge.StatisticalHorizon.norm_coarsePredictor_le_one`
+
+- statement (kernel-elaborated, sha256 `502d20af4f4928bc`):
+
+      ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {U P : E →L[ℝ] E}, ‖U‖ ≤ 1 → ‖P‖ ≤ 1 → ‖SGC.Bridge.StatisticalHorizon.coarsePredictor U P‖ ≤ 1
+
+- axioms: Classical.choice [lean-core], Quot.sound [lean-core], propext [lean-core]
+- unused hypotheses: none
+- automation: trivial_by=None vacuous_by=None empty_domain=None
+- claim map: UNATTESTED
+
+- definitions to read (project-local, reachable from the statement):
+
+    - `SGC.Bridge.StatisticalHorizon.coarsePredictor` (def, SGC.Bridge.StatisticalHorizon): `{E : Type u_1} → [inst : NormedAddCommGroup E] → [inst_1 : NormedSpace ℝ E] → (E →L[ℝ] E) → (E →L[ℝ] E) → E →L[ℝ] E`
+
+### `SGC.Bridge.StatisticalHorizon.norm_pow_predictor_mul_proj_le_one`
+
+- statement (kernel-elaborated, sha256 `c267641a2618e077`):
+
+      ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {U P : E →L[ℝ] E}, ‖U‖ ≤ 1 → ‖P‖ ≤ 1 → ∀ (m : ℕ), ‖SGC.Bridge.StatisticalHorizon.coarsePredictor U P ^ m * P‖ ≤ 1
+
+- axioms: Classical.choice [lean-core], Quot.sound [lean-core], propext [lean-core]
+- unused hypotheses: none
+- automation: trivial_by=None vacuous_by=None empty_domain=None
+- claim map: UNATTESTED
+
+- definitions to read (project-local, reachable from the statement):
+
+    - `SGC.Bridge.StatisticalHorizon.coarsePredictor` (def, SGC.Bridge.StatisticalHorizon): `{E : Type u_1} → [inst : NormedAddCommGroup E] → [inst_1 : NormedSpace ℝ E] → (E →L[ℝ] E) → (E →L[ℝ] E) → E →L[ℝ] E`
+
+### `SGC.Bridge.StatisticalHorizon.proj_mul_pow_predictor_mul_proj`
+
+- statement (kernel-elaborated, sha256 `3d37306dd6eb5c79`):
+
+      ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {U P : E →L[ℝ] E}, P * P = P → ∀ (m : ℕ), P * (SGC.Bridge.StatisticalHorizon.coarsePredictor U P ^ m * P) = SGC.Bridge.StatisticalHorizon.coarsePredictor U P ^ m * P
+
+- axioms: Classical.choice [lean-core], Quot.sound [lean-core], propext [lean-core]
+- unused hypotheses: none
+- automation: trivial_by=None vacuous_by=None empty_domain=None
+- claim map: UNATTESTED
+
+- definitions to read (project-local, reachable from the statement):
+
+    - `SGC.Bridge.StatisticalHorizon.coarsePredictor` (def, SGC.Bridge.StatisticalHorizon): `{E : Type u_1} → [inst : NormedAddCommGroup E] → [inst_1 : NormedSpace ℝ E] → (E →L[ℝ] E) → (E →L[ℝ] E) → E →L[ℝ] E`
+
+### `SGC.Bridge.StatisticalHorizon.statistical_forecast_horizon`
+
+- statement (kernel-elaborated, sha256 `313db3079c181b5b`):
+
+      ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {U P : E →L[ℝ] E}, ‖U‖ ≤ 1 → ‖P‖ ≤ 1 → P * P = P → ∀ (m : ℕ), ‖P * (U ^ m * P) - SGC.Bridge.StatisticalHorizon.coarsePredictor U P ^ m * P‖ ≤ ↑m * SGC.Bridge.StatisticalHorizon.closureDefect U P
+
+- axioms: Classical.choice [lean-core], Quot.sound [lean-core], propext [lean-core]
+- unused hypotheses: none
+- automation: trivial_by=None vacuous_by=None empty_domain=None
+- claim map: UNATTESTED
+
+- definitions to read (project-local, reachable from the statement):
+
+    - `SGC.Bridge.StatisticalHorizon.coarsePredictor` (def, SGC.Bridge.StatisticalHorizon): `{E : Type u_1} → [inst : NormedAddCommGroup E] → [inst_1 : NormedSpace ℝ E] → (E →L[ℝ] E) → (E →L[ℝ] E) → E →L[ℝ] E`
+    - `SGC.Bridge.StatisticalHorizon.closureDefect` (def, SGC.Bridge.StatisticalHorizon): `{E : Type u_1} → [inst : NormedAddCommGroup E] → [inst_1 : NormedSpace ℝ E] → (E →L[ℝ] E) → (E →L[ℝ] E) → ℝ`
+
+### `SGC.Bridge.StatisticalHorizon.statistical_horizon`
+
+- statement (kernel-elaborated, sha256 `a28e349a74031150`):
+
+      ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {U P : E →L[ℝ] E}, ‖U‖ ≤ 1 → ‖P‖ ≤ 1 → P * P = P → ∀ (m : ℕ), ‖SGC.Bridge.StatisticalHorizon.errorOp U P m‖ ≤ ↑m * SGC.Bridge.StatisticalHorizon.closureDefect U P
+
+- axioms: Classical.choice [lean-core], Quot.sound [lean-core], propext [lean-core]
+- unused hypotheses: none
+- automation: trivial_by=None vacuous_by=None empty_domain=None
+- claim map: UNATTESTED
+
+- definitions to read (project-local, reachable from the statement):
+
+    - `SGC.Bridge.StatisticalHorizon.errorOp` (def, SGC.Bridge.StatisticalHorizon): `{E : Type u_1} → [inst : NormedAddCommGroup E] → [inst_1 : NormedSpace ℝ E] → (E →L[ℝ] E) → (E →L[ℝ] E) → ℕ → E →L[ℝ] E`
+    - `SGC.Bridge.StatisticalHorizon.closureDefect` (def, SGC.Bridge.StatisticalHorizon): `{E : Type u_1} → [inst : NormedAddCommGroup E] → [inst_1 : NormedSpace ℝ E] → (E →L[ℝ] E) → (E →L[ℝ] E) → ℝ`
+    - `SGC.Bridge.StatisticalHorizon.coarsePredictor` (def, SGC.Bridge.StatisticalHorizon): `{E : Type u_1} → [inst : NormedAddCommGroup E] → [inst_1 : NormedSpace ℝ E] → (E →L[ℝ] E) → (E →L[ℝ] E) → E →L[ℝ] E`
+
+### `SGC.Bridge.StatisticalHorizon.sub_predictor_mul`
+
+- statement (kernel-elaborated, sha256 `397d427928824758`):
+
+      ∀ {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {U P : E →L[ℝ] E}, P * P = P → ∀ (m : ℕ), (U - SGC.Bridge.StatisticalHorizon.coarsePredictor U P) * (SGC.Bridge.StatisticalHorizon.coarsePredictor U P ^ m * P) = (1 - P) * U * P * (SGC.Bridge.StatisticalHorizon.coarsePredictor U P ^ m * P)
+
+- axioms: Classical.choice [lean-core], Quot.sound [lean-core], propext [lean-core]
+- unused hypotheses: none
+- automation: trivial_by=None vacuous_by=None empty_domain=None
+- claim map: UNATTESTED
+
+- definitions to read (project-local, reachable from the statement):
+
+    - `SGC.Bridge.StatisticalHorizon.coarsePredictor` (def, SGC.Bridge.StatisticalHorizon): `{E : Type u_1} → [inst : NormedAddCommGroup E] → [inst_1 : NormedSpace ℝ E] → (E →L[ℝ] E) → (E →L[ℝ] E) → E →L[ℝ] E`
 
 ### `SGC.Bridge.ValidityHorizon.current_driven_crystal`
 
