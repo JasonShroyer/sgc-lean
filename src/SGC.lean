@@ -255,6 +255,12 @@ import SGC.Bridge.DeterministicKernels
 -- No stationarity; no fluid claims. (2026-09-13)
 import SGC.Bridge.TerminalDecoding
 
+-- Block renormalization: temporal blocking of a deterministic dynamics is an exact
+-- (eps = 0) coarse-graining - (T_f)^b = T_{f^[b]} on finite V; on Mathlib TM0 machines
+-- h blocks of b steps = b*h steps, and the block tower is halting-faithful. Isolates the
+-- theorem inside the 2025 "TEP is RG" reading; no space lower bound claimed. (2026-09-13)
+import SGC.Bridge.BlockRenormalization
+
 -- The Defect-Horizon Bridge: identifies ValidityHorizon's abstract leakage
 -- ε = ‖B‖ with Approximate's concrete defect ‖(I−Π)LΠ‖_π via the weighted
 -- operator algebra PiMat (π in the type, NormedRing/NormedAlgebra instances),
