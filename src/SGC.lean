@@ -45,6 +45,7 @@ import SGC.Bridge.AbstractBKM
 import SGC.Bridge.ResidualHorizon
 import SGC.Bridge.StatisticalHorizon
 import SGC.Bridge.DeterministicKernels
+import SGC.Bridge.TerminalDecoding
 
 /-!
 # SGC - Two Horizons
@@ -87,6 +88,10 @@ axiom closures are recorded in `AXIOMS.md` and in the `lean-triage` receipts und
 * `SGC.Bridge.DeterministicKernels` - detailed balance of a deterministic dynamics iff
   involution; directed dynamics carries a positive-current cycle; the bare two-level
   program/energy handoff toy is compatible (no abstract obstruction).
+* `SGC.Bridge.TerminalDecoding` - the finite-state terminal decoding certificate: Kernel
+  Horizon -> total variation -> per-class decoder error transfer; observed
+  distinguishability sandwich with an explicit full-state contraction hypothesis;
+  Dobrushin mixing refinement; the review's regression cases.
 
 ## Supporting modules
 
