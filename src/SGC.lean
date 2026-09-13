@@ -47,6 +47,7 @@ import SGC.Bridge.StatisticalHorizon
 import SGC.Bridge.DeterministicKernels
 import SGC.Bridge.TerminalDecoding
 import SGC.Bridge.BlockRenormalization
+import SGC.Bridge.DeterministicLumpability
 
 /-!
 # SGC - Two Horizons
@@ -97,6 +98,10 @@ axiom closures are recorded in `AXIOMS.md` and in the `lean-triage` receipts und
   an exact (`epsilon = 0`) coarse-graining; on Mathlib TM0 machines `h` blocks of `b`
   steps is `b*h` steps and the block tower is halting-faithful (the theorem inside the
   2025 "tree evaluation is RG" reading; no space lower bound claimed).
+* `SGC.Bridge.DeterministicLumpability` - exact lumpability of a deterministic dynamics is
+  a factor map (`x ~ y -> f x ~ f y`); defect and closure commutator vanish iff so; the
+  canonical coarse kernel is the quotient machine (`pi` is gauge); blocking commutes with
+  quotienting. The correct SGC object for a deterministic generalized shift.
 
 ## Supporting modules
 
