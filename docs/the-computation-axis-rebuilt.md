@@ -53,7 +53,7 @@ has to be tested against it directly.
 ### 2.1 Blocking is exact **[KERNEL, `SGC.Bridge.BlockRenormalization`]**
 
 The 2025 manuscript *The Physical Basis of Computational Complexity* read the
-Williams / Cook-Mertz simulation (`TIME[t] ⊆ SPACE[√(t log t)]`) as a renormalization
+Williams / Cook-Mertz simulation (`TIME[t] subset of SPACE[sqrt(t log t)]`) as a renormalization
 flow: a time block is a coarse-graining step, the `b`-step simulation is the RG rule. Of
 that reading, exactly this is a theorem:
 
@@ -78,14 +78,14 @@ information argument that the manuscript does not supply (Cook-Mertz's `O(b)` is
 
 ```
 detKernel_stronglyLumpable_iff :
-  IsStronglyLumpable (detKernel f) P  <->  ∀ x y, P.rel x y -> P.rel (f x) (f y)
+  IsStronglyLumpable (detKernel f) P  <->  forall x y, P.rel x y -> P.rel (f x) (f y)
 ```
 
 The right-hand side is `Descends f P`: `f` induces a map `quotMap f P` on `P.Quot` with
-`quot_map ∘ f = quotMap f P ∘ quot_map`. That is the semiconjugacy / factor-map
+`quot_map o f = quotMap f P o quot_map`. That is the semiconjugacy / factor-map
 condition of symbolic dynamics - the notion Moore (1991) uses to realize a Turing machine
 as a generalized shift, and the notion CMPP (2021) use to encode the shift into the
-return map of a Beltrami field on a Cantor transversal (`pi ∘ Phi = sigma ∘ pi`).
+return map of a Beltrami field on a Cantor transversal (`pi o Phi = sigma o pi`).
 
 Consequences, each kernel-checked and each valid for *every* strictly positive reference
 measure `pi`:
