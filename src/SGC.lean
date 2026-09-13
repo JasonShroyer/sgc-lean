@@ -244,6 +244,11 @@ import SGC.Bridge.ResidualHorizon
 -- external review 2026-09-12; formalization ours. No fluid claims. (2026-09-13)
 import SGC.Bridge.StatisticalHorizon
 
+-- Deterministic kernels: detailed balance <-> involution; directed dynamics carries a
+-- positive-current cycle; the bare two-level "program + energy handoff" toy is compatible
+-- (so any obstruction needs physical constraints). Bennett caveat in docstring. (2026-09-13)
+import SGC.Bridge.DeterministicKernels
+
 -- The Defect-Horizon Bridge: identifies ValidityHorizon's abstract leakage
 -- ε = ‖B‖ with Approximate's concrete defect ‖(I−Π)LΠ‖_π via the weighted
 -- operator algebra PiMat (π in the type, NormedRing/NormedAlgebra instances),
