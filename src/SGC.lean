@@ -233,6 +233,11 @@ import SGC.Bridge.ValidityHorizon
 -- Kernel-proven, no new axioms (2026-09-12).
 import SGC.Bridge.AbstractBKM
 
+-- Residual Horizon: nonlinear Kernel Horizon via Mathlib's approximate-trajectories
+-- Gronwall; coarse-law error <= residual budget eps (e^{Kt}-1)/K; zero residual =>
+-- exact tracking (the nonlinear eps = 0 pole). No fluid claims. (2026-09-12)
+import SGC.Bridge.ResidualHorizon
+
 -- The Defect-Horizon Bridge: identifies ValidityHorizon's abstract leakage
 -- ε = ‖B‖ with Approximate's concrete defect ‖(I−Π)LΠ‖_π via the weighted
 -- operator algebra PiMat (π in the type, NormedRing/NormedAlgebra instances),
