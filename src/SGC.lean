@@ -261,6 +261,12 @@ import SGC.Bridge.TerminalDecoding
 -- theorem inside the 2025 "TEP is RG" reading; no space lower bound claimed. (2026-09-13)
 import SGC.Bridge.BlockRenormalization
 
+-- Deterministic lumpability: strong lumpability of a deterministic kernel <-> the map
+-- descends to the quotient (factor map / semiconjugacy, the Moore/CMPP notion); defect
+-- and closure commutator vanish iff so; the coarse kernel IS the quotient machine (pi is
+-- gauge); eternal closure; blocking commutes with quotienting. Answers reviewer Q2. (2026-09-13)
+import SGC.Bridge.DeterministicLumpability
+
 -- The Defect-Horizon Bridge: identifies ValidityHorizon's abstract leakage
 -- ε = ‖B‖ with Approximate's concrete defect ‖(I−Π)LΠ‖_π via the weighted
 -- operator algebra PiMat (π in the type, NormedRing/NormedAlgebra instances),
