@@ -7,7 +7,7 @@
  ],
  "counts": {
   "fail": 0,
-  "info": 39,
+  "info": 56,
   "warn": 15
  },
  "findings": [
@@ -100,7 +100,7 @@
    "code": "DIRTY_TREE",
    "detail": "working tree has uncommitted changes; audited bytes may differ from the recorded commit",
    "evidence": {
-    "commit": "848f1ebb980e2d3d71121a6fb3fd9e8e469aaa51"
+    "commit": "4aa50546f7c335f8f444fcc698449b17f86ee701"
    },
    "id": "F12",
    "remedy": "commit or stash, then re-run so the receipt names one revision",
@@ -261,6 +261,18 @@
    "remedy": "Treat compiled-code trust (native_decide, extern, implemented_by) with extra care on affected toolchains.",
    "severity": "warn",
    "theorem": null
+  },
+  {
+   "basis": "witness",
+   "code": "AUTOMATION_CLOSES_TARGET_UNDER_POLICY",
+   "detail": "the configured automation policy closes the statement (`rfl`); legitimate, but weigh against any strong narrative",
+   "evidence": {
+    "tactic": "rfl"
+   },
+   "id": "F07",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.DeterministicLumpability.Regression.byState_rel"
   },
   {
    "basis": "witness",
@@ -504,6 +516,86 @@
    "id": "F10",
    "remedy": "add a claim-map entry with human_attestation",
    "severity": "info",
+   "theorem": "SGC.Bridge.DeterministicLumpability.Regression.byState_rel"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.DeterministicLumpability.Regression.oblivious_defect_zero"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.DeterministicLumpability.Regression.oblivious_descends"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.DeterministicLumpability.Regression.oblivious_stronglyLumpable"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.DeterministicLumpability.Regression.reader_commutator_ne_zero"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.DeterministicLumpability.Regression.reader_defect_pos"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.DeterministicLumpability.Regression.reader_not_descends"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.DeterministicLumpability.Regression.reader_not_stronglyLumpable"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
    "theorem": "SGC.Bridge.DeterministicLumpability.closureCommutator_detKernel_eq_zero_iff"
   },
   {
@@ -611,6 +703,206 @@
    "remedy": "",
    "severity": "info",
    "theorem": "SGC.Bridge.DeterministicLumpability.Descends.iterate"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "5 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.DeterministicLumpability.Regression.Cfg",
+     "SGC.Partition.rel",
+     "SGC.Bridge.DeterministicLumpability.Regression.byState",
+     "SGC.Partition",
+     "SGC.Partition.mk"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.DeterministicLumpability.Regression.byState_rel"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "18 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.DeterministicLumpability.Regression.Cfg",
+     "SGC.Renormalization.MeasureReentry.defectSq",
+     "SGC.Bridge.BlockRenormalization.detKernel",
+     "SGC.Bridge.DeterministicLumpability.Regression.oblivious",
+     "SGC.Bridge.DeterministicLumpability.Regression.byState",
+     "SGC.Partition",
+     "SGC.Partition.Quot",
+     "SGC.Partition.instFintype",
+     "SGC.Renormalization.MeasureReentry.residual",
+     "SGC.Partition.mk",
+     "SGC.Partition.rel",
+     "SGC.Partition.decRel",
+     "SGC.row_sum_block",
+     "SGC.Thermodynamics.CoarseGenerator",
+     "SGC.Partition.quot_map",
+     "SGC.Partition.instDecidableEq",
+     "SGC.Thermodynamics.CoarseStationaryDist",
+     "SGC.pi_bar"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.DeterministicLumpability.Regression.oblivious_defect_zero"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "7 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.DeterministicLumpability.Descends",
+     "SGC.Bridge.DeterministicLumpability.Regression.Cfg",
+     "SGC.Bridge.DeterministicLumpability.Regression.oblivious",
+     "SGC.Bridge.DeterministicLumpability.Regression.byState",
+     "SGC.Partition",
+     "SGC.Partition.rel",
+     "SGC.Partition.mk"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.DeterministicLumpability.Regression.oblivious_descends"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "12 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.IsStronglyLumpable",
+     "SGC.Bridge.DeterministicLumpability.Regression.Cfg",
+     "SGC.Bridge.BlockRenormalization.detKernel",
+     "SGC.Bridge.DeterministicLumpability.Regression.oblivious",
+     "SGC.Bridge.DeterministicLumpability.Regression.byState",
+     "SGC.Partition",
+     "SGC.Partition.rel",
+     "SGC.Partition.Quot",
+     "SGC.Partition.quot_map",
+     "SGC.Partition.instDecidableEq",
+     "SGC.Partition.mk",
+     "SGC.Partition.decRel"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.DeterministicLumpability.Regression.oblivious_stronglyLumpable"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "17 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.DeterministicLumpability.Regression.Cfg",
+     "SGC.Partition.Quot",
+     "SGC.Bridge.DeterministicLumpability.Regression.byState",
+     "SGC.Renormalization.MeasureReentry.closureCommutator",
+     "SGC.Bridge.BlockRenormalization.detKernel",
+     "SGC.Bridge.DeterministicLumpability.Regression.reader",
+     "SGC.Partition",
+     "SGC.Partition.rel",
+     "SGC.Partition.mk",
+     "SGC.lift_matrix",
+     "SGC.Partition.instFintype",
+     "SGC.Thermodynamics.CoarseGenerator",
+     "SGC.Partition.quot_map",
+     "SGC.Partition.instDecidableEq",
+     "SGC.Partition.decRel",
+     "SGC.Thermodynamics.CoarseStationaryDist",
+     "SGC.pi_bar"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.DeterministicLumpability.Regression.reader_commutator_ne_zero"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "18 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.DeterministicLumpability.Regression.Cfg",
+     "SGC.Renormalization.MeasureReentry.defectSq",
+     "SGC.Bridge.BlockRenormalization.detKernel",
+     "SGC.Bridge.DeterministicLumpability.Regression.reader",
+     "SGC.Bridge.DeterministicLumpability.Regression.byState",
+     "SGC.Partition",
+     "SGC.Partition.Quot",
+     "SGC.Partition.instFintype",
+     "SGC.Renormalization.MeasureReentry.residual",
+     "SGC.Partition.mk",
+     "SGC.Partition.rel",
+     "SGC.Partition.decRel",
+     "SGC.row_sum_block",
+     "SGC.Thermodynamics.CoarseGenerator",
+     "SGC.Partition.quot_map",
+     "SGC.Partition.instDecidableEq",
+     "SGC.Thermodynamics.CoarseStationaryDist",
+     "SGC.pi_bar"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.DeterministicLumpability.Regression.reader_defect_pos"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "7 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.DeterministicLumpability.Descends",
+     "SGC.Bridge.DeterministicLumpability.Regression.Cfg",
+     "SGC.Bridge.DeterministicLumpability.Regression.reader",
+     "SGC.Bridge.DeterministicLumpability.Regression.byState",
+     "SGC.Partition",
+     "SGC.Partition.rel",
+     "SGC.Partition.mk"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.DeterministicLumpability.Regression.reader_not_descends"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "12 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.IsStronglyLumpable",
+     "SGC.Bridge.DeterministicLumpability.Regression.Cfg",
+     "SGC.Bridge.BlockRenormalization.detKernel",
+     "SGC.Bridge.DeterministicLumpability.Regression.reader",
+     "SGC.Bridge.DeterministicLumpability.Regression.byState",
+     "SGC.Partition",
+     "SGC.Partition.rel",
+     "SGC.Partition.Quot",
+     "SGC.Partition.quot_map",
+     "SGC.Partition.instDecidableEq",
+     "SGC.Partition.mk",
+     "SGC.Partition.decRel"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.DeterministicLumpability.Regression.reader_not_stronglyLumpable"
   },
   {
    "basis": "kernel",

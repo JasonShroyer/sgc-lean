@@ -177,6 +177,71 @@ theorem detKernel_pow_stronglyLumpable (f : V → V) (P : Partition V) (h : Desc
   rw [detKernel_pow, detKernel_stronglyLumpable_iff]
   exact h.iterate b
 
+/-! ## Regression: coarse-graining a machine by its control state
+
+Two two-state, two-symbol machines on the finite configuration space `Bool × Bool`
+(control state, symbol under the head). The partition `byState` identifies configurations
+with the same control state.
+
+* `oblivious` flips the control state and ignores the symbol. Coarse-graining by state is
+  **exact**: the quotient is the one-state-flip machine and the defect is zero.
+* `reader` moves to state `true` iff it reads `1`. Coarse-graining by state is **inexact**:
+  the closure commutator is nonzero and the measure-reentry defect is positive for every
+  positive `π` - the SGC signature of a computation that *reads its tape*. -/
+
+namespace Regression
+
+/-- Configurations: `(control state, symbol under the head)`. -/
+abbrev Cfg := Bool × Bool
+
+/-- Partition by control state. -/
+def byState : Partition Cfg where
+  rel := ⟨fun x y => x.1 = y.1, ⟨fun _ => rfl, fun h => h.symm, fun h h' => h.trans h'⟩⟩
+  decRel := fun x y => inferInstanceAs (Decidable (x.1 = y.1))
+
+lemma byState_rel (x y : Cfg) : byState.rel.r x y ↔ x.1 = y.1 := Iff.rfl
+
+/-- A machine that flips its state and ignores the symbol. -/
+def oblivious (c : Cfg) : Cfg := (!c.1, c.2)
+
+/-- A machine whose next state is the symbol it reads. -/
+def reader (c : Cfg) : Cfg := (c.2, c.2)
+
+theorem oblivious_descends : Descends oblivious byState := by
+  intro x y h
+  simp only [byState_rel, oblivious] at *
+  rw [h]
+
+theorem oblivious_stronglyLumpable : IsStronglyLumpable (detKernel oblivious) byState :=
+  (detKernel_stronglyLumpable_iff _ _).mpr oblivious_descends
+
+theorem oblivious_defect_zero {pi : Cfg → ℝ} (hpi : ∀ x, 0 < pi x) :
+    defectSq (detKernel oblivious) byState pi = 0 :=
+  (defectSq_detKernel_eq_zero_iff _ _ hpi).mpr oblivious_descends
+
+theorem reader_not_descends : ¬ Descends reader byState := by
+  intro h
+  have := h (false, false) (false, true) rfl
+  simp [reader] at this
+
+theorem reader_not_stronglyLumpable : ¬ IsStronglyLumpable (detKernel reader) byState :=
+  fun h => reader_not_descends ((detKernel_stronglyLumpable_iff _ _).mp h)
+
+theorem reader_commutator_ne_zero {pi : Cfg → ℝ} (hpi : ∀ x, 0 < pi x) :
+    closureCommutator (detKernel reader) byState pi ≠ 0 :=
+  fun h => reader_not_descends ((closureCommutator_detKernel_eq_zero_iff _ _ hpi).mp h)
+
+/-- **Reading the tape is measured by the defect**: for every positive reference measure
+the measure-reentry defect of the `reader` machine, coarse-grained by control state, is
+strictly positive. -/
+theorem reader_defect_pos {pi : Cfg → ℝ} (hpi : ∀ x, 0 < pi x) :
+    0 < defectSq (detKernel reader) byState pi := by
+  have hne : defectSq (detKernel reader) byState pi ≠ 0 :=
+    fun h => reader_not_descends ((defectSq_detKernel_eq_zero_iff _ _ hpi).mp h)
+  exact lt_of_le_of_ne (defectSq_nonneg _ _ fun x => (hpi x).le) hne.symm
+
+end Regression
+
 end SGC.Bridge.DeterministicLumpability
 
 end
