@@ -46,6 +46,7 @@ import SGC.Bridge.ResidualHorizon
 import SGC.Bridge.StatisticalHorizon
 import SGC.Bridge.DeterministicKernels
 import SGC.Bridge.TerminalDecoding
+import SGC.Bridge.BlockRenormalization
 
 /-!
 # SGC - Two Horizons
@@ -92,6 +93,10 @@ axiom closures are recorded in `AXIOMS.md` and in the `lean-triage` receipts und
   Horizon -> total variation -> per-class decoder error transfer; observed
   distinguishability sandwich with an explicit full-state contraction hypothesis;
   Dobrushin mixing refinement; the review's regression cases.
+* `SGC.Bridge.BlockRenormalization` - temporal blocking of a deterministic computation is
+  an exact (`epsilon = 0`) coarse-graining; on Mathlib TM0 machines `h` blocks of `b`
+  steps is `b*h` steps and the block tower is halting-faithful (the theorem inside the
+  2025 "tree evaluation is RG" reading; no space lower bound claimed).
 
 ## Supporting modules
 

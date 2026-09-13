@@ -25,6 +25,7 @@ conditional-expectation projector, `D = (I - Pi) L Pi` the **lumpability defect*
 | Statistical Horizon | `SGC.Bridge.StatisticalHorizon.statistical_forecast_horizon` | Koopman-type `U` (`||U|| <= 1`), projection `P`, `A = P U P`, `delta = ||(1-P) U P||`: `||P U^m P - A^m P|| <= m delta`; regression test `fourCycle_K2_ne_K1_sq` |
 | Detailed balance is involution | `SGC.Bridge.DeterministicKernels.detailedBalance_iff_involutive` | deterministic `f` with positive invariant `pi`: detailed balance `<->` `f (f x) = x`; orbit of length `> 2` `=>` positive-current cycle; bare two-level handoff toy is compatible |
 | Terminal decoding certificate | `SGC.Bridge.TerminalDecoding.kernel_terminal_reliability` | `tv(rho T^m J, rho J Q^m) <= min 1 (m c/2)`; a fixed decoder's per-class error transfers within that budget; `D_obs` sandwiched between `D_ref - 2 eps` and an explicit full-state contraction bound; `no_terminal_decoder_of_contraction`; Dobrushin mixing budgets |
+| Block renormalization is exact | `SGC.Bridge.BlockRenormalization.detKernel_pow`, `multistep_mul`, `evalDom_iff_block_halts` | `(T_f)^b = T_{f^[b]}`; `h` blocks of `b` TM steps `=` `b*h` steps; the block tower halts iff the machine halts (Mathlib `Turing.eval`) |
 | Abstract BKM (L0) | `SGC.Bridge.AbstractBKM.norm_le_exp_budget` | `||x'|| <= W ||x||  =>  ||x t|| <= exp(int_0^t W) ||x 0||`; finite budget => bounded; excursion => budget spent |
 
 All of these have kernel closure contained in `{propext, Classical.choice, Quot.sound}`
