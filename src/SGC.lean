@@ -44,6 +44,7 @@ import SGC.Bridge.DiscreteFluidDynamics
 import SGC.Bridge.AbstractBKM
 import SGC.Bridge.ResidualHorizon
 import SGC.Bridge.StatisticalHorizon
+import SGC.Bridge.DeterministicKernels
 
 /-!
 # SGC - Two Horizons
@@ -83,6 +84,9 @@ axiom closures are recorded in `AXIOMS.md` and in the `lean-triage` receipts und
 * `SGC.Bridge.StatisticalHorizon` - Kernel Horizon in an abstract operator setting
   (Koopman operator + conditional expectation): `||P U^m P - A^m P|| <= m delta`; the
   four-cycle regression test `K2 != K1^2`.
+* `SGC.Bridge.DeterministicKernels` - detailed balance of a deterministic dynamics iff
+  involution; directed dynamics carries a positive-current cycle; the bare two-level
+  program/energy handoff toy is compatible (no abstract obstruction).
 
 ## Supporting modules
 

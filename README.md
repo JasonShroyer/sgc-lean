@@ -23,6 +23,7 @@ conditional-expectation projector, `D = (I - Pi) L Pi` the **lumpability defect*
 | Discrete fluid dictionary | `SGC.Bridge.DiscreteFluidDynamics.*` | finite-state continuity / equilibrium / cycle / lift facts; `int_0^inf e^{-nu t} = 1/nu` |
 | Residual Horizon | `SGC.Bridge.ResidualHorizon.residual_horizon` | projected fine trajectory vs exact coarse trajectory: `dist <= eps (e^{Kt} - 1) / K` where `eps` bounds the residual (closure term); zero residual => exact tracking |
 | Statistical Horizon | `SGC.Bridge.StatisticalHorizon.statistical_forecast_horizon` | Koopman-type `U` (`||U|| <= 1`), projection `P`, `A = P U P`, `delta = ||(1-P) U P||`: `||P U^m P - A^m P|| <= m delta`; regression test `fourCycle_K2_ne_K1_sq` |
+| Detailed balance is involution | `SGC.Bridge.DeterministicKernels.detailedBalance_iff_involutive` | deterministic `f` with positive invariant `pi`: detailed balance `<->` `f (f x) = x`; orbit of length `> 2` `=>` positive-current cycle; bare two-level handoff toy is compatible |
 | Abstract BKM (L0) | `SGC.Bridge.AbstractBKM.norm_le_exp_budget` | `||x'|| <= W ||x||  =>  ||x t|| <= exp(int_0^t W) ||x 0||`; finite budget => bounded; excursion => budget spent |
 
 All of these have kernel closure contained in `{propext, Classical.choice, Quot.sound}`
