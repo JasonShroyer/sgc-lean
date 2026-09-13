@@ -2,7 +2,7 @@
 
 ## A position paper on the SGC -> Miranda-Moore -> Navier-Stokes program, written the week forced Navier-Stokes blowup was formalized
 
-**Jason Shroyer** (SGC project), with drafting assistance. Version 0.1.2, 2026-09-12 (6.1'' added after external review).
+**Jason Shroyer** (SGC project), with drafting assistance. Version 0.1.3, 2026-09-12 (6.1'', 6.2 retraction and 6.1''' added after external review).
 Status: internal preprint. Every mathematical claim carries one of four labels:
 **[KERNEL]** kernel-checked in Lean 4 in `sgc-lean` (declaration named);
 **[EXTERNAL]** published or publicly released by others, cited;
@@ -386,7 +386,58 @@ language `Lambda(t)` is the smallest `N` whose coarse description is currently v
 and `int Lambda^2 dt` is the horizon budget. Conjecture 6.2 below is stated in these
 terms.
 
-### 6.2 No renormalization-transparent blowup **[CONJECTURE]**
+### 6.1''' Bounded energy bounds every fixed-resolution quantity; the residual theorem **[KERNEL + reviewer correction]**
+
+The same reviewer observed that on `T^3` the `k`-th Fourier coefficient of `(u . grad) u`
+is `sum_{p+q=k} (u_p . iq) u_q`, hence bounded by `|k| ||u||_{L^2}^2`. So a bounded
+kinetic energy `E` gives `||C_N(u)|| <~ N E` **at every fixed `N`, for all time,
+through a finite-energy singularity**. This is exactly the regime of the 2026
+Navier-Stokes construction (bounded energy, unbounded `L^inf`). Consequence: no
+fixed-resolution quantity - neither the flux `D_N` nor the closure term `C_N` -
+diverges at such a blowup. What escapes to infinity is the *resolution required* for a
+given tolerance, not any observable at a fixed resolution. Conjecture 6.2 as stated in
+v0.1 and v0.1.2 is therefore **false**, and is retracted below.
+
+The reviewer also exhibited a smooth unforced flow with zero leakage defect and nonzero
+projected Galerkin error, and prescribed the correct replacement: *a residual-controlled
+error theorem, not a scalar-flux theorem*. We agree, and it is now kernel-checked:
+
+**Theorem 2.8 (Residual Horizon) [KERNEL, 2026-09-12]**
+`SGC.Bridge.ResidualHorizon.residual_horizon`. Let `v` be a coarse law, Lipschitz with
+constant `K` on a region, `g` an exact coarse trajectory and `f` any trajectory in the
+region with residual `||f' - v(f)|| <= eps` and `f 0 = g 0`. Then
+`dist (f t) (g t) <= eps (e^{Kt} - 1) / K` on `[0, T]` (`residual_horizon_explicit`);
+zero residual forces `f = g` (`exact_tracking_of_zero_residual`, the nonlinear
+`epsilon = 0` pole); and a residual budget within tolerance gives a validity horizon of at
+least `T` (`within_tolerance_of_residual_small`). Proof: Mathlib's
+`dist_le_of_approx_trajectories_ODE_of_mem`. For Galerkin Navier-Stokes, `f = P_N u`,
+`v` the Galerkin field, and the residual *is* `C_N(u)`. The theorem is a fixed-`N`
+statement: `K = K_N` grows with `N`.
+
+This reshapes the ladder. L1 is no longer "bound the error by the flux"; it is
+"bound the residual `C_N(u)` along solutions" - the closure problem in its honest form -
+and "control `K_N` and the accumulated residual uniformly enough that the resolution
+required for tolerance `eta`, call it `N_eta(t)`, is the object whose escape to infinity
+characterizes breakdown". That object is the determining wavenumber of 6.1'.
+
+### 6.2 No renormalization-transparent blowup **[RETRACTED as stated; replaced]**
+
+**Retracted (v0.1-v0.1.2):** "BKM divergence forces `limsup ||C_N(u(t))|| = inf` for
+every fixed `N`." False by the energy bound of 6.1''' whenever kinetic energy is bounded,
+which is the case of interest.
+
+**Replacement [CONJECTURE, possibly a corollary of known results]:** Let `u` be a smooth
+solution on `[0, T*)` with `int_0^{T*} ||omega||_inf dt = inf` and bounded energy. For
+every tolerance `eta > 0`, the minimal resolution `N_eta(t)` at which the Galerkin coarse
+law tracks `P_N u` within `eta` on `[0, t]` satisfies `N_eta(t) -> inf` as `t -> T*`.
+In determining-wavenumber language, `Lambda(t) -> inf`. If Cheskidov - Shvydkoy's
+criterion already gives this, the SGC content is only the reading: *a singularity is
+the closing of every finite validity horizon, while every fixed-resolution observable
+stays bounded*. That reading is, we think, the correct intuition to carry into the
+computation axis (Q2 of the commission): a fluid computer at fixed resolution sees
+nothing of its own singularity.
+
+### 6.2 (original text, kept for the record)
 
 Theorem 2.5 shows what eternal computation looks like in SGC terms: an exact
 (`epsilon = 0`) tower at every scale. The blowup constructions show what a singularity

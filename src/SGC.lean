@@ -42,6 +42,7 @@ import SGC.Bridge.HaltingCompiler
 import SGC.Bridge.CantorShiftTower
 import SGC.Bridge.DiscreteFluidDynamics
 import SGC.Bridge.AbstractBKM
+import SGC.Bridge.ResidualHorizon
 
 /-!
 # SGC - Two Horizons
@@ -73,6 +74,9 @@ axiom closures are recorded in `AXIOMS.md` and in the `lean-triage` receipts und
   the viscous time budget; the continuum dictionary is framing, stated as such.
 * `SGC.Bridge.AbstractBKM` - L0 of the BKM ladder: time-dependent Gronwall budget
   theorem in a normed space; finite budget implies bounded evolution.
+* `SGC.Bridge.ResidualHorizon` - the nonlinear Kernel Horizon: coarse-law error is
+  controlled by the accumulated residual (re-entry / closure term); zero residual
+  forces exact tracking.
 
 ## Supporting modules
 

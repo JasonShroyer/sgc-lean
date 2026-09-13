@@ -102,9 +102,13 @@ three below are the ones we most need.
 
 ## 6. The three questions
 
-### Q1. Is the Galerkin validity horizon a closure-term-controlled a posteriori error bound - and is that new?
+### Q1. With the residual theorem now kernel-checked, what bounds the residual?
 
-(Restated after your first note. You were right: the driver is re-entry, not leakage.)
+(Restated twice after your notes. You were right on both: the driver is the residual
+`C_N`, not the flux; and bounded energy bounds `C_N` at every fixed `N`, so 6.2 as
+stated was false and is retracted. The residual-controlled error theorem you prescribed
+is now `SGC.Bridge.ResidualHorizon.residual_horizon` on the branch, via Mathlib's
+`dist_le_of_approx_trajectories_ODE_of_mem`; see paper 6.1''' and 2.8.)
 
 Read our Kernel Horizon theorem on Galerkin Navier-Stokes literally. The SGC *coarse
 trajectory* is the `N`-mode Galerkin solution `u_N(t)`. The SGC *projected fine

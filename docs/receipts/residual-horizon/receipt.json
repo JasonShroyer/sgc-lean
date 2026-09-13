@@ -1,0 +1,2382 @@
+{
+ "claim": {
+  "scope": [
+   "SGC.Bridge.ResidualHorizon.exact_tracking_of_zero_residual",
+   "SGC.Bridge.ResidualHorizon.residual_horizon",
+   "SGC.Bridge.ResidualHorizon.residual_horizon_explicit",
+   "SGC.Bridge.ResidualHorizon.within_tolerance_of_residual_small"
+  ],
+  "statement": "The 4 audited theorem(s) build under the pinned toolchain, depend on no axioms beyond the trusted base ['propext', 'Classical.choice', 'Quot.sound'], and exhibit none of the catalogued failure modes F01-F16 at fail level.",
+  "status": "INCONCLUSIVE",
+  "status_history": [
+   {
+    "reason": "auditor declared the trusted base and the failure-mode checklist before running the probe",
+    "status": "REGISTERED",
+    "timestamp": "2026-09-13T01:43:54Z"
+   },
+   {
+    "reason": "triage verdict REVIEW: 0 fail, 16 warn, 22 info",
+    "status": "INCONCLUSIVE",
+    "timestamp": "2026-09-13T01:44:27Z"
+   }
+  ],
+  "type": "methodological"
+ },
+ "created": "2026-09-13T01:44:27Z",
+ "evidence": {
+  "advisory_hits": [
+   "lean4-issue-14576",
+   "runtime-refcount-overflow-2026"
+  ],
+  "build": {
+   "skipped": true
+  },
+  "candidates": [
+   {
+    "is_baseline": true,
+    "name": "trusted-base-only (propext, Classical.choice, Quot.sound)",
+    "note": "null hypothesis: the theorem is exactly as trustworthy as Lean's kernel and its declared classical axioms, and says what it appears to say"
+   },
+   {
+    "axioms": [
+     {
+      "module": "Init.Prelude",
+      "name": "Classical.choice",
+      "origin": "lean-core"
+     },
+     {
+      "module": "Init.Core",
+      "name": "Quot.sound",
+      "origin": "lean-core"
+     },
+     {
+      "module": "Init.Core",
+      "name": "propext",
+      "origin": "lean-core"
+     }
+    ],
+    "beyond_trusted_base": [],
+    "binders": [
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "E",
+      "type": "Type u_1"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "inst._@.SGC.Bridge.ResidualHorizon.2204395887._hygCtx._hyg.3",
+      "type": "NormedAddCommGroup E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "inst._@.SGC.Bridge.ResidualHorizon.2204395887._hygCtx._hyg.6",
+      "type": "NormedSpace \u211d E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "v",
+      "type": "\u211d \u2192 E \u2192 E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "s",
+      "type": "\u211d \u2192 Set E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "K",
+      "type": "NNReal"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "f",
+      "type": "\u211d \u2192 E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "f'",
+      "type": "\u211d \u2192 E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "g",
+      "type": "\u211d \u2192 E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "T",
+      "type": "\u211d"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hv",
+      "type": "\u2200 t \u2208 Set.Ico 0 T, LipschitzOnWith K (v t) (s t)"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hf",
+      "type": "ContinuousOn f (Set.Icc 0 T)"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hf'",
+      "type": "\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt f (f' t) (Set.Ici t) t"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hres",
+      "type": "\u2200 t \u2208 Set.Ico 0 T, SGC.Bridge.ResidualHorizon.residual v f f' t = 0"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hfs",
+      "type": "\u2200 t \u2208 Set.Ico 0 T, f t \u2208 s t"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hg",
+      "type": "ContinuousOn g (Set.Icc 0 T)"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hg'",
+      "type": "\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt g (v t (g t)) (Set.Ici t) t"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hgs",
+      "type": "\u2200 t \u2208 Set.Ico 0 T, g t \u2208 s t"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "h0",
+      "type": "f 0 = g 0"
+     },
+     {
+      "explicit": true,
+      "isProp": false,
+      "name": "t",
+      "type": "\u211d"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "a._@._internal._hyg.0",
+      "type": "t \u2208 Set.Icc 0 T"
+     }
+    ],
+    "claim_map": {
+     "status": "UNATTESTED"
+    },
+    "definition_cone": [
+     {
+      "constant_prop_body": "",
+      "extern": false,
+      "ignored_explicit_args": [],
+      "implemented_by": "",
+      "kind": "def",
+      "module": "SGC.Bridge.ResidualHorizon",
+      "name": "SGC.Bridge.ResidualHorizon.residual",
+      "partial": false,
+      "sorry_in_value": false,
+      "type": "{E : Type u_1} \u2192 [NormedAddCommGroup E] \u2192 (\u211d \u2192 E \u2192 E) \u2192 (\u211d \u2192 E) \u2192 (\u211d \u2192 E) \u2192 \u211d \u2192 E",
+      "unsafe": false
+     }
+    ],
+    "empty_domain_binder": null,
+    "is_baseline": false,
+    "module": "SGC.Bridge.ResidualHorizon",
+    "name": "SGC.Bridge.ResidualHorizon.exact_tracking_of_zero_residual",
+    "statement": "\u2200 {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace \u211d E] {v : \u211d \u2192 E \u2192 E} {s : \u211d \u2192 Set E} {K : NNReal} {f f' g : \u211d \u2192 E} {T : \u211d}, (\u2200 t \u2208 Set.Ico 0 T, LipschitzOnWith K (v t) (s t)) \u2192 ContinuousOn f (Set.Icc 0 T) \u2192 (\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt f (f' t) (Set.Ici t) t) \u2192 (\u2200 t \u2208 Set.Ico 0 T, SGC.Bridge.ResidualHorizon.residual v f f' t = 0) \u2192 (\u2200 t \u2208 Set.Ico 0 T, f t \u2208 s t) \u2192 ContinuousOn g (Set.Icc 0 T) \u2192 (\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt g (v t (g t)) (Set.Ici t) t) \u2192 (\u2200 t \u2208 Set.Ico 0 T, g t \u2208 s t) \u2192 f 0 = g 0 \u2192 \u2200 t \u2208 Set.Icc 0 T, f t = g t",
+    "statement_sha256": "33b7a167896ffc630650a3b03d81822dc5b9b7e3d8c09eb99596023d5d4537d7",
+    "theorem": "SGC.Bridge.ResidualHorizon.exact_tracking_of_zero_residual",
+    "trivial_by": null,
+    "unused_hypotheses": [],
+    "vacuous_by": null
+   },
+   {
+    "axioms": [
+     {
+      "module": "Init.Prelude",
+      "name": "Classical.choice",
+      "origin": "lean-core"
+     },
+     {
+      "module": "Init.Core",
+      "name": "Quot.sound",
+      "origin": "lean-core"
+     },
+     {
+      "module": "Init.Core",
+      "name": "propext",
+      "origin": "lean-core"
+     }
+    ],
+    "beyond_trusted_base": [],
+    "binders": [
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "E",
+      "type": "Type u_1"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "inst._@.SGC.Bridge.ResidualHorizon.1766940206._hygCtx._hyg.3",
+      "type": "NormedAddCommGroup E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "inst._@.SGC.Bridge.ResidualHorizon.1766940206._hygCtx._hyg.6",
+      "type": "NormedSpace \u211d E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "v",
+      "type": "\u211d \u2192 E \u2192 E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "s",
+      "type": "\u211d \u2192 Set E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "K",
+      "type": "NNReal"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "f",
+      "type": "\u211d \u2192 E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "f'",
+      "type": "\u211d \u2192 E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "g",
+      "type": "\u211d \u2192 E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "T",
+      "type": "\u211d"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "\u03b5",
+      "type": "\u211d"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hv",
+      "type": "\u2200 t \u2208 Set.Ico 0 T, LipschitzOnWith K (v t) (s t)"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hf",
+      "type": "ContinuousOn f (Set.Icc 0 T)"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hf'",
+      "type": "\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt f (f' t) (Set.Ici t) t"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hres",
+      "type": "\u2200 t \u2208 Set.Ico 0 T, \u2016SGC.Bridge.ResidualHorizon.residual v f f' t\u2016 \u2264 \u03b5"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hfs",
+      "type": "\u2200 t \u2208 Set.Ico 0 T, f t \u2208 s t"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hg",
+      "type": "ContinuousOn g (Set.Icc 0 T)"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hg'",
+      "type": "\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt g (v t (g t)) (Set.Ici t) t"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hgs",
+      "type": "\u2200 t \u2208 Set.Ico 0 T, g t \u2208 s t"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "h0",
+      "type": "f 0 = g 0"
+     },
+     {
+      "explicit": true,
+      "isProp": false,
+      "name": "t",
+      "type": "\u211d"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "a._@._internal._hyg.0",
+      "type": "t \u2208 Set.Icc 0 T"
+     }
+    ],
+    "claim_map": {
+     "status": "UNATTESTED"
+    },
+    "definition_cone": [
+     {
+      "constant_prop_body": "",
+      "extern": false,
+      "ignored_explicit_args": [],
+      "implemented_by": "",
+      "kind": "def",
+      "module": "SGC.Bridge.ResidualHorizon",
+      "name": "SGC.Bridge.ResidualHorizon.residual",
+      "partial": false,
+      "sorry_in_value": false,
+      "type": "{E : Type u_1} \u2192 [NormedAddCommGroup E] \u2192 (\u211d \u2192 E \u2192 E) \u2192 (\u211d \u2192 E) \u2192 (\u211d \u2192 E) \u2192 \u211d \u2192 E",
+      "unsafe": false
+     }
+    ],
+    "empty_domain_binder": null,
+    "is_baseline": false,
+    "module": "SGC.Bridge.ResidualHorizon",
+    "name": "SGC.Bridge.ResidualHorizon.residual_horizon",
+    "statement": "\u2200 {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace \u211d E] {v : \u211d \u2192 E \u2192 E} {s : \u211d \u2192 Set E} {K : NNReal} {f f' g : \u211d \u2192 E} {T \u03b5 : \u211d}, (\u2200 t \u2208 Set.Ico 0 T, LipschitzOnWith K (v t) (s t)) \u2192 ContinuousOn f (Set.Icc 0 T) \u2192 (\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt f (f' t) (Set.Ici t) t) \u2192 (\u2200 t \u2208 Set.Ico 0 T, \u2016SGC.Bridge.ResidualHorizon.residual v f f' t\u2016 \u2264 \u03b5) \u2192 (\u2200 t \u2208 Set.Ico 0 T, f t \u2208 s t) \u2192 ContinuousOn g (Set.Icc 0 T) \u2192 (\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt g (v t (g t)) (Set.Ici t) t) \u2192 (\u2200 t \u2208 Set.Ico 0 T, g t \u2208 s t) \u2192 f 0 = g 0 \u2192 \u2200 t \u2208 Set.Icc 0 T, dist (f t) (g t) \u2264 gronwallBound 0 (\u2191K) \u03b5 t",
+    "statement_sha256": "894fe5bd2922dbf8709db6f914abd40979f28dfbc9ebd93044b4057171658f9f",
+    "theorem": "SGC.Bridge.ResidualHorizon.residual_horizon",
+    "trivial_by": null,
+    "unused_hypotheses": [],
+    "vacuous_by": null
+   },
+   {
+    "axioms": [
+     {
+      "module": "Init.Prelude",
+      "name": "Classical.choice",
+      "origin": "lean-core"
+     },
+     {
+      "module": "Init.Core",
+      "name": "Quot.sound",
+      "origin": "lean-core"
+     },
+     {
+      "module": "Init.Core",
+      "name": "propext",
+      "origin": "lean-core"
+     }
+    ],
+    "beyond_trusted_base": [],
+    "binders": [
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "E",
+      "type": "Type u_1"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "inst._@.SGC.Bridge.ResidualHorizon.2231917538._hygCtx._hyg.3",
+      "type": "NormedAddCommGroup E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "inst._@.SGC.Bridge.ResidualHorizon.2231917538._hygCtx._hyg.6",
+      "type": "NormedSpace \u211d E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "v",
+      "type": "\u211d \u2192 E \u2192 E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "s",
+      "type": "\u211d \u2192 Set E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "K",
+      "type": "NNReal"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "f",
+      "type": "\u211d \u2192 E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "f'",
+      "type": "\u211d \u2192 E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "g",
+      "type": "\u211d \u2192 E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "T",
+      "type": "\u211d"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "\u03b5",
+      "type": "\u211d"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hK",
+      "type": "\u2191K \u2260 0"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hv",
+      "type": "\u2200 t \u2208 Set.Ico 0 T, LipschitzOnWith K (v t) (s t)"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hf",
+      "type": "ContinuousOn f (Set.Icc 0 T)"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hf'",
+      "type": "\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt f (f' t) (Set.Ici t) t"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hres",
+      "type": "\u2200 t \u2208 Set.Ico 0 T, \u2016SGC.Bridge.ResidualHorizon.residual v f f' t\u2016 \u2264 \u03b5"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hfs",
+      "type": "\u2200 t \u2208 Set.Ico 0 T, f t \u2208 s t"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hg",
+      "type": "ContinuousOn g (Set.Icc 0 T)"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hg'",
+      "type": "\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt g (v t (g t)) (Set.Ici t) t"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hgs",
+      "type": "\u2200 t \u2208 Set.Ico 0 T, g t \u2208 s t"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "h0",
+      "type": "f 0 = g 0"
+     },
+     {
+      "explicit": true,
+      "isProp": false,
+      "name": "t",
+      "type": "\u211d"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "a._@._internal._hyg.0",
+      "type": "t \u2208 Set.Icc 0 T"
+     }
+    ],
+    "claim_map": {
+     "status": "UNATTESTED"
+    },
+    "definition_cone": [
+     {
+      "constant_prop_body": "",
+      "extern": false,
+      "ignored_explicit_args": [],
+      "implemented_by": "",
+      "kind": "def",
+      "module": "SGC.Bridge.ResidualHorizon",
+      "name": "SGC.Bridge.ResidualHorizon.residual",
+      "partial": false,
+      "sorry_in_value": false,
+      "type": "{E : Type u_1} \u2192 [NormedAddCommGroup E] \u2192 (\u211d \u2192 E \u2192 E) \u2192 (\u211d \u2192 E) \u2192 (\u211d \u2192 E) \u2192 \u211d \u2192 E",
+      "unsafe": false
+     }
+    ],
+    "empty_domain_binder": null,
+    "is_baseline": false,
+    "module": "SGC.Bridge.ResidualHorizon",
+    "name": "SGC.Bridge.ResidualHorizon.residual_horizon_explicit",
+    "statement": "\u2200 {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace \u211d E] {v : \u211d \u2192 E \u2192 E} {s : \u211d \u2192 Set E} {K : NNReal} {f f' g : \u211d \u2192 E} {T \u03b5 : \u211d}, \u2191K \u2260 0 \u2192 (\u2200 t \u2208 Set.Ico 0 T, LipschitzOnWith K (v t) (s t)) \u2192 ContinuousOn f (Set.Icc 0 T) \u2192 (\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt f (f' t) (Set.Ici t) t) \u2192 (\u2200 t \u2208 Set.Ico 0 T, \u2016SGC.Bridge.ResidualHorizon.residual v f f' t\u2016 \u2264 \u03b5) \u2192 (\u2200 t \u2208 Set.Ico 0 T, f t \u2208 s t) \u2192 ContinuousOn g (Set.Icc 0 T) \u2192 (\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt g (v t (g t)) (Set.Ici t) t) \u2192 (\u2200 t \u2208 Set.Ico 0 T, g t \u2208 s t) \u2192 f 0 = g 0 \u2192 \u2200 t \u2208 Set.Icc 0 T, dist (f t) (g t) \u2264 \u03b5 / \u2191K * (Real.exp (\u2191K * t) - 1)",
+    "statement_sha256": "0a4bcb4a9429691a0fefaf4890bf27eb77781e6145d903b0e43c251c333996e3",
+    "theorem": "SGC.Bridge.ResidualHorizon.residual_horizon_explicit",
+    "trivial_by": null,
+    "unused_hypotheses": [],
+    "vacuous_by": null
+   },
+   {
+    "axioms": [
+     {
+      "module": "Init.Prelude",
+      "name": "Classical.choice",
+      "origin": "lean-core"
+     },
+     {
+      "module": "Init.Core",
+      "name": "Quot.sound",
+      "origin": "lean-core"
+     },
+     {
+      "module": "Init.Core",
+      "name": "propext",
+      "origin": "lean-core"
+     }
+    ],
+    "beyond_trusted_base": [],
+    "binders": [
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "E",
+      "type": "Type u_1"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "inst._@.SGC.Bridge.ResidualHorizon.3752775102._hygCtx._hyg.3",
+      "type": "NormedAddCommGroup E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "inst._@.SGC.Bridge.ResidualHorizon.3752775102._hygCtx._hyg.6",
+      "type": "NormedSpace \u211d E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "v",
+      "type": "\u211d \u2192 E \u2192 E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "s",
+      "type": "\u211d \u2192 Set E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "K",
+      "type": "NNReal"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "f",
+      "type": "\u211d \u2192 E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "f'",
+      "type": "\u211d \u2192 E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "g",
+      "type": "\u211d \u2192 E"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "T",
+      "type": "\u211d"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "\u03b5",
+      "type": "\u211d"
+     },
+     {
+      "explicit": false,
+      "isProp": false,
+      "name": "\u03b7",
+      "type": "\u211d"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hK",
+      "type": "\u2191K \u2260 0"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hT",
+      "type": "0 \u2264 T"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hv",
+      "type": "\u2200 t \u2208 Set.Ico 0 T, LipschitzOnWith K (v t) (s t)"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hf",
+      "type": "ContinuousOn f (Set.Icc 0 T)"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hf'",
+      "type": "\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt f (f' t) (Set.Ici t) t"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hres",
+      "type": "\u2200 t \u2208 Set.Ico 0 T, \u2016SGC.Bridge.ResidualHorizon.residual v f f' t\u2016 \u2264 \u03b5"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "h\u03b5",
+      "type": "0 \u2264 \u03b5"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hfs",
+      "type": "\u2200 t \u2208 Set.Ico 0 T, f t \u2208 s t"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hg",
+      "type": "ContinuousOn g (Set.Icc 0 T)"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hg'",
+      "type": "\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt g (v t (g t)) (Set.Ici t) t"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hgs",
+      "type": "\u2200 t \u2208 Set.Ico 0 T, g t \u2208 s t"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "h0",
+      "type": "f 0 = g 0"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "hbudget",
+      "type": "\u03b5 / \u2191K * (Real.exp (\u2191K * T) - 1) \u2264 \u03b7"
+     },
+     {
+      "explicit": true,
+      "isProp": false,
+      "name": "t",
+      "type": "\u211d"
+     },
+     {
+      "explicit": true,
+      "isProp": true,
+      "name": "a._@._internal._hyg.0",
+      "type": "t \u2208 Set.Icc 0 T"
+     }
+    ],
+    "claim_map": {
+     "status": "UNATTESTED"
+    },
+    "definition_cone": [
+     {
+      "constant_prop_body": "",
+      "extern": false,
+      "ignored_explicit_args": [],
+      "implemented_by": "",
+      "kind": "def",
+      "module": "SGC.Bridge.ResidualHorizon",
+      "name": "SGC.Bridge.ResidualHorizon.residual",
+      "partial": false,
+      "sorry_in_value": false,
+      "type": "{E : Type u_1} \u2192 [NormedAddCommGroup E] \u2192 (\u211d \u2192 E \u2192 E) \u2192 (\u211d \u2192 E) \u2192 (\u211d \u2192 E) \u2192 \u211d \u2192 E",
+      "unsafe": false
+     }
+    ],
+    "empty_domain_binder": null,
+    "is_baseline": false,
+    "module": "SGC.Bridge.ResidualHorizon",
+    "name": "SGC.Bridge.ResidualHorizon.within_tolerance_of_residual_small",
+    "statement": "\u2200 {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace \u211d E] {v : \u211d \u2192 E \u2192 E} {s : \u211d \u2192 Set E} {K : NNReal} {f f' g : \u211d \u2192 E} {T \u03b5 \u03b7 : \u211d}, \u2191K \u2260 0 \u2192 0 \u2264 T \u2192 (\u2200 t \u2208 Set.Ico 0 T, LipschitzOnWith K (v t) (s t)) \u2192 ContinuousOn f (Set.Icc 0 T) \u2192 (\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt f (f' t) (Set.Ici t) t) \u2192 (\u2200 t \u2208 Set.Ico 0 T, \u2016SGC.Bridge.ResidualHorizon.residual v f f' t\u2016 \u2264 \u03b5) \u2192 0 \u2264 \u03b5 \u2192 (\u2200 t \u2208 Set.Ico 0 T, f t \u2208 s t) \u2192 ContinuousOn g (Set.Icc 0 T) \u2192 (\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt g (v t (g t)) (Set.Ici t) t) \u2192 (\u2200 t \u2208 Set.Ico 0 T, g t \u2208 s t) \u2192 f 0 = g 0 \u2192 \u03b5 / \u2191K * (Real.exp (\u2191K * T) - 1) \u2264 \u03b7 \u2192 \u2200 t \u2208 Set.Icc 0 T, dist (f t) (g t) \u2264 \u03b7",
+    "statement_sha256": "0e94ab89dd063733efffe7337f1cf05405cd169de7b841a96443834c3ddfe2e8",
+    "theorem": "SGC.Bridge.ResidualHorizon.within_tolerance_of_residual_small",
+    "trivial_by": null,
+    "unused_hypotheses": [
+     "hT"
+    ],
+    "vacuous_by": null
+   }
+  ],
+  "checks": [
+   {
+    "consequence_if_violated": "the audited bytes may not be the claimed ones",
+    "detail": [
+     "DIRTY_TREE"
+    ],
+    "name": "artifact: revision inspected is pinned and clean",
+    "result": "warn"
+   },
+   {
+    "consequence_if_violated": "nothing downstream is meaningful",
+    "detail": [],
+    "name": "build: lake build replays under the pinned toolchain",
+    "result": "pass"
+   },
+   {
+    "consequence_if_violated": "a theorem rests on an unproven assumption, an unfinished proof, or compiled code",
+    "detail": [],
+    "name": "kernel/trust: closure within trusted base, no sorry, no undeclared compiler trust",
+    "result": "pass"
+   },
+   {
+    "consequence_if_violated": "Lean proves something other than the intended statement, or proves it vacuously",
+    "detail": [
+     "UNUSED_HYPOTHESIS: SGC.Bridge.ResidualHorizon.within_tolerance_of_residual_small"
+    ],
+    "name": "statement: targets resolve; hypotheses used; domains non-empty; hypotheses consistent",
+    "result": "warn"
+   },
+   {
+    "consequence_if_violated": "an axiom-clean theorem about a mis-defined object is empty",
+    "detail": [],
+    "name": "definition cone: no sorry-valued, constant, or argument-ignoring definitions",
+    "result": "pass"
+   },
+   {
+    "consequence_if_violated": "the narrative claims more than the kernel checked",
+    "detail": [
+     "CITED_DECLARATION_MISSING: SGC.DiscreteFluidDynamics",
+     "CITED_DECLARATION_MISSING: SGC.Measurement.Interfaces.TightnessAudit",
+     "CITED_DECLARATION_MISSING: SGC.Measurement.Interfaces.tightness_ratio_nonneg",
+     "CITED_DECLARATION_MISSING: SGC.Measurement.Wavelets",
+     "CITED_DECLARATION_MISSING: SGC.Measurement.Wavelets.DiffusionWavelet",
+     "CITED_DECLARATION_MISSING: SGC.Stochastic.KramersEscape",
+     "NARRATIVE_CLAIM_NEEDS_HUMAN_MAP",
+     "NARRATIVE_CLAIM_NEEDS_HUMAN_MAP",
+     "NARRATIVE_CLAIM_NEEDS_HUMAN_MAP",
+     "NARRATIVE_CLAIM_NEEDS_HUMAN_MAP",
+     "NARRATIVE_CLAIM_NEEDS_HUMAN_MAP",
+     "NARRATIVE_CLAIM_NEEDS_HUMAN_MAP"
+    ],
+    "name": "semantic map: public prose maps to declarations",
+    "result": "warn"
+   },
+   {
+    "consequence_if_violated": "individually plausible axioms may be jointly inconsistent or degenerate",
+    "detail": [],
+    "name": "trust surface: project axioms constrained and documented",
+    "result": "pass"
+   },
+   {
+    "consequence_if_violated": "implementation-level exploits are not excluded by `#print axioms` alone",
+    "detail": [
+     "TOOLCHAIN_ADVISORY",
+     "TOOLCHAIN_ADVISORY"
+    ],
+    "name": "process: toolchain advisories and kernel replay",
+    "result": "warn"
+   }
+  ],
+  "kernel_replay": {
+   "available": null,
+   "note": "skipped: build not verified"
+  },
+  "narrative": {
+   "cited_identifiers": [
+    {
+     "exists": false,
+     "file": "ARCHITECTURE.md",
+     "name": "SGC.Axioms"
+    },
+    {
+     "exists": false,
+     "file": "ARCHITECTURE.md",
+     "name": "SGC.Renormalization"
+    },
+    {
+     "exists": false,
+     "file": "ARCHITECTURE.md",
+     "name": "SGC.Bridge.Quantum"
+    },
+    {
+     "exists": false,
+     "file": "ARCHITECTURE.md",
+     "name": "SGC.Spectral"
+    },
+    {
+     "exists": false,
+     "file": "ARCHITECTURE.md",
+     "name": "SGC.Renormalization"
+    },
+    {
+     "exists": false,
+     "file": "ARCHITECTURE.md",
+     "name": "SGC.Bridge"
+    },
+    {
+     "exists": false,
+     "file": "ARCHITECTURE.md",
+     "name": "SGC.Renormalization"
+    },
+    {
+     "exists": false,
+     "file": "PRIORITY_CLAIMS.md",
+     "name": "SGC.Bridge.DiscreteFluidDynamics"
+    },
+    {
+     "exists": false,
+     "file": "PRIORITY_CLAIMS.md",
+     "name": "SGC.Bridge.AbstractBKM"
+    },
+    {
+     "exists": false,
+     "file": "README.md",
+     "name": "SGC.Bridge.Quantum"
+    },
+    {
+     "exists": false,
+     "file": "RESEARCH_JOURNAL.md",
+     "name": "SGC.Observables"
+    },
+    {
+     "exists": false,
+     "file": "RESEARCH_JOURNAL.md",
+     "name": "SGC.Observables"
+    },
+    {
+     "exists": false,
+     "file": "VERIFIED_CORE_MANIFEST.md",
+     "name": "SGC.Axioms"
+    },
+    {
+     "exists": false,
+     "file": "VERIFIED_CORE_MANIFEST.md",
+     "name": "SGC.Spectral"
+    },
+    {
+     "exists": false,
+     "file": "VERIFIED_CORE_MANIFEST.md",
+     "name": "SGC.Renormalization"
+    },
+    {
+     "exists": false,
+     "file": "VERIFIED_CORE_MANIFEST.md",
+     "name": "SGC.Topology"
+    },
+    {
+     "exists": false,
+     "file": "VERIFIED_CORE_MANIFEST.md",
+     "name": "SGC.Thermodynamics"
+    },
+    {
+     "exists": false,
+     "file": "VERIFIED_CORE_MANIFEST.md",
+     "name": "SGC.Variational"
+    },
+    {
+     "exists": false,
+     "file": "VERIFIED_CORE_MANIFEST.md",
+     "name": "SGC.Bridge"
+    },
+    {
+     "exists": false,
+     "file": "VERIFIED_CORE_MANIFEST.md",
+     "name": "SGC.Information"
+    },
+    {
+     "exists": false,
+     "file": "VERIFIED_CORE_MANIFEST.md",
+     "name": "SGC.Observables"
+    },
+    {
+     "exists": false,
+     "file": "VERIFIED_CORE_MANIFEST.md",
+     "name": "SGC.Geometry.Manifold"
+    },
+    {
+     "exists": false,
+     "file": "decisions/0009-representation-manifold-tsallis-prereg.md",
+     "name": "SGC.Topology.PadicPathSpace"
+    },
+    {
+     "exists": false,
+     "file": "decisions/0010-consolidation-dimensional-collapse.md",
+     "name": "SGC.Topology.PadicPathSpace"
+    },
+    {
+     "exists": false,
+     "file": "decisions/0010-consolidation-dimensional-collapse.md",
+     "name": "SGC.Geometry.Manifold.Convergence"
+    },
+    {
+     "exists": false,
+     "file": "decisions/0015-curvature-undecidability-local-invariant.md",
+     "name": "SGC.Bridge.GeometricClosure"
+    },
+    {
+     "exists": false,
+     "file": "decisions/0015-curvature-undecidability-local-invariant.md",
+     "name": "SGC.Renormalization.QuotientGenerator"
+    },
+    {
+     "exists": false,
+     "file": "demos/README.md",
+     "name": "SGC.Measurement.Wavelets"
+    },
+    {
+     "exists": false,
+     "file": "demos/README.md",
+     "name": "SGC.Measurement.Interfaces.TightnessAudit"
+    },
+    {
+     "exists": false,
+     "file": "demos/README.md",
+     "name": "SGC.Thermodynamics.Evolution.CanEvolve"
+    },
+    {
+     "exists": false,
+     "file": "demos/README.md",
+     "name": "SGC.Evolution.Dynamics.EvolutionStep"
+    },
+    {
+     "exists": false,
+     "file": "demos/README.md",
+     "name": "SGC.Measurement.Interfaces.tightness_ratio_nonneg"
+    },
+    {
+     "exists": false,
+     "file": "demos/README.md",
+     "name": "SGC.Thermodynamics.Evolution.SatisfiesEvolutionInequality"
+    },
+    {
+     "exists": false,
+     "file": "demos/README.md",
+     "name": "SGC.Measurement.Wavelets.DiffusionWavelet"
+    },
+    {
+     "exists": false,
+     "file": "docs/cantor-halting-design.md",
+     "name": "SGC.Geometry.OperatorStrain"
+    },
+    {
+     "exists": false,
+     "file": "docs/haltmarker-design.md",
+     "name": "SGC.Bridge.CurvatureUndecidability.cd0_haltW_iff"
+    },
+    {
+     "exists": false,
+     "file": "docs/haltmarker-design.md",
+     "name": "SGC.Bridge.HaltingCompiler"
+    },
+    {
+     "exists": false,
+     "file": "docs/INDEX.md",
+     "name": "SGC.Axioms.Geometry"
+    },
+    {
+     "exists": false,
+     "file": "docs/INDEX.md",
+     "name": "SGC.Renormalization.Approximate"
+    },
+    {
+     "exists": false,
+     "file": "docs/INDEX.md",
+     "name": "SGC.Bridge.Quantum"
+    },
+    {
+     "exists": false,
+     "file": "docs/INDEX.md",
+     "name": "SGC.FunctionalBlanket"
+    },
+    {
+     "exists": false,
+     "file": "docs/INDEX.md",
+     "name": "SGC.Grokking"
+    },
+    {
+     "exists": false,
+     "file": "docs/INDEX.md",
+     "name": "SGC.FunctionalBlanket"
+    },
+    {
+     "exists": false,
+     "file": "docs/INDEX.md",
+     "name": "SGC.InformationGeometry.KramersEscape"
+    },
+    {
+     "exists": false,
+     "file": "docs/INDEX.md",
+     "name": "SGC.InformationGeometry.InformationGradientLaw"
+    },
+    {
+     "exists": false,
+     "file": "docs/INDEX.md",
+     "name": "SGC.ContinualLearning.AdiabaticInvariant"
+    },
+    {
+     "exists": false,
+     "file": "docs/measure-reentry.md",
+     "name": "SGC.Renormalization.MeasureReentry"
+    },
+    {
+     "exists": false,
+     "file": "docs/operator-strain-design.md",
+     "name": "SGC.Bridge.CurvatureUndecidability"
+    },
+    {
+     "exists": false,
+     "file": "docs/operator-strain-design.md",
+     "name": "SGC.Geometry.OperatorStrain"
+    },
+    {
+     "exists": false,
+     "file": "docs/RESEARCH_ASSISTANT_BRIEFING.md",
+     "name": "SGC.Renormalization.Approximate"
+    },
+    {
+     "exists": false,
+     "file": "docs/three-arrows-design.md",
+     "name": "SGC.Thermodynamics.EntropyProduction"
+    },
+    {
+     "exists": false,
+     "file": "reports/BROWNIAN_MOTION_LEAN_EXPLORATION.md",
+     "name": "SGC.Thermodynamics.antisymmetric_part_zero_iff_detailed_balance"
+    },
+    {
+     "exists": false,
+     "file": "reports/BROWNIAN_MOTION_LEAN_EXPLORATION.md",
+     "name": "SGC.Bridge.Discretization"
+    },
+    {
+     "exists": false,
+     "file": "reports/BROWNIAN_MOTION_LEAN_EXPLORATION.md",
+     "name": "SGC.Bridge.Discretization"
+    },
+    {
+     "exists": false,
+     "file": "reports/BROWNIAN_MOTION_LEAN_EXPLORATION.md",
+     "name": "SGC.InformationGeometry.KramersEscape"
+    },
+    {
+     "exists": false,
+     "file": "reports/BROWNIAN_MOTION_LEAN_EXPLORATION.md",
+     "name": "SGC.Stochastic.KramersEscape"
+    },
+    {
+     "exists": false,
+     "file": "reports/BROWNIAN_MOTION_LEAN_EXPLORATION.md",
+     "name": "SGC.Renormalization.QuotientGenerator"
+    },
+    {
+     "exists": false,
+     "file": "reports/BROWNIAN_MOTION_LEAN_EXPLORATION.md",
+     "name": "SGC.Examples.ThreeStateCycle"
+    },
+    {
+     "exists": false,
+     "file": "reports/BROWNIAN_MOTION_LEAN_EXPLORATION.md",
+     "name": "SGC.Stochastic.BrownianMotion"
+    },
+    {
+     "exists": false,
+     "file": "reports/BROWNIAN_MOTION_LEAN_EXPLORATION.md",
+     "name": "SGC.Stochastic.BrownianMotion"
+    },
+    {
+     "exists": false,
+     "file": "reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md",
+     "name": "SGC.Bridge.CelegansFloquetTsallis.celegans_anomalous_diffusion_value"
+    },
+    {
+     "exists": false,
+     "file": "reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md",
+     "name": "SGC.Bridge.CelegansFloquetTsallis.predicted_alpha_eq_r_half"
+    },
+    {
+     "exists": false,
+     "file": "reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md",
+     "name": "SGC.Bridge.CelegansFloquetTsallis.celegans_scaling_lt_UGM"
+    },
+    {
+     "exists": false,
+     "file": "reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md",
+     "name": "SGC.Foundations.AxiomAudit"
+    },
+    {
+     "exists": false,
+     "file": "reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md",
+     "name": "SGC.Stochastic.conjecture_C2_hard_half"
+    },
+    {
+     "exists": false,
+     "file": "reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md",
+     "name": "SGC.Bridge.CelegansFloquetTsallis.predicted_alpha_eq_r_half"
+    },
+    {
+     "exists": false,
+     "file": "reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md",
+     "name": "SGC.Bridge.CelegansFloquetTsallis.celegans_scaling_lt_UGM"
+    },
+    {
+     "exists": false,
+     "file": "reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md",
+     "name": "SGC.DiscreteFluidDynamics"
+    },
+    {
+     "exists": false,
+     "file": "reports/ITERATION_SUMMARY_V3_V5.md",
+     "name": "SGC.Bridge.Quantum"
+    },
+    {
+     "exists": false,
+     "file": "reports/ITERATION_SUMMARY_V3_V5.md",
+     "name": "SGC.Renormalization.Approximate"
+    },
+    {
+     "exists": false,
+     "file": "reports/ITERATION_SUMMARY_V3_V5.md",
+     "name": "SGC.Renormalization.Approximate"
+    },
+    {
+     "exists": false,
+     "file": "reports/PHASE_2B_HG_BANDPASSFILTER_INSTANTIATION.md",
+     "name": "SGC.Bridge.CanonicalWavelet"
+    },
+    {
+     "exists": false,
+     "file": "reports/PHASE_4A_CANONICAL_WAVELET_FISHER_RAO_INTEGRATION.md",
+     "name": "SGC.Spectral.Defs"
+    },
+    {
+     "exists": false,
+     "file": "reports/PHASE_4A_CANONICAL_WAVELET_FISHER_RAO_INTEGRATION.md",
+     "name": "SGC.Bridge.CanonicalWaveletFisherRao"
+    },
+    {
+     "exists": false,
+     "file": "reports/PHASE_R2_R4_OPEN_DISCOVERY_FINDINGS.md",
+     "name": "SGC.Quantum.KnillLaflamme.lean"
+    },
+    {
+     "exists": false,
+     "file": "reports/PHASE_R2_R4_OPEN_DISCOVERY_FINDINGS.md",
+     "name": "SGC.Quantum.HatanoNelson"
+    },
+    {
+     "exists": false,
+     "file": "reports/PHASE_R2_R4_OPEN_DISCOVERY_FINDINGS.md",
+     "name": "SGC.Spectral.WeightedHermitian"
+    },
+    {
+     "exists": false,
+     "file": "reports/PHASE_R2_R4_OPEN_DISCOVERY_FINDINGS.md",
+     "name": "SGC.Markov.StationaryDistribution.lean"
+    },
+    {
+     "exists": false,
+     "file": "reports/SECOND_LAW_FORMALIZATION_2026-05-25.md",
+     "name": "SGC.ComplexityRelativity.complexity_is_relational"
+    },
+    {
+     "exists": false,
+     "file": "reports/SPINGLASS_GAUGE_AUDIT.md",
+     "in_source": true,
+     "name": "SGC.Spectral.Floquet.PeriodicGeneratorFamily"
+    }
+   ],
+   "documents_scanned": 175,
+   "overclaim_hits": [
+    {
+     "file": "CHANGELOG.md",
+     "line": 164,
+     "term": "Riemann"
+    },
+    {
+     "file": "PRIORITY_CLAIMS.md",
+     "line": 93,
+     "term": "Navier-Stokes"
+    },
+    {
+     "file": "PRIORITY_CLAIMS.md",
+     "line": 95,
+     "term": "Navier-Stokes"
+    },
+    {
+     "file": "PRIORITY_CLAIMS.md",
+     "line": 99,
+     "term": "Navier-Stokes"
+    },
+    {
+     "file": "README.md",
+     "line": 37,
+     "term": "fully verified"
+    },
+    {
+     "file": "RESEARCH_JOURNAL.md",
+     "line": 90,
+     "term": "Riemann"
+    },
+    {
+     "file": "RESEARCH_JOURNAL.md",
+     "line": 285,
+     "term": "unconditional"
+    },
+    {
+     "file": "RESEARCH_JOURNAL.md",
+     "line": 567,
+     "term": "unconditional"
+    },
+    {
+     "file": "RESEARCH_JOURNAL.md",
+     "line": 816,
+     "term": "unconditional"
+    },
+    {
+     "file": "THEORY.md",
+     "line": 175,
+     "term": "Millennium"
+    },
+    {
+     "file": "VERIFIED_CORE_MANIFEST.md",
+     "line": 381,
+     "term": "Riemann"
+    },
+    {
+     "file": "VERIFIED_CORE_MANIFEST.md",
+     "line": 385,
+     "term": "Riemann"
+    },
+    {
+     "file": "VERIFIED_CORE_MANIFEST.md",
+     "line": 52,
+     "term": "fully verified"
+    },
+    {
+     "file": "VERIFIED_CORE_MANIFEST.md",
+     "line": 117,
+     "term": "fully verified"
+    },
+    {
+     "file": "VERIFIED_CORE_MANIFEST.md",
+     "line": 417,
+     "term": "fully verified"
+    },
+    {
+     "file": "WINDSURF_ARCHIVE_MISSION.md",
+     "line": 273,
+     "term": "fully verified"
+    },
+    {
+     "file": "decisions/0013-affinity-protection-conserved-charge.md",
+     "line": 40,
+     "term": "Riemann"
+    },
+    {
+     "file": "decisions/0016-curvature-descends-along-lumpable-quotients.md",
+     "line": 50,
+     "term": "settles"
+    },
+    {
+     "file": "docs/bkm-formalization-design.md",
+     "line": 46,
+     "term": "Millennium"
+    },
+    {
+     "file": "docs/bkm-formalization-design.md",
+     "line": 51,
+     "term": "Navier-Stokes"
+    },
+    {
+     "file": "docs/operator-strain-design.md",
+     "line": 26,
+     "term": "unconditional"
+    },
+    {
+     "file": "docs/operator-strain-design.md",
+     "line": 59,
+     "term": "unconditional"
+    },
+    {
+     "file": "docs/retired-axioms.md",
+     "line": 871,
+     "term": "Riemann"
+    },
+    {
+     "file": "docs/SGC_CANONICAL_GROKKING_THEORY.md",
+     "line": 148,
+     "term": "Riemann"
+    },
+    {
+     "file": "docs/SGC_CANONICAL_GROKKING_THEORY.md",
+     "line": 298,
+     "term": "Riemann"
+    },
+    {
+     "file": "docs/SGC_CONTROL_ARCHITECTURE.md",
+     "line": 646,
+     "term": "Riemann"
+    },
+    {
+     "file": "docs/sgc_theory_roadmap.md",
+     "line": 90,
+     "term": "Riemann"
+    },
+    {
+     "file": "docs/sgc_theory_roadmap.md",
+     "line": 95,
+     "term": "Riemann"
+    },
+    {
+     "file": "docs/sgc_theory_roadmap.md",
+     "line": 136,
+     "term": "Riemann"
+    },
+    {
+     "file": "docs/SGC_THRML_EXPERIMENT_PROPOSAL_local.md",
+     "line": 220,
+     "term": "Riemann"
+    },
+    {
+     "file": "reports/BROWNIAN_MOTION_LEAN_EXPLORATION.md",
+     "line": 454,
+     "term": "Riemann"
+    },
+    {
+     "file": "reports/EMERGENCE_THEORY_FROM_FIRST_PRINCIPLES.md",
+     "line": 98,
+     "term": "unconditional"
+    },
+    {
+     "file": "reports/EMERGENCE_THEORY_FROM_FIRST_PRINCIPLES.md",
+     "line": 379,
+     "term": "unconditional"
+    },
+    {
+     "file": "reports/ITERATION_SUMMARY_V3_V5.md",
+     "line": 24,
+     "term": "unconditional"
+    },
+    {
+     "file": "reports/phase1c_implementation_summary.md",
+     "line": 71,
+     "term": "Riemann"
+    },
+    {
+     "file": "reports/PHASE_4A_CANONICAL_WAVELET_FISHER_RAO_INTEGRATION.md",
+     "line": 249,
+     "term": "settles"
+    },
+    {
+     "file": "reports/PHASE_DIAGRAM_UNIFICATION.md",
+     "line": 67,
+     "term": "Navier-Stokes"
+    },
+    {
+     "file": "reports/PHASE_DIAGRAM_UNIFICATION.md",
+     "line": 243,
+     "term": "Riemann"
+    },
+    {
+     "file": "reports/SGC_GROKKING_RESEARCH_REPORT.md",
+     "line": 216,
+     "term": "Riemann"
+    },
+    {
+     "file": "reports/SGC_GROKKING_RESEARCH_REPORT.md",
+     "line": 465,
+     "term": "Riemann"
+    },
+    {
+     "file": "reports/SPRINT_PLAN_POST_4C.md",
+     "line": 24,
+     "term": "unconditional"
+    },
+    {
+     "file": "reports/SPRINT_PLAN_POST_4C.md",
+     "line": 255,
+     "term": "unconditional"
+    },
+    {
+     "file": "reports/UNIVERSAL_INDUCTION_SYNTHESIS.md",
+     "line": 141,
+     "term": "Riemann"
+    },
+    {
+     "file": "theory_context/Native Encoding Architecture.md",
+     "line": 345,
+     "term": "Riemann"
+    },
+    {
+     "file": "theory_context/sg.md",
+     "line": 430,
+     "term": "Riemann"
+    },
+    {
+     "file": "theory_context/SGC Theory  Deep Dive & Methods.md",
+     "line": 464,
+     "term": "Riemann"
+    },
+    {
+     "file": "theory_context/SGC UPAT Methods Deep Dive.md",
+     "line": 343,
+     "term": "Riemann"
+    },
+    {
+     "file": "theory_context/SGC UPAT Methods Deep Dive.md",
+     "line": 474,
+     "term": "Riemann"
+    },
+    {
+     "file": "theory_context/SGC UPAT Methods Deep Dive.md",
+     "line": 211,
+     "term": "settles"
+    },
+    {
+     "file": "theory_context/SGC-ARC Agent Deep Dive.md",
+     "line": 313,
+     "term": "Riemann"
+    },
+    {
+     "file": "theory_context/UPAT_SGC_mapping.md",
+     "line": 58,
+     "term": "Riemann"
+    }
+   ],
+   "vacuity_prone_hits": []
+  },
+  "probe_meta": {
+   "errors": [],
+   "heartbeats": 20,
+   "probe_sha256": "a1b7c82824c993678c037954d9f930a29bf87ecb7960238542b5bcb8754eaba2",
+   "probes": true,
+   "returncode": 0,
+   "seconds": 15.4
+  },
+  "raw_probe_output": [
+   "@@THM {\"axioms\":[{\"module\":\"Init.Prelude\",\"name\":\"Classical.choice\"},{\"module\":\"Init.Core\",\"name\":\"Quot.sound\"},{\"module\":\"Init.Core\",\"name\":\"propext\"}],\"binders\":[{\"explicit\":false,\"isProp\":false,\"name\":\"E\",\"type\":\"Type u_1\"},{\"explicit\":false,\"isProp\":false,\"name\":\"inst._@.SGC.Bridge.ResidualHorizon.2204395887._hygCtx._hyg.3\",\"type\":\"NormedAddCommGroup E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"inst._@.SGC.Bridge.ResidualHorizon.2204395887._hygCtx._hyg.6\",\"type\":\"NormedSpace \u211d E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"v\",\"type\":\"\u211d \u2192 E \u2192 E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"s\",\"type\":\"\u211d \u2192 Set E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"K\",\"type\":\"NNReal\"},{\"explicit\":false,\"isProp\":false,\"name\":\"f\",\"type\":\"\u211d \u2192 E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"f'\",\"type\":\"\u211d \u2192 E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"g\",\"type\":\"\u211d \u2192 E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"T\",\"type\":\"\u211d\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hv\",\"type\":\"\u2200 t \u2208 Set.Ico 0 T, LipschitzOnWith K (v t) (s t)\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hf\",\"type\":\"ContinuousOn f (Set.Icc 0 T)\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hf'\",\"type\":\"\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt f (f' t) (Set.Ici t) t\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hres\",\"type\":\"\u2200 t \u2208 Set.Ico 0 T, SGC.Bridge.ResidualHorizon.residual v f f' t = 0\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hfs\",\"type\":\"\u2200 t \u2208 Set.Ico 0 T, f t \u2208 s t\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hg\",\"type\":\"ContinuousOn g (Set.Icc 0 T)\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hg'\",\"type\":\"\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt g (v t (g t)) (Set.Ici t) t\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hgs\",\"type\":\"\u2200 t \u2208 Set.Ico 0 T, g t \u2208 s t\"},{\"explicit\":true,\"isProp\":true,\"name\":\"h0\",\"type\":\"f 0 = g 0\"},{\"explicit\":true,\"isProp\":false,\"name\":\"t\",\"type\":\"\u211d\"},{\"explicit\":true,\"isProp\":true,\"name\":\"a._@._internal._hyg.0\",\"type\":\"t \u2208 Set.Icc 0 T\"}],\"definition_cone\":[{\"constant_prop_body\":\"\",\"extern\":false,\"ignored_explicit_args\":[],\"implemented_by\":\"\",\"kind\":\"def\",\"module\":\"SGC.Bridge.ResidualHorizon\",\"name\":\"SGC.Bridge.ResidualHorizon.residual\",\"partial\":false,\"sorry_in_value\":false,\"type\":\"{E : Type u_1} \u2192 [NormedAddCommGroup E] \u2192 (\u211d \u2192 E \u2192 E) \u2192 (\u211d \u2192 E) \u2192 (\u211d \u2192 E) \u2192 \u211d \u2192 E\",\"unsafe\":false}],\"empty_domain_binder\":\"\",\"is_prop\":true,\"level_params\":[\"u_1\"],\"module\":\"SGC.Bridge.ResidualHorizon\",\"name\":\"SGC.Bridge.ResidualHorizon.exact_tracking_of_zero_residual\",\"probe_error\":\"\",\"statement\":\"\u2200 {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace \u211d E] {v : \u211d \u2192 E \u2192 E} {s : \u211d \u2192 Set E} {K : NNReal} {f f' g : \u211d \u2192 E} {T : \u211d}, (\u2200 t \u2208 Set.Ico 0 T, LipschitzOnWith K (v t) (s t)) \u2192 ContinuousOn f (Set.Icc 0 T) \u2192 (\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt f (f' t) (Set.Ici t) t) \u2192 (\u2200 t \u2208 Set.Ico 0 T, SGC.Bridge.ResidualHorizon.residual v f f' t = 0) \u2192 (\u2200 t \u2208 Set.Ico 0 T, f t \u2208 s t) \u2192 ContinuousOn g (Set.Icc 0 T) \u2192 (\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt g (v t (g t)) (Set.Ici t) t) \u2192 (\u2200 t \u2208 Set.Ico 0 T, g t \u2208 s t) \u2192 f 0 = g 0 \u2192 \u2200 t \u2208 Set.Icc 0 T, f t = g t\",\"trivial_by\":\"\",\"unused_hypotheses\":[],\"vacuous_by\":\"\"}",
+   "@@THM {\"axioms\":[{\"module\":\"Init.Prelude\",\"name\":\"Classical.choice\"},{\"module\":\"Init.Core\",\"name\":\"Quot.sound\"},{\"module\":\"Init.Core\",\"name\":\"propext\"}],\"binders\":[{\"explicit\":false,\"isProp\":false,\"name\":\"E\",\"type\":\"Type u_1\"},{\"explicit\":false,\"isProp\":false,\"name\":\"inst._@.SGC.Bridge.ResidualHorizon.1742996054._hygCtx._hyg.3\",\"type\":\"NormedAddCommGroup E\"},{\"explicit\":true,\"isProp\":false,\"name\":\"v\",\"type\":\"\u211d \u2192 E \u2192 E\"},{\"explicit\":true,\"isProp\":false,\"name\":\"f\",\"type\":\"\u211d \u2192 E\"},{\"explicit\":true,\"isProp\":false,\"name\":\"f'\",\"type\":\"\u211d \u2192 E\"},{\"explicit\":true,\"isProp\":false,\"name\":\"t\",\"type\":\"\u211d\"}],\"definition_cone\":[{\"constant_prop_body\":\"\",\"extern\":false,\"ignored_explicit_args\":[],\"implemented_by\":\"\",\"kind\":\"def\",\"module\":\"SGC.Bridge.ResidualHorizon\",\"name\":\"SGC.Bridge.ResidualHorizon.residual\",\"partial\":false,\"sorry_in_value\":false,\"type\":\"{E : Type u_1} \u2192 [NormedAddCommGroup E] \u2192 (\u211d \u2192 E \u2192 E) \u2192 (\u211d \u2192 E) \u2192 (\u211d \u2192 E) \u2192 \u211d \u2192 E\",\"unsafe\":false}],\"empty_domain_binder\":\"\",\"is_prop\":true,\"level_params\":[\"u_1\"],\"module\":\"SGC.Bridge.ResidualHorizon\",\"name\":\"SGC.Bridge.ResidualHorizon.residual.eq_1\",\"probe_error\":\"\",\"statement\":\"\u2200 {E : Type u_1} [inst : NormedAddCommGroup E] (v : \u211d \u2192 E \u2192 E) (f f' : \u211d \u2192 E) (t : \u211d), SGC.Bridge.ResidualHorizon.residual v f f' t = f' t - v t (f t)\",\"trivial_by\":\"rfl\",\"unused_hypotheses\":[],\"vacuous_by\":\"\"}",
+   "@@THM {\"axioms\":[{\"module\":\"Init.Prelude\",\"name\":\"Classical.choice\"},{\"module\":\"Init.Core\",\"name\":\"Quot.sound\"},{\"module\":\"Init.Core\",\"name\":\"propext\"}],\"binders\":[{\"explicit\":false,\"isProp\":false,\"name\":\"E\",\"type\":\"Type u_1\"},{\"explicit\":false,\"isProp\":false,\"name\":\"inst._@.SGC.Bridge.ResidualHorizon.1766940206._hygCtx._hyg.3\",\"type\":\"NormedAddCommGroup E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"inst._@.SGC.Bridge.ResidualHorizon.1766940206._hygCtx._hyg.6\",\"type\":\"NormedSpace \u211d E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"v\",\"type\":\"\u211d \u2192 E \u2192 E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"s\",\"type\":\"\u211d \u2192 Set E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"K\",\"type\":\"NNReal\"},{\"explicit\":false,\"isProp\":false,\"name\":\"f\",\"type\":\"\u211d \u2192 E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"f'\",\"type\":\"\u211d \u2192 E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"g\",\"type\":\"\u211d \u2192 E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"T\",\"type\":\"\u211d\"},{\"explicit\":false,\"isProp\":false,\"name\":\"\u03b5\",\"type\":\"\u211d\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hv\",\"type\":\"\u2200 t \u2208 Set.Ico 0 T, LipschitzOnWith K (v t) (s t)\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hf\",\"type\":\"ContinuousOn f (Set.Icc 0 T)\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hf'\",\"type\":\"\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt f (f' t) (Set.Ici t) t\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hres\",\"type\":\"\u2200 t \u2208 Set.Ico 0 T, \u2016SGC.Bridge.ResidualHorizon.residual v f f' t\u2016 \u2264 \u03b5\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hfs\",\"type\":\"\u2200 t \u2208 Set.Ico 0 T, f t \u2208 s t\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hg\",\"type\":\"ContinuousOn g (Set.Icc 0 T)\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hg'\",\"type\":\"\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt g (v t (g t)) (Set.Ici t) t\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hgs\",\"type\":\"\u2200 t \u2208 Set.Ico 0 T, g t \u2208 s t\"},{\"explicit\":true,\"isProp\":true,\"name\":\"h0\",\"type\":\"f 0 = g 0\"},{\"explicit\":true,\"isProp\":false,\"name\":\"t\",\"type\":\"\u211d\"},{\"explicit\":true,\"isProp\":true,\"name\":\"a._@._internal._hyg.0\",\"type\":\"t \u2208 Set.Icc 0 T\"}],\"definition_cone\":[{\"constant_prop_body\":\"\",\"extern\":false,\"ignored_explicit_args\":[],\"implemented_by\":\"\",\"kind\":\"def\",\"module\":\"SGC.Bridge.ResidualHorizon\",\"name\":\"SGC.Bridge.ResidualHorizon.residual\",\"partial\":false,\"sorry_in_value\":false,\"type\":\"{E : Type u_1} \u2192 [NormedAddCommGroup E] \u2192 (\u211d \u2192 E \u2192 E) \u2192 (\u211d \u2192 E) \u2192 (\u211d \u2192 E) \u2192 \u211d \u2192 E\",\"unsafe\":false}],\"empty_domain_binder\":\"\",\"is_prop\":true,\"level_params\":[\"u_1\"],\"module\":\"SGC.Bridge.ResidualHorizon\",\"name\":\"SGC.Bridge.ResidualHorizon.residual_horizon\",\"probe_error\":\"\",\"statement\":\"\u2200 {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace \u211d E] {v : \u211d \u2192 E \u2192 E} {s : \u211d \u2192 Set E} {K : NNReal} {f f' g : \u211d \u2192 E} {T \u03b5 : \u211d}, (\u2200 t \u2208 Set.Ico 0 T, LipschitzOnWith K (v t) (s t)) \u2192 ContinuousOn f (Set.Icc 0 T) \u2192 (\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt f (f' t) (Set.Ici t) t) \u2192 (\u2200 t \u2208 Set.Ico 0 T, \u2016SGC.Bridge.ResidualHorizon.residual v f f' t\u2016 \u2264 \u03b5) \u2192 (\u2200 t \u2208 Set.Ico 0 T, f t \u2208 s t) \u2192 ContinuousOn g (Set.Icc 0 T) \u2192 (\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt g (v t (g t)) (Set.Ici t) t) \u2192 (\u2200 t \u2208 Set.Ico 0 T, g t \u2208 s t) \u2192 f 0 = g 0 \u2192 \u2200 t \u2208 Set.Icc 0 T, dist (f t) (g t) \u2264 gronwallBound 0 (\u2191K) \u03b5 t\",\"trivial_by\":\"\",\"unused_hypotheses\":[],\"vacuous_by\":\"\"}",
+   "@@THM {\"axioms\":[{\"module\":\"Init.Prelude\",\"name\":\"Classical.choice\"},{\"module\":\"Init.Core\",\"name\":\"Quot.sound\"},{\"module\":\"Init.Core\",\"name\":\"propext\"}],\"binders\":[{\"explicit\":false,\"isProp\":false,\"name\":\"E\",\"type\":\"Type u_1\"},{\"explicit\":false,\"isProp\":false,\"name\":\"inst._@.SGC.Bridge.ResidualHorizon.2231917538._hygCtx._hyg.3\",\"type\":\"NormedAddCommGroup E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"inst._@.SGC.Bridge.ResidualHorizon.2231917538._hygCtx._hyg.6\",\"type\":\"NormedSpace \u211d E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"v\",\"type\":\"\u211d \u2192 E \u2192 E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"s\",\"type\":\"\u211d \u2192 Set E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"K\",\"type\":\"NNReal\"},{\"explicit\":false,\"isProp\":false,\"name\":\"f\",\"type\":\"\u211d \u2192 E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"f'\",\"type\":\"\u211d \u2192 E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"g\",\"type\":\"\u211d \u2192 E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"T\",\"type\":\"\u211d\"},{\"explicit\":false,\"isProp\":false,\"name\":\"\u03b5\",\"type\":\"\u211d\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hK\",\"type\":\"\u2191K \u2260 0\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hv\",\"type\":\"\u2200 t \u2208 Set.Ico 0 T, LipschitzOnWith K (v t) (s t)\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hf\",\"type\":\"ContinuousOn f (Set.Icc 0 T)\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hf'\",\"type\":\"\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt f (f' t) (Set.Ici t) t\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hres\",\"type\":\"\u2200 t \u2208 Set.Ico 0 T, \u2016SGC.Bridge.ResidualHorizon.residual v f f' t\u2016 \u2264 \u03b5\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hfs\",\"type\":\"\u2200 t \u2208 Set.Ico 0 T, f t \u2208 s t\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hg\",\"type\":\"ContinuousOn g (Set.Icc 0 T)\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hg'\",\"type\":\"\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt g (v t (g t)) (Set.Ici t) t\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hgs\",\"type\":\"\u2200 t \u2208 Set.Ico 0 T, g t \u2208 s t\"},{\"explicit\":true,\"isProp\":true,\"name\":\"h0\",\"type\":\"f 0 = g 0\"},{\"explicit\":true,\"isProp\":false,\"name\":\"t\",\"type\":\"\u211d\"},{\"explicit\":true,\"isProp\":true,\"name\":\"a._@._internal._hyg.0\",\"type\":\"t \u2208 Set.Icc 0 T\"}],\"definition_cone\":[{\"constant_prop_body\":\"\",\"extern\":false,\"ignored_explicit_args\":[],\"implemented_by\":\"\",\"kind\":\"def\",\"module\":\"SGC.Bridge.ResidualHorizon\",\"name\":\"SGC.Bridge.ResidualHorizon.residual\",\"partial\":false,\"sorry_in_value\":false,\"type\":\"{E : Type u_1} \u2192 [NormedAddCommGroup E] \u2192 (\u211d \u2192 E \u2192 E) \u2192 (\u211d \u2192 E) \u2192 (\u211d \u2192 E) \u2192 \u211d \u2192 E\",\"unsafe\":false}],\"empty_domain_binder\":\"\",\"is_prop\":true,\"level_params\":[\"u_1\"],\"module\":\"SGC.Bridge.ResidualHorizon\",\"name\":\"SGC.Bridge.ResidualHorizon.residual_horizon_explicit\",\"probe_error\":\"\",\"statement\":\"\u2200 {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace \u211d E] {v : \u211d \u2192 E \u2192 E} {s : \u211d \u2192 Set E} {K : NNReal} {f f' g : \u211d \u2192 E} {T \u03b5 : \u211d}, \u2191K \u2260 0 \u2192 (\u2200 t \u2208 Set.Ico 0 T, LipschitzOnWith K (v t) (s t)) \u2192 ContinuousOn f (Set.Icc 0 T) \u2192 (\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt f (f' t) (Set.Ici t) t) \u2192 (\u2200 t \u2208 Set.Ico 0 T, \u2016SGC.Bridge.ResidualHorizon.residual v f f' t\u2016 \u2264 \u03b5) \u2192 (\u2200 t \u2208 Set.Ico 0 T, f t \u2208 s t) \u2192 ContinuousOn g (Set.Icc 0 T) \u2192 (\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt g (v t (g t)) (Set.Ici t) t) \u2192 (\u2200 t \u2208 Set.Ico 0 T, g t \u2208 s t) \u2192 f 0 = g 0 \u2192 \u2200 t \u2208 Set.Icc 0 T, dist (f t) (g t) \u2264 \u03b5 / \u2191K * (Real.exp (\u2191K * t) - 1)\",\"trivial_by\":\"\",\"unused_hypotheses\":[],\"vacuous_by\":\"\"}",
+   "@@THM {\"axioms\":[{\"module\":\"Init.Prelude\",\"name\":\"Classical.choice\"},{\"module\":\"Init.Core\",\"name\":\"Quot.sound\"},{\"module\":\"Init.Core\",\"name\":\"propext\"}],\"binders\":[{\"explicit\":false,\"isProp\":false,\"name\":\"E\",\"type\":\"Type u_1\"},{\"explicit\":false,\"isProp\":false,\"name\":\"inst._@.SGC.Bridge.ResidualHorizon.3752775102._hygCtx._hyg.3\",\"type\":\"NormedAddCommGroup E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"inst._@.SGC.Bridge.ResidualHorizon.3752775102._hygCtx._hyg.6\",\"type\":\"NormedSpace \u211d E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"v\",\"type\":\"\u211d \u2192 E \u2192 E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"s\",\"type\":\"\u211d \u2192 Set E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"K\",\"type\":\"NNReal\"},{\"explicit\":false,\"isProp\":false,\"name\":\"f\",\"type\":\"\u211d \u2192 E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"f'\",\"type\":\"\u211d \u2192 E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"g\",\"type\":\"\u211d \u2192 E\"},{\"explicit\":false,\"isProp\":false,\"name\":\"T\",\"type\":\"\u211d\"},{\"explicit\":false,\"isProp\":false,\"name\":\"\u03b5\",\"type\":\"\u211d\"},{\"explicit\":false,\"isProp\":false,\"name\":\"\u03b7\",\"type\":\"\u211d\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hK\",\"type\":\"\u2191K \u2260 0\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hT\",\"type\":\"0 \u2264 T\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hv\",\"type\":\"\u2200 t \u2208 Set.Ico 0 T, LipschitzOnWith K (v t) (s t)\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hf\",\"type\":\"ContinuousOn f (Set.Icc 0 T)\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hf'\",\"type\":\"\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt f (f' t) (Set.Ici t) t\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hres\",\"type\":\"\u2200 t \u2208 Set.Ico 0 T, \u2016SGC.Bridge.ResidualHorizon.residual v f f' t\u2016 \u2264 \u03b5\"},{\"explicit\":true,\"isProp\":true,\"name\":\"h\u03b5\",\"type\":\"0 \u2264 \u03b5\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hfs\",\"type\":\"\u2200 t \u2208 Set.Ico 0 T, f t \u2208 s t\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hg\",\"type\":\"ContinuousOn g (Set.Icc 0 T)\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hg'\",\"type\":\"\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt g (v t (g t)) (Set.Ici t) t\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hgs\",\"type\":\"\u2200 t \u2208 Set.Ico 0 T, g t \u2208 s t\"},{\"explicit\":true,\"isProp\":true,\"name\":\"h0\",\"type\":\"f 0 = g 0\"},{\"explicit\":true,\"isProp\":true,\"name\":\"hbudget\",\"type\":\"\u03b5 / \u2191K * (Real.exp (\u2191K * T) - 1) \u2264 \u03b7\"},{\"explicit\":true,\"isProp\":false,\"name\":\"t\",\"type\":\"\u211d\"},{\"explicit\":true,\"isProp\":true,\"name\":\"a._@._internal._hyg.0\",\"type\":\"t \u2208 Set.Icc 0 T\"}],\"definition_cone\":[{\"constant_prop_body\":\"\",\"extern\":false,\"ignored_explicit_args\":[],\"implemented_by\":\"\",\"kind\":\"def\",\"module\":\"SGC.Bridge.ResidualHorizon\",\"name\":\"SGC.Bridge.ResidualHorizon.residual\",\"partial\":false,\"sorry_in_value\":false,\"type\":\"{E : Type u_1} \u2192 [NormedAddCommGroup E] \u2192 (\u211d \u2192 E \u2192 E) \u2192 (\u211d \u2192 E) \u2192 (\u211d \u2192 E) \u2192 \u211d \u2192 E\",\"unsafe\":false}],\"empty_domain_binder\":\"\",\"is_prop\":true,\"level_params\":[\"u_1\"],\"module\":\"SGC.Bridge.ResidualHorizon\",\"name\":\"SGC.Bridge.ResidualHorizon.within_tolerance_of_residual_small\",\"probe_error\":\"\",\"statement\":\"\u2200 {E : Type u_1} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace \u211d E] {v : \u211d \u2192 E \u2192 E} {s : \u211d \u2192 Set E} {K : NNReal} {f f' g : \u211d \u2192 E} {T \u03b5 \u03b7 : \u211d}, \u2191K \u2260 0 \u2192 0 \u2264 T \u2192 (\u2200 t \u2208 Set.Ico 0 T, LipschitzOnWith K (v t) (s t)) \u2192 ContinuousOn f (Set.Icc 0 T) \u2192 (\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt f (f' t) (Set.Ici t) t) \u2192 (\u2200 t \u2208 Set.Ico 0 T, \u2016SGC.Bridge.ResidualHorizon.residual v f f' t\u2016 \u2264 \u03b5) \u2192 0 \u2264 \u03b5 \u2192 (\u2200 t \u2208 Set.Ico 0 T, f t \u2208 s t) \u2192 ContinuousOn g (Set.Icc 0 T) \u2192 (\u2200 t \u2208 Set.Ico 0 T, HasDerivWithinAt g (v t (g t)) (Set.Ici t) t) \u2192 (\u2200 t \u2208 Set.Ico 0 T, g t \u2208 s t) \u2192 f 0 = g 0 \u2192 \u03b5 / \u2191K * (Real.exp (\u2191K * T) - 1) \u2264 \u03b7 \u2192 \u2200 t \u2208 Set.Icc 0 T, dist (f t) (g t) \u2264 \u03b7\",\"trivial_by\":\"\",\"unused_hypotheses\":[\"hT\"],\"vacuous_by\":\"\"}",
+   "@@AXIOMS []",
+   "@@LOCALS [\"SGC.Bridge.ResidualHorizon.residual_horizon\",\"SGC.Bridge.ResidualHorizon.residual_horizon_explicit\",\"SGC.Bridge.ResidualHorizon.within_tolerance_of_residual_small\",\"SGC.Bridge.ResidualHorizon.residual\",\"SGC.Bridge.ResidualHorizon.exact_tracking_of_zero_residual\",\"SGC.Bridge.ResidualHorizon.residual.eq_1\"]",
+   "@@COUNT {\"local_constants\":6,\"theorems\":5}"
+  ],
+  "trust_surface": {
+   "axioms": [],
+   "ledger_files": [
+    "decisions\\0004-axiom-discharge-inside-fintype-firewall.md",
+    "docs\\axiom-discharge-campaign.md",
+    "docs\\axiom-preflight.md",
+    "docs\\retired-axioms.md",
+    "logs\\fourier_axioms.txt",
+    "logs\\fourier_axioms2.txt",
+    "logs\\fourier_axioms3.txt",
+    "reports\\AXIOM_SORRY_LANDSCAPE_2026-05-25.md",
+    "scratch\\AxiomCheck.lean",
+    "scratch\\axiomcheck_out.txt",
+    "scratch\\CurvQuotientAxioms.lean",
+    "scratch\\CurvUndecAxioms.lean",
+    "scratch\\FourierAxiomCheck.lean",
+    "scratch\\LocalToGlobalAxiomCheck.lean",
+    "scripts\\AxiomAudit.lean",
+    "theory_context\\UPAT archive\\Current Archive\\Theorems_and_Proofs\\New Directions and Exploration\\UPAT from the axiom of Invariance and a finite Markov chain.docx",
+    "theory_context\\UPAT archive\\Current Archive\\Theorems_and_Proofs\\Theorem Refinements\\FHDT with 2 fenced Axioms.docx",
+    "theory_context\\UPAT archive\\Current Archive\\Theorems_and_Proofs\\Theorem Refinements\\Project Archive FHDT one remaining axiom 111725.docx",
+    "theory_context\\UPAT archive\\Current Archive\\Theorems_and_Proofs\\Theorem Refinements\\Project Archive FHDT two remaining axioms 111725.docx",
+    "theory_context\\UPAT archive\\Current Archive\\Theorems_and_Proofs\\Updated Lean Archive as of 033126\\src\\SGC\\Spectral\\Core\\Assumptions.lean",
+    "theory_context\\UPAT archive\\Current Archive\\Experiments\\FHDT Lean4 Verification\\Assumptions_lean.docx",
+    "theory_context\\UPAT archive\\Current Archive\\Experiments\\FHDT Lean4 Verification\\Assumptions_lean_w.docx",
+    "src\\SGC\\Foundations\\AxiomAudit.lean",
+    "src\\SGC\\Spectral\\Core\\Assumptions.lean",
+    "lean_txt_export\\src\\UPAT\\Stability\\Core\\Assumptions.txt",
+    "lean_txt_export\\src\\FHDT\\Core\\Assumptions.txt",
+    ".git\\refs\\remotes\\origin\\sprint\\entropy-axiom-closure-2026-05-25",
+    ".git\\refs\\heads\\sprint\\entropy-axiom-closure-2026-05-25",
+    ".git\\logs\\refs\\remotes\\origin\\sprint\\entropy-axiom-closure-2026-05-25",
+    ".git\\logs\\refs\\heads\\sprint\\entropy-axiom-closure-2026-05-25"
+   ]
+  }
+ },
+ "execution": {
+  "credential_mounts": "unknown (self-declared by operator)",
+  "execution_mode": "trusted_local",
+  "network_policy": "unknown",
+  "note": "these fields are declared by the operator, not measured; the receipt records them so a reader knows on what machine untrusted build code ran",
+  "repo_source": "local_path",
+  "resource_limits": "unknown (self-declared by operator)",
+  "sandbox_image_hash": null
+ },
+ "falsifiers": [
+  "any target whose kernel closure contains sorryAx or a project/dependency axiom outside the trusted base",
+  "any target whose hypotheses jointly imply False, or whose binder ranges over an empty type",
+  "any statement-cone definition that is sorry-valued",
+  "a cited declaration that does not exist; a missing target",
+  "lake build or fresh kernel replay failure",
+  "HUMAN STEP: the printed statement (hash recorded) does not mean what the surrounding prose claims"
+ ],
+ "hash_self": "19ac344976d2c6d6c635f3ee4969004aa6e8ba9688d9d770b170d98fb6cb9ff4",
+ "id": "lean-triage-e89d3677eb8e-20260913T014427Z",
+ "limitations": [
+  "This receipt records evidence and witnesses. It does not certify importance, novelty, or that any formal statement matches an informal claim; claim_map is UNATTESTED unless a named human signed it.",
+  "Automation probes (triviality, vacuity, emptiness) are budgeted searches: absence of a witness is not evidence of non-triviality or consistency.",
+  "The definition cone is a reading list, not a verdict; only a human can judge whether a definition captures the intended concept.",
+  "Kernel implementation bugs and environment hacking are only excluded by external checkers (lean4checker --fresh, comparator); this tool records whether they ran.",
+  "Lean's kernel, elaborator, and dependencies are trusted; their axioms are the baseline, not audited here.",
+  "Only the listed modules/targets are audited; nothing is implied about other declarations."
+ ],
+ "measurement_chain": [
+  {
+   "declared_by": "lean-triage 0.2.1",
+   "kind": "sensor",
+   "params": {
+    "git": true,
+    "manifest": true,
+    "tree_hash": true
+   },
+   "stage": "provenance"
+  },
+  {
+   "declared_by": "lean-triage 0.2.1",
+   "kind": "preprocess",
+   "params": {
+    "command": "lake build",
+    "skipped": true,
+    "toolchain": "leanprover/lean4:v4.25.2"
+   },
+   "stage": "clean build"
+  },
+  {
+   "declared_by": "lean-triage 0.2.1",
+   "kind": "sensor",
+   "params": {
+    "automation_probes": true,
+    "heartbeats_per_probe": 20,
+    "method": "Lean.collectAxioms + Meta telescopes via run_cmd, executed with `lake env lean`"
+   },
+   "stage": "kernel probe"
+  },
+  {
+   "declared_by": "lean-triage 0.2.1",
+   "kind": "derive",
+   "params": {
+    "documents": 175,
+    "vocabulary": [
+     "Millennium",
+     "Navier-Stokes",
+     "Navier Stokes",
+     "Riemann",
+     "Collatz",
+     "Goldbach",
+     "P vs NP",
+     "P = NP",
+     "settles",
+     "first proof",
+     "unconditional",
+     "fully verified",
+     "machine-verified proof of"
+    ]
+   },
+   "stage": "narrative scan"
+  },
+  {
+   "declared_by": "lean-triage 0.2.1",
+   "kind": "sensor",
+   "params": {
+    "available": null
+   },
+   "stage": "kernel replay"
+  }
+ ],
+ "predictions": [
+  {
+   "id": "P-no-fail-findings",
+   "outcome": "void",
+   "outcome_at": "2026-09-13T01:44:27Z",
+   "registered_at": "2026-09-13T01:43:54Z",
+   "spec_hash": "a49e48dd64ca3313dc2407c6ae75fcc6709ca6d817ea1d26c6271604065f7963",
+   "statement": "no target exhibits a fail-level catalogued failure mode"
+  }
+ ],
+ "receipt_version": "1.0",
+ "reproduction": {
+  "command": "lean_triage.py audit --repo C:/Lean4 Projects --module SGC.Bridge.ResidualHorizon --skip-build --out receipts/sgc-residualhorizon",
+  "seeds": {
+   "none": "deterministic"
+  },
+  "source_hashes": {
+   "audited_tree": "e89d3677eb8e5f4786260c363c42abee52e585bdc414c8f76b8fe057b8fbdb1c",
+   "lean_triage.py": "7e7d28e056e9d1fa6b59cc8fecd98a1f0c5155da74e5e4b21e7d44af92aee637",
+   "probe": "a1b7c82824c993678c037954d9f930a29bf87ecb7960238542b5bcb8754eaba2"
+  },
+  "tolerances": {
+   "automation_probes": "heartbeat-budget dependent",
+   "axiom_closure": "exact",
+   "statement_text": "pretty-printer dependent"
+  }
+ },
+ "subject": {
+  "dataset": {
+   "description": "Lean 4 source tree (lean sources + build configuration), dependency checkouts excluded",
+   "name": "https://github.com/JasonShroyer/sgc-lean.git",
+   "sha256": "e89d3677eb8e5f4786260c363c42abee52e585bdc414c8f76b8fe057b8fbdb1c"
+  },
+  "modules": [
+   "SGC.Bridge.ResidualHorizon"
+  ],
+  "provenance": {
+   "dependencies": [
+    {
+     "inputRev": "v4.25.2",
+     "name": "mathlib",
+     "rev": "c98ae54af00eaefe79c51b2b278361ca94e59bfb",
+     "url": "https://github.com/leanprover-community/mathlib4"
+    },
+    {
+     "inputRev": "main",
+     "name": "plausible",
+     "rev": "0203092c2e5e26edf967000f0e177cf31c72e17a",
+     "url": "https://github.com/leanprover-community/plausible"
+    },
+    {
+     "inputRev": "main",
+     "name": "LeanSearchClient",
+     "rev": "2ed4ba69b6127de8f5c2af83cccacd3c988b06bf",
+     "url": "https://github.com/leanprover-community/LeanSearchClient"
+    },
+    {
+     "inputRev": "main",
+     "name": "importGraph",
+     "rev": "3611075024b3529e5798e53c733671039f06f0bd",
+     "url": "https://github.com/leanprover-community/import-graph"
+    },
+    {
+     "inputRev": "v0.0.80+lean-v4.25.2",
+     "name": "proofwidgets",
+     "rev": "45777338ffb69576c945dfe9466665b8023a8b8c",
+     "url": "https://github.com/leanprover-community/ProofWidgets4"
+    },
+    {
+     "inputRev": "master",
+     "name": "aesop",
+     "rev": "a2e4d9e9aebdbdce1ce6b6f0a19dd49e0120c990",
+     "url": "https://github.com/leanprover-community/aesop"
+    },
+    {
+     "inputRev": "master",
+     "name": "Qq",
+     "rev": "9bff22d64abde45944c7b1f55bce6c89dd8307e6",
+     "url": "https://github.com/leanprover-community/quote4"
+    },
+    {
+     "inputRev": "main",
+     "name": "batteries",
+     "rev": "ffad3f5b7ebe1ac3e09779ec8a863a5138c1246c",
+     "url": "https://github.com/leanprover-community/batteries"
+    },
+    {
+     "inputRev": "v4.25.1",
+     "name": "Cli",
+     "rev": "cd188c6ecfbf6c00cf639e4d4fb18bf773ce8c2c",
+     "url": "https://github.com/leanprover/lean4-cli"
+    }
+   ],
+   "git_branch": "cantor-layer-wip",
+   "git_commit": "0012a5a5b16f7e4e26465e84c3772627a17a5fd0",
+   "git_dirty": true,
+   "git_remote": "https://github.com/JasonShroyer/sgc-lean.git",
+   "lakefile_present": true,
+   "lean_toolchain": "leanprover/lean4:v4.25.2",
+   "repo_path": "C:\\Lean4 Projects",
+   "source_files_hashed": 244,
+   "source_tree_sha256": "e89d3677eb8e5f4786260c363c42abee52e585bdc414c8f76b8fe057b8fbdb1c"
+  },
+  "requested_targets": []
+ },
+ "tool": {
+  "name": "lean-triage",
+  "probe_sha256": "a1b7c82824c993678c037954d9f930a29bf87ecb7960238542b5bcb8754eaba2",
+  "source_sha256": "7e7d28e056e9d1fa6b59cc8fecd98a1f0c5155da74e5e4b21e7d44af92aee637",
+  "version": "0.2.1"
+ },
+ "triage": {
+  "checks_not_run": [
+   "lake build (skipped by request)",
+   "kernel replay from fresh environment (lean4checker not available or build unverified)",
+   "comparator / external checker (never run automatically)",
+   "human claim-map attestation (none supplied)"
+  ],
+  "counts": {
+   "fail": 0,
+   "info": 22,
+   "warn": 16
+  },
+  "findings": [
+   {
+    "basis": "heuristic",
+    "code": "CITED_DECLARATION_MISSING",
+    "detail": "cited in reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md but no such declaration exists in the loaded environment or in project sources",
+    "evidence": {
+     "files": [
+      "reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md"
+     ]
+    },
+    "id": "F10",
+    "remedy": "classify: moved / renamed / local-only / planned / deleted; then repair the citation",
+    "severity": "warn",
+    "theorem": "SGC.DiscreteFluidDynamics"
+   },
+   {
+    "basis": "heuristic",
+    "code": "CITED_DECLARATION_MISSING",
+    "detail": "cited in demos/README.md but no such declaration exists in the loaded environment or in project sources",
+    "evidence": {
+     "files": [
+      "demos/README.md"
+     ]
+    },
+    "id": "F10",
+    "remedy": "classify: moved / renamed / local-only / planned / deleted; then repair the citation",
+    "severity": "warn",
+    "theorem": "SGC.Measurement.Interfaces.TightnessAudit"
+   },
+   {
+    "basis": "heuristic",
+    "code": "CITED_DECLARATION_MISSING",
+    "detail": "cited in demos/README.md but no such declaration exists in the loaded environment or in project sources",
+    "evidence": {
+     "files": [
+      "demos/README.md"
+     ]
+    },
+    "id": "F10",
+    "remedy": "classify: moved / renamed / local-only / planned / deleted; then repair the citation",
+    "severity": "warn",
+    "theorem": "SGC.Measurement.Interfaces.tightness_ratio_nonneg"
+   },
+   {
+    "basis": "heuristic",
+    "code": "CITED_DECLARATION_MISSING",
+    "detail": "cited in demos/README.md but no such declaration exists in the loaded environment or in project sources",
+    "evidence": {
+     "files": [
+      "demos/README.md"
+     ]
+    },
+    "id": "F10",
+    "remedy": "classify: moved / renamed / local-only / planned / deleted; then repair the citation",
+    "severity": "warn",
+    "theorem": "SGC.Measurement.Wavelets"
+   },
+   {
+    "basis": "heuristic",
+    "code": "CITED_DECLARATION_MISSING",
+    "detail": "cited in demos/README.md but no such declaration exists in the loaded environment or in project sources",
+    "evidence": {
+     "files": [
+      "demos/README.md"
+     ]
+    },
+    "id": "F10",
+    "remedy": "classify: moved / renamed / local-only / planned / deleted; then repair the citation",
+    "severity": "warn",
+    "theorem": "SGC.Measurement.Wavelets.DiffusionWavelet"
+   },
+   {
+    "basis": "heuristic",
+    "code": "CITED_DECLARATION_MISSING",
+    "detail": "cited in reports/BROWNIAN_MOTION_LEAN_EXPLORATION.md but no such declaration exists in the loaded environment or in project sources",
+    "evidence": {
+     "files": [
+      "reports/BROWNIAN_MOTION_LEAN_EXPLORATION.md"
+     ]
+    },
+    "id": "F10",
+    "remedy": "classify: moved / renamed / local-only / planned / deleted; then repair the citation",
+    "severity": "warn",
+    "theorem": "SGC.Stochastic.KramersEscape"
+   },
+   {
+    "basis": "process",
+    "code": "DIRTY_TREE",
+    "detail": "working tree has uncommitted changes; audited bytes may differ from the recorded commit",
+    "evidence": {
+     "commit": "0012a5a5b16f7e4e26465e84c3772627a17a5fd0"
+    },
+    "id": "F12",
+    "remedy": "commit or stash, then re-run so the receipt names one revision",
+    "severity": "warn",
+    "theorem": null
+   },
+   {
+    "basis": "heuristic",
+    "code": "NARRATIVE_CLAIM_NEEDS_HUMAN_MAP",
+    "detail": "strong-claim vocabulary 'Millennium' appears 2x (THEORY.md:175, docs/bkm-formalization-design.md:46); a human must map the formal statements to it",
+    "evidence": {
+     "locations": [
+      "THEORY.md:175",
+      "docs/bkm-formalization-design.md:46"
+     ]
+    },
+    "id": "F10",
+    "remedy": "supply --claim-map with attested entries or soften the prose",
+    "severity": "warn",
+    "theorem": null
+   },
+   {
+    "basis": "heuristic",
+    "code": "NARRATIVE_CLAIM_NEEDS_HUMAN_MAP",
+    "detail": "strong-claim vocabulary 'Navier-Stokes' appears 5x (PRIORITY_CLAIMS.md:93, PRIORITY_CLAIMS.md:95, PRIORITY_CLAIMS.md:99, ...); a human must map the formal statements to it",
+    "evidence": {
+     "locations": [
+      "PRIORITY_CLAIMS.md:93",
+      "PRIORITY_CLAIMS.md:95",
+      "PRIORITY_CLAIMS.md:99",
+      "docs/bkm-formalization-design.md:51",
+      "reports/PHASE_DIAGRAM_UNIFICATION.md:67"
+     ]
+    },
+    "id": "F10",
+    "remedy": "supply --claim-map with attested entries or soften the prose",
+    "severity": "warn",
+    "theorem": null
+   },
+   {
+    "basis": "heuristic",
+    "code": "NARRATIVE_CLAIM_NEEDS_HUMAN_MAP",
+    "detail": "strong-claim vocabulary 'Riemann' appears 26x (CHANGELOG.md:164, RESEARCH_JOURNAL.md:90, VERIFIED_CORE_MANIFEST.md:381, ...); a human must map the formal statements to it",
+    "evidence": {
+     "locations": [
+      "CHANGELOG.md:164",
+      "RESEARCH_JOURNAL.md:90",
+      "VERIFIED_CORE_MANIFEST.md:381",
+      "VERIFIED_CORE_MANIFEST.md:385",
+      "decisions/0013-affinity-protection-conserved-charge.md:40",
+      "docs/retired-axioms.md:871",
+      "docs/SGC_CANONICAL_GROKKING_THEORY.md:148",
+      "docs/SGC_CANONICAL_GROKKING_THEORY.md:298",
+      "docs/SGC_CONTROL_ARCHITECTURE.md:646",
+      "docs/sgc_theory_roadmap.md:90",
+      "docs/sgc_theory_roadmap.md:95",
+      "docs/sgc_theory_roadmap.md:136",
+      "docs/SGC_THRML_EXPERIMENT_PROPOSAL_local.md:220",
+      "reports/BROWNIAN_MOTION_LEAN_EXPLORATION.md:454",
+      "reports/phase1c_implementation_summary.md:71",
+      "reports/PHASE_DIAGRAM_UNIFICATION.md:243",
+      "reports/SGC_GROKKING_RESEARCH_REPORT.md:216",
+      "reports/SGC_GROKKING_RESEARCH_REPORT.md:465",
+      "reports/UNIVERSAL_INDUCTION_SYNTHESIS.md:141",
+      "theory_context/Native Encoding Architecture.md:345",
+      "theory_context/sg.md:430",
+      "theory_context/SGC Theory  Deep Dive & Methods.md:464",
+      "theory_context/SGC UPAT Methods Deep Dive.md:343",
+      "theory_context/SGC UPAT Methods Deep Dive.md:474",
+      "theory_context/SGC-ARC Agent Deep Dive.md:313",
+      "theory_context/UPAT_SGC_mapping.md:58"
+     ]
+    },
+    "id": "F10",
+    "remedy": "supply --claim-map with attested entries or soften the prose",
+    "severity": "warn",
+    "theorem": null
+   },
+   {
+    "basis": "heuristic",
+    "code": "NARRATIVE_CLAIM_NEEDS_HUMAN_MAP",
+    "detail": "strong-claim vocabulary 'fully verified' appears 5x (README.md:37, VERIFIED_CORE_MANIFEST.md:52, VERIFIED_CORE_MANIFEST.md:117, ...); a human must map the formal statements to it",
+    "evidence": {
+     "locations": [
+      "README.md:37",
+      "VERIFIED_CORE_MANIFEST.md:52",
+      "VERIFIED_CORE_MANIFEST.md:117",
+      "VERIFIED_CORE_MANIFEST.md:417",
+      "WINDSURF_ARCHIVE_MISSION.md:273"
+     ]
+    },
+    "id": "F10",
+    "remedy": "supply --claim-map with attested entries or soften the prose",
+    "severity": "warn",
+    "theorem": null
+   },
+   {
+    "basis": "heuristic",
+    "code": "NARRATIVE_CLAIM_NEEDS_HUMAN_MAP",
+    "detail": "strong-claim vocabulary 'settles' appears 3x (decisions/0016-curvature-descends-along-lumpable-quotients.md:50, reports/PHASE_4A_CANONICAL_WAVELET_FISHER_RAO_INTEGRATION.md:249, theory_context/SGC UPAT Methods Deep Dive.md:211); a human must map the formal statements to it",
+    "evidence": {
+     "locations": [
+      "decisions/0016-curvature-descends-along-lumpable-quotients.md:50",
+      "reports/PHASE_4A_CANONICAL_WAVELET_FISHER_RAO_INTEGRATION.md:249",
+      "theory_context/SGC UPAT Methods Deep Dive.md:211"
+     ]
+    },
+    "id": "F10",
+    "remedy": "supply --claim-map with attested entries or soften the prose",
+    "severity": "warn",
+    "theorem": null
+   },
+   {
+    "basis": "heuristic",
+    "code": "NARRATIVE_CLAIM_NEEDS_HUMAN_MAP",
+    "detail": "strong-claim vocabulary 'unconditional' appears 10x (RESEARCH_JOURNAL.md:285, RESEARCH_JOURNAL.md:567, RESEARCH_JOURNAL.md:816, ...); a human must map the formal statements to it",
+    "evidence": {
+     "locations": [
+      "RESEARCH_JOURNAL.md:285",
+      "RESEARCH_JOURNAL.md:567",
+      "RESEARCH_JOURNAL.md:816",
+      "docs/operator-strain-design.md:26",
+      "docs/operator-strain-design.md:59",
+      "reports/EMERGENCE_THEORY_FROM_FIRST_PRINCIPLES.md:98",
+      "reports/EMERGENCE_THEORY_FROM_FIRST_PRINCIPLES.md:379",
+      "reports/ITERATION_SUMMARY_V3_V5.md:24",
+      "reports/SPRINT_PLAN_POST_4C.md:24",
+      "reports/SPRINT_PLAN_POST_4C.md:255"
+     ]
+    },
+    "id": "F10",
+    "remedy": "supply --claim-map with attested entries or soften the prose",
+    "severity": "warn",
+    "theorem": null
+   },
+   {
+    "basis": "process",
+    "code": "TOOLCHAIN_ADVISORY",
+    "detail": "toolchain leanprover/lean4:v4.25.2 is below 4.32.2: Kernel soundness bug (nested inductive types with phantom parameters) allowed an axiom-free proof of False; #print axioms reported nothing. Fixed in Lean 4.32.2.",
+    "evidence": {
+     "advisory": "lean4-issue-14576",
+     "source": "leanprover/lean4 issue 14576 and the 4.32.2 release notes (verify against the upstream text)."
+    },
+    "id": "F13",
+    "remedy": "Re-check the artifact under a toolchain >= 4.32.2 and/or run an independent external checker (lean4checker --fresh, lean4lean/nanoda via comparator) before relying on 'no axioms' as evidence.",
+    "severity": "warn",
+    "theorem": null
+   },
+   {
+    "basis": "process",
+    "code": "TOOLCHAIN_ADVISORY",
+    "detail": "toolchain leanprover/lean4:v4.25.2 is below 4.32.2: Runtime reference-count overflow path that could corrupt memory and yield False (reported in the 2026 soundness-bug hunt).",
+    "evidence": {
+     "advisory": "runtime-refcount-overflow-2026",
+     "source": "Lean FRO soundness postmortem, 2026-08 (verify against the upstream text)."
+    },
+    "id": "F13",
+    "remedy": "Treat compiled-code trust (native_decide, extern, implemented_by) with extra care on affected toolchains.",
+    "severity": "warn",
+    "theorem": null
+   },
+   {
+    "basis": "kernel",
+    "code": "UNUSED_HYPOTHESIS",
+    "detail": "hypothesis `hT` never occurs in the proof term; the statement may be over-constrained or mis-stated",
+    "evidence": {
+     "hypothesis": "hT"
+    },
+    "id": "F09",
+    "remedy": "drop the hypothesis or check the statement",
+    "severity": "warn",
+    "theorem": "SGC.Bridge.ResidualHorizon.within_tolerance_of_residual_small"
+   },
+   {
+    "basis": "process",
+    "code": "BUILD_SKIPPED",
+    "detail": "build skipped by request; the probe ran against existing .olean files whose provenance is not established here",
+    "evidence": null,
+    "id": "F12",
+    "remedy": "",
+    "severity": "info",
+    "theorem": null
+   },
+   {
+    "basis": "heuristic",
+    "code": "CITED_DECLARATION_UNLOADED",
+    "detail": "cited in reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md; a declaration with this final name exists in project sources but not in the audited modules",
+    "evidence": {
+     "files": [
+      "reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md"
+     ]
+    },
+    "id": "F10",
+    "remedy": "audit the module that defines it to confirm the citation",
+    "severity": "info",
+    "theorem": "SGC.Bridge.CelegansFloquetTsallis.celegans_anomalous_diffusion_value"
+   },
+   {
+    "basis": "heuristic",
+    "code": "CITED_DECLARATION_UNLOADED",
+    "detail": "cited in reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md; a declaration with this final name exists in project sources but not in the audited modules",
+    "evidence": {
+     "files": [
+      "reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md"
+     ]
+    },
+    "id": "F10",
+    "remedy": "audit the module that defines it to confirm the citation",
+    "severity": "info",
+    "theorem": "SGC.Bridge.CelegansFloquetTsallis.celegans_scaling_lt_UGM"
+   },
+   {
+    "basis": "heuristic",
+    "code": "CITED_DECLARATION_UNLOADED",
+    "detail": "cited in reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md; a declaration with this final name exists in project sources but not in the audited modules",
+    "evidence": {
+     "files": [
+      "reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md"
+     ]
+    },
+    "id": "F10",
+    "remedy": "audit the module that defines it to confirm the citation",
+    "severity": "info",
+    "theorem": "SGC.Bridge.CelegansFloquetTsallis.predicted_alpha_eq_r_half"
+   },
+   {
+    "basis": "heuristic",
+    "code": "CITED_DECLARATION_UNLOADED",
+    "detail": "cited in docs/haltmarker-design.md; a declaration with this final name exists in project sources but not in the audited modules",
+    "evidence": {
+     "files": [
+      "docs/haltmarker-design.md"
+     ]
+    },
+    "id": "F10",
+    "remedy": "audit the module that defines it to confirm the citation",
+    "severity": "info",
+    "theorem": "SGC.Bridge.CurvatureUndecidability.cd0_haltW_iff"
+   },
+   {
+    "basis": "heuristic",
+    "code": "CITED_DECLARATION_UNLOADED",
+    "detail": "cited in reports/SECOND_LAW_FORMALIZATION_2026-05-25.md; a declaration with this final name exists in project sources but not in the audited modules",
+    "evidence": {
+     "files": [
+      "reports/SECOND_LAW_FORMALIZATION_2026-05-25.md"
+     ]
+    },
+    "id": "F10",
+    "remedy": "audit the module that defines it to confirm the citation",
+    "severity": "info",
+    "theorem": "SGC.ComplexityRelativity.complexity_is_relational"
+   },
+   {
+    "basis": "heuristic",
+    "code": "CITED_DECLARATION_UNLOADED",
+    "detail": "cited in demos/README.md; a declaration with this final name exists in project sources but not in the audited modules",
+    "evidence": {
+     "files": [
+      "demos/README.md"
+     ]
+    },
+    "id": "F10",
+    "remedy": "audit the module that defines it to confirm the citation",
+    "severity": "info",
+    "theorem": "SGC.Evolution.Dynamics.EvolutionStep"
+   },
+   {
+    "basis": "heuristic",
+    "code": "CITED_DECLARATION_UNLOADED",
+    "detail": "cited in reports/PHASE_R2_R4_OPEN_DISCOVERY_FINDINGS.md; a declaration with this final name exists in project sources but not in the audited modules",
+    "evidence": {
+     "files": [
+      "reports/PHASE_R2_R4_OPEN_DISCOVERY_FINDINGS.md"
+     ]
+    },
+    "id": "F10",
+    "remedy": "audit the module that defines it to confirm the citation",
+    "severity": "info",
+    "theorem": "SGC.Markov.StationaryDistribution.lean"
+   },
+   {
+    "basis": "heuristic",
+    "code": "CITED_DECLARATION_UNLOADED",
+    "detail": "cited in reports/PHASE_R2_R4_OPEN_DISCOVERY_FINDINGS.md; a declaration with this final name exists in project sources but not in the audited modules",
+    "evidence": {
+     "files": [
+      "reports/PHASE_R2_R4_OPEN_DISCOVERY_FINDINGS.md"
+     ]
+    },
+    "id": "F10",
+    "remedy": "audit the module that defines it to confirm the citation",
+    "severity": "info",
+    "theorem": "SGC.Quantum.KnillLaflamme.lean"
+   },
+   {
+    "basis": "heuristic",
+    "code": "CITED_DECLARATION_UNLOADED",
+    "detail": "cited in reports/SPINGLASS_GAUGE_AUDIT.md; a declaration with this final name exists in project sources but not in the audited modules",
+    "evidence": {
+     "files": [
+      "reports/SPINGLASS_GAUGE_AUDIT.md"
+     ]
+    },
+    "id": "F10",
+    "remedy": "audit the module that defines it to confirm the citation",
+    "severity": "info",
+    "theorem": "SGC.Spectral.Floquet.PeriodicGeneratorFamily"
+   },
+   {
+    "basis": "heuristic",
+    "code": "CITED_DECLARATION_UNLOADED",
+    "detail": "cited in reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md; a declaration with this final name exists in project sources but not in the audited modules",
+    "evidence": {
+     "files": [
+      "reports/CELEGANS_FLOQUET_TSALLIS_BRIDGE.md"
+     ]
+    },
+    "id": "F10",
+    "remedy": "audit the module that defines it to confirm the citation",
+    "severity": "info",
+    "theorem": "SGC.Stochastic.conjecture_C2_hard_half"
+   },
+   {
+    "basis": "heuristic",
+    "code": "CITED_DECLARATION_UNLOADED",
+    "detail": "cited in demos/README.md; a declaration with this final name exists in project sources but not in the audited modules",
+    "evidence": {
+     "files": [
+      "demos/README.md"
+     ]
+    },
+    "id": "F10",
+    "remedy": "audit the module that defines it to confirm the citation",
+    "severity": "info",
+    "theorem": "SGC.Thermodynamics.Evolution.CanEvolve"
+   },
+   {
+    "basis": "heuristic",
+    "code": "CITED_DECLARATION_UNLOADED",
+    "detail": "cited in demos/README.md; a declaration with this final name exists in project sources but not in the audited modules",
+    "evidence": {
+     "files": [
+      "demos/README.md"
+     ]
+    },
+    "id": "F10",
+    "remedy": "audit the module that defines it to confirm the citation",
+    "severity": "info",
+    "theorem": "SGC.Thermodynamics.Evolution.SatisfiesEvolutionInequality"
+   },
+   {
+    "basis": "heuristic",
+    "code": "CITED_DECLARATION_UNLOADED",
+    "detail": "cited in reports/BROWNIAN_MOTION_LEAN_EXPLORATION.md; a declaration with this final name exists in project sources but not in the audited modules",
+    "evidence": {
+     "files": [
+      "reports/BROWNIAN_MOTION_LEAN_EXPLORATION.md"
+     ]
+    },
+    "id": "F10",
+    "remedy": "audit the module that defines it to confirm the citation",
+    "severity": "info",
+    "theorem": "SGC.Thermodynamics.antisymmetric_part_zero_iff_detailed_balance"
+   },
+   {
+    "basis": "attestation",
+    "code": "CLAIM_MAP_UNATTESTED",
+    "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+    "evidence": null,
+    "id": "F10",
+    "remedy": "add a claim-map entry with human_attestation",
+    "severity": "info",
+    "theorem": "SGC.Bridge.ResidualHorizon.exact_tracking_of_zero_residual"
+   },
+   {
+    "basis": "attestation",
+    "code": "CLAIM_MAP_UNATTESTED",
+    "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+    "evidence": null,
+    "id": "F10",
+    "remedy": "add a claim-map entry with human_attestation",
+    "severity": "info",
+    "theorem": "SGC.Bridge.ResidualHorizon.residual_horizon"
+   },
+   {
+    "basis": "attestation",
+    "code": "CLAIM_MAP_UNATTESTED",
+    "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+    "evidence": null,
+    "id": "F10",
+    "remedy": "add a claim-map entry with human_attestation",
+    "severity": "info",
+    "theorem": "SGC.Bridge.ResidualHorizon.residual_horizon_explicit"
+   },
+   {
+    "basis": "attestation",
+    "code": "CLAIM_MAP_UNATTESTED",
+    "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+    "evidence": null,
+    "id": "F10",
+    "remedy": "add a claim-map entry with human_attestation",
+    "severity": "info",
+    "theorem": "SGC.Bridge.ResidualHorizon.within_tolerance_of_residual_small"
+   },
+   {
+    "basis": "kernel",
+    "code": "DEFINITION_CONE_INDEX",
+    "detail": "1 project-local definition(s) determine what this theorem is about; read them",
+    "evidence": {
+     "definitions": [
+      "SGC.Bridge.ResidualHorizon.residual"
+     ]
+    },
+    "id": "F08",
+    "remedy": "",
+    "severity": "info",
+    "theorem": "SGC.Bridge.ResidualHorizon.exact_tracking_of_zero_residual"
+   },
+   {
+    "basis": "kernel",
+    "code": "DEFINITION_CONE_INDEX",
+    "detail": "1 project-local definition(s) determine what this theorem is about; read them",
+    "evidence": {
+     "definitions": [
+      "SGC.Bridge.ResidualHorizon.residual"
+     ]
+    },
+    "id": "F08",
+    "remedy": "",
+    "severity": "info",
+    "theorem": "SGC.Bridge.ResidualHorizon.residual_horizon"
+   },
+   {
+    "basis": "kernel",
+    "code": "DEFINITION_CONE_INDEX",
+    "detail": "1 project-local definition(s) determine what this theorem is about; read them",
+    "evidence": {
+     "definitions": [
+      "SGC.Bridge.ResidualHorizon.residual"
+     ]
+    },
+    "id": "F08",
+    "remedy": "",
+    "severity": "info",
+    "theorem": "SGC.Bridge.ResidualHorizon.residual_horizon_explicit"
+   },
+   {
+    "basis": "kernel",
+    "code": "DEFINITION_CONE_INDEX",
+    "detail": "1 project-local definition(s) determine what this theorem is about; read them",
+    "evidence": {
+     "definitions": [
+      "SGC.Bridge.ResidualHorizon.residual"
+     ]
+    },
+    "id": "F08",
+    "remedy": "",
+    "severity": "info",
+    "theorem": "SGC.Bridge.ResidualHorizon.within_tolerance_of_residual_small"
+   }
+  ],
+  "verdict": "REVIEW",
+  "verdict_meaning": {
+   "FINDINGS": "evidence the claim is not established as stated",
+   "NO_BLOCKING_EVIDENCE": "no configured blocking evidence found by the checks that ran; not 'correct'",
+   "REVIEW": "warn-level review candidates need a human"
+  }
+ },
+ "verification": {
+  "anchors": [
+   {
+    "anchor_id": "lean4.axiom.propext",
+    "role": "trusted base"
+   },
+   {
+    "anchor_id": "lean4.axiom.Classical.choice",
+    "role": "trusted base"
+   },
+   {
+    "anchor_id": "lean4.axiom.Quot.sound",
+    "role": "trusted base"
+   }
+  ]
+ }
+}

@@ -21,6 +21,7 @@ conditional-expectation projector, `D = (I - Pi) L Pi` the **lumpability defect*
 | Curvature bound is Pi^0_1-hard | `SGC.Bridge.HaltingCompiler.cd0_compiled_iff` | global `CD(0, inf)` on a compiled generator family `<->` non-halting of Mathlib `TM0` machines |
 | Moore's shift is renormalization-transparent | `SGC.Bridge.CantorShiftTower.shiftTower_defect_zero` | cylinder truncations of the shift form an exact (`epsilon = 0`) strongly lumpable tower |
 | Discrete fluid dictionary | `SGC.Bridge.DiscreteFluidDynamics.*` | finite-state continuity / equilibrium / cycle / lift facts; `int_0^inf e^{-nu t} = 1/nu` |
+| Residual Horizon | `SGC.Bridge.ResidualHorizon.residual_horizon` | projected fine trajectory vs exact coarse trajectory: `dist <= eps (e^{Kt} - 1) / K` where `eps` bounds the residual (closure term); zero residual => exact tracking |
 | Abstract BKM (L0) | `SGC.Bridge.AbstractBKM.norm_le_exp_budget` | `||x'|| <= W ||x||  =>  ||x t|| <= exp(int_0^t W) ||x 0||`; finite budget => bounded; excursion => budget spent |
 
 All of these have kernel closure `{propext, Classical.choice, Quot.sound}`. See
