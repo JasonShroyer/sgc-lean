@@ -102,40 +102,54 @@ three below are the ones we most need.
 
 ## 6. The three questions
 
-### Q1. Is the Galerkin validity horizon a flux-controlled a posteriori error bound - and is that new?
+### Q1. Is the Galerkin validity horizon a closure-term-controlled a posteriori error bound - and is that new?
+
+(Restated after your first note. You were right: the driver is re-entry, not leakage.)
 
 Read our Kernel Horizon theorem on Galerkin Navier-Stokes literally. The SGC *coarse
-trajectory* is the `N`-mode Galerkin solution `u_N(t)` (the projected dynamics run as an
-autonomous macro-law). The SGC *projected fine trajectory* is `P_N u(t)`, the truncation
-of the true solution. The Kernel Horizon theorem bounds their difference by the
-accumulated defect along the trajectory:
+trajectory* is the `N`-mode Galerkin solution `u_N(t)`. The SGC *projected fine
+trajectory* is `P_N u(t)`. Their difference obeys a Duhamel identity whose forcing term is
+the closure commutator
 
 ```
-||P_N u(t) - u_N(t)||  <=  int_0^t ||D_N(u(s))|| e^{C (t - s)} ds      (shape of defect_horizon_bound)
+C_N(u) = P_N B(u,u) - B(P_N u, P_N u)     (B(u,u) = Leray-projected (u . grad) u)
 ```
 
-i.e. **the Galerkin approximation error is controlled by the energy flux through the
-cutoff along the true solution**, with Gronwall growth. Classical Galerkin convergence
-theory bounds this error by Sobolev norms and `N^{-s}`; flux is not the usual currency.
+- the subgrid-scale closure term of LES, and the exact nonlinear analogue of the
+commutator `C_T` in `kernel_closure_error_le`. The horizon-theorem shape is then
 
-*Is a flux-controlled a posteriori Galerkin error bound of this form known? If not, is it
-true, and is it provable at L1 with Gronwall alone (so that it is an honest corollary of
-our L0 theorem), or does the Leray projector and the pressure make the "defect" fail to be
-the thing that drives the error?*
+```
+||P_N u(t) - u_N(t)||  <=  int_0^t ||C_N(u(s))|| e^{L_N (t - s)} ds ,
+```
 
-Why this is the most valuable question: a yes-and-new answer gives SGC its first theorem
-that a fluid dynamicist would want independently of our framing (an a posteriori
-estimator for spectral DNS in physical units). A "known" answer gives us the citation and
-lets us skip to L2. A "false because of the pressure" answer kills the naive L1 and tells
-us what the defect must actually be.
+with `L_N` a Lipschitz constant of the Galerkin vector field on the relevant ball. In the
+linear SGC theory the norm of the re-entry block is controlled by the leakage block (the
+flux) via the vertical companion bound and, for self-adjoint generators, by adjointness.
+Neither survives the nonlinearity as stated.
+
+*Three sub-questions. (a) Is a closure-term-controlled a posteriori Galerkin error bound
+of this Gronwall form known, and under what hypotheses on `u` is it sharp enough to be
+useful (the Lipschitz constant `L_N` grows with `N`)? (b) Is there any known inequality
+bounding the re-entry term `||C_N(u)||` by the flux through `N` plus a quantity depending
+only on the unresolved reservoir `||(I - P_N) u||_{H^s}` - the nonlinear replacement for
+the vertical-companion / adjointness step - or is the absence of such a bound exactly the
+closure problem, so that L1 should be stated with `C_N` as primitive? (c) Does the
+pressure (the Leray projector inside `B`) contribute a term to `C_N` that is not
+scale-local, and does that break any hope of a uniform-in-`N` estimate?*
+
+Why this is the most valuable question: (a) tells us whether L1 is a corollary of our L0
+theorem plus one Galerkin estimate or a research problem; (b) tells us whether the flux
+(the quantity with a physical name) or the closure term (the quantity that drives the
+error) should be the SGC defect for fluids; (c) tells us whether the whole approach is
+scale-local enough to formalize.
 
 ### Q2. Does computation require zero flux?
 
 This is the question our whole two-pole picture stands or falls on.
 
 Every known realization of universal computation in a fluid (Cardona-Miranda-Peralta-Salas
-2021; Dyhr et al. 2026) is *steady* or *stationary*, hence has zero energy flux across
-every scale; in SGC terms `epsilon = 0`, the validity horizon is infinite, and the
+2021; Dyhr et al. 2026) is *steady* or *stationary*, hence has zero energy flux and zero
+closure term across every scale; in SGC terms `epsilon = 0`, the validity horizon is infinite, and the
 symbolic layer is renormalization-transparent (`shiftTower_defect_zero`). Tao's
 "computational blowup" blueprint, by contrast, needs a *time-dependent* flow that
 computes while transferring energy to smaller scales. Our conjecture (paper, Section 6.2)
@@ -159,13 +173,13 @@ the counterexample is exactly the object a computational-blowup program needs.
 ### Q3. What quantity, if any, is monotone across the phase boundary?
 
 Our picture has three phases for a divergence-free flow, indexed by the behaviour of
-the truncation defect across scales:
+the closure term `C_N` (re-entry; see paper 6.1'') across scales:
 
 | Phase | Defect `D_N` | Examples | Status |
 |---|---|---|---|
-| sealed crystal | `= 0` for all `N` | Beltrami / Reeb; Moore shift; the fluids that compute | KERNEL at the symbolic layer |
-| finite cascade | `!= 0`, bounded uniformly in `N` on `[0, T]` | (regular turbulence?) | FRAMING |
-| collapse | `-> inf` for every `N` as `t -> T*` | the 2026 blowup constructions; BKM divergence | CONJECTURE (6.2) |
+| sealed crystal | `C_N = D_N = 0` for all `N` | Beltrami / Reeb; Moore shift; the fluids that compute | KERNEL at the symbolic layer |
+| finite cascade | `C_N != 0`, bounded uniformly in `N` on `[0, T]` | (regular turbulence?) | FRAMING |
+| collapse | `C_N -> inf` for every `N` as `t -> T*` | the 2026 blowup constructions; BKM divergence | CONJECTURE (6.2) |
 
 If this is right, the unforced Clay question (A)/(B) is *whether an unforced flow can
 leave the middle phase*. In every other renormalization picture we know, leaving a phase
