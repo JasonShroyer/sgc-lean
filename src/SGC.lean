@@ -238,6 +238,12 @@ import SGC.Bridge.AbstractBKM
 -- exact tracking (the nonlinear eps = 0 pole). No fluid claims. (2026-09-12)
 import SGC.Bridge.ResidualHorizon
 
+-- Statistical Horizon: Kernel Horizon transported to an abstract operator setting
+-- (Koopman operator + conditional-expectation projection): ||Pi U^m Pi - A^m Pi|| <= m delta,
+-- plus the four-cycle regression test K2 != K1^2. Statement and counterexample from
+-- external review 2026-09-12; formalization ours. No fluid claims. (2026-09-13)
+import SGC.Bridge.StatisticalHorizon
+
 -- The Defect-Horizon Bridge: identifies ValidityHorizon's abstract leakage
 -- ε = ‖B‖ with Approximate's concrete defect ‖(I−Π)LΠ‖_π via the weighted
 -- operator algebra PiMat (π in the type, NormedRing/NormedAlgebra instances),
