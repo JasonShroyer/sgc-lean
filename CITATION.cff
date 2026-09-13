@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use this formalization, please cite it as below."
+title: "SGC - Two Horizons: kernel-checked theorems on coarse-graining defects, fluid computation, and regularity budgets"
+type: software
+authors:
+  - family-names: Shroyer
+    given-names: Jason
+version: 0.1.0
+date-released: 2026-09-12
+license: Apache-2.0
+repository-code: "https://github.com/JasonShroyer/sgc-lean"
+keywords:
+  - Lean 4
+  - Mathlib
+  - Markov generators
+  - lumpability
+  - Bakry-Emery curvature
+  - undecidability
+  - Beale-Kato-Majda
+  - Navier-Stokes
+  - fluid computation
+abstract: >-
+  Curated Lean 4 formalization: the Kernel Horizon theorem (finite-time closure error
+  linear in the lumpability defect), explicit defect-horizon bounds, descent of
+  Bakry-Emery curvature bounds along exactly lumpable quotients, Pi^0_1-hardness of a
+  global curvature bound via a compiler against Mathlib's Turing machines, exact
+  renormalization transparency of Moore's shift, a discrete fluid dictionary, and an
+  abstract Beale-Kato-Majda-type budget continuation theorem (L0). All headline theorems
+  have kernel closure {propext, Classical.choice, Quot.sound}.
