@@ -249,6 +249,12 @@ import SGC.Bridge.StatisticalHorizon
 -- (so any obstruction needs physical constraints). Bennett caveat in docstring. (2026-09-13)
 import SGC.Bridge.DeterministicKernels
 
+-- Terminal decoding certificate: Kernel Horizon -> total variation -> per-class decoder
+-- error transfer, observed-distinguishability sandwich, explicit full-state contraction
+-- interface, Dobrushin mixing refinement, and the regression cases from external review.
+-- No stationarity; no fluid claims. (2026-09-13)
+import SGC.Bridge.TerminalDecoding
+
 -- The Defect-Horizon Bridge: identifies ValidityHorizon's abstract leakage
 -- ε = ‖B‖ with Approximate's concrete defect ‖(I−Π)LΠ‖_π via the weighted
 -- operator algebra PiMat (π in the type, NormedRing/NormedAlgebra instances),
