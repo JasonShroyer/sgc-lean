@@ -258,6 +258,41 @@ exactly which certificate is worth having for machines: not the linear one.
 
 Neither item above is a slogan.
 
+## 5b. Second correction round: exact error, all-or-nothing, and terminal vs path **[KERNEL + CORRECTED]**
+
+Added after the gap, then corrected by a second follow-up review the same evening.
+
+- **Exact terminal error** (`machine_point_tv_exact`): from a point input,
+  `tv = 1 - Q^h (q x) (q (f^[h] x))` - an equality. `machine_mixture_tv_le`: for general
+  input laws this is only an upper bound (mixture discrepancies cancel: uniform input to the
+  uniform reader has terminal TV `0` while the average point error is `1/2`).
+- **All-or-nothing** (`descends_iff_defect_lt_one`, `linear_certificate_implies_descends`):
+  `Descends f P <-> c < 1`; the uniform additive certificate certifies any `p < 1/2` only
+  for exact factor maps. Correction: the defect is **gapped, not quantized** - nonzero
+  values fill `[1, 2)` continuously (weights `p, 1-p` on the reader give `c = 2 max(p, 1-p)`).
+- **Constant-row regime** (`dobrushin_zero_iff_rows_equal`, `machine_error_of_dobrushin_zero`):
+  with `delta(Q) = 0` the terminal error from a point is `1 - rho (q (f^[h] x))` for a fixed
+  row `rho` - uniformly bounded and non-accumulating, but not necessarily constant (the
+  endpoint moves; non-uniform reader weights oscillate between `p` and `1 - p`). Corrections:
+  the reference row is maximally uncertain, not "confidently wrong"; `delta(Q) = 0` says
+  nothing about whether the fine machine preserves its input (`f = (1,3,0,3)` on `Fin 4`
+  has the same `Q` and erases everything in three steps).
+- **Sharpness** (`Regression.reader_budget_sharp`): on the uniform reader the exact terminal
+  error equals the contraction-aware budget `1/2` at every positive horizon, from every
+  point input; the linear budget is `1` from two steps.
+- **Terminal is not path** (`machine_path_tv_exact`, `Regression.reader_path_tv`): the TV
+  between the actual coarse *trajectory* and the reference Markov path law is
+  `1 - prod_{j<h} Q (z_j) (z_{j+1})`; on the uniform reader this is `1 - 2^{-h}` while the
+  terminal error is `1/2`. **A bounded terminal discrepancy coexists with a trajectory
+  discrepancy tending to one.** Neither is the probability that an actual decoder execution
+  fails; that needs the decoder and the labels.
+
+The three obligations, restated more strictly after this round: *semantics* = input
+classes, intended answers, and the decoder's decision rule (not endpoint identification);
+*approximation* = actual/reference discrepancy for the declared input law and the declared
+observable (terminal or path); *physics* = a proved realization and, for any obstruction,
+a complete-state contraction. Mixing of `Q` discharges none of them.
+
 ## 6. Ledger
 
 | Module (today) | Declarations | Closure | Audit |
@@ -267,7 +302,7 @@ Neither item above is a slogan.
 | `TerminalDecoding` | 115 | standard | 0 fail |
 | `BlockRenormalization` | 10 | standard | 0 fail |
 | `DeterministicLumpability` (+ `Regression`) | 19 | standard | 0 fail |
-| `MachineCertificate` (+ `Gap`, `Regression`) | 30 | standard | 0 fail |
+| `MachineCertificate` (+ `Gap`, `Exact`, `Path`, `Regression`) | 51 | standard | 0 fail |
 
 Branches: see the commit log (`MachineCertificate` and its corrections landed after v0.1). Receipts under
 `docs/receipts/`. Two lean-triage false positives found and fixed today (hypotheses the
