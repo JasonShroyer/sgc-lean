@@ -453,6 +453,76 @@ theorem linear_certificate_implies_descends [Nonempty V] (f : V → V) (P : Part
 
 end Exact
 
+/-! ## The confidently-wrong regime: zero Dobrushin coefficient of the reference kernel
+
+`dobrushin_zero_iff_rows_equal`: the canonical coarse kernel has Dobrushin coefficient `0`
+iff all its rows coincide - the coarse variable carries no information about its own
+successor. In that regime the reference forecast is the same fixed row `rho` at every
+positive horizon (`pow_row_const_of_rows_equal`), so from a point input the exact error is
+`1 - rho (q (f^[h] x))` for every `h >= 1` (`machine_error_of_dobrushin_zero`): **bounded,
+non-accumulating, and generally nonzero**. This is the regime in which a coarse observer is
+confidently and boundedly wrong: the reference mixes instantly while the fine machine is
+deterministic and never forgets its input. The contraction-aware budget
+`(c/2) * sum_{j<h} delta^j = c/2` is the right certificate here, and on the reader class it
+is attained (`Regression.reader_budget_sharp`). -/
+
+section ConfidentlyWrong
+
+variable {X : Type*} [Fintype X] [DecidableEq X]
+
+omit [DecidableEq X] in
+theorem dobrushin_zero_iff_rows_equal (M : Matrix X X ℝ) :
+    dobrushin M = 0 ↔ ∀ x y, M x = M y := by
+  constructor
+  · intro h x y
+    have hn : rowL1Norm (rowDifferences M) = 0 := by unfold dobrushin at h; linarith
+    have hz : rowDifferences M = 0 := by
+      unfold rowL1Norm at hn
+      exact norm_eq_zero.mp hn
+    funext z
+    have := congrFun (congrFun hz (x, y)) z
+    simp only [rowDifferences, Matrix.zero_apply] at this
+    linarith
+  · intro h
+    have hz : rowDifferences M = 0 := by
+      ext xy z
+      simp only [rowDifferences, Matrix.zero_apply]
+      rw [h xy.1 xy.2]; ring
+    unfold dobrushin rowL1Norm
+    rw [hz, norm_zero, zero_div]
+
+/-- With all rows equal, every positive power has the same constant rows. -/
+theorem pow_row_const_of_rows_equal (M : Matrix X X ℝ) (hM : RowStochastic M)
+    (hrows : ∀ x y, M x = M y) (h : ℕ) (hh : 1 ≤ h) (x x' : X) :
+    (M ^ h) x = M x' := by
+  induction h with
+  | zero => omega
+  | succ h ih =>
+    rcases Nat.eq_zero_or_pos h with h0 | hpos
+    · subst h0; simpa using hrows x x'
+    · funext z
+      rw [pow_succ, Matrix.mul_apply]
+      have hrow : ∀ c, M c z = M x' z := fun c => congrFun (hrows c x') z
+      simp_rw [hrow, ← Finset.sum_mul]
+      have := (hM.pow h).sum_one x
+      rw [this, one_mul]
+
+/-- **Confidently wrong**: with a zero-Dobrushin reference kernel the exact error from a point
+input is `1 - Q (any) (q (f^[h] x))` at every positive horizon - bounded and non-accumulating. -/
+theorem machine_error_of_dobrushin_zero (f : V → V) (P : Partition V) {pi : V → ℝ}
+    (hpi : ∀ x, 0 < pi x) (hδ : dobrushin (CoarseGenerator (detKernel f) P pi) = 0)
+    (x : V) (h : ℕ) (hh : 1 ≤ h) (A : P.Quot) :
+    tv (actualLaw (detKernel f) P (detKernel_isStochastic f) (pointMass x) h)
+      (referenceLaw (detKernel f) P hpi (detKernel_isStochastic f) (pointMass x) h) =
+      1 - CoarseGenerator (detKernel f) P pi A (P.quot_map (f^[h] x)) := by
+  rw [machine_point_tv_exact f P hpi x h]
+  have hQ := RowStochastic.of_existing (coarseKernel_isStochastic (detKernel f) P hpi
+    (detKernel_isStochastic f))
+  have hrows := (dobrushin_zero_iff_rows_equal _).mp hδ
+  rw [pow_row_const_of_rows_equal _ hQ hrows h hh (P.quot_map x) A]
+
+end ConfidentlyWrong
+
 /-! ## Deterministic quotients do not mix (one step, exact case) -/
 
 /-- A deterministic kernel with two distinct outputs has Dobrushin coefficient `1`. -/
@@ -786,6 +856,58 @@ theorem swap_Q_sq_ne_Q_block :
   have := congrFun (congrFun h (fstPartition.quot_map (false, false))) (fstPartition.quot_map (false, false))
   rw [hsq, hdiag] at this
   norm_num at this
+
+/-! ### Sharpness of the contraction-aware budget on the reader class -/
+
+/-- Every entry of the reader's canonical coarse kernel (uniform weights) is `1/2`. -/
+theorem reader_Q_entry (A B : byState.Quot) :
+    CoarseGenerator (detKernel reader) byState (fun _ => (1 : ℝ)) A B = 1 / 2 := by
+  obtain ⟨⟨b, t⟩, hA⟩ := Quotient.exists_rep A
+  have hA' : byState.quot_map (b, t) = A := hA
+  have hbb : byState.quot_map (b, t) = byState.quot_map (b, b) :=
+    (quot_map_eq_iff byState _ _).mpr rfl
+  rw [← hA', hbb]
+  exact reader_coarse_row b B
+
+theorem reader_dobrushin_zero :
+    dobrushin (CoarseGenerator (detKernel reader) byState (fun _ => (1 : ℝ))) = 0 :=
+  (dobrushin_zero_iff_rows_equal _).mpr fun A B => by funext C; rw [reader_Q_entry, reader_Q_entry]
+
+/-- The reader's defect is exactly `1`: the lower end of the gap. -/
+theorem reader_defect_exact : machineDefect reader byState (fun _ => (1 : ℝ)) = 1 := by
+  apply le_antisymm
+  · apply rowL1Norm_le _ zero_le_one
+    intro x
+    rw [detKernel_row_residual_l1 reader byState (fun _ => one_pos) x, reader_Q_entry]
+    norm_num
+  · exact reader_defect_eq_one (fun _ => one_pos)
+
+/-- The contraction-aware budget of the reader is exactly `1/2` at every positive horizon. -/
+theorem reader_mixing_budget (h : ℕ) (hh : 1 ≤ h) :
+    mixingBudget (detKernel reader) byState (fun _ => (1 : ℝ)) h = 1 / 2 := by
+  unfold mixingBudget
+  have hc : rowL1Norm (closureCommutator (detKernel reader) byState (fun _ => (1 : ℝ))) = 1 :=
+    reader_defect_exact
+  rw [hc, reader_dobrushin_zero]
+  have hsum : (∑ j ∈ Finset.range h, (0 : ℝ) ^ j) = 1 := by
+    obtain ⟨k, rfl⟩ : ∃ k, h = k + 1 := ⟨h - 1, by omega⟩
+    rw [Finset.sum_range_succ', Finset.sum_eq_zero]
+    · simp
+    · intro j _; simp
+  rw [hsum]
+  norm_num
+
+/-- **Sharpness.** From every point input the reader's exact terminal error equals the
+contraction-aware budget `1/2` at every positive horizon: the budget is attained, while the
+linear budget is `1` from two steps on. -/
+theorem reader_budget_sharp (x : Cfg) (h : ℕ) (hh : 1 ≤ h) :
+    tv (actualLaw (detKernel reader) byState (detKernel_isStochastic reader) (pointMass x) h)
+      (referenceLaw (detKernel reader) byState (fun _ => one_pos) (detKernel_isStochastic reader)
+        (pointMass x) h) =
+      mixingBudget (detKernel reader) byState (fun _ => (1 : ℝ)) h := by
+  rw [machine_error_of_dobrushin_zero reader byState (fun _ => one_pos) reader_dobrushin_zero x h hh
+    (byState.quot_map x), reader_Q_entry, reader_mixing_budget h hh]
+  norm_num
 
 end Regression
 
