@@ -321,6 +321,138 @@ theorem machineDefect_linear_budget_vacuous (f : V → V) (P : Partition V) {pi 
 
 end Gap
 
+/-! ## The exact terminal error of a machine, and the all-or-nothing theorem
+
+The gap says the uniform linear certificate is void for every nonexact machine. Two results
+replace it with content.
+
+**Exact error** (`machine_point_tv_exact`). From a point input `x`, the terminal TV between
+the actual observation and the reference prediction after `h` steps is *exactly*
+
+    `1 - (Q^h) (q x) (q (f^[h] x))`
+
+- one minus the reference mass on the true coarse endpoint. This is an equality, computable
+for any concrete machine, and it is what any law-specific certificate for a computation
+must bound. `machine_point_tv_eq_zero_iff`: it vanishes iff the reference predicts the
+endpoint with probability one.
+
+**All-or-nothing** (`descends_iff_defect_lt_one`, `linear_certificate_implies_descends`).
+For a deterministic machine, `Descends f P <-> c < 1`. Hence if the uniform additive
+certificate `beta + min 1 (h c / 2) <= p` certifies *any* target `p < 1/2` at *any*
+horizon `h >= 1`, the coarse-graining is an exact factor map. There is no "approximately
+computing" quotient at the uniform level: a coarse description of a computation is exact
+or its uniform certificate is void. Graded guarantees for computations must therefore be
+law-specific (the exact formula above) or contraction-aware (`kernel_horizon_tv_mixing`),
+never uniform-linear. -/
+
+section Exact
+
+/-- The reference law from a point input is the row `(Q^h) (q x)`. -/
+lemma machine_point_reference (f : V → V) (P : Partition V) {pi : V → ℝ}
+    (hpi : ∀ x, 0 < pi x) (x : V) (h : ℕ) (B : P.Quot) :
+    referenceLaw (detKernel f) P hpi (detKernel_isStochastic f) (pointMass x) h B =
+      (CoarseGenerator (detKernel f) P pi ^ h) (P.quot_map x) B := by
+  change ((pointMass x : V → ℝ) ᵥ* (lift_matrix P * (CoarseGenerator (detKernel f) P pi) ^ h)) B = _
+  rw [← Matrix.vecMul_vecMul]
+  have hJ : (pointMass x : V → ℝ) ᵥ* lift_matrix P =
+      fun A => if P.quot_map x = A then 1 else 0 := by
+    ext A
+    simp only [Matrix.vecMul, dotProduct, pointMass, lift_matrix]
+    rw [Finset.sum_eq_single x]
+    · simp
+    · intro y _ hy; simp [hy]
+    · simp
+  rw [hJ]
+  simp only [Matrix.vecMul, dotProduct]
+  rw [Finset.sum_eq_single (P.quot_map x)]
+  · simp
+  · intro A _ hA; simp [Ne.symm hA]
+  · simp
+
+/-- TV between a point mass and a probability row is one minus the row's mass at the point. -/
+lemma tv_point_prob {X : Type*} [Fintype X] [DecidableEq X] (x0 : X) (rho : ProbabilityRow X) :
+    tv (fun y => if y = x0 then (1 : ℝ) else 0) rho = 1 - rho x0 := by
+  have hle : rho x0 ≤ 1 := by
+    have := rho.sum_one
+    have h := Finset.single_le_sum (fun y _ => rho.nonneg y) (Finset.mem_univ x0)
+    linarith
+  unfold tv l1
+  have hterm : ∀ y, |(fun y => if y = x0 then (1 : ℝ) else 0) y - rho y| =
+      (if y = x0 then 1 - rho y else rho y) := by
+    intro y
+    by_cases hy : y = x0
+    · simp [hy, abs_of_nonneg (sub_nonneg.mpr hle)]
+    · simp [hy, abs_of_nonneg (rho.nonneg y)]
+  simp only [Pi.sub_apply]
+  simp_rw [hterm]
+  have hsplit : ∀ y, (if y = x0 then 1 - rho y else rho y) =
+      (if y = x0 then (1 : ℝ) else 0) + rho y - 2 * (if y = x0 then rho y else 0) := by
+    intro y; split_ifs <;> ring
+  simp_rw [hsplit]
+  rw [Finset.sum_sub_distrib, Finset.sum_add_distrib, ← Finset.mul_sum, rho.sum_one]
+  simp
+  ring
+
+/-- **Exact terminal error of a machine from a point input.** -/
+theorem machine_point_tv_exact (f : V → V) (P : Partition V) {pi : V → ℝ}
+    (hpi : ∀ x, 0 < pi x) (x : V) (h : ℕ) :
+    tv (actualLaw (detKernel f) P (detKernel_isStochastic f) (pointMass x) h)
+      (referenceLaw (detKernel f) P hpi (detKernel_isStochastic f) (pointMass x) h) =
+      1 - (CoarseGenerator (detKernel f) P pi ^ h) (P.quot_map x) (P.quot_map (f^[h] x)) := by
+  have hact : (actualLaw (detKernel f) P (detKernel_isStochastic f) (pointMass x) h : P.Quot → ℝ) =
+      fun B => if B = P.quot_map (f^[h] x) then 1 else 0 := by
+    funext B
+    rw [machine_point_law]
+    simp only [eq_comm]
+  have hval := tv_point_prob (P.quot_map (f^[h] x))
+    (referenceLaw (detKernel f) P hpi (detKernel_isStochastic f) (pointMass x) h)
+  rw [machine_point_reference f P hpi x h] at hval
+  rw [← hval]
+  congr 1
+
+/-- The exact error vanishes iff the reference predicts the true endpoint with probability one. -/
+theorem machine_point_tv_eq_zero_iff (f : V → V) (P : Partition V) {pi : V → ℝ}
+    (hpi : ∀ x, 0 < pi x) (x : V) (h : ℕ) :
+    tv (actualLaw (detKernel f) P (detKernel_isStochastic f) (pointMass x) h)
+      (referenceLaw (detKernel f) P hpi (detKernel_isStochastic f) (pointMass x) h) = 0 ↔
+      (CoarseGenerator (detKernel f) P pi ^ h) (P.quot_map x) (P.quot_map (f^[h] x)) = 1 := by
+  rw [machine_point_tv_exact f P hpi x h]
+  constructor <;> intro hh <;> linarith
+
+/-- **All-or-nothing**: a deterministic machine's coarse-graining is exact iff its defect is
+below `1`. -/
+theorem descends_iff_defect_lt_one [Nonempty V] (f : V → V) (P : Partition V) {pi : V → ℝ}
+    (hpi : ∀ x, 0 < pi x) : Descends f P ↔ machineDefect f P pi < 1 := by
+  constructor
+  · intro hd
+    have : machineDefect f P pi = 0 := by
+      unfold machineDefect
+      rw [(closureCommutator_detKernel_eq_zero_iff f P hpi).mpr hd]
+      simp [rowL1Norm]
+    linarith
+  · intro hc
+    by_contra hnd
+    linarith [machineDefect_ge_one_of_not_descends f P hpi hnd]
+
+/-- **The uniform certificate is a factor-map detector.** If the additive linear
+certificate certifies any target below `1/2` at any positive horizon, the coarse-graining is
+an exact factor map. -/
+theorem linear_certificate_implies_descends [Nonempty V] (f : V → V) (P : Partition V)
+    {pi : V → ℝ} (hpi : ∀ x, 0 < pi x) {beta p : ℝ} (hbeta : 0 ≤ beta) (hp : p < 1 / 2)
+    {h : ℕ} (hh : 1 ≤ h) (hcert : beta + min 1 (h * machineDefect f P pi / 2) ≤ p) :
+    Descends f P := by
+  rw [descends_iff_defect_lt_one f P hpi]
+  have hmin : min 1 (h * machineDefect f P pi / 2) < 1 / 2 := by linarith
+  have hlt : h * machineDefect f P pi / 2 < 1 / 2 := by
+    rcases min_choice 1 (h * machineDefect f P pi / 2) with hm | hm
+    · rw [hm] at hmin; norm_num at hmin
+    · rw [hm] at hmin; exact hmin
+  have hh' : (1 : ℝ) ≤ h := by exact_mod_cast hh
+  have hc0 : 0 ≤ machineDefect f P pi := norm_nonneg _
+  nlinarith
+
+end Exact
+
 /-! ## Deterministic quotients do not mix (one step, exact case) -/
 
 /-- A deterministic kernel with two distinct outputs has Dobrushin coefficient `1`. -/
