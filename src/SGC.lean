@@ -267,6 +267,12 @@ import SGC.Bridge.BlockRenormalization
 -- gauge); eternal closure; blocking commutes with quotienting. Answers reviewer Q2. (2026-09-13)
 import SGC.Bridge.DeterministicLumpability
 
+-- Machine certificate: TerminalDecoding on a blocked deterministic machine (budget
+-- min 1 (h c/2); zero under a factor map; point laws); deterministic quotients have
+-- Dobrushin coefficient 1 (no mixing refinement); window criterion for descent; the
+-- head-moving machine window theorem (agreement radius shrinks by one per step). (2026-09-13)
+import SGC.Bridge.MachineCertificate
+
 -- The Defect-Horizon Bridge: identifies ValidityHorizon's abstract leakage
 -- ε = ‖B‖ with Approximate's concrete defect ‖(I−Π)LΠ‖_π via the weighted
 -- operator algebra PiMat (π in the type, NormedRing/NormedAlgebra instances),
