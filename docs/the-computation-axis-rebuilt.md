@@ -2,7 +2,9 @@
 
 ## Follow-up to *Certificates, Not Slogans* (same day, afternoon session)
 
-**Jason Shroyer** (SGC project), with drafting assistance. Version 0.1, 2026-09-13.
+**Jason Shroyer** (SGC project), with drafting assistance. Version 0.2, 2026-09-13
+(v0.1 corrected the same evening after external review of `MachineCertificate`; the
+corrections are marked **[CORRECTED]** and summarized in Section 5a).
 Labels as before: **[KERNEL]** kernel-checked, declaration named; **[EXTERNAL]** cited;
 **[FRAMING]** unproved analogy; **[CONJECTURE]** precise open target; **[RETRACTED]**.
 
@@ -199,12 +201,62 @@ hypotheses. The bridge is now typed at both ends.
    size: the quantitative shape of "how much tape must a coarse description keep?"
 2. **The decoding certificate on a blocked machine [KERNEL target].** Combine 2.1 with
    `TerminalDecoding`: for a deterministic machine observed through a partition `P` with
-   defect `c`, the terminal decoding budget after `h` blocks is `min 1 (h c / 2)`, and
-   the Dobrushin refinement applies to the quotient machine. This is the first place the
-   morning's certificate meets an actual computer, and it makes the local/global split of
-   the 2025 manuscript a computed quantity rather than an `Omega`.
+   defect `c`, the terminal decoding budget after `h` blocks is `min 1 (h c / 2)`.
 
-Both are one-to-two-session targets. Neither is a slogan.
+Both were done the same evening (`SGC.Bridge.MachineCertificate`), and the external
+review of that module produced the corrections and the new theorem in Section 5a.
+
+## 5a. Corrections after review of `MachineCertificate` **[CORRECTED]**
+
+The reviewer found no error in the theorem statements and four overstatements in the
+prose around them. All four are withdrawn here and in the module docstrings.
+
+1. **"Deterministic quotients do not mix, so the coarse-graining error of a computation
+   accumulates linearly."** Withdrawn. `mixing_budget_trivial_of_quotient_machine`
+   assumes `Descends`, hence `c = 0`: it proves nothing about error growth. A linear
+   *upper* bound is not linear growth. And one-step Dobrushin coefficient `1` does not
+   persist: `f = (0, 0, 1)` on `Fin 3` has `delta(Q) = 1` but `f^[2]` constant, so
+   `delta(Q^2) = 0` (`Regression.collapse_dobrushin_two_zero`).
+2. **"Decoders are right or wrong, never in between."** Withdrawn as stated. True for a
+   deterministic decoder on a point-mass input; a randomized decoder has fractional error
+   on a deterministic trajectory, and TV error transfer applies to it unchanged.
+3. **"The window shrinks by exactly one cell per step; same-window descent only for
+   `b = 0`."** Withdrawn. `tmBlock_descends_shrink` is a *uniform sufficiency* statement
+   (radius `r` determines radius `r - b`); it is not necessary for a given machine (the
+   identity machine keeps any window), and worst-case sharpness (a pure shift needs radius
+   `s + b`) is a separate, unformalized necessity theorem.
+4. **"This is Mathlib's `TM0` semantics written out."** Withdrawn. `tmStep` is a total,
+   simultaneous write-and-move model; `TM0` is partial and moves *or* writes. The window
+   theorem holds for the custom model; a `TM0` adapter (simulation, halting, step-count
+   overhead) is a separate target.
+
+Two further facts from the review, both now theorems:
+
+- **Block descent does not exclude intermediate leakage.** `f (a, b) = (b, a)` has
+  `f^[2] = id`, which descends onto the first coordinate while `f` does not
+  (`Regression.swap_block_descends_not_step`); and `Q[f^[2]] != Q[f]^2`
+  (`Regression.swap_Q_sq_ne_Q_block`). A block theorem must not equate these kernels.
+- **The deterministic defect gap [KERNEL, `machineDefect_gap`].** For a deterministic
+  machine with positive weights on a finite nonempty configuration space,
+
+      `c = 0  or  1 <= c < 2`.
+
+  Each commutator row has `L^1` mass `2 (1 - Q(q x, q (f x)))` (`detKernel_row_residual_l1`);
+  positivity gives `< 2`; failure of descent puts two outputs in one fiber, one with mass
+  `<= 1/2`, giving `>= 1`. Consequence (`machineDefect_linear_budget_vacuous`): in every
+  nonexact deterministic case the linear budget is `>= 1/2` at `h = 1` and exactly `1`
+  for `h >= 2`, so the uniform additive certificate **cannot certify any target
+  `p < 1/2` at any positive horizon**. This is a limitation of the linear certificate,
+  not a lower bound on actual error: the reader machine has `c = 1` but `delta(Q) = 0`,
+  and the contraction-aware budget `(c/2) sum delta^j = 1/2` is sharp there
+  (`Regression.reader_coarse_row`); the collapse example has positive defect with
+  actual error decaying as `2^{-h}`.
+
+The reviewer's deduction was made from our definitions in prose; the formalization is
+ours. It is, in our judgment, the most useful result of the evening, because it says
+exactly which certificate is worth having for machines: not the linear one.
+
+Neither item above is a slogan.
 
 ## 6. Ledger
 
@@ -215,8 +267,9 @@ Both are one-to-two-session targets. Neither is a slogan.
 | `TerminalDecoding` | 115 | standard | 0 fail |
 | `BlockRenormalization` | 10 | standard | 0 fail |
 | `DeterministicLumpability` (+ `Regression`) | 19 | standard | 0 fail |
+| `MachineCertificate` (+ `Gap`, `Regression`) | 30 | standard | 0 fail |
 
-Branches: `cantor-layer-wip` `42c4e1f`; `opus/two-horizons` `6b2230c`. Receipts under
+Branches: see the commit log (`MachineCertificate` and its corrections landed after v0.1). Receipts under
 `docs/receipts/`. Two lean-triage false positives found and fixed today (hypotheses the
 statement depends on; compiler-generated lemmas), selftest passing.
 

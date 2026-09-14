@@ -23,19 +23,21 @@ certificate of `TerminalDecoding` specializes to:
   zero: the quotient machine predicts the observed law exactly, for every input law and
   every horizon;
 * `machine_point_law` - from a point mass at `x`, the actual observed law after `h` steps
-  is the point mass at `quot_map (f^[h] x)`: deterministic machines have deterministic
-  observations, so every decoder is either right or wrong, never in between;
+  is the point mass at `quot_map (f^[h] x)`. For a *deterministic* decoder and a point-mass
+  input this makes every terminal error `0` or `1`; a randomized decoder can still have
+  fractional error, and TV error transfer applies to it unchanged;
 * `machine_terminal_reliability` - the per-class reliability transfer, instantiated.
 
-## The mixing refinement is vacuous for deterministic quotients
+## One-step Dobrushin coefficient of a deterministic quotient
 
 `dobrushin_detKernel_eq_one`: a deterministic kernel with two distinct outputs has
-Dobrushin coefficient `1`. Hence when the *quotient* dynamics is itself a machine (the
-exactly lumpable case, `coarseGenerator_detKernel_eq`), the geometric refinement
-`c / (2 (1 - delta))` of `TerminalDecoding` gives nothing beyond the linear budget: a
-computation does not mix, and its coarse-graining error, when nonzero, can accumulate
-linearly in the number of steps. This is the honest SGC form of the 2025 manuscript's
-"global integration cost grows with the number of levels".
+one-step Dobrushin coefficient `1`. `mixing_budget_trivial_of_quotient_machine` applies
+this to the quotient machine of an *exactly lumpable* coarse-graining - where `c = 0`, so
+the budget is zero anyway. It therefore establishes **neither** positive error
+accumulation **nor** persistent non-mixing: `Q^k = T_{g^k}` can have coefficient `0` as
+soon as `g^k` is constant (`Regression.collapse_dobrushin_two_zero`). An earlier docstring
+read this as "the coarse-graining error of a computation accumulates linearly"; that was
+an upper bound misread as growth and is withdrawn (external review, 2026-09-13).
 
 ## Theorem 1 (general form): descent onto kept coordinates
 
@@ -50,13 +52,30 @@ enters the window from outside during `b` steps*.
 `tmStep_iterate_window` / `tmBlock_descends_shrink`: for a one-tape machine in
 head-relative coordinates with moves bounded by one cell, the `b`-step block map sends the
 equivalence "same control state and same tape on `|i| <= r`" to "same control state and
-same tape on `|i| <= r - b`". The block map descends onto a window **that shrinks by one
-cell per step**; exact descent onto the same window holds only for `b = 0`. The incoming
-cells are the leak (`defect_pos_of_leak`; `reader_defect_pos` is the one-cell prototype),
-and the shrinkage is exactly the reviewer's observation about `truncate_pathShift`
-(depth `n+1` input for a depth-`n` output) in the Bernoulli tower - now proved for a real
-machine model. The state space is infinite, so only the descent notion is used; the
+same tape on `|i| <= r - b`" (for `r >= b`). This is a **uniform sufficiency** statement:
+a window of radius `r` always determines a window of radius `r - b` after `b` steps. It is
+**not** necessary for a given machine (the identity machine preserves any window forever),
+and it is worst-case sharp only for centered windows over unrestricted tapes (a pure shift
+with two symbols needs radius exactly `s + b` to determine `[-s, s]`; that necessity
+statement is not formalized here). The incoming cells are the potential leak
+(`defect_pos_of_leak`; `reader_defect_pos` is the one-cell prototype), matching the
+reviewer's observation about `truncate_pathShift` in the Bernoulli tower.
+
+**Scope of the machine model.** `tmStep` is a *total* step that writes and moves
+simultaneously. Mathlib's `TM0` step is partial (`Option`) and performs a move *or* a
+write per step. The window theorem holds for the custom model as stated; a bridge to
+`TM0` execution (simulation, halting, step-count overhead) is a separate adapter and is
+not supplied here. The state space is infinite, so only the descent notion is used; the
 finite-`V` defect theorems apply to any finite window truncation.
+
+## Block descent does not exclude intermediate leakage
+
+`Regression.swap_block_descends_not_step`: `f (a, b) = (b, a)` has `f^[2] = id`, which
+descends onto the first coordinate, while `f` itself does not. Block descent guarantees
+endpoint independence only; one-step descent implies descent of all iterates, not
+conversely. Moreover the canonical kernel of `f^[2]` is the identity while
+`(Q[f])^2` is the all-`1/2` matrix (`Regression.swap_Q_sq_ne_Q_block`): a block theorem
+must not equate `Q[f^[b]]` with `Q[f]^b`.
 
 ## Not claimed
 
@@ -142,7 +161,167 @@ theorem machine_terminal_reliability (f : V → V) (P : Partition V) {pi : V →
   kernel_terminal_reliability (detKernel f) P hpi (detKernel_isStochastic f) mu d beta p h
     hRef hBudget
 
-/-! ## Deterministic quotients do not mix -/
+/-! ## The deterministic defect gap
+
+External review (2026-09-13) deduced from the definitions that the closure defect of a
+deterministic machine cannot be small without being zero. Formalized here.
+
+For each configuration `x` with output fiber `B_x = q (f x)`, the row of the closure
+commutator is `[B = B_x] - Q(q x, B)`, whose `L^1` mass is `2 (1 - Q(q x, B_x))`
+(`detKernel_row_residual_l1`). Strict positivity of `pi` gives `Q(q x, B_x) > 0`, so every
+row has mass `< 2` (`machineDefect_lt_two`). If descent fails, some fiber has two distinct
+outputs, one of which has conditional mass `<= 1/2`, so that row has mass `>= 1`
+(`machineDefect_ge_one_of_not_descends`). Hence
+
+    `c = 0  ∨  1 <= c < 2`            (`machineDefect_gap`).
+
+Consequence for the *linear* certificate (`machineDefect_linear_budget_vacuous`): in every
+nonexact deterministic case the budget `min 1 (h c / 2)` is `>= 1/2` at `h = 1` and equals
+`1` for `h >= 2`, so the uniform additive argument `beta + budget <= p` cannot certify any
+target `p < 1/2` at a positive horizon. This is a limitation of *that certificate*, not a
+lower bound on actual error: law-specific or contraction-aware estimates can be sharp
+(`Regression.reader_geometric_budget_half`). -/
+
+section Gap
+
+/-- Row of the deterministic closure commutator: `[B = q (f x)] - Q(q x, B)`. -/
+lemma detKernel_commutator_entry (f : V → V) (P : Partition V) (pi : V → ℝ) (x : V)
+    (B : P.Quot) :
+    closureCommutator (detKernel f) P pi x B =
+      (if P.quot_map (f x) = B then 1 else 0) -
+        CoarseGenerator (detKernel f) P pi (P.quot_map x) B := by
+  rw [closureCommutator_entry]
+  unfold SGC.Renormalization.MeasureReentry.residual
+  rw [row_sum_block_detKernel]
+
+lemma coarse_entry_le_one (f : V → V) (P : Partition V) {pi : V → ℝ}
+    (hpi : ∀ x, 0 < pi x) (A B : P.Quot) :
+    CoarseGenerator (detKernel f) P pi A B ≤ 1 := by
+  have hQ := coarseKernel_isStochastic (detKernel f) P hpi (detKernel_isStochastic f)
+  have := hQ.row_sum_one A
+  have hle := Finset.single_le_sum (fun B' _ => hQ.nonneg A B') (Finset.mem_univ B)
+  linarith
+
+/-- The `L^1` mass of a deterministic commutator row is `2 (1 - Q(q x, q (f x)))`. -/
+theorem detKernel_row_residual_l1 (f : V → V) (P : Partition V) {pi : V → ℝ}
+    (hpi : ∀ x, 0 < pi x) (x : V) :
+    l1 (closureCommutator (detKernel f) P pi x) =
+      2 * (1 - CoarseGenerator (detKernel f) P pi (P.quot_map x) (P.quot_map (f x))) := by
+  have hQ := coarseKernel_isStochastic (detKernel f) P hpi (detKernel_isStochastic f)
+  have hrow : ∀ B, |closureCommutator (detKernel f) P pi x B| =
+      (if P.quot_map (f x) = B
+        then 1 - CoarseGenerator (detKernel f) P pi (P.quot_map x) B
+        else CoarseGenerator (detKernel f) P pi (P.quot_map x) B) := by
+    intro B
+    rw [detKernel_commutator_entry]
+    by_cases hB : P.quot_map (f x) = B
+    · simp [hB, abs_of_nonneg (sub_nonneg.mpr (coarse_entry_le_one f P hpi _ _))]
+    · simp [hB, abs_of_nonneg (hQ.nonneg _ B)]
+  unfold l1
+  simp_rw [hrow]
+  have h1 : ∀ B, (if P.quot_map (f x) = B
+      then 1 - CoarseGenerator (detKernel f) P pi (P.quot_map x) B
+      else CoarseGenerator (detKernel f) P pi (P.quot_map x) B) =
+      (if P.quot_map (f x) = B then (1 : ℝ) else 0) +
+        CoarseGenerator (detKernel f) P pi (P.quot_map x) B -
+        2 * (if P.quot_map (f x) = B then CoarseGenerator (detKernel f) P pi (P.quot_map x) B
+          else 0) := by
+    intro B; split_ifs <;> ring
+  simp_rw [h1]
+  rw [Finset.sum_sub_distrib, Finset.sum_add_distrib, ← Finset.mul_sum, hQ.row_sum_one]
+  simp
+  ring
+
+/-- The output fiber of `x` carries at least the conditional mass of `x` itself. -/
+lemma coarse_output_mass_pos (f : V → V) (P : Partition V) {pi : V → ℝ}
+    (hpi : ∀ x, 0 < pi x) (x : V) :
+    0 < CoarseGenerator (detKernel f) P pi (P.quot_map x) (P.quot_map (f x)) := by
+  rw [coarseGenerator_eq_conditional_exit_average _ P hpi]
+  have hpos : 0 < pi_bar P pi (P.quot_map x) := pi_bar_pos P hpi _
+  apply mul_pos (one_div_pos.mpr hpos)
+  have hterm : ∀ y, 0 ≤ (if P.quot_map y = P.quot_map x
+      then pi y * row_sum_block (detKernel f) P y (P.quot_map (f x)) else 0) := by
+    intro y
+    split_ifs
+    · rw [row_sum_block_detKernel]
+      apply mul_nonneg (hpi y).le
+      split_ifs <;> norm_num
+    · exact le_rfl
+  have hx : 0 < (if P.quot_map x = P.quot_map x
+      then pi x * row_sum_block (detKernel f) P x (P.quot_map (f x)) else 0) := by
+    rw [if_pos rfl, row_sum_block_detKernel, if_pos rfl, mul_one]
+    exact hpi x
+  exact lt_of_lt_of_le hx (Finset.single_le_sum (fun y _ => hterm y) (Finset.mem_univ x))
+
+/-- Every row of a deterministic commutator has `L^1` mass strictly below `2`. -/
+theorem machineDefect_lt_two [Nonempty V] (f : V → V) (P : Partition V) {pi : V → ℝ}
+    (hpi : ∀ x, 0 < pi x) : machineDefect f P pi < 2 := by
+  obtain ⟨x0, _, hmin⟩ := Finset.exists_min_image Finset.univ
+    (fun x => CoarseGenerator (detKernel f) P pi (P.quot_map x) (P.quot_map (f x)))
+    Finset.univ_nonempty
+  have hm := coarse_output_mass_pos f P hpi x0
+  have hQle := coarse_entry_le_one f P hpi (P.quot_map x0) (P.quot_map (f x0))
+  have hle : machineDefect f P pi ≤
+      2 * (1 - CoarseGenerator (detKernel f) P pi (P.quot_map x0) (P.quot_map (f x0))) := by
+    apply rowL1Norm_le _ (by linarith)
+    intro x
+    rw [detKernel_row_residual_l1 f P hpi x]
+    linarith [hmin x (Finset.mem_univ x)]
+  linarith
+
+/-- If descent fails, some row has `L^1` mass at least `1`. -/
+theorem machineDefect_ge_one_of_not_descends (f : V → V) (P : Partition V) {pi : V → ℝ}
+    (hpi : ∀ x, 0 < pi x) (hnd : ¬ Descends f P) : 1 ≤ machineDefect f P pi := by
+  have hQ := coarseKernel_isStochastic (detKernel f) P hpi (detKernel_isStochastic f)
+  unfold Descends at hnd
+  push_neg at hnd
+  obtain ⟨x, y, hxy, hne⟩ := hnd
+  have hA : P.quot_map y = P.quot_map x := Quotient.sound (P.rel.symm hxy)
+  have hBne : P.quot_map (f x) ≠ P.quot_map (f y) := fun h => hne (Quotient.exact h)
+  have hsum : CoarseGenerator (detKernel f) P pi (P.quot_map x) (P.quot_map (f x)) +
+      CoarseGenerator (detKernel f) P pi (P.quot_map x) (P.quot_map (f y)) ≤ 1 := by
+    have h1 := hQ.row_sum_one (P.quot_map x)
+    rw [← Finset.sum_pair hBne, ← h1]
+    exact Finset.sum_le_sum_of_subset_of_nonneg (Finset.subset_univ _)
+      (fun B _ _ => hQ.nonneg _ B)
+  have hrow_x := detKernel_row_residual_l1 f P hpi x
+  have hrow_y := detKernel_row_residual_l1 f P hpi y
+  rw [hA] at hrow_y
+  have hx := row_l1_le_rowL1Norm (closureCommutator (detKernel f) P pi) x
+  have hy := row_l1_le_rowL1Norm (closureCommutator (detKernel f) P pi) y
+  unfold machineDefect
+  by_cases hhalf : CoarseGenerator (detKernel f) P pi (P.quot_map x) (P.quot_map (f x)) ≤ 1 / 2
+  · linarith
+  · linarith
+
+/-- **The deterministic defect gap**: `c = 0 ∨ 1 <= c < 2`. -/
+theorem machineDefect_gap [Nonempty V] (f : V → V) (P : Partition V) {pi : V → ℝ}
+    (hpi : ∀ x, 0 < pi x) :
+    machineDefect f P pi = 0 ∨ (1 ≤ machineDefect f P pi ∧ machineDefect f P pi < 2) := by
+  by_cases hd : Descends f P
+  · left
+    unfold machineDefect
+    rw [(closureCommutator_detKernel_eq_zero_iff f P hpi).mpr hd]
+    simp [rowL1Norm]
+  · right
+    exact ⟨machineDefect_ge_one_of_not_descends f P hpi hd, machineDefect_lt_two f P hpi⟩
+
+/-- In every nonexact deterministic case the linear budget is `>= 1/2` at `h = 1` and `1`
+for `h >= 2`: the uniform additive certificate cannot certify `p < 1/2` at any positive
+horizon. A limitation of the linear certificate, not a bound on actual error. -/
+theorem machineDefect_linear_budget_vacuous (f : V → V) (P : Partition V) {pi : V → ℝ}
+    (hpi : ∀ x, 0 < pi x) (hnd : ¬ Descends f P) :
+    1 / 2 ≤ min 1 ((1 : ℕ) * machineDefect f P pi / 2) ∧
+      ∀ h : ℕ, 2 ≤ h → min 1 (h * machineDefect f P pi / 2) = 1 := by
+  have hc := machineDefect_ge_one_of_not_descends f P hpi hnd
+  refine ⟨le_min (by norm_num) (by simp; linarith), fun h hh => ?_⟩
+  apply min_eq_left
+  have : (2 : ℝ) ≤ h := by exact_mod_cast hh
+  nlinarith
+
+end Gap
+
+/-! ## Deterministic quotients do not mix (one step, exact case) -/
 
 /-- A deterministic kernel with two distinct outputs has Dobrushin coefficient `1`. -/
 theorem dobrushin_detKernel_eq_one (f : V → V) {x y : V} (hxy : f x ≠ f y) :
@@ -164,9 +343,10 @@ theorem dobrushin_detKernel_eq_one (f : V → V) {x y : V} (hxy : f x ≠ f y) :
     norm_num
   linarith
 
-/-- When the quotient is itself a machine with two distinct outputs, the geometric
-refinement of the terminal budget collapses to the linear one: the `epsilon > 0`
-coarse-graining error of a computation can accumulate linearly in the number of steps. -/
+/-- When the coarse-graining is exact and the quotient machine has two distinct outputs,
+the one-step Dobrushin coefficient of the canonical coarse kernel is `1`. Since `c = 0`
+under `Descends`, this says nothing about error accumulation; it only records that the
+geometric refinement has no one-step advantage in the exact deterministic case. -/
 theorem mixing_budget_trivial_of_quotient_machine (f : V → V) (P : Partition V)
     (hd : Descends f P) {pi : V → ℝ} (hpi : ∀ x, 0 < pi x)
     {A B : P.Quot} (hAB : quotMap f P hd A ≠ quotMap f P hd B) :
@@ -229,9 +409,10 @@ end Window
 A one-tape machine in head-relative coordinates: configuration `(q, t)` with control state
 `q : Q` and tape `t : ℤ → Γ` read relative to the head (cell `0` is under the head). One
 step reads `t 0`, writes `w q (t 0)` there, moves to `nxt q (t 0)`, and shifts the tape by
-the move `mv q (t 0) ∈ {-1, 0, 1}` so the head is again at `0`. This is Mathlib's `TM0`
-semantics on `Tape` written out on `ℤ → Γ`; the state space is infinite, so only the
-descent notion (which needs no finiteness) is used here.
+the move `mv q (t 0) ∈ {-1, 0, 1}` so the head is again at `0`. This is a total,
+simultaneous write-and-move model in the spirit of Mathlib's `TM0` on `Tape`, not `TM0`
+itself (see the module docstring); the state space is infinite, so only the descent notion
+(which needs no finiteness) is used here.
 
 **Window theorem** (`tmStep_iterate_window`): after `b` steps, the control state and the
 tape on the window `|i| <= r - b` depend only on the initial control state and the
@@ -314,9 +495,9 @@ lemma windowRel_equivalence (r : ℤ) : Equivalence (WindowRel (Q := Q) (Γ := �
   symm h := ⟨h.1.symm, fun i hi => (h.2 i hi).symm⟩
   trans h h' := ⟨h.1.trans h'.1, fun i hi => (h.2 i hi).trans (h'.2 i hi)⟩
 
-/-- **The block map descends onto the shrunken window**: `x ~_r y → f^[b] x ~_{r-b} f^[b] y`.
-Exact descent onto the *same* window is the `b = 0` case only; for `b > 0` the incoming
-cells are the leak (`defect_pos_of_leak`). -/
+/-- **The block map descends onto the shrunken window**: `x ~_r y → f^[b] x ~_{r-b} f^[b] y`
+for `r >= b`. Sufficient, uniformly over machines with `|mv| <= 1`; not necessary for a
+given machine. The incoming cells are the potential leak (`defect_pos_of_leak`). -/
 theorem tmBlock_descends_shrink (nxt : Q → Γ → Q) (w : Q → Γ → Γ) (mv : Q → Γ → ℤ)
     (hmv : ∀ q a, |mv q a| ≤ 1) (b : ℕ) {r : ℤ} (hr : (b : ℤ) ≤ r)
     {c c' : TMCfg Q Γ} (h : WindowRel r c c') :
@@ -324,6 +505,157 @@ theorem tmBlock_descends_shrink (nxt : Q → Γ → Q) (w : Q → Γ → Γ) (mv
   tmStep_iterate_window nxt w mv hmv b hr h.1 h.2
 
 end Locality
+
+/-! ## Regressions from the external review of this module (2026-09-13) -/
+
+namespace Regression
+
+open SGC.Bridge.DeterministicLumpability.Regression
+
+/-- The reader machine coarse-grained by state: defect exactly `1` (the gap's lower end). -/
+theorem reader_defect_eq_one {pi : Cfg → ℝ} (hpi : ∀ x, 0 < pi x) :
+    machineDefect reader byState pi ≥ 1 :=
+  machineDefect_ge_one_of_not_descends reader byState hpi reader_not_descends
+
+/-- With uniform weights the reader's canonical coarse kernel is the all-`1/2` matrix, whose
+Dobrushin coefficient is `0`: the *reference* kernel mixes instantly while the fine
+dynamics (two fixed points) never forgets its input. Mixing of the reference kernel is not
+mixing of the actual projected process. -/
+theorem reader_coarse_row (b : Bool) (B : byState.Quot) :
+    CoarseGenerator (detKernel reader) byState (fun _ => (1 : ℝ)) (byState.quot_map (b, b)) B
+      = 1 / 2 := by
+  obtain ⟨⟨s, t⟩, hB⟩ := Quotient.exists_rep B
+  have hB' : byState.quot_map (s, t) = B := hB
+  rw [← hB', coarseGenerator_eq_conditional_exit_average _ byState (fun _ => one_pos)]
+  have hbar : pi_bar byState (fun _ => (1 : ℝ)) (byState.quot_map (b, b)) = 2 := by
+    unfold pi_bar
+    have : ∀ x : Cfg, (byState.quot_map x = byState.quot_map (b, b)) ↔ x.1 = b := by
+      intro x; exact quot_map_eq_iff byState x (b, b)
+    simp only [this]
+    cases b <;> simp <;> exact_mod_cast (by decide : _)
+  rw [hbar]
+  have hsum : (∑ x : Cfg, if byState.quot_map x = byState.quot_map (b, b)
+      then (1 : ℝ) * row_sum_block (detKernel reader) byState x (byState.quot_map (s, t)) else 0)
+      = 1 := by
+    have h1 : ∀ x : Cfg, (byState.quot_map x = byState.quot_map (b, b)) ↔ x.1 = b := by
+      intro x; exact quot_map_eq_iff byState x (b, b)
+    have h2 : ∀ x : Cfg, row_sum_block (detKernel reader) byState x (byState.quot_map (s, t))
+        = if x.2 = s then 1 else 0 := by
+      intro x
+      rw [row_sum_block_detKernel]
+      have : (byState.quot_map (reader x) = byState.quot_map (s, t)) ↔ x.2 = s := by
+        rw [quot_map_eq_iff]; rfl
+      simp only [this]
+    simp only [h1, h2, one_mul]
+    cases b <;> cases s <;> simp [Fintype.sum_prod_type]
+  rw [hsum]
+  norm_num
+
+/-- Collapse: `f 0 = 0, f 1 = 0, f 2 = 1` on `Fin 3` with the discrete partition. Descent
+holds (`c = 0`), the one-step coarse kernel has Dobrushin coefficient `1` (two distinct
+outputs), yet `f^[2]` is constant so the two-step kernel has coefficient `0`. One-step
+non-mixing does not persist. -/
+def collapse : Fin 3 → Fin 3 := ![0, 0, 1]
+
+theorem collapse_sq_const (x : Fin 3) : collapse^[2] x = 0 := by
+  fin_cases x <;> rfl
+
+theorem collapse_dobrushin_one : dobrushin (detKernel collapse) = 1 :=
+  dobrushin_detKernel_eq_one collapse (x := 0) (y := 2) (by decide)
+
+theorem collapse_dobrushin_two_zero : dobrushin ((detKernel collapse) ^ 2) = 0 := by
+  rw [detKernel_pow]
+  have hrd : rowDifferences (detKernel (collapse^[2])) = 0 := by
+    ext xy y
+    have h1 := collapse_sq_const xy.1
+    have h2 := collapse_sq_const xy.2
+    simp only [rowDifferences, detKernel, Matrix.zero_apply]
+    rw [h1, h2, sub_self]
+  unfold dobrushin rowL1Norm
+  rw [hrd, norm_zero, zero_div]
+
+/-- Swap: `f (a, b) = (b, a)`. `f^[2] = id` descends onto the first coordinate; `f` does
+not. Block descent is endpoint-only. -/
+def swap2 (x : Bool × Bool) : Bool × Bool := (x.2, x.1)
+
+theorem swap_block_descends_not_step :
+    Descends (swap2^[2]) (fstPartition (A := Bool) (B := Bool)) ∧
+      ¬ Descends swap2 (fstPartition (A := Bool) (B := Bool)) := by
+  refine ⟨fun x y h => ?_, fun h => ?_⟩
+  · show (swap2^[2] x).1 = (swap2^[2] y).1
+    simpa [swap2] using h
+  · have := h (false, false) (false, true) rfl
+    simp [swap2] at this
+
+/-- The canonical kernel of the block `f^[2] = id` is the identity, while the square of the
+canonical kernel of `f` is the all-`1/2` matrix: `Q[f^[2]] ≠ Q[f]^2`. -/
+theorem swap_Q_sq_ne_Q_block :
+    (CoarseGenerator (detKernel swap2) fstPartition (fun _ => (1 : ℝ))) ^ 2 ≠
+      CoarseGenerator (detKernel (swap2^[2])) fstPartition (fun _ => (1 : ℝ)) := by
+  intro h
+  have hid : (swap2^[2]) = id := by funext x; cases x; rfl
+  have hdesc : Descends (swap2^[2]) (fstPartition (A := Bool) (B := Bool)) :=
+    swap_block_descends_not_step.1
+  rw [coarseGenerator_detKernel_eq _ _ hdesc (fun _ => one_pos)] at h
+  -- the block quotient is the identity map, so its kernel has a diagonal entry 1
+  have hdiag : detKernel (quotMap (swap2^[2]) fstPartition hdesc)
+      (fstPartition.quot_map (false, false)) (fstPartition.quot_map (false, false)) = 1 := by
+    simp only [detKernel, quotMap_mk]
+    exact if_pos rfl
+  -- but Q[f] has all rows equal (both fibers send half their mass to each output), so Q^2
+  -- has that same entry 1/2
+  have hQ : ∀ A B, CoarseGenerator (detKernel swap2) fstPartition (fun _ => (1 : ℝ)) A B = 1 / 2 := by
+    intro A B
+    obtain ⟨⟨a, b⟩, hA⟩ := Quotient.exists_rep A
+    obtain ⟨⟨c, d⟩, hB⟩ := Quotient.exists_rep B
+    have hA' : fstPartition.quot_map (a, b) = A := hA
+    have hB' : fstPartition.quot_map (c, d) = B := hB
+    rw [← hA', ← hB', coarseGenerator_eq_conditional_exit_average _ fstPartition (fun _ => one_pos)]
+    have hbar : pi_bar fstPartition (fun _ => (1 : ℝ)) (fstPartition.quot_map (a, b)) = 2 := by
+      unfold pi_bar
+      have : ∀ x : Bool × Bool,
+          (fstPartition.quot_map x = fstPartition.quot_map (a, b)) ↔ x.1 = a := by
+        intro x; exact quot_map_eq_iff fstPartition x (a, b)
+      simp only [this]
+      cases a <;> simp <;> exact_mod_cast (by decide : _)
+    have hsum : (∑ x : Bool × Bool, if fstPartition.quot_map x = fstPartition.quot_map (a, b)
+        then (1 : ℝ) * row_sum_block (detKernel swap2) fstPartition x (fstPartition.quot_map (c, d))
+        else 0) = 1 := by
+      have h1 : ∀ x : Bool × Bool,
+          (fstPartition.quot_map x = fstPartition.quot_map (a, b)) ↔ x.1 = a := by
+        intro x; exact quot_map_eq_iff fstPartition x (a, b)
+      have h2 : ∀ x : Bool × Bool, row_sum_block (detKernel swap2) fstPartition x
+          (fstPartition.quot_map (c, d)) = if x.2 = c then 1 else 0 := by
+        intro x
+        rw [row_sum_block_detKernel]
+        have : (fstPartition.quot_map (swap2 x) = fstPartition.quot_map (c, d)) ↔ x.2 = c := by
+          rw [quot_map_eq_iff]; rfl
+        simp only [this]
+      simp only [h1, h2, one_mul]
+      cases a <;> cases c <;> simp [Fintype.sum_prod_type]
+    rw [hbar, hsum]
+    norm_num
+  have hsq : ((CoarseGenerator (detKernel swap2) fstPartition (fun _ => (1 : ℝ))) ^ 2)
+      (fstPartition.quot_map (false, false)) (fstPartition.quot_map (false, false)) = 1 / 2 := by
+    rw [pow_two, Matrix.mul_apply]
+    simp only [hQ]
+    have hcard : Fintype.card (fstPartition (A := Bool) (B := Bool)).Quot = 2 := by
+      have hbij : Function.Bijective (fun x : Bool => fstPartition.quot_map (x, false)) := by
+        constructor
+        · intro x y h
+          exact (quot_map_eq_iff fstPartition (x, false) (y, false)).mp h
+        · intro B
+          obtain ⟨⟨a, b⟩, hB⟩ := Quotient.exists_rep B
+          exact ⟨a, hB ▸ Quotient.sound rfl⟩
+      rw [← Fintype.card_of_bijective hbij]
+      simp
+    rw [Finset.sum_const, Finset.card_univ, hcard]
+    norm_num
+  have := congrFun (congrFun h (fstPartition.quot_map (false, false))) (fstPartition.quot_map (false, false))
+  rw [hsq, hdiag] at this
+  norm_num at this
+
+end Regression
 
 end SGC.Bridge.MachineCertificate
 
