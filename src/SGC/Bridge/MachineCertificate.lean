@@ -343,7 +343,13 @@ horizon `h >= 1`, the coarse-graining is an exact factor map. There is no "appro
 computing" quotient at the uniform level: a coarse description of a computation is exact
 or its uniform certificate is void. Graded guarantees for computations must therefore be
 law-specific (the exact formula above) or contraction-aware (`kernel_horizon_tv_mixing`),
-never uniform-linear. -/
+never uniform-linear. The defect is **gapped, not quantized**: nonzero values fill `[1, 2)`
+continuously (weights `p, 1 - p` on the reader give `c = 2 max(p, 1 - p)`).
+
+**General input laws** (`machine_mixture_tv_le`): for a non-point input `mu` the point
+formula is only an upper bound, `tv <= sum_x mu x (1 - Q^h (q x) (q (f^[h] x)))`, and
+mixture discrepancies can cancel (uniform input to the uniform reader has terminal TV `0`
+while the average point error is `1/2`). -/
 
 section Exact
 
@@ -451,20 +457,169 @@ theorem linear_certificate_implies_descends [Nonempty V] (f : V → V) (P : Part
   have hc0 : 0 ≤ machineDefect f P pi := norm_nonneg _
   nlinarith
 
+/-- TV of pushforwards is bounded by the input-weighted average of row TVs. -/
+lemma tv_vecMul_le_weighted_rows {X Y : Type*} [Fintype X] [Fintype Y]
+    (rho : ProbabilityRow X) (M N : Matrix X Y ℝ) :
+    tv ((rho : X → ℝ) ᵥ* M) ((rho : X → ℝ) ᵥ* N) ≤ ∑ x, rho x * tv (M x) (N x) := by
+  unfold tv
+  rw [← Matrix.vecMul_sub]
+  have h : l1 ((rho : X → ℝ) ᵥ* (M - N)) ≤ ∑ x, rho x * l1 ((M - N) x) := by
+    calc
+      l1 ((rho : X → ℝ) ᵥ* (M - N)) ≤ ∑ y, ∑ x, |rho x * (M - N) x y| :=
+        Finset.sum_le_sum fun y _ => Finset.abs_sum_le_sum_abs _ _
+      _ = ∑ x, rho x * l1 ((M - N) x) := by
+        rw [Finset.sum_comm]
+        simp only [abs_mul, abs_of_nonneg (rho.nonneg _), l1, Finset.mul_sum]
+  have : ∑ x, rho x * (l1 (M x - N x) / 2) = (∑ x, rho x * l1 ((M - N) x)) / 2 := by
+    rw [Finset.sum_div]
+    refine Finset.sum_congr rfl fun x _ => ?_
+    have : (M - N) x = M x - N x := rfl
+    rw [this]; ring
+  rw [this]
+  linarith
+
+/-- **General input laws**: the point formula is an upper bound for mixtures. -/
+theorem machine_mixture_tv_le (f : V → V) (P : Partition V) {pi : V → ℝ}
+    (hpi : ∀ x, 0 < pi x) (mu : ProbabilityRow V) (h : ℕ) :
+    tv (actualLaw (detKernel f) P (detKernel_isStochastic f) mu h)
+      (referenceLaw (detKernel f) P hpi (detKernel_isStochastic f) mu h) ≤
+      ∑ x, mu x * (1 - (CoarseGenerator (detKernel f) P pi ^ h) (P.quot_map x)
+        (P.quot_map (f^[h] x))) := by
+  have hb := tv_vecMul_le_weighted_rows mu ((detKernel f) ^ h * lift_matrix P)
+    (lift_matrix P * (CoarseGenerator (detKernel f) P pi ^ h))
+  refine le_trans hb (le_of_eq ?_)
+  refine Finset.sum_congr rfl fun x _ => ?_
+  congr 1
+  have hrowA : ((detKernel f) ^ h * lift_matrix P) x =
+      (actualLaw (detKernel f) P (detKernel_isStochastic f) (pointMass x) h : P.Quot → ℝ) := by
+    funext B
+    change _ = ((pointMass x : V → ℝ) ᵥ* ((detKernel f) ^ h * lift_matrix P)) B
+    simp only [Matrix.vecMul, dotProduct, pointMass]
+    rw [Finset.sum_eq_single x]
+    · simp
+    · intro y _ hy; simp [hy]
+    · simp
+  have hrowR : (lift_matrix P * (CoarseGenerator (detKernel f) P pi ^ h)) x =
+      (referenceLaw (detKernel f) P hpi (detKernel_isStochastic f) (pointMass x) h : P.Quot → ℝ) := by
+    funext B
+    change _ = ((pointMass x : V → ℝ) ᵥ* (lift_matrix P * (CoarseGenerator (detKernel f) P pi ^ h))) B
+    simp only [Matrix.vecMul, dotProduct, pointMass]
+    rw [Finset.sum_eq_single x]
+    · simp
+    · intro y _ hy; simp [hy]
+    · simp
+  rw [hrowA, hrowR]
+  exact machine_point_tv_exact f P hpi x h
+
 end Exact
 
-/-! ## The confidently-wrong regime: zero Dobrushin coefficient of the reference kernel
+/-! ## Terminal versus trajectory: the path-law identity
+
+The terminal formula sums the reference mass over *all* coarse paths reaching the true
+endpoint. The whole observed trajectory is a different observable. For the actual coarse
+path `z_j = q (f^[j] x)` and the reference Markov path law started at `q x`,
+
+    `tv (path law) = 1 - prod_{j<h} Q (z_j) (z_{j+1})`        (`machine_path_tv_exact`).
+
+On the uniform reader this is `1 - 2^{-h}` (`Regression.reader_path_tv`) while the terminal
+error is `1/2`: **a bounded terminal discrepancy coexists with a trajectory discrepancy
+tending to one.** Neither is the probability that an actual decoder execution fails; that
+needs the decoder and the labels. -/
+
+section Path
+
+variable {Y : Type*} [Fintype Y] [DecidableEq Y]
+
+/-- Reference Markov probability of a sequence of `h` transitions after start `s`. -/
+def pathProb (Q : Matrix Y Y ℝ) : Y → (h : ℕ) → (Fin h → Y) → ℝ
+  | _, 0, _ => 1
+  | s, h + 1, z => Q s (z 0) * pathProb Q (z 0) h (Fin.tail z)
+
+omit [DecidableEq Y] in
+lemma pathProb_nonneg (Q : Matrix Y Y ℝ) (hQ : RowStochastic Q) (s : Y) (h : ℕ)
+    (z : Fin h → Y) : 0 ≤ pathProb Q s h z := by
+  induction h generalizing s with
+  | zero => simp [pathProb]
+  | succ h ih => exact mul_nonneg (hQ.nonneg _ _) (ih _ _)
+
+omit [DecidableEq Y] in
+lemma pathProb_sum (Q : Matrix Y Y ℝ) (hQ : RowStochastic Q) (s : Y) (h : ℕ) :
+    ∑ z : Fin h → Y, pathProb Q s h z = 1 := by
+  induction h generalizing s with
+  | zero => simp [pathProb]
+  | succ h ih =>
+    rw [← Fintype.sum_equiv (Fin.consEquiv fun _ => Y)
+      (fun p : Y × (Fin h → Y) => Q s p.1 * pathProb Q p.1 h p.2)
+      (fun z => pathProb Q s (h + 1) z) (fun p => by
+        simp only [Fin.consEquiv, pathProb, Equiv.coe_fn_mk, Fin.cons_zero, Fin.tail_cons])]
+    rw [Fintype.sum_prod_type]
+    simp_rw [← Finset.mul_sum, ih, mul_one]
+    exact hQ.sum_one s
+
+/-- The reference path law as a probability row on `h`-step coarse paths. -/
+def refPathLaw (Q : Matrix Y Y ℝ) (hQ : RowStochastic Q) (s : Y) (h : ℕ) :
+    ProbabilityRow (Fin h → Y) where
+  mass := pathProb Q s h
+  nonneg := pathProb_nonneg Q hQ s h
+  sum_one := pathProb_sum Q hQ s h
+
+/-- The actual coarse path after the start: `z_{j+1} = q (f^[j+1] x)`. -/
+def actualPath (f : V → V) (P : Partition V) (x : V) (h : ℕ) : Fin h → P.Quot :=
+  fun j => P.quot_map (f^[j.val + 1] x)
+
+omit [Fintype V] in
+lemma pathProb_actualPath (f : V → V) (P : Partition V) (Q : Matrix P.Quot P.Quot ℝ)
+    (x : V) (h : ℕ) :
+    pathProb Q (P.quot_map x) h (actualPath f P x h) =
+      ∏ j : Fin h, Q (P.quot_map (f^[j.val] x)) (P.quot_map (f^[j.val + 1] x)) := by
+  induction h generalizing x with
+  | zero => simp [pathProb]
+  | succ h ih =>
+    rw [Fin.prod_univ_succ]
+    simp only [pathProb, actualPath, Fin.val_zero, zero_add, Function.iterate_one]
+    congr 1
+    have htail : Fin.tail (actualPath f P x (h + 1)) = actualPath f P (f x) h := by
+      funext j
+      simp only [Fin.tail, actualPath, Fin.val_succ]
+      rw [show j.val + 1 + 1 = (j.val + 1) + 1 from rfl, Function.iterate_succ_apply]
+    rw [htail, ih (f x)]
+    refine Finset.prod_congr rfl fun j _ => ?_
+    simp only [Fin.val_succ]
+    rw [Function.iterate_succ_apply, Function.iterate_succ_apply, Function.iterate_succ_apply,
+      Function.iterate_succ_apply]
+
+/-- **Path-law identity**: TV between the actual coarse trajectory and the reference Markov
+path law equals one minus the product of the reference transition masses along it. -/
+theorem machine_path_tv_exact (f : V → V) (P : Partition V) {pi : V → ℝ}
+    (hpi : ∀ x, 0 < pi x) (x : V) (h : ℕ) :
+    tv (fun z : Fin h → P.Quot => if z = actualPath f P x h then (1 : ℝ) else 0)
+      (refPathLaw (CoarseGenerator (detKernel f) P pi)
+        (RowStochastic.of_existing (coarseKernel_isStochastic _ P hpi (detKernel_isStochastic f)))
+        (P.quot_map x) h) =
+      1 - ∏ j : Fin h, CoarseGenerator (detKernel f) P pi (P.quot_map (f^[j.val] x))
+        (P.quot_map (f^[j.val + 1] x)) := by
+  rw [tv_point_prob]
+  change 1 - pathProb _ _ _ _ = _
+  rw [pathProb_actualPath]
+
+end Path
+
+/-! ## The constant-row regime: zero Dobrushin coefficient of the reference kernel
 
 `dobrushin_zero_iff_rows_equal`: the canonical coarse kernel has Dobrushin coefficient `0`
 iff all its rows coincide - the coarse variable carries no information about its own
 successor. In that regime the reference forecast is the same fixed row `rho` at every
-positive horizon (`pow_row_const_of_rows_equal`), so from a point input the exact error is
-`1 - rho (q (f^[h] x))` for every `h >= 1` (`machine_error_of_dobrushin_zero`): **bounded,
-non-accumulating, and generally nonzero**. This is the regime in which a coarse observer is
-confidently and boundedly wrong: the reference mixes instantly while the fine machine is
-deterministic and never forgets its input. The contraction-aware budget
-`(c/2) * sum_{j<h} delta^j = c/2` is the right certificate here, and on the reader class it
-is attained (`Regression.reader_budget_sharp`). -/
+positive horizon (`pow_row_const_of_rows_equal`), so from a point input the exact *terminal*
+error is `1 - rho (q (f^[h] x))` for every `h >= 1` (`machine_error_of_dobrushin_zero`):
+**uniformly bounded and non-accumulating**, though not necessarily constant in `h` (the
+endpoint `q (f^[h] x)` may move; with non-uniform weights the reader's error oscillates
+between `p` and `1 - p`). The reference row is maximally uncertain, not confidently wrong.
+Zero Dobrushin coefficient of `Q` says nothing about whether the fine machine preserves or
+erases its input: the reader erases `a` and keeps `b`; `f = (1, 3, 0, 3)` on `Fin 4` has the
+same constant-row `Q` and erases everything after three steps. The contraction-aware budget
+`(c/2) * sum_{j<h} delta^j = c/2` is the right *terminal* certificate here, and on the
+reader class it is attained (`Regression.reader_budget_sharp`). It does **not** transfer to
+the whole trajectory: see `machine_path_tv_exact` below. -/
 
 section ConfidentlyWrong
 
@@ -908,6 +1063,17 @@ theorem reader_budget_sharp (x : Cfg) (h : ℕ) (hh : 1 ≤ h) :
   rw [machine_error_of_dobrushin_zero reader byState (fun _ => one_pos) reader_dobrushin_zero x h hh
     (byState.quot_map x), reader_Q_entry, reader_mixing_budget h hh]
   norm_num
+
+/-- **Terminal `1/2`, path `1 - 2^{-h}`.** On the uniform reader the whole-trajectory
+discrepancy tends to one while the terminal discrepancy is `1/2` forever. -/
+theorem reader_path_tv (x : Cfg) (h : ℕ) :
+    tv (fun z : Fin h → byState.Quot => if z = actualPath reader byState x h then (1 : ℝ) else 0)
+      (refPathLaw (CoarseGenerator (detKernel reader) byState (fun _ => (1 : ℝ)))
+        (RowStochastic.of_existing
+          (coarseKernel_isStochastic _ byState (fun _ => one_pos) (detKernel_isStochastic reader)))
+        (byState.quot_map x) h) = 1 - (1 / 2) ^ h := by
+  rw [machine_path_tv_exact reader byState (fun _ => one_pos) x h]
+  simp only [reader_Q_entry, Finset.prod_const, Finset.card_univ, Fintype.card_fin]
 
 end Regression
 
