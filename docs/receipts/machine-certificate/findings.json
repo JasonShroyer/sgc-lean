@@ -7,7 +7,7 @@
  ],
  "counts": {
   "fail": 0,
-  "info": 88,
+  "info": 104,
   "warn": 15
  },
  "findings": [
@@ -100,7 +100,7 @@
    "code": "DIRTY_TREE",
    "detail": "working tree has uncommitted changes; audited bytes may differ from the recorded commit",
    "evidence": {
-    "commit": "742d4b1af1fd949d7f36f4a0f6908e0895ebd24c"
+    "commit": "3d534fe1b33a6da3bc051993f9d1539a0ede22fb"
    },
    "id": "F12",
    "remedy": "commit or stash, then re-run so the receipt names one revision",
@@ -524,6 +524,26 @@
    "id": "F10",
    "remedy": "add a claim-map entry with human_attestation",
    "severity": "info",
+   "theorem": "SGC.Bridge.MachineCertificate.Regression.reader_Q_entry"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.MachineCertificate.Regression.reader_budget_sharp"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
    "theorem": "SGC.Bridge.MachineCertificate.Regression.reader_coarse_row"
   },
   {
@@ -535,6 +555,36 @@
    "remedy": "add a claim-map entry with human_attestation",
    "severity": "info",
    "theorem": "SGC.Bridge.MachineCertificate.Regression.reader_defect_eq_one"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.MachineCertificate.Regression.reader_defect_exact"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.MachineCertificate.Regression.reader_dobrushin_zero"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.MachineCertificate.Regression.reader_mixing_budget"
   },
   {
    "basis": "attestation",
@@ -664,6 +714,16 @@
    "id": "F10",
    "remedy": "add a claim-map entry with human_attestation",
    "severity": "info",
+   "theorem": "SGC.Bridge.MachineCertificate.dobrushin_zero_iff_rows_equal"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
    "theorem": "SGC.Bridge.MachineCertificate.iterate_fst_of_autonomous"
   },
   {
@@ -715,6 +775,16 @@
    "remedy": "add a claim-map entry with human_attestation",
    "severity": "info",
    "theorem": "SGC.Bridge.MachineCertificate.machineDefect_lt_two"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.MachineCertificate.machine_error_of_dobrushin_zero"
   },
   {
    "basis": "attestation",
@@ -795,6 +865,16 @@
    "remedy": "add a claim-map entry with human_attestation",
    "severity": "info",
    "theorem": "SGC.Bridge.MachineCertificate.mixing_budget_trivial_of_quotient_machine"
+  },
+  {
+   "basis": "attestation",
+   "code": "CLAIM_MAP_UNATTESTED",
+   "detail": "no human-attested mapping from an informal claim to this statement; the printed statement is the only claim",
+   "evidence": null,
+   "id": "F10",
+   "remedy": "add a claim-map entry with human_attestation",
+   "severity": "info",
+   "theorem": "SGC.Bridge.MachineCertificate.pow_row_const_of_rows_equal"
   },
   {
    "basis": "attestation",
@@ -908,6 +988,80 @@
      "SGC.Thermodynamics.CoarseGenerator",
      "SGC.Bridge.BlockRenormalization.detKernel",
      "SGC.Bridge.DeterministicLumpability.Regression.reader",
+     "SGC.Partition",
+     "SGC.Partition.rel",
+     "SGC.Partition.mk",
+     "SGC.Thermodynamics.CoarseStationaryDist",
+     "SGC.Partition.quot_map",
+     "SGC.Partition.instDecidableEq",
+     "SGC.pi_bar",
+     "SGC.Partition.decRel"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.MachineCertificate.Regression.reader_Q_entry"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "34 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.DeterministicLumpability.Regression.Cfg",
+     "SGC.Bridge.TerminalDecoding.tv",
+     "SGC.Partition.Quot",
+     "SGC.Bridge.DeterministicLumpability.Regression.byState",
+     "SGC.Partition.instFintype",
+     "SGC.Bridge.TerminalDecoding.ProbabilityRow.mass",
+     "SGC.Bridge.TerminalDecoding.actualLaw",
+     "SGC.Bridge.BlockRenormalization.detKernel",
+     "SGC.Bridge.DeterministicLumpability.Regression.reader",
+     "SGC.Bridge.BlockRenormalization.detKernel_isStochastic",
+     "SGC.Bridge.MachineCertificate.pointMass",
+     "SGC.Bridge.TerminalDecoding.referenceLaw",
+     "SGC.Bridge.TerminalDecoding.mixingBudget",
+     "SGC.Bridge.TerminalDecoding.l1",
+     "SGC.Partition",
+     "SGC.Partition.rel",
+     "SGC.Partition.mk",
+     "SGC.Partition.decRel",
+     "SGC.Bridge.TerminalDecoding.ProbabilityRow",
+     "SGC.Renormalization.KernelHorizon.IsStochastic",
+     "SGC.Bridge.TerminalDecoding.ProbabilityRow.push",
+     "SGC.lift_matrix",
+     "SGC.Renormalization.KernelHorizon.IsStochastic.mk",
+     "SGC.Bridge.TerminalDecoding.ProbabilityRow.mk",
+     "SGC.Partition.instDecidableEq",
+     "SGC.Thermodynamics.CoarseGenerator",
+     "SGC.Bridge.TerminalDecoding.rowL1Norm",
+     "SGC.Renormalization.MeasureReentry.closureCommutator",
+     "SGC.Bridge.TerminalDecoding.dobrushin",
+     "SGC.Bridge.TerminalDecoding.RowStochastic",
+     "SGC.Partition.quot_map",
+     "SGC.Thermodynamics.CoarseStationaryDist",
+     "SGC.Bridge.TerminalDecoding.rowDifferences",
+     "SGC.pi_bar"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.MachineCertificate.Regression.reader_budget_sharp"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "14 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Partition.Quot",
+     "SGC.Bridge.DeterministicLumpability.Regression.Cfg",
+     "SGC.Bridge.DeterministicLumpability.Regression.byState",
+     "SGC.Thermodynamics.CoarseGenerator",
+     "SGC.Bridge.BlockRenormalization.detKernel",
+     "SGC.Bridge.DeterministicLumpability.Regression.reader",
      "SGC.Partition.quot_map",
      "SGC.Partition",
      "SGC.Partition.rel",
@@ -954,6 +1108,103 @@
    "remedy": "",
    "severity": "info",
    "theorem": "SGC.Bridge.MachineCertificate.Regression.reader_defect_eq_one"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "19 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.MachineCertificate.machineDefect",
+     "SGC.Bridge.DeterministicLumpability.Regression.Cfg",
+     "SGC.Bridge.DeterministicLumpability.Regression.reader",
+     "SGC.Bridge.DeterministicLumpability.Regression.byState",
+     "SGC.Partition",
+     "SGC.Bridge.TerminalDecoding.rowL1Norm",
+     "SGC.Partition.Quot",
+     "SGC.Partition.instFintype",
+     "SGC.Renormalization.MeasureReentry.closureCommutator",
+     "SGC.Bridge.BlockRenormalization.detKernel",
+     "SGC.Partition.mk",
+     "SGC.Partition.rel",
+     "SGC.Partition.decRel",
+     "SGC.lift_matrix",
+     "SGC.Thermodynamics.CoarseGenerator",
+     "SGC.Partition.quot_map",
+     "SGC.Partition.instDecidableEq",
+     "SGC.Thermodynamics.CoarseStationaryDist",
+     "SGC.pi_bar"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.MachineCertificate.Regression.reader_defect_exact"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "18 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.TerminalDecoding.dobrushin",
+     "SGC.Partition.Quot",
+     "SGC.Bridge.DeterministicLumpability.Regression.Cfg",
+     "SGC.Bridge.DeterministicLumpability.Regression.byState",
+     "SGC.Partition.instFintype",
+     "SGC.Thermodynamics.CoarseGenerator",
+     "SGC.Bridge.BlockRenormalization.detKernel",
+     "SGC.Bridge.DeterministicLumpability.Regression.reader",
+     "SGC.Bridge.TerminalDecoding.rowL1Norm",
+     "SGC.Bridge.TerminalDecoding.rowDifferences",
+     "SGC.Partition",
+     "SGC.Partition.rel",
+     "SGC.Partition.mk",
+     "SGC.Partition.decRel",
+     "SGC.Thermodynamics.CoarseStationaryDist",
+     "SGC.Partition.quot_map",
+     "SGC.Partition.instDecidableEq",
+     "SGC.pi_bar"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.MachineCertificate.Regression.reader_dobrushin_zero"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "21 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.TerminalDecoding.mixingBudget",
+     "SGC.Bridge.DeterministicLumpability.Regression.Cfg",
+     "SGC.Bridge.BlockRenormalization.detKernel",
+     "SGC.Bridge.DeterministicLumpability.Regression.reader",
+     "SGC.Bridge.DeterministicLumpability.Regression.byState",
+     "SGC.Partition",
+     "SGC.Bridge.TerminalDecoding.rowL1Norm",
+     "SGC.Partition.Quot",
+     "SGC.Partition.instFintype",
+     "SGC.Renormalization.MeasureReentry.closureCommutator",
+     "SGC.Bridge.TerminalDecoding.dobrushin",
+     "SGC.Thermodynamics.CoarseGenerator",
+     "SGC.Partition.mk",
+     "SGC.Partition.rel",
+     "SGC.Partition.decRel",
+     "SGC.lift_matrix",
+     "SGC.Bridge.TerminalDecoding.rowDifferences",
+     "SGC.Thermodynamics.CoarseStationaryDist",
+     "SGC.Partition.quot_map",
+     "SGC.Partition.instDecidableEq",
+     "SGC.pi_bar"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.MachineCertificate.Regression.reader_mixing_budget"
   },
   {
    "basis": "kernel",
@@ -1228,6 +1479,22 @@
   {
    "basis": "kernel",
    "code": "DEFINITION_CONE_INDEX",
+   "detail": "3 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.TerminalDecoding.dobrushin",
+     "SGC.Bridge.TerminalDecoding.rowL1Norm",
+     "SGC.Bridge.TerminalDecoding.rowDifferences"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.MachineCertificate.dobrushin_zero_iff_rows_equal"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
    "detail": "16 project-local definition(s) determine what this theorem is about; read them",
    "evidence": {
     "definitions": [
@@ -1367,6 +1634,47 @@
    "remedy": "",
    "severity": "info",
    "theorem": "SGC.Bridge.MachineCertificate.machineDefect_lt_two"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "28 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Partition",
+     "SGC.Bridge.TerminalDecoding.dobrushin",
+     "SGC.Partition.Quot",
+     "SGC.Partition.instFintype",
+     "SGC.Thermodynamics.CoarseGenerator",
+     "SGC.Bridge.BlockRenormalization.detKernel",
+     "SGC.Bridge.TerminalDecoding.tv",
+     "SGC.Bridge.TerminalDecoding.ProbabilityRow.mass",
+     "SGC.Bridge.TerminalDecoding.actualLaw",
+     "SGC.Bridge.BlockRenormalization.detKernel_isStochastic",
+     "SGC.Bridge.MachineCertificate.pointMass",
+     "SGC.Bridge.TerminalDecoding.referenceLaw",
+     "SGC.Partition.quot_map",
+     "SGC.Bridge.TerminalDecoding.rowL1Norm",
+     "SGC.Bridge.TerminalDecoding.rowDifferences",
+     "SGC.Partition.rel",
+     "SGC.Partition.decRel",
+     "SGC.Thermodynamics.CoarseStationaryDist",
+     "SGC.Partition.instDecidableEq",
+     "SGC.Bridge.TerminalDecoding.l1",
+     "SGC.Bridge.TerminalDecoding.ProbabilityRow",
+     "SGC.Renormalization.KernelHorizon.IsStochastic",
+     "SGC.Bridge.TerminalDecoding.ProbabilityRow.push",
+     "SGC.lift_matrix",
+     "SGC.Renormalization.KernelHorizon.IsStochastic.mk",
+     "SGC.Bridge.TerminalDecoding.ProbabilityRow.mk",
+     "SGC.pi_bar",
+     "SGC.Bridge.TerminalDecoding.RowStochastic"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.MachineCertificate.machine_error_of_dobrushin_zero"
   },
   {
    "basis": "kernel",
@@ -1659,6 +1967,20 @@
    "remedy": "",
    "severity": "info",
    "theorem": "SGC.Bridge.MachineCertificate.mixing_budget_trivial_of_quotient_machine"
+  },
+  {
+   "basis": "kernel",
+   "code": "DEFINITION_CONE_INDEX",
+   "detail": "1 project-local definition(s) determine what this theorem is about; read them",
+   "evidence": {
+    "definitions": [
+     "SGC.Bridge.TerminalDecoding.RowStochastic"
+    ]
+   },
+   "id": "F08",
+   "remedy": "",
+   "severity": "info",
+   "theorem": "SGC.Bridge.MachineCertificate.pow_row_const_of_rows_equal"
   },
   {
    "basis": "kernel",

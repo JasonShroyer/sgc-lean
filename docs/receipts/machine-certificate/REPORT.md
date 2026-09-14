@@ -1,16 +1,16 @@
 # lean-triage report: REVIEW
 
-- receipt: `lean-triage-2f6aa60a750a-20260914T030932Z`  (hash_self `3cdd9c4d9c91f9c7...`)
+- receipt: `lean-triage-0ad4a6aab9b1-20260914T031444Z`  (hash_self `f5a76912a9b5b1f7...`)
 - tool: lean-triage 0.2.1 (source `25bc5fa54832`, probe `97172a3b4b00`)
 - repo: https://github.com/JasonShroyer/sgc-lean.git
-- commit: 742d4b1af1fd949d7f36f4a0f6908e0895ebd24c  dirty=True
+- commit: 3d534fe1b33a6da3bc051993f9d1539a0ede22fb  dirty=True
 - toolchain: leanprover/lean4:v4.25.2
-- source tree sha256: `2f6aa60a750abe7260442d6b8efb153d6262d8a12f6a2529c6814ea8b98453be`
+- source tree sha256: `0ad4a6aab9b11ced056d3024b991833c75e6f6e5e9f3f4000724f4548717f23d`
 - modules: SGC.Bridge.MachineCertificate
 
 ## Verdict
 
-**REVIEW** - 0 fail, 15 warn, 88 info.
+**REVIEW** - 0 fail, 15 warn, 104 info.
 
 NO_BLOCKING_EVIDENCE = no configured blocking evidence found by the checks that ran. REVIEW = warn-level items need a human. FINDINGS = evidence the claim is not established as stated. None of these means 'correct' or 'important'.
 
@@ -60,8 +60,13 @@ basis: kernel = read from the kernel/elaborated environment; witness = a reprodu
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.Regression.collapse_dobrushin_one | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.Regression.collapse_dobrushin_two_zero | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.Regression.collapse_sq_const | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
+| info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.Regression.reader_Q_entry | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
+| info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.Regression.reader_budget_sharp | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.Regression.reader_coarse_row | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.Regression.reader_defect_eq_one | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
+| info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.Regression.reader_defect_exact | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
+| info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.Regression.reader_dobrushin_zero | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
+| info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.Regression.reader_mixing_budget | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.Regression.swap_Q_sq_ne_Q_block | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.Regression.swap_block_descends_not_step | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.agreeOn_mono | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
@@ -74,12 +79,14 @@ basis: kernel = read from the kernel/elaborated environment; witness = a reprodu
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.detKernel_commutator_entry | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.detKernel_row_residual_l1 | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.dobrushin_detKernel_eq_one | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
+| info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.dobrushin_zero_iff_rows_equal | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.iterate_fst_of_autonomous | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.linear_certificate_implies_descends | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.machineDefect_gap | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.machineDefect_ge_one_of_not_descends | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.machineDefect_linear_budget_vacuous | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.machineDefect_lt_two | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
+| info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.machine_error_of_dobrushin_zero | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.machine_point_law | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.machine_point_reference | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.machine_point_tv_eq_zero_iff | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
@@ -88,6 +95,7 @@ basis: kernel = read from the kernel/elaborated environment; witness = a reprodu
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.machine_terminal_tv | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.machine_terminal_tv_of_descends | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.mixing_budget_trivial_of_quotient_machine | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
+| info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.pow_row_const_of_rows_equal | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.tmBlock_descends_shrink | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.tmStep_iterate_window | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
 | info | attestation | F10 | CLAIM_MAP_UNATTESTED | SGC.Bridge.MachineCertificate.tmStep_window | no human-attested mapping from an informal claim to this statement; the printed statement is the only claim |
@@ -96,8 +104,13 @@ basis: kernel = read from the kernel/elaborated environment; witness = a reprodu
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.Regression.collapse_dobrushin_one | 5 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.Regression.collapse_dobrushin_two_zero | 5 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.Regression.collapse_sq_const | 1 project-local definition(s) determine what this theorem is about; read them |
+| info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.Regression.reader_Q_entry | 14 project-local definition(s) determine what this theorem is about; read them |
+| info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.Regression.reader_budget_sharp | 34 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.Regression.reader_coarse_row | 14 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.Regression.reader_defect_eq_one | 19 project-local definition(s) determine what this theorem is about; read them |
+| info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.Regression.reader_defect_exact | 19 project-local definition(s) determine what this theorem is about; read them |
+| info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.Regression.reader_dobrushin_zero | 18 project-local definition(s) determine what this theorem is about; read them |
+| info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.Regression.reader_mixing_budget | 21 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.Regression.swap_Q_sq_ne_Q_block | 14 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.Regression.swap_block_descends_not_step | 6 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.agreeOn_mono | 1 project-local definition(s) determine what this theorem is about; read them |
@@ -110,11 +123,13 @@ basis: kernel = read from the kernel/elaborated environment; witness = a reprodu
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.detKernel_commutator_entry | 13 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.detKernel_row_residual_l1 | 14 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.dobrushin_detKernel_eq_one | 4 project-local definition(s) determine what this theorem is about; read them |
+| info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.dobrushin_zero_iff_rows_equal | 3 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.linear_certificate_implies_descends | 16 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.machineDefect_gap | 15 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.machineDefect_ge_one_of_not_descends | 16 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.machineDefect_linear_budget_vacuous | 16 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.machineDefect_lt_two | 15 project-local definition(s) determine what this theorem is about; read them |
+| info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.machine_error_of_dobrushin_zero | 28 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.machine_point_law | 19 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.machine_point_reference | 22 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.machine_point_tv_eq_zero_iff | 25 project-local definition(s) determine what this theorem is about; read them |
@@ -123,6 +138,7 @@ basis: kernel = read from the kernel/elaborated environment; witness = a reprodu
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.machine_terminal_tv | 27 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.machine_terminal_tv_of_descends | 25 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.mixing_budget_trivial_of_quotient_machine | 16 project-local definition(s) determine what this theorem is about; read them |
+| info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.pow_row_const_of_rows_equal | 1 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.tmBlock_descends_shrink | 4 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.tmStep_iterate_window | 3 project-local definition(s) determine what this theorem is about; read them |
 | info | kernel | F08 | DEFINITION_CONE_INDEX | SGC.Bridge.MachineCertificate.tmStep_window | 3 project-local definition(s) determine what this theorem is about; read them |
@@ -184,6 +200,82 @@ basis: kernel = read from the kernel/elaborated environment; witness = a reprodu
 
     - `SGC.Bridge.MachineCertificate.Regression.collapse` (def, SGC.Bridge.MachineCertificate): `Fin 3 → Fin 3`
 
+### `SGC.Bridge.MachineCertificate.Regression.reader_Q_entry`
+
+- statement (kernel-elaborated, sha256 `1e4ba67ed78aa46b`):
+
+      ∀ (A B : SGC.Bridge.DeterministicLumpability.Regression.byState.Quot), SGC.Thermodynamics.CoarseGenerator (SGC.Bridge.BlockRenormalization.detKernel SGC.Bridge.DeterministicLumpability.Regression.reader) SGC.Bridge.DeterministicLumpability.Regression.byState (fun x => 1) A B = 1 / 2
+
+- axioms: Classical.choice [lean-core], Quot.sound [lean-core], propext [lean-core]
+- unused hypotheses: none
+- automation: trivial_by=None vacuous_by=None empty_domain=None
+- claim map: UNATTESTED
+
+- definitions to read (project-local, reachable from the statement):
+
+    - `SGC.Partition.Quot` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → SGC.Partition V → Type u_2`
+    - `SGC.Bridge.DeterministicLumpability.Regression.Cfg` (def, SGC.Bridge.DeterministicLumpability): `Type`
+    - `SGC.Bridge.DeterministicLumpability.Regression.byState` (def, SGC.Bridge.DeterministicLumpability): `SGC.Partition SGC.Bridge.DeterministicLumpability.Regression.Cfg`
+    - `SGC.Thermodynamics.CoarseGenerator` (def, SGC.Thermodynamics.EntropyProduction): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → Matrix V V ℝ → (P : SGC.Partition V) → (V → ℝ) → Matrix P.Quot P.Quot ℝ`
+    - `SGC.Bridge.BlockRenormalization.detKernel` (def, SGC.Bridge.BlockRenormalization): `{V : Type u_1} → [DecidableEq V] → (V → V) → Matrix V V ℝ`
+    - `SGC.Bridge.DeterministicLumpability.Regression.reader` (def, SGC.Bridge.DeterministicLumpability): `SGC.Bridge.DeterministicLumpability.Regression.Cfg → SGC.Bridge.DeterministicLumpability.Regression.Cfg`
+    - `SGC.Partition` (inductive, SGC.Renormalization.Lumpability): `(V : Type u_2) → [DecidableEq V] → Type u_2`
+    - `SGC.Partition.rel` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → SGC.Partition V → Setoid V`
+    - `SGC.Partition.mk` (ctor, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → (rel : Setoid V) → DecidableRel ⇑rel → SGC.Partition V`
+    - `SGC.Thermodynamics.CoarseStationaryDist` (def, SGC.Thermodynamics.EntropyProduction): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → (P : SGC.Partition V) → (V → ℝ) → P.Quot → ℝ`
+    - `SGC.Partition.quot_map` (def, SGC.Renormalization.Lumpability): `{V : Type u_1} → [inst : DecidableEq V] → (P : SGC.Partition V) → V → P.Quot`
+    - `SGC.Partition.instDecidableEq` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → (P : SGC.Partition V) → DecidableEq P.Quot`
+    - `SGC.pi_bar` (def, SGC.Renormalization.Lumpability): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → (P : SGC.Partition V) → (V → ℝ) → P.Quot → ℝ`
+    - `SGC.Partition.decRel` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → (self : SGC.Partition V) → DecidableRel ⇑self.rel`
+
+### `SGC.Bridge.MachineCertificate.Regression.reader_budget_sharp`
+
+- statement (kernel-elaborated, sha256 `9bd4cb8f13fa3176`):
+
+      ∀ (x : SGC.Bridge.DeterministicLumpability.Regression.Cfg) (h : ℕ), 1 ≤ h → SGC.Bridge.TerminalDecoding.tv (SGC.Bridge.TerminalDecoding.actualLaw (SGC.Bridge.BlockRenormalization.detKernel SGC.Bridge.DeterministicLumpability.Regression.reader) SGC.Bridge.DeterministicLumpability.Regression.byState ⋯ (SGC.Bridge.MachineCertificate.pointMass x) h).mass (SGC.Bridge.TerminalDecoding.referenceLaw (SGC.Bridge.BlockRenormalization.detKernel SGC.Bridge.DeterministicLumpability.Regression.reader) SGC.Bridge.DeterministicLumpability.Regression.byState ⋯ ⋯ (SGC.Bridge.MachineCertificate.pointMass x) h).mass = SGC.Bridge.TerminalDecoding.mixingBudget (SGC.Bridge.BlockRenormalization.detKernel SGC.Bridge.DeterministicLumpability.Regression.reader) SGC.Bridge.DeterministicLumpability.Regression.byState (fun x => 1) h
+
+- axioms: Classical.choice [lean-core], Quot.sound [lean-core], propext [lean-core]
+- unused hypotheses: none
+- automation: trivial_by=None vacuous_by=None empty_domain=None
+- claim map: UNATTESTED
+
+- definitions to read (project-local, reachable from the statement):
+
+    - `SGC.Bridge.DeterministicLumpability.Regression.Cfg` (def, SGC.Bridge.DeterministicLumpability): `Type`
+    - `SGC.Bridge.TerminalDecoding.tv` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → [Fintype X] → (X → ℝ) → (X → ℝ) → ℝ`
+    - `SGC.Partition.Quot` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → SGC.Partition V → Type u_2`
+    - `SGC.Bridge.DeterministicLumpability.Regression.byState` (def, SGC.Bridge.DeterministicLumpability): `SGC.Partition SGC.Bridge.DeterministicLumpability.Regression.Cfg`
+    - `SGC.Partition.instFintype` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [Fintype V] → [inst : DecidableEq V] → (P : SGC.Partition V) → Fintype P.Quot`
+    - `SGC.Bridge.TerminalDecoding.ProbabilityRow.mass` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_4} → [inst : Fintype X] → SGC.Bridge.TerminalDecoding.ProbabilityRow X → X → ℝ`
+    - `SGC.Bridge.TerminalDecoding.actualLaw` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → [inst : Fintype X] → [inst_1 : DecidableEq X] → (T : Matrix X X ℝ) → (P : SGC.Partition X) → SGC.Renormalization.KernelHorizon.IsStochastic T → SGC.Bridge.TerminalDecoding.ProbabilityRow X → ℕ → SGC.Bridge.TerminalDecoding.ProbabilityRow P.Quot`
+    - `SGC.Bridge.BlockRenormalization.detKernel` (def, SGC.Bridge.BlockRenormalization): `{V : Type u_1} → [DecidableEq V] → (V → V) → Matrix V V ℝ`
+    - `SGC.Bridge.DeterministicLumpability.Regression.reader` (def, SGC.Bridge.DeterministicLumpability): `SGC.Bridge.DeterministicLumpability.Regression.Cfg → SGC.Bridge.DeterministicLumpability.Regression.Cfg`
+    - `SGC.Bridge.BlockRenormalization.detKernel_isStochastic` (theorem, SGC.Bridge.BlockRenormalization): `∀ {V : Type u_1} [inst : Fintype V] [inst_1 : DecidableEq V] (f : V → V), SGC.Renormalization.KernelHorizon.IsStochastic (SGC.Bridge.BlockRenormalization.detKernel f)`
+    - `SGC.Bridge.MachineCertificate.pointMass` (def, SGC.Bridge.MachineCertificate): `{V : Type u_1} → [inst : Fintype V] → [DecidableEq V] → V → SGC.Bridge.TerminalDecoding.ProbabilityRow V`
+    - `SGC.Bridge.TerminalDecoding.referenceLaw` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → [inst : Fintype X] → [inst_1 : DecidableEq X] → (T : Matrix X X ℝ) → (P : SGC.Partition X) → {pi : X → ℝ} → (∀ (x : X), 0 < pi x) → SGC.Renormalization.KernelHorizon.IsStochastic T → SGC.Bridge.TerminalDecoding.ProbabilityRow X → ℕ → SGC.Bridge.TerminalDecoding.ProbabilityRow P.Quot`
+    - `SGC.Bridge.TerminalDecoding.mixingBudget` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → [Fintype X] → [inst : DecidableEq X] → Matrix X X ℝ → SGC.Partition X → (X → ℝ) → ℕ → ℝ`
+    - `SGC.Bridge.TerminalDecoding.l1` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → [Fintype X] → (X → ℝ) → ℝ`
+    - `SGC.Partition` (inductive, SGC.Renormalization.Lumpability): `(V : Type u_2) → [DecidableEq V] → Type u_2`
+    - `SGC.Partition.rel` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → SGC.Partition V → Setoid V`
+    - `SGC.Partition.mk` (ctor, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → (rel : Setoid V) → DecidableRel ⇑rel → SGC.Partition V`
+    - `SGC.Partition.decRel` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → (self : SGC.Partition V) → DecidableRel ⇑self.rel`
+    - `SGC.Bridge.TerminalDecoding.ProbabilityRow` (inductive, SGC.Bridge.TerminalDecoding): `(X : Type u_4) → [Fintype X] → Type u_4`
+    - `SGC.Renormalization.KernelHorizon.IsStochastic` (inductive, SGC.Renormalization.KernelHorizon): `{V : Type u_1} → [Fintype V] → Matrix V V ℝ → Prop`
+    - `SGC.Bridge.TerminalDecoding.ProbabilityRow.push` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → {Y : Type u_2} → [inst : Fintype X] → [inst_1 : Fintype Y] → SGC.Bridge.TerminalDecoding.ProbabilityRow X → (M : Matrix X Y ℝ) → SGC.Bridge.TerminalDecoding.RowStochastic M → SGC.Bridge.TerminalDecoding.ProbabilityRow Y`
+    - `SGC.lift_matrix` (def, SGC.Renormalization.Lumpability): `{V : Type u_1} → [inst : DecidableEq V] → (P : SGC.Partition V) → Matrix V P.Quot ℝ`
+    - `SGC.Renormalization.KernelHorizon.IsStochastic.mk` (ctor, SGC.Renormalization.KernelHorizon): `∀ {V : Type u_1} [inst : Fintype V] {T : Matrix V V ℝ}, (∀ (i j : V), 0 ≤ T i j) → (∀ (i : V), ∑ j, T i j = 1) → SGC.Renormalization.KernelHorizon.IsStochastic T`
+    - `SGC.Bridge.TerminalDecoding.ProbabilityRow.mk` (ctor, SGC.Bridge.TerminalDecoding): `{X : Type u_4} → [inst : Fintype X] → (mass : X → ℝ) → (∀ (x : X), 0 ≤ mass x) → ∑ x, mass x = 1 → SGC.Bridge.TerminalDecoding.ProbabilityRow X`
+    - `SGC.Partition.instDecidableEq` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → (P : SGC.Partition V) → DecidableEq P.Quot`
+    - `SGC.Thermodynamics.CoarseGenerator` (def, SGC.Thermodynamics.EntropyProduction): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → Matrix V V ℝ → (P : SGC.Partition V) → (V → ℝ) → Matrix P.Quot P.Quot ℝ`
+    - `SGC.Bridge.TerminalDecoding.rowL1Norm` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → {Y : Type u_2} → [Fintype X] → [Fintype Y] → Matrix X Y ℝ → ℝ`
+    - `SGC.Renormalization.MeasureReentry.closureCommutator` (def, SGC.Renormalization.MeasureReentry): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → Matrix V V ℝ → (P : SGC.Partition V) → (V → ℝ) → Matrix V P.Quot ℝ`
+    - `SGC.Bridge.TerminalDecoding.dobrushin` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → {Y : Type u_2} → [Fintype X] → [Fintype Y] → Matrix X Y ℝ → ℝ`
+    - `SGC.Bridge.TerminalDecoding.RowStochastic` (inductive, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → {Y : Type u_2} → [Fintype Y] → Matrix X Y ℝ → Prop`
+    - `SGC.Partition.quot_map` (def, SGC.Renormalization.Lumpability): `{V : Type u_1} → [inst : DecidableEq V] → (P : SGC.Partition V) → V → P.Quot`
+    - `SGC.Thermodynamics.CoarseStationaryDist` (def, SGC.Thermodynamics.EntropyProduction): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → (P : SGC.Partition V) → (V → ℝ) → P.Quot → ℝ`
+    - `SGC.Bridge.TerminalDecoding.rowDifferences` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → {Y : Type u_2} → Matrix X Y ℝ → Matrix (X × X) Y ℝ`
+    - `SGC.pi_bar` (def, SGC.Renormalization.Lumpability): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → (P : SGC.Partition V) → (V → ℝ) → P.Quot → ℝ`
+
 ### `SGC.Bridge.MachineCertificate.Regression.reader_coarse_row`
 
 - statement (kernel-elaborated, sha256 `5509ee93e6f455bd`):
@@ -243,6 +335,106 @@ basis: kernel = read from the kernel/elaborated environment; witness = a reprodu
     - `SGC.Partition.quot_map` (def, SGC.Renormalization.Lumpability): `{V : Type u_1} → [inst : DecidableEq V] → (P : SGC.Partition V) → V → P.Quot`
     - `SGC.Partition.instDecidableEq` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → (P : SGC.Partition V) → DecidableEq P.Quot`
     - `SGC.Thermodynamics.CoarseStationaryDist` (def, SGC.Thermodynamics.EntropyProduction): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → (P : SGC.Partition V) → (V → ℝ) → P.Quot → ℝ`
+    - `SGC.pi_bar` (def, SGC.Renormalization.Lumpability): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → (P : SGC.Partition V) → (V → ℝ) → P.Quot → ℝ`
+
+### `SGC.Bridge.MachineCertificate.Regression.reader_defect_exact`
+
+- statement (kernel-elaborated, sha256 `0c7e33ba591a72cd`):
+
+      (SGC.Bridge.MachineCertificate.machineDefect SGC.Bridge.DeterministicLumpability.Regression.reader SGC.Bridge.DeterministicLumpability.Regression.byState fun x => 1) = 1
+
+- axioms: Classical.choice [lean-core], Quot.sound [lean-core], propext [lean-core]
+- unused hypotheses: none
+- automation: trivial_by=None vacuous_by=None empty_domain=None
+- claim map: UNATTESTED
+
+- definitions to read (project-local, reachable from the statement):
+
+    - `SGC.Bridge.MachineCertificate.machineDefect` (def, SGC.Bridge.MachineCertificate): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → (V → V) → SGC.Partition V → (V → ℝ) → ℝ`
+    - `SGC.Bridge.DeterministicLumpability.Regression.Cfg` (def, SGC.Bridge.DeterministicLumpability): `Type`
+    - `SGC.Bridge.DeterministicLumpability.Regression.reader` (def, SGC.Bridge.DeterministicLumpability): `SGC.Bridge.DeterministicLumpability.Regression.Cfg → SGC.Bridge.DeterministicLumpability.Regression.Cfg`
+    - `SGC.Bridge.DeterministicLumpability.Regression.byState` (def, SGC.Bridge.DeterministicLumpability): `SGC.Partition SGC.Bridge.DeterministicLumpability.Regression.Cfg`
+    - `SGC.Partition` (inductive, SGC.Renormalization.Lumpability): `(V : Type u_2) → [DecidableEq V] → Type u_2`
+    - `SGC.Bridge.TerminalDecoding.rowL1Norm` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → {Y : Type u_2} → [Fintype X] → [Fintype Y] → Matrix X Y ℝ → ℝ`
+    - `SGC.Partition.Quot` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → SGC.Partition V → Type u_2`
+    - `SGC.Partition.instFintype` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [Fintype V] → [inst : DecidableEq V] → (P : SGC.Partition V) → Fintype P.Quot`
+    - `SGC.Renormalization.MeasureReentry.closureCommutator` (def, SGC.Renormalization.MeasureReentry): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → Matrix V V ℝ → (P : SGC.Partition V) → (V → ℝ) → Matrix V P.Quot ℝ`
+    - `SGC.Bridge.BlockRenormalization.detKernel` (def, SGC.Bridge.BlockRenormalization): `{V : Type u_1} → [DecidableEq V] → (V → V) → Matrix V V ℝ`
+    - `SGC.Partition.mk` (ctor, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → (rel : Setoid V) → DecidableRel ⇑rel → SGC.Partition V`
+    - `SGC.Partition.rel` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → SGC.Partition V → Setoid V`
+    - `SGC.Partition.decRel` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → (self : SGC.Partition V) → DecidableRel ⇑self.rel`
+    - `SGC.lift_matrix` (def, SGC.Renormalization.Lumpability): `{V : Type u_1} → [inst : DecidableEq V] → (P : SGC.Partition V) → Matrix V P.Quot ℝ`
+    - `SGC.Thermodynamics.CoarseGenerator` (def, SGC.Thermodynamics.EntropyProduction): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → Matrix V V ℝ → (P : SGC.Partition V) → (V → ℝ) → Matrix P.Quot P.Quot ℝ`
+    - `SGC.Partition.quot_map` (def, SGC.Renormalization.Lumpability): `{V : Type u_1} → [inst : DecidableEq V] → (P : SGC.Partition V) → V → P.Quot`
+    - `SGC.Partition.instDecidableEq` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → (P : SGC.Partition V) → DecidableEq P.Quot`
+    - `SGC.Thermodynamics.CoarseStationaryDist` (def, SGC.Thermodynamics.EntropyProduction): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → (P : SGC.Partition V) → (V → ℝ) → P.Quot → ℝ`
+    - `SGC.pi_bar` (def, SGC.Renormalization.Lumpability): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → (P : SGC.Partition V) → (V → ℝ) → P.Quot → ℝ`
+
+### `SGC.Bridge.MachineCertificate.Regression.reader_dobrushin_zero`
+
+- statement (kernel-elaborated, sha256 `f6bb760e83f6ddcb`):
+
+      SGC.Bridge.TerminalDecoding.dobrushin (SGC.Thermodynamics.CoarseGenerator (SGC.Bridge.BlockRenormalization.detKernel SGC.Bridge.DeterministicLumpability.Regression.reader) SGC.Bridge.DeterministicLumpability.Regression.byState fun x => 1) = 0
+
+- axioms: Classical.choice [lean-core], Quot.sound [lean-core], propext [lean-core]
+- unused hypotheses: none
+- automation: trivial_by=None vacuous_by=None empty_domain=None
+- claim map: UNATTESTED
+
+- definitions to read (project-local, reachable from the statement):
+
+    - `SGC.Bridge.TerminalDecoding.dobrushin` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → {Y : Type u_2} → [Fintype X] → [Fintype Y] → Matrix X Y ℝ → ℝ`
+    - `SGC.Partition.Quot` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → SGC.Partition V → Type u_2`
+    - `SGC.Bridge.DeterministicLumpability.Regression.Cfg` (def, SGC.Bridge.DeterministicLumpability): `Type`
+    - `SGC.Bridge.DeterministicLumpability.Regression.byState` (def, SGC.Bridge.DeterministicLumpability): `SGC.Partition SGC.Bridge.DeterministicLumpability.Regression.Cfg`
+    - `SGC.Partition.instFintype` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [Fintype V] → [inst : DecidableEq V] → (P : SGC.Partition V) → Fintype P.Quot`
+    - `SGC.Thermodynamics.CoarseGenerator` (def, SGC.Thermodynamics.EntropyProduction): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → Matrix V V ℝ → (P : SGC.Partition V) → (V → ℝ) → Matrix P.Quot P.Quot ℝ`
+    - `SGC.Bridge.BlockRenormalization.detKernel` (def, SGC.Bridge.BlockRenormalization): `{V : Type u_1} → [DecidableEq V] → (V → V) → Matrix V V ℝ`
+    - `SGC.Bridge.DeterministicLumpability.Regression.reader` (def, SGC.Bridge.DeterministicLumpability): `SGC.Bridge.DeterministicLumpability.Regression.Cfg → SGC.Bridge.DeterministicLumpability.Regression.Cfg`
+    - `SGC.Bridge.TerminalDecoding.rowL1Norm` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → {Y : Type u_2} → [Fintype X] → [Fintype Y] → Matrix X Y ℝ → ℝ`
+    - `SGC.Bridge.TerminalDecoding.rowDifferences` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → {Y : Type u_2} → Matrix X Y ℝ → Matrix (X × X) Y ℝ`
+    - `SGC.Partition` (inductive, SGC.Renormalization.Lumpability): `(V : Type u_2) → [DecidableEq V] → Type u_2`
+    - `SGC.Partition.rel` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → SGC.Partition V → Setoid V`
+    - `SGC.Partition.mk` (ctor, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → (rel : Setoid V) → DecidableRel ⇑rel → SGC.Partition V`
+    - `SGC.Partition.decRel` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → (self : SGC.Partition V) → DecidableRel ⇑self.rel`
+    - `SGC.Thermodynamics.CoarseStationaryDist` (def, SGC.Thermodynamics.EntropyProduction): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → (P : SGC.Partition V) → (V → ℝ) → P.Quot → ℝ`
+    - `SGC.Partition.quot_map` (def, SGC.Renormalization.Lumpability): `{V : Type u_1} → [inst : DecidableEq V] → (P : SGC.Partition V) → V → P.Quot`
+    - `SGC.Partition.instDecidableEq` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → (P : SGC.Partition V) → DecidableEq P.Quot`
+    - `SGC.pi_bar` (def, SGC.Renormalization.Lumpability): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → (P : SGC.Partition V) → (V → ℝ) → P.Quot → ℝ`
+
+### `SGC.Bridge.MachineCertificate.Regression.reader_mixing_budget`
+
+- statement (kernel-elaborated, sha256 `24514d59e7ceb12f`):
+
+      ∀ (h : ℕ), 1 ≤ h → SGC.Bridge.TerminalDecoding.mixingBudget (SGC.Bridge.BlockRenormalization.detKernel SGC.Bridge.DeterministicLumpability.Regression.reader) SGC.Bridge.DeterministicLumpability.Regression.byState (fun x => 1) h = 1 / 2
+
+- axioms: Classical.choice [lean-core], Quot.sound [lean-core], propext [lean-core]
+- unused hypotheses: none
+- automation: trivial_by=None vacuous_by=None empty_domain=None
+- claim map: UNATTESTED
+
+- definitions to read (project-local, reachable from the statement):
+
+    - `SGC.Bridge.TerminalDecoding.mixingBudget` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → [Fintype X] → [inst : DecidableEq X] → Matrix X X ℝ → SGC.Partition X → (X → ℝ) → ℕ → ℝ`
+    - `SGC.Bridge.DeterministicLumpability.Regression.Cfg` (def, SGC.Bridge.DeterministicLumpability): `Type`
+    - `SGC.Bridge.BlockRenormalization.detKernel` (def, SGC.Bridge.BlockRenormalization): `{V : Type u_1} → [DecidableEq V] → (V → V) → Matrix V V ℝ`
+    - `SGC.Bridge.DeterministicLumpability.Regression.reader` (def, SGC.Bridge.DeterministicLumpability): `SGC.Bridge.DeterministicLumpability.Regression.Cfg → SGC.Bridge.DeterministicLumpability.Regression.Cfg`
+    - `SGC.Bridge.DeterministicLumpability.Regression.byState` (def, SGC.Bridge.DeterministicLumpability): `SGC.Partition SGC.Bridge.DeterministicLumpability.Regression.Cfg`
+    - `SGC.Partition` (inductive, SGC.Renormalization.Lumpability): `(V : Type u_2) → [DecidableEq V] → Type u_2`
+    - `SGC.Bridge.TerminalDecoding.rowL1Norm` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → {Y : Type u_2} → [Fintype X] → [Fintype Y] → Matrix X Y ℝ → ℝ`
+    - `SGC.Partition.Quot` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → SGC.Partition V → Type u_2`
+    - `SGC.Partition.instFintype` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [Fintype V] → [inst : DecidableEq V] → (P : SGC.Partition V) → Fintype P.Quot`
+    - `SGC.Renormalization.MeasureReentry.closureCommutator` (def, SGC.Renormalization.MeasureReentry): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → Matrix V V ℝ → (P : SGC.Partition V) → (V → ℝ) → Matrix V P.Quot ℝ`
+    - `SGC.Bridge.TerminalDecoding.dobrushin` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → {Y : Type u_2} → [Fintype X] → [Fintype Y] → Matrix X Y ℝ → ℝ`
+    - `SGC.Thermodynamics.CoarseGenerator` (def, SGC.Thermodynamics.EntropyProduction): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → Matrix V V ℝ → (P : SGC.Partition V) → (V → ℝ) → Matrix P.Quot P.Quot ℝ`
+    - `SGC.Partition.mk` (ctor, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → (rel : Setoid V) → DecidableRel ⇑rel → SGC.Partition V`
+    - `SGC.Partition.rel` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → SGC.Partition V → Setoid V`
+    - `SGC.Partition.decRel` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → (self : SGC.Partition V) → DecidableRel ⇑self.rel`
+    - `SGC.lift_matrix` (def, SGC.Renormalization.Lumpability): `{V : Type u_1} → [inst : DecidableEq V] → (P : SGC.Partition V) → Matrix V P.Quot ℝ`
+    - `SGC.Bridge.TerminalDecoding.rowDifferences` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → {Y : Type u_2} → Matrix X Y ℝ → Matrix (X × X) Y ℝ`
+    - `SGC.Thermodynamics.CoarseStationaryDist` (def, SGC.Thermodynamics.EntropyProduction): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → (P : SGC.Partition V) → (V → ℝ) → P.Quot → ℝ`
+    - `SGC.Partition.quot_map` (def, SGC.Renormalization.Lumpability): `{V : Type u_1} → [inst : DecidableEq V] → (P : SGC.Partition V) → V → P.Quot`
+    - `SGC.Partition.instDecidableEq` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → (P : SGC.Partition V) → DecidableEq P.Quot`
     - `SGC.pi_bar` (def, SGC.Renormalization.Lumpability): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → (P : SGC.Partition V) → (V → ℝ) → P.Quot → ℝ`
 
 ### `SGC.Bridge.MachineCertificate.Regression.swap_Q_sq_ne_Q_block`
@@ -527,6 +719,23 @@ basis: kernel = read from the kernel/elaborated environment; witness = a reprodu
     - `SGC.Bridge.TerminalDecoding.rowL1Norm` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → {Y : Type u_2} → [Fintype X] → [Fintype Y] → Matrix X Y ℝ → ℝ`
     - `SGC.Bridge.TerminalDecoding.rowDifferences` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → {Y : Type u_2} → Matrix X Y ℝ → Matrix (X × X) Y ℝ`
 
+### `SGC.Bridge.MachineCertificate.dobrushin_zero_iff_rows_equal`
+
+- statement (kernel-elaborated, sha256 `233780b560f95326`):
+
+      ∀ {X : Type u_2} [inst : Fintype X] (M : Matrix X X ℝ), SGC.Bridge.TerminalDecoding.dobrushin M = 0 ↔ ∀ (x y : X), M x = M y
+
+- axioms: Classical.choice [lean-core], Quot.sound [lean-core], propext [lean-core]
+- unused hypotheses: none
+- automation: trivial_by=None vacuous_by=None empty_domain=None
+- claim map: UNATTESTED
+
+- definitions to read (project-local, reachable from the statement):
+
+    - `SGC.Bridge.TerminalDecoding.dobrushin` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → {Y : Type u_2} → [Fintype X] → [Fintype Y] → Matrix X Y ℝ → ℝ`
+    - `SGC.Bridge.TerminalDecoding.rowL1Norm` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → {Y : Type u_2} → [Fintype X] → [Fintype Y] → Matrix X Y ℝ → ℝ`
+    - `SGC.Bridge.TerminalDecoding.rowDifferences` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → {Y : Type u_2} → Matrix X Y ℝ → Matrix (X × X) Y ℝ`
+
 ### `SGC.Bridge.MachineCertificate.iterate_fst_of_autonomous`
 
 - statement (kernel-elaborated, sha256 `c05ee5c60d27509a`):
@@ -685,6 +894,48 @@ basis: kernel = read from the kernel/elaborated environment; witness = a reprodu
     - `SGC.Partition.instDecidableEq` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → (P : SGC.Partition V) → DecidableEq P.Quot`
     - `SGC.Thermodynamics.CoarseStationaryDist` (def, SGC.Thermodynamics.EntropyProduction): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → (P : SGC.Partition V) → (V → ℝ) → P.Quot → ℝ`
     - `SGC.pi_bar` (def, SGC.Renormalization.Lumpability): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → (P : SGC.Partition V) → (V → ℝ) → P.Quot → ℝ`
+
+### `SGC.Bridge.MachineCertificate.machine_error_of_dobrushin_zero`
+
+- statement (kernel-elaborated, sha256 `15f7a72d7206d493`):
+
+      ∀ {V : Type u_1} [inst : Fintype V] [inst_1 : DecidableEq V] (f : V → V) (P : SGC.Partition V) {pi : V → ℝ} (hpi : ∀ (x : V), 0 < pi x), SGC.Bridge.TerminalDecoding.dobrushin (SGC.Thermodynamics.CoarseGenerator (SGC.Bridge.BlockRenormalization.detKernel f) P pi) = 0 → ∀ (x : V) (h : ℕ), 1 ≤ h → ∀ (A : P.Quot), SGC.Bridge.TerminalDecoding.tv (SGC.Bridge.TerminalDecoding.actualLaw (SGC.Bridge.BlockRenormalization.detKernel f) P ⋯ (SGC.Bridge.MachineCertificate.pointMass x) h).mass (SGC.Bridge.TerminalDecoding.referenceLaw (SGC.Bridge.BlockRenormalization.detKernel f) P hpi ⋯ (SGC.Bridge.MachineCertificate.pointMass x) h).mass = 1 - SGC.Thermodynamics.CoarseGenerator (SGC.Bridge.BlockRenormalization.detKernel f) P pi A (P.quot_map (f^[h] x))
+
+- axioms: Classical.choice [lean-core], Quot.sound [lean-core], propext [lean-core]
+- unused hypotheses: none
+- automation: trivial_by=None vacuous_by=None empty_domain=None
+- claim map: UNATTESTED
+
+- definitions to read (project-local, reachable from the statement):
+
+    - `SGC.Partition` (inductive, SGC.Renormalization.Lumpability): `(V : Type u_2) → [DecidableEq V] → Type u_2`
+    - `SGC.Bridge.TerminalDecoding.dobrushin` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → {Y : Type u_2} → [Fintype X] → [Fintype Y] → Matrix X Y ℝ → ℝ`
+    - `SGC.Partition.Quot` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → SGC.Partition V → Type u_2`
+    - `SGC.Partition.instFintype` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [Fintype V] → [inst : DecidableEq V] → (P : SGC.Partition V) → Fintype P.Quot`
+    - `SGC.Thermodynamics.CoarseGenerator` (def, SGC.Thermodynamics.EntropyProduction): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → Matrix V V ℝ → (P : SGC.Partition V) → (V → ℝ) → Matrix P.Quot P.Quot ℝ`
+    - `SGC.Bridge.BlockRenormalization.detKernel` (def, SGC.Bridge.BlockRenormalization): `{V : Type u_1} → [DecidableEq V] → (V → V) → Matrix V V ℝ`
+    - `SGC.Bridge.TerminalDecoding.tv` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → [Fintype X] → (X → ℝ) → (X → ℝ) → ℝ`
+    - `SGC.Bridge.TerminalDecoding.ProbabilityRow.mass` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_4} → [inst : Fintype X] → SGC.Bridge.TerminalDecoding.ProbabilityRow X → X → ℝ`
+    - `SGC.Bridge.TerminalDecoding.actualLaw` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → [inst : Fintype X] → [inst_1 : DecidableEq X] → (T : Matrix X X ℝ) → (P : SGC.Partition X) → SGC.Renormalization.KernelHorizon.IsStochastic T → SGC.Bridge.TerminalDecoding.ProbabilityRow X → ℕ → SGC.Bridge.TerminalDecoding.ProbabilityRow P.Quot`
+    - `SGC.Bridge.BlockRenormalization.detKernel_isStochastic` (theorem, SGC.Bridge.BlockRenormalization): `∀ {V : Type u_1} [inst : Fintype V] [inst_1 : DecidableEq V] (f : V → V), SGC.Renormalization.KernelHorizon.IsStochastic (SGC.Bridge.BlockRenormalization.detKernel f)`
+    - `SGC.Bridge.MachineCertificate.pointMass` (def, SGC.Bridge.MachineCertificate): `{V : Type u_1} → [inst : Fintype V] → [DecidableEq V] → V → SGC.Bridge.TerminalDecoding.ProbabilityRow V`
+    - `SGC.Bridge.TerminalDecoding.referenceLaw` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → [inst : Fintype X] → [inst_1 : DecidableEq X] → (T : Matrix X X ℝ) → (P : SGC.Partition X) → {pi : X → ℝ} → (∀ (x : X), 0 < pi x) → SGC.Renormalization.KernelHorizon.IsStochastic T → SGC.Bridge.TerminalDecoding.ProbabilityRow X → ℕ → SGC.Bridge.TerminalDecoding.ProbabilityRow P.Quot`
+    - `SGC.Partition.quot_map` (def, SGC.Renormalization.Lumpability): `{V : Type u_1} → [inst : DecidableEq V] → (P : SGC.Partition V) → V → P.Quot`
+    - `SGC.Bridge.TerminalDecoding.rowL1Norm` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → {Y : Type u_2} → [Fintype X] → [Fintype Y] → Matrix X Y ℝ → ℝ`
+    - `SGC.Bridge.TerminalDecoding.rowDifferences` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → {Y : Type u_2} → Matrix X Y ℝ → Matrix (X × X) Y ℝ`
+    - `SGC.Partition.rel` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → SGC.Partition V → Setoid V`
+    - `SGC.Partition.decRel` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → (self : SGC.Partition V) → DecidableRel ⇑self.rel`
+    - `SGC.Thermodynamics.CoarseStationaryDist` (def, SGC.Thermodynamics.EntropyProduction): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → (P : SGC.Partition V) → (V → ℝ) → P.Quot → ℝ`
+    - `SGC.Partition.instDecidableEq` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → (P : SGC.Partition V) → DecidableEq P.Quot`
+    - `SGC.Bridge.TerminalDecoding.l1` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → [Fintype X] → (X → ℝ) → ℝ`
+    - `SGC.Bridge.TerminalDecoding.ProbabilityRow` (inductive, SGC.Bridge.TerminalDecoding): `(X : Type u_4) → [Fintype X] → Type u_4`
+    - `SGC.Renormalization.KernelHorizon.IsStochastic` (inductive, SGC.Renormalization.KernelHorizon): `{V : Type u_1} → [Fintype V] → Matrix V V ℝ → Prop`
+    - `SGC.Bridge.TerminalDecoding.ProbabilityRow.push` (def, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → {Y : Type u_2} → [inst : Fintype X] → [inst_1 : Fintype Y] → SGC.Bridge.TerminalDecoding.ProbabilityRow X → (M : Matrix X Y ℝ) → SGC.Bridge.TerminalDecoding.RowStochastic M → SGC.Bridge.TerminalDecoding.ProbabilityRow Y`
+    - `SGC.lift_matrix` (def, SGC.Renormalization.Lumpability): `{V : Type u_1} → [inst : DecidableEq V] → (P : SGC.Partition V) → Matrix V P.Quot ℝ`
+    - `SGC.Renormalization.KernelHorizon.IsStochastic.mk` (ctor, SGC.Renormalization.KernelHorizon): `∀ {V : Type u_1} [inst : Fintype V] {T : Matrix V V ℝ}, (∀ (i j : V), 0 ≤ T i j) → (∀ (i : V), ∑ j, T i j = 1) → SGC.Renormalization.KernelHorizon.IsStochastic T`
+    - `SGC.Bridge.TerminalDecoding.ProbabilityRow.mk` (ctor, SGC.Bridge.TerminalDecoding): `{X : Type u_4} → [inst : Fintype X] → (mass : X → ℝ) → (∀ (x : X), 0 ≤ mass x) → ∑ x, mass x = 1 → SGC.Bridge.TerminalDecoding.ProbabilityRow X`
+    - `SGC.pi_bar` (def, SGC.Renormalization.Lumpability): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → (P : SGC.Partition V) → (V → ℝ) → P.Quot → ℝ`
+    - `SGC.Bridge.TerminalDecoding.RowStochastic` (inductive, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → {Y : Type u_2} → [Fintype Y] → Matrix X Y ℝ → Prop`
 
 ### `SGC.Bridge.MachineCertificate.machine_point_law`
 
@@ -985,6 +1236,21 @@ basis: kernel = read from the kernel/elaborated environment; witness = a reprodu
     - `SGC.Thermodynamics.CoarseStationaryDist` (def, SGC.Thermodynamics.EntropyProduction): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → (P : SGC.Partition V) → (V → ℝ) → P.Quot → ℝ`
     - `SGC.Partition.instDecidableEq` (def, SGC.Renormalization.Lumpability): `{V : Type u_2} → [inst : DecidableEq V] → (P : SGC.Partition V) → DecidableEq P.Quot`
     - `SGC.pi_bar` (def, SGC.Renormalization.Lumpability): `{V : Type u_1} → [Fintype V] → [inst : DecidableEq V] → (P : SGC.Partition V) → (V → ℝ) → P.Quot → ℝ`
+
+### `SGC.Bridge.MachineCertificate.pow_row_const_of_rows_equal`
+
+- statement (kernel-elaborated, sha256 `e732c7842741aa1f`):
+
+      ∀ {X : Type u_2} [inst : Fintype X] [inst_1 : DecidableEq X] (M : Matrix X X ℝ), SGC.Bridge.TerminalDecoding.RowStochastic M → (∀ (x y : X), M x = M y) → ∀ (h : ℕ), 1 ≤ h → ∀ (x x' : X), (M ^ h) x = M x'
+
+- axioms: Classical.choice [lean-core], Quot.sound [lean-core], propext [lean-core]
+- unused hypotheses: none
+- automation: trivial_by=None vacuous_by=None empty_domain=None
+- claim map: UNATTESTED
+
+- definitions to read (project-local, reachable from the statement):
+
+    - `SGC.Bridge.TerminalDecoding.RowStochastic` (inductive, SGC.Bridge.TerminalDecoding): `{X : Type u_1} → {Y : Type u_2} → [Fintype Y] → Matrix X Y ℝ → Prop`
 
 ### `SGC.Bridge.MachineCertificate.tmBlock_descends_shrink`
 
