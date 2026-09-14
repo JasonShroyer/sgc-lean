@@ -48,6 +48,7 @@ import SGC.Bridge.DeterministicKernels
 import SGC.Bridge.TerminalDecoding
 import SGC.Bridge.BlockRenormalization
 import SGC.Bridge.DeterministicLumpability
+import SGC.Bridge.MachineCertificate
 
 /-!
 # SGC - Two Horizons
@@ -102,6 +103,10 @@ axiom closures are recorded in `AXIOMS.md` and in the `lean-triage` receipts und
   a factor map (`x ~ y -> f x ~ f y`); defect and closure commutator vanish iff so; the
   canonical coarse kernel is the quotient machine (`pi` is gauge); blocking commutes with
   quotienting. The correct SGC object for a deterministic generalized shift.
+* `SGC.Bridge.MachineCertificate` - the terminal decoding certificate on a blocked
+  machine (budget `min 1 (h c/2)`, zero under a factor map); deterministic quotients do
+  not mix (Dobrushin `1`); the window theorem: a head-moving machine's `b`-step block map
+  descends onto the tape window of radius `r - b` (one cell of leak per step).
 
 ## Supporting modules
 
