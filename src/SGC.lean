@@ -202,6 +202,8 @@ import SGC.InformationGeometry.FisherNoetherBridge
 -- Finite exponential families: Fisher = covariance = Hessian of log Z; the Fisher
 -- kernel is exact, parameter-independent non-identifiability (support invariants)
 import SGC.InformationGeometry.FiniteExponentialFamily
+-- Coarse-graining: Fisher loss = within-fiber score variance; lossless iff sufficient
+import SGC.InformationGeometry.FisherCoarseGraining
 
 -- Defect Dynamics: Lyapunov staging for the learning-side defect.
 -- 2026-06-10 hygiene pass: projected_update_zero_defect un-axiomatized,
