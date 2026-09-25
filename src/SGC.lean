@@ -199,6 +199,9 @@ import SGC.Structure.TemporalCoherence
 -- inconsistent expfam axiom). 2 sorries visible by design:
 -- 1 deferred-standard (Rayleigh) + 1 open research (Davis-Kahan).
 import SGC.InformationGeometry.FisherNoetherBridge
+-- Finite exponential families: Fisher = covariance = Hessian of log Z; the Fisher
+-- kernel is exact, parameter-independent non-identifiability (support invariants)
+import SGC.InformationGeometry.FiniteExponentialFamily
 
 -- Defect Dynamics: Lyapunov staging for the learning-side defect.
 -- 2026-06-10 hygiene pass: projected_update_zero_defect un-axiomatized,
