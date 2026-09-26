@@ -208,6 +208,10 @@ import SGC.InformationGeometry.FisherCoarseGraining
 import SGC.InformationGeometry.ScoreProjection
 -- Directional closure defect of block-pair tilts (mean zero, Cauchy-Schwarz to D_pi)
 import SGC.InformationGeometry.BlockPairTilt
+-- Markov path space: exact Fisher loss and T^2 * Bmax * D_pi^2 bound (canonical defect)
+import SGC.InformationGeometry.MarkovPathFisher
+-- Certified evaluation scope: computed defect, proved information horizon
+import SGC.Core.Scope
 
 -- Defect Dynamics: Lyapunov staging for the learning-side defect.
 -- 2026-06-10 hygiene pass: projected_update_zero_defect un-axiomatized,
