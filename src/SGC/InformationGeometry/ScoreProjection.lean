@@ -139,6 +139,50 @@ theorem fisherLoss_le (hp : ∀ ω, 0 < p ω) (g : β → ℝ) :
   have hM : 0 ≤ blockMass q p b := Finset.sum_nonneg (fun ω _ => (hp ω).le)
   nlinarith [mul_nonneg hM (sq_nonneg (coarseScore q p d b - g b))]
 
+/-- Block average of a function under `p`. -/
+def blockAvg (w e : Ω → ℝ) (b : β) : ℝ :=
+  (∑ ω ∈ univ.filter (fun ω => q ω = b), w ω * e ω) / blockMass q w b
+
+/-- **Conditional-variance form of the loss.** If the fine score splits as a
+block-measurable part minus an error `e`, the Fisher loss is exactly the
+`p`-weighted within-block variance of `e`: the part of `e` that the coarse
+variable cannot predict. -/
+theorem fisherLoss_eq_condVar (hp : ∀ ω, 0 < p ω) (g e : Ω → ℝ) (g' : β → ℝ)
+    (hg : ∀ ω, g ω = g' (q ω)) (hs : ∀ ω, d ω / p ω = g ω - e ω) :
+    fineFisher p d - coarseFisher q p d
+      = ∑ ω, p ω * (e ω - blockAvg q p e (q ω)) ^ 2 := by
+  rw [fisherLoss_eq q d hp]
+  refine Finset.sum_congr rfl (fun ω _ => ?_)
+  have hcs : coarseScore q p d (q ω) = g' (q ω) - blockAvg q p e (q ω) := by
+    unfold coarseScore blockAvg blockDeriv
+    have hd : ∀ ω' ∈ univ.filter (fun ω' => q ω' = q ω),
+        d ω' = p ω' * g' (q ω) - p ω' * e ω' := by
+      intro ω' hω'
+      have h1 := hs ω'
+      rw [hg ω', (Finset.mem_filter.mp hω').2] at h1
+      have := (hp ω').ne'
+      field_simp at h1
+      linarith
+    rw [Finset.sum_congr rfl hd, Finset.sum_sub_distrib, ← Finset.sum_mul]
+    change (blockMass q p (q ω) * g' (q ω) - _) / blockMass q p (q ω) = _
+    have hM : 0 < blockMass q p (q ω) :=
+      Finset.sum_pos (fun ω _ => hp ω) ⟨ω, by simp⟩
+    field_simp
+  rw [hcs, hs ω, hg ω]
+  ring
+
+/-- **Variance bound.** Under the same splitting, the loss is at most the
+`p`-weighted second moment of the error. -/
+theorem fisherLoss_le_errorSq (hp : ∀ ω, 0 < p ω) (g e : Ω → ℝ) (g' : β → ℝ)
+    (hg : ∀ ω, g ω = g' (q ω)) (hs : ∀ ω, d ω / p ω = g ω - e ω) :
+    fineFisher p d - coarseFisher q p d ≤ ∑ ω, p ω * e ω ^ 2 := by
+  have h := fisherLoss_le q d hp g'
+  have heq : ∀ ω, p ω * (d ω / p ω - g' (q ω)) ^ 2 = p ω * e ω ^ 2 := by
+    intro ω
+    rw [hs ω, hg ω]
+    ring
+  simpa only [heq] using h
+
 /-- Fisher information cannot increase under coarse-graining. -/
 theorem coarseFisher_le (hp : ∀ ω, 0 < p ω) : coarseFisher q p d ≤ fineFisher p d := by
   have h := fisherLoss_eq q d hp
