@@ -3,7 +3,7 @@ Copyright (c) 2026 SGC Project. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: SGC Formalization Team
 -/
-import SGC.InformationGeometry.MarkovPathFisher
+import SGC.InformationGeometry.MarkovPathMixing
 
 /-!
 # `SGC.Scope`: a certified evaluation scope
@@ -21,9 +21,11 @@ is a derived proposition, equivalent to zero defect.
   `T² · Bmax · 𝔇_π²` (proved, `MarkovPathFisher`).
 * `informationHorizon` / `fisherLoss_le_of_le_horizon` — the proved horizon:
   for `T ≤ √(ε / (Bmax · 𝔇_π²))` the loss is at most `ε`.
-* `mixingLossRate` — the linear-in-`T` rate `Bmax · 𝔇_π² · (1+σ)/(1-σ)` is a
-  DEFINITION ONLY. It is supported numerically (960/960 cases,
-  `closure_sufficiency_v3`) but not proved; no theorem here depends on it.
+* `fisherLoss_le_mixing` — under the `L²(π)` contraction hypothesis
+  `MixingContraction` with `σ < 1` (reversibility not assumed), the loss is at
+  most `T · Bmax · 𝔇_π² · (1+σ)/(1-σ)`; `fisherLoss_le_of_le_mixingHorizon`
+  gives the corresponding horizon `ε / mixingLossRate`. That `MixingContraction`
+  holds with some `σ < 1` for positive kernels is standard but assumed here.
 
 These horizons bound information about a parameter direction lost by coarse
 observation. They are not prediction-error horizons; those are
@@ -101,9 +103,50 @@ theorem fisherLoss_le_of_le_horizon (b : S.partition.Quot → S.partition.Quot �
     rwa [le_div_iff₀ hc] at hsq
   exact (S.fisherLoss_le b hB T).trans h2
 
-/-- Conjectural linear-in-`T` loss rate under mixing with contraction `σ`.
-Definition only: numerically supported, not proved; no theorem uses it. -/
+/-- Linear-in-`T` loss rate under mixing with `L²(π)` contraction `σ` on
+mean-zero functions. -/
 def mixingLossRate (Bmax σ : ℝ) : ℝ := Bmax * S.defectSq * (1 + σ) / (1 - σ)
+
+/-- **Linear information-loss bound under mixing** (proved,
+`MarkovPathMixing`): `loss(T) ≤ T · mixingLossRate`. -/
+theorem fisherLoss_le_mixing (b : S.partition.Quot → S.partition.Quot → ℝ) {Bmax σ : ℝ}
+    (hB : ∀ A, ∑ C, b A C ^ 2 ≤ Bmax)
+    (hσ : MarkovPathMixing.MixingContraction S.kernel S.pi σ) (hσ0 : 0 ≤ σ) (hσ1 : σ < 1)
+    (T : ℕ) : S.fisherLoss b T ≤ (T : ℝ) * S.mixingLossRate Bmax σ := by
+  have h := MarkovPathMixing.fisherLoss_markov_path_le_mixing_measureReentry S.kernel S.pi T
+    S.partition S.kernel_pos S.kernel_row S.pi_pos S.pi_stationary hσ hσ0 hσ1 b hB
+  have heq : (T : ℝ) * ((1 + σ) / (1 - σ)) * (Bmax * S.defectSq)
+      = (T : ℝ) * S.mixingLossRate Bmax σ := by
+    unfold mixingLossRate
+    ring
+  exact h.trans (le_of_eq heq)
+
+/-- **Unconditional linear bound.** Every scope (with `π` a probability vector)
+has a Doeblin constant `c ∈ (0,1]` such that, for every block-pair tilt,
+`loss(T) ≤ T · (2 - c)/c · Bmax · 𝔇_π²`. No mixing hypothesis is assumed. -/
+theorem exists_linear_fisherLoss_bound [Nonempty V] (hsum : ∑ x, S.pi x = 1) :
+    ∃ c : ℝ, 0 < c ∧ c ≤ 1 ∧ ∀ (b : S.partition.Quot → S.partition.Quot → ℝ) (Bmax : ℝ),
+      (∀ A, ∑ C, b A C ^ 2 ≤ Bmax) → ∀ T : ℕ,
+        S.fisherLoss b T ≤ (T : ℝ) * ((2 - c) / c) * (Bmax * S.defectSq) := by
+  obtain ⟨c, hc0, hc1, hmin⟩ := MarkovPathMixing.exists_doeblin S.kernel S.kernel_pos
+    S.kernel_row (fun x => (S.pi_pos x).le) hsum
+  exact ⟨c, hc0, hc1, fun b Bmax hB T =>
+    MarkovPathMixing.fisherLoss_markov_path_le_doeblin S.kernel S.pi T S.partition S.kernel_pos
+      S.kernel_row S.pi_pos hsum S.pi_stationary hc0 hc1 hmin b hB⟩
+
+/-- The mixing information horizon `ε / mixingLossRate`: within it the loss is
+at most `ε`. -/
+def mixingHorizon (ε Bmax σ : ℝ) : ℝ := ε / S.mixingLossRate Bmax σ
+
+theorem fisherLoss_le_of_le_mixingHorizon (b : S.partition.Quot → S.partition.Quot → ℝ)
+    {Bmax σ ε : ℝ} (hB : ∀ A, ∑ C, b A C ^ 2 ≤ Bmax)
+    (hσ : MarkovPathMixing.MixingContraction S.kernel S.pi σ) (hσ0 : 0 ≤ σ) (hσ1 : σ < 1)
+    (hrate : 0 < S.mixingLossRate Bmax σ) (T : ℕ)
+    (hT : (T : ℝ) ≤ S.mixingHorizon ε Bmax σ) : S.fisherLoss b T ≤ ε := by
+  have h := S.fisherLoss_le_mixing b hB hσ hσ0 hσ1 T
+  unfold mixingHorizon at hT
+  rw [le_div_iff₀ hrate] at hT
+  exact h.trans hT
 
 end Scope
 

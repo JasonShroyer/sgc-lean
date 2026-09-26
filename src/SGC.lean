@@ -210,6 +210,8 @@ import SGC.InformationGeometry.ScoreProjection
 import SGC.InformationGeometry.BlockPairTilt
 -- Markov path space: exact Fisher loss and T^2 * Bmax * D_pi^2 bound (canonical defect)
 import SGC.InformationGeometry.MarkovPathFisher
+-- Mixing: two-time marginals, L2(pi) correlation decay, linear-in-T bound
+import SGC.InformationGeometry.MarkovPathMixing
 -- Certified evaluation scope: computed defect, proved information horizon
 import SGC.Core.Scope
 
