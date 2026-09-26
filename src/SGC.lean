@@ -204,6 +204,8 @@ import SGC.InformationGeometry.FisherNoetherBridge
 import SGC.InformationGeometry.FiniteExponentialFamily
 -- Coarse-graining: Fisher loss = within-fiber score variance; lossless iff sufficient
 import SGC.InformationGeometry.FisherCoarseGraining
+-- Parameterization-free score projection: exact loss and best-approximation bound
+import SGC.InformationGeometry.ScoreProjection
 
 -- Defect Dynamics: Lyapunov staging for the learning-side defect.
 -- 2026-06-10 hygiene pass: projected_update_zero_defect un-axiomatized,
