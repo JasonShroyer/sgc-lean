@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: SGC Formalization Team
 -/
 import SGC.InformationGeometry.MarkovPathMixing
+import SGC.InformationGeometry.MarkovPathInitialLaw
 
 /-!
 # `SGC.Scope`: a certified evaluation scope
@@ -147,6 +148,57 @@ theorem fisherLoss_le_of_le_mixingHorizon (b : S.partition.Quot → S.partition.
   unfold mixingHorizon at hT
   rw [le_div_iff₀ hrate] at hT
   exact h.trans hT
+
+/-! ### Parameter-dependent start -/
+
+/-- Fisher loss when the chain starts from `μ` with initial score `s₀`. -/
+def fisherLossFrom (μ : V → ℝ) (s₀ : V → ℝ) (b : S.partition.Quot → S.partition.Quot → ℝ)
+    (T : ℕ) : ℝ :=
+  ScoreProjection.fineFisher (MarkovPathFisher.pathProb S.kernel μ T)
+      (MarkovPathInitialLaw.pathDerivInit S.kernel S.partition.quot_map μ b s₀ T)
+    - ScoreProjection.coarseFisher (MarkovPathFisher.macroPath S.partition.quot_map T)
+      (MarkovPathFisher.pathProb S.kernel μ T)
+      (MarkovPathInitialLaw.pathDerivInit S.kernel S.partition.quot_map μ b s₀ T)
+
+/-- The initial-law defect `V₀` of a start `(μ, s₀)`: within-block variance of the initial score. -/
+def initialDefect (μ s₀ : V → ℝ) : ℝ :=
+  MarkovPathInitialLaw.initialDefect S.partition.quot_map μ s₀
+
+/-- A start is feasible for tolerance `ε` when its initial-law defect alone does not
+exhaust the budget: `2 V₀ < ε`. Otherwise no horizon exists (the offset does not decay). -/
+def initiallyFeasible (μ s₀ : V → ℝ) (ε : ℝ) : Prop := 2 * S.initialDefect μ s₀ < ε
+
+/-- **Linear bound from a dominated start.** -/
+theorem fisherLossFrom_le_mixing [Nonempty V] (μ s₀ : V → ℝ) (hμ : ∀ x, 0 < μ x) {κ : ℝ}
+    (hdom : ∀ x, μ x ≤ κ * S.pi x) (b : S.partition.Quot → S.partition.Quot → ℝ) {Bmax σ : ℝ}
+    (hB : ∀ A, ∑ C, b A C ^ 2 ≤ Bmax)
+    (hσ : MarkovPathMixing.MixingContraction S.kernel S.pi σ) (hσ0 : 0 ≤ σ) (hσ1 : σ < 1)
+    (T : ℕ) :
+    S.fisherLossFrom μ s₀ b T
+      ≤ 2 * κ * (T : ℝ) * S.mixingLossRate Bmax σ + 2 * S.initialDefect μ s₀ := by
+  have h := MarkovPathInitialLaw.fisherLoss_initialLaw_le_mixing S.kernel S.partition.quot_map S.pi μ
+    b s₀ T S.kernel_pos S.kernel_row S.pi_pos S.pi_stationary hμ hdom hσ hσ0 hσ1 hB
+  unfold fisherLossFrom
+  refine h.trans (le_of_eq ?_)
+  rw [MarkovPathFisher.defectSq_eq_measureReentry S.kernel S.pi S.partition S.pi_pos]
+  unfold mixingLossRate defectSq initialDefect
+  ring
+
+/-- Horizon from a dominated start: `(ε − 2V₀) / (2 κ · mixingLossRate)`; meaningful only
+when `initiallyFeasible`. -/
+def nonstationaryHorizon (μ s₀ : V → ℝ) (ε κ Bmax σ : ℝ) : ℝ :=
+  (ε - 2 * S.initialDefect μ s₀) / (2 * κ * S.mixingLossRate Bmax σ)
+
+theorem fisherLossFrom_le_of_le_horizon [Nonempty V] (μ s₀ : V → ℝ) (hμ : ∀ x, 0 < μ x) {κ : ℝ}
+    (hdom : ∀ x, μ x ≤ κ * S.pi x) (b : S.partition.Quot → S.partition.Quot → ℝ) {Bmax σ ε : ℝ}
+    (hB : ∀ A, ∑ C, b A C ^ 2 ≤ Bmax)
+    (hσ : MarkovPathMixing.MixingContraction S.kernel S.pi σ) (hσ0 : 0 ≤ σ) (hσ1 : σ < 1)
+    (hrate : 0 < 2 * κ * S.mixingLossRate Bmax σ) (T : ℕ)
+    (hT : (T : ℝ) ≤ S.nonstationaryHorizon μ s₀ ε κ Bmax σ) : S.fisherLossFrom μ s₀ b T ≤ ε := by
+  have h := S.fisherLossFrom_le_mixing μ s₀ hμ hdom b hB hσ hσ0 hσ1 T
+  unfold nonstationaryHorizon at hT
+  rw [le_div_iff₀ hrate] at hT
+  linarith
 
 end Scope
 
