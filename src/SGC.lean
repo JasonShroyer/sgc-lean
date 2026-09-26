@@ -218,6 +218,10 @@ import SGC.InformationGeometry.OneStepLowerBound
 import SGC.InformationGeometry.MarkovPathInitialLaw
 -- Towers: pushforward of the path law under a lumpable level is the lumped chain's path law
 import SGC.InformationGeometry.MarkovPathTower
+-- Quantified converse: lossless for every block-pair tilt iff strongly lumpable
+import SGC.InformationGeometry.LosslessIffLumpable
+-- Continuous time: exp of a generator is a stochastic kernel (row sums, nonnegativity)
+import SGC.InformationGeometry.ContinuousTimeKernel
 -- Certified evaluation scope: computed defect, proved information horizon
 import SGC.Core.Scope
 
