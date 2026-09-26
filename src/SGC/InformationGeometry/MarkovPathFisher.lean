@@ -224,6 +224,115 @@ theorem fisherLoss_markov_path_le (hP : ∀ x y, 0 < P x y) (hrow : ∀ x, ∑ y
         have := mul_le_mul_of_nonneg_left hE (mul_nonneg hT hT)
         nlinarith [this]
 
+/-! ### Towers of partitions -/
+
+section Tower
+
+variable {γ : Type*} [Fintype γ] [DecidableEq γ]
+
+lemma macroPath_comp (f : β → γ) (ω : Fin (T + 1) → V) :
+    macroPath (fun x => f (q x)) T ω = (fun Y : Fin (T + 1) → β => fun t => f (Y t)) (macroPath q T ω) :=
+  rfl
+
+lemma macroPath_surjective (hq : Function.Surjective q) :
+    Function.Surjective (macroPath q T) := by
+  intro Y
+  refine ⟨fun t => Classical.choose (hq (Y t)), ?_⟩
+  funext t
+  exact Classical.choose_spec (hq (Y t))
+
+/-- **Chain rule on path space.** For a tower `V → β → γ` of partitions, the loss
+through the composite partition equals the loss through `q` plus the loss of the
+`β`-observer's pushed-forward path family through `f`. No hypotheses. -/
+theorem fisherLoss_markov_chain (f : β → γ) (μ : V → ℝ) (d : (Fin (T + 1) → V) → ℝ) :
+    ScoreProjection.fineFisher (pathProb P μ T) d
+      - ScoreProjection.coarseFisher (macroPath (fun x => f (q x)) T) (pathProb P μ T) d
+      = (ScoreProjection.fineFisher (pathProb P μ T) d
+          - ScoreProjection.coarseFisher (macroPath q T) (pathProb P μ T) d)
+        + (ScoreProjection.fineFisher (ScoreProjection.blockMass (macroPath q T) (pathProb P μ T))
+              (ScoreProjection.blockDeriv (macroPath q T) d)
+          - ScoreProjection.coarseFisher (fun Y : Fin (T + 1) → β => fun t => f (Y t))
+              (ScoreProjection.blockMass (macroPath q T) (pathProb P μ T))
+              (ScoreProjection.blockDeriv (macroPath q T) d)) := by
+  have hcomp : macroPath (fun x => f (q x)) T
+      = fun ω => (fun Y : Fin (T + 1) → β => fun t => f (Y t)) (macroPath q T ω) := rfl
+  rw [hcomp]
+  exact ScoreProjection.fisherLoss_chain (macroPath q T) d (fun Y => fun t => f (Y t))
+
+/-- **Monotonicity in refinement on path space.** A coarser partition loses at
+least as much Fisher information as any finer partition it factors through. -/
+theorem fisherLoss_markov_mono (hP : ∀ x y, 0 < P x y) {μ : V → ℝ} (hμ : ∀ x, 0 < μ x)
+    (hq : Function.Surjective q) (f : β → γ) (d : (Fin (T + 1) → V) → ℝ) :
+    ScoreProjection.fineFisher (pathProb P μ T) d
+      - ScoreProjection.coarseFisher (macroPath q T) (pathProb P μ T) d
+      ≤ ScoreProjection.fineFisher (pathProb P μ T) d
+      - ScoreProjection.coarseFisher (macroPath (fun x => f (q x)) T) (pathProb P μ T) d := by
+  rw [fisherLoss_markov_chain P q T f μ d]
+  have h := ScoreProjection.coarseFisher_le (fun Y : Fin (T + 1) → β => fun t => f (Y t))
+    (ScoreProjection.blockDeriv (macroPath q T) d)
+    (ScoreProjection.blockMass_pos (macroPath q T) (pathProb_pos P hP hμ T)
+      (macroPath_surjective q T hq))
+  linarith
+
+/-- Strong lumpability of `q` for `P`: block exit probabilities are constant on blocks. -/
+def Lumpable (P : Matrix V V ℝ) (q : V → β) : Prop :=
+  ∀ x y, q x = q y → ∀ C, blockExit P q x C = blockExit P q y C
+
+lemma res_eq_zero_of_lumpable (P : Matrix V V ℝ) (q : V → β) (π : V → ℝ) (hπ : ∀ x, 0 < π x)
+    (hl : Lumpable P q) (x : V) (C : β) : BlockPairTilt.res q π (blockExit P q) x C = 0 := by
+  unfold BlockPairTilt.res BlockPairTilt.Rbar
+  have hM : 0 < BlockPairTilt.blockMass q π (q x) :=
+    Finset.sum_pos (fun y _ => hπ y) ⟨x, by simp⟩
+  have hconst : ∑ y ∈ univ.filter (fun y => q y = q x), π y * blockExit P q y C
+      = blockExit P q x C * BlockPairTilt.blockMass q π (q x) := by
+    unfold BlockPairTilt.blockMass
+    rw [Finset.mul_sum]
+    refine Finset.sum_congr rfl (fun y hy => ?_)
+    rw [hl y x (Finset.mem_filter.mp hy).2 C]
+    ring
+  rw [hconst, mul_div_assoc, div_self hM.ne', mul_one, sub_self]
+
+/-- **A lumpable level is transparent.** Under strong lumpability of `q`, the
+macro-observer loses no Fisher information about any block-pair tilt. -/
+theorem fisherLoss_markov_path_eq_zero_of_lumpable (hP : ∀ x y, 0 < P x y) (hπ : ∀ x, 0 < π x)
+    (hl : Lumpable P q) :
+    ScoreProjection.fineFisher (pathProb P π T) (pathDeriv P q π b T)
+      - ScoreProjection.coarseFisher (macroPath q T) (pathProb P π T) (pathDeriv P q π b T) = 0 := by
+  have hδ : ∀ x, BlockPairTilt.delta q π (blockExit P q) b x = 0 := by
+    intro x
+    unfold BlockPairTilt.delta
+    exact Finset.sum_eq_zero (fun C _ => by rw [res_eq_zero_of_lumpable P q π hπ hl x C, zero_mul])
+  have hdef : ∀ ω, pathDefect P q π b T ω = 0 := by
+    intro ω
+    unfold pathDefect
+    exact Finset.sum_eq_zero (fun t _ => hδ _)
+  have h1 := ScoreProjection.fisherLoss_le_errorSq (macroPath q T) (pathDeriv P q π b T)
+    (pathProb_pos P hP hπ T) (fun ω => surrogate P q π b T (macroPath q T ω))
+    (pathDefect P q π b T) (surrogate P q π b T) (fun _ => rfl) (pathDeriv_div P q π b T hP hπ)
+  have h2 := ScoreProjection.coarseFisher_le (macroPath q T) (pathDeriv P q π b T)
+    (pathProb_pos P hP hπ T)
+  simp only [hdef, sq, mul_zero, Finset.sum_const_zero] at h1
+  linarith
+
+/-- **Tower collapse at an exact level.** If the inner partition `q` is lumpable, the
+composite loss through `f ∘ q` equals the second-level loss of the pushed-forward
+path family. (That this family is the path law of the lumped chain is the remaining
+step, checked numerically to `1e-15`, not yet formalized.) -/
+theorem fisherLoss_markov_tower_of_lumpable {γ : Type*} [Fintype γ] [DecidableEq γ]
+    (hP : ∀ x y, 0 < P x y) (hπ : ∀ x, 0 < π x) (hl : Lumpable P q) (f : β → γ) :
+    ScoreProjection.fineFisher (pathProb P π T) (pathDeriv P q π b T)
+      - ScoreProjection.coarseFisher (macroPath (fun x => f (q x)) T) (pathProb P π T)
+          (pathDeriv P q π b T)
+      = ScoreProjection.fineFisher (ScoreProjection.blockMass (macroPath q T) (pathProb P π T))
+            (ScoreProjection.blockDeriv (macroPath q T) (pathDeriv P q π b T))
+        - ScoreProjection.coarseFisher (fun Y : Fin (T + 1) → β => fun t => f (Y t))
+            (ScoreProjection.blockMass (macroPath q T) (pathProb P π T))
+            (ScoreProjection.blockDeriv (macroPath q T) (pathDeriv P q π b T)) := by
+  rw [fisherLoss_markov_chain P q T f π (pathDeriv P q π b T),
+    fisherLoss_markov_path_eq_zero_of_lumpable P q π b T hP hπ hl, zero_add]
+
+end Tower
+
 /-! ### The canonical measure-reentry defect -/
 
 open SGC SGC.Renormalization.MeasureReentry in

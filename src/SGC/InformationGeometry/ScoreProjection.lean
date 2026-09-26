@@ -190,4 +190,89 @@ theorem coarseFisher_le (hp : ∀ ω, 0 < p ω) : coarseFisher q p d ≤ fineFis
     Finset.sum_nonneg (fun ω _ => mul_nonneg (hp ω).le (sq_nonneg _))
   linarith
 
+/-! ### Composition along a tower `Ω → β → γ` -/
+
+section Tower
+
+variable {γ : Type*} [Fintype γ] [DecidableEq γ]
+
+/-- Fiber sums compose along a tower. -/
+lemma sum_filter_comp (f : β → γ) (c : γ) (F : Ω → ℝ) :
+    ∑ ω ∈ univ.filter (fun ω => f (q ω) = c), F ω
+      = ∑ b ∈ univ.filter (fun b => f b = c), ∑ ω ∈ univ.filter (fun ω => q ω = b), F ω := by
+  rw [← Finset.sum_fiberwise_of_maps_to (s := univ.filter (fun ω => f (q ω) = c))
+    (t := univ.filter (fun b => f b = c)) (g := q)]
+  · refine Finset.sum_congr rfl (fun b hb => ?_)
+    refine Finset.sum_congr ?_ (fun _ _ => rfl)
+    ext ω
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+    constructor
+    · rintro ⟨_, h⟩; exact h
+    · intro h; exact ⟨by rw [h]; exact (Finset.mem_filter.mp hb).2, h⟩
+  · intro ω hω
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hω ⊢
+    exact hω
+
+/-- Pushed-forward mass and derivative along `q` are the block quantities. -/
+theorem blockMass_comp (f : β → γ) (c : γ) :
+    blockMass (fun ω => f (q ω)) p c = blockMass f (blockMass q p) c := by
+  unfold blockMass
+  exact sum_filter_comp q f c p
+
+theorem blockDeriv_comp (f : β → γ) (c : γ) :
+    blockDeriv (fun ω => f (q ω)) d c = blockDeriv f (blockDeriv q d) c := by
+  unfold blockDeriv
+  exact sum_filter_comp q f c d
+
+/-- **Coarse Fisher information composes.** The composite coarse Fisher equals
+the coarse Fisher of the pushed-forward family. -/
+theorem coarseFisher_comp (f : β → γ) :
+    coarseFisher (fun ω => f (q ω)) p d = coarseFisher f (blockMass q p) (blockDeriv q d) := by
+  unfold coarseFisher
+  refine Finset.sum_congr rfl (fun c _ => ?_)
+  rw [blockMass_comp q f c, blockDeriv_comp q d f c]
+
+/-- The coarse Fisher of `q` is the fine Fisher of the pushed-forward family. -/
+theorem coarseFisher_eq_fineFisher_push :
+    coarseFisher q p d = fineFisher (blockMass q p) (blockDeriv q d) := rfl
+
+/-- **Chain rule for Fisher loss.** Along a tower `Ω → β → γ`, the loss through
+the composite equals the loss at the first level plus the loss at the second
+level (computed for the pushed-forward family). No hypotheses. -/
+theorem fisherLoss_chain (f : β → γ) :
+    fineFisher p d - coarseFisher (fun ω => f (q ω)) p d
+      = (fineFisher p d - coarseFisher q p d)
+        + (fineFisher (blockMass q p) (blockDeriv q d)
+            - coarseFisher f (blockMass q p) (blockDeriv q d)) := by
+  rw [coarseFisher_comp q d f]
+  have h : coarseFisher q p d = fineFisher (blockMass q p) (blockDeriv q d) := rfl
+  rw [h]
+  ring
+
+/-- Pushed-forward mass is positive when every fiber is nonempty. -/
+lemma blockMass_pos (hp : ∀ ω, 0 < p ω) (hq : Function.Surjective q) (b : β) :
+    0 < blockMass q p b := by
+  obtain ⟨ω, rfl⟩ := hq b
+  exact Finset.sum_pos (fun ω _ => hp ω) ⟨ω, by simp⟩
+
+/-- **Loss is monotone in refinement.** A coarser view loses at least as much as
+any finer view it factors through. -/
+theorem fisherLoss_mono (hp : ∀ ω, 0 < p ω) (hq : Function.Surjective q) (f : β → γ) :
+    fineFisher p d - coarseFisher q p d
+      ≤ fineFisher p d - coarseFisher (fun ω => f (q ω)) p d := by
+  rw [fisherLoss_chain q d f]
+  have h := coarseFisher_le f (blockDeriv q d) (blockMass_pos q hp hq)
+  linarith
+
+/-- The second-level loss is also dominated by the composite loss. -/
+theorem fisherLoss_second_le (hp : ∀ ω, 0 < p ω) (f : β → γ) :
+    fineFisher (blockMass q p) (blockDeriv q d) - coarseFisher f (blockMass q p) (blockDeriv q d)
+      ≤ fineFisher p d - coarseFisher (fun ω => f (q ω)) p d := by
+  rw [fisherLoss_chain q d f]
+  have h := coarseFisher_le q d hp
+  linarith
+
+end Tower
+
+
 end SGC.InformationGeometry.ScoreProjection
