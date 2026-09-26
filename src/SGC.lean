@@ -214,6 +214,8 @@ import SGC.InformationGeometry.MarkovPathFisher
 import SGC.InformationGeometry.MarkovPathMixing
 -- One-step lower bound: loss(1) >= sum_A (1 - chi2_A) * block energy of delta (two-sided defect)
 import SGC.InformationGeometry.OneStepLowerBound
+-- Parameter-dependent initial law: domination mu P^t <= kappa pi; the initial-law defect V0
+import SGC.InformationGeometry.MarkovPathInitialLaw
 -- Certified evaluation scope: computed defect, proved information horizon
 import SGC.Core.Scope
 
