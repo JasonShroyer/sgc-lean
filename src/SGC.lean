@@ -216,6 +216,8 @@ import SGC.InformationGeometry.MarkovPathMixing
 import SGC.InformationGeometry.OneStepLowerBound
 -- Parameter-dependent initial law: domination mu P^t <= kappa pi; the initial-law defect V0
 import SGC.InformationGeometry.MarkovPathInitialLaw
+-- Towers: pushforward of the path law under a lumpable level is the lumped chain's path law
+import SGC.InformationGeometry.MarkovPathTower
 -- Certified evaluation scope: computed defect, proved information horizon
 import SGC.Core.Scope
 
