@@ -5,6 +5,7 @@ Authors: SGC Formalization Team
 -/
 import SGC.InformationGeometry.MarkovPathMixing
 import SGC.InformationGeometry.MarkovPathInitialLaw
+import SGC.InformationGeometry.ContinuousTimeKernel
 
 /-!
 # `SGC.Scope`: a certified evaluation scope
@@ -199,6 +200,28 @@ theorem fisherLossFrom_le_of_le_horizon [Nonempty V] (μ s₀ : V → ℝ) (hμ 
   unfold nonstationaryHorizon at hT
   rw [le_div_iff₀ hrate] at hT
   linarith
+
+/-! ### Scopes from continuous-time generators -/
+
+open scoped Matrix.Norms.Operator in
+/-- **A scope from a generator.** For a finite-state generator `L` with positive
+off-diagonal rates, a step `h > 0`, a partition, and a positive law `π` with
+`π L = 0`, the sampled semigroup `exp (h • L)` is a positive stochastic kernel
+with stationary law `π`; every path-space theorem of this file applies to it. -/
+def ofGenerator (L : Matrix V V ℝ) (hL : InformationGeometry.ContinuousTimeKernel.IsGenerator L)
+    (hoff : ∀ x y, x ≠ y → 0 < L x y) {h : ℝ} (hh : 0 < h) (Part : Partition V) (π : V → ℝ)
+    (hπ : ∀ x, 0 < π x) (hπL : π ᵥ* L = 0) : Scope V where
+  kernel := NormedSpace.exp ℝ (h • L)
+  partition := Part
+  pi := π
+  kernel_pos := InformationGeometry.ContinuousTimeKernel.exp_entry_pos (h • L)
+    (InformationGeometry.ContinuousTimeKernel.isGenerator_smul L hL hh.le)
+    (InformationGeometry.ContinuousTimeKernel.offdiag_pos_smul L hoff hh)
+  kernel_row := InformationGeometry.ContinuousTimeKernel.exp_row_sum (h • L)
+    (InformationGeometry.ContinuousTimeKernel.isGenerator_smul L hL hh.le).row_zero
+  pi_pos := hπ
+  pi_stationary := InformationGeometry.ContinuousTimeKernel.exp_stationary (h • L) (by
+    rw [Matrix.vecMul_smul, hπL, smul_zero])
 
 end Scope
 

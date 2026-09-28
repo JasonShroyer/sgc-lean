@@ -140,6 +140,82 @@ theorem exp_entry_nonneg (L : Matrix V V ℝ) (hL : IsGenerator L) (i j : V) :
     Matrix.smul_apply, smul_eq_mul]
   exact mul_nonneg (Real.exp_pos _).le (exp_entry_nonneg_of_nonneg M (shifted_nonneg L hL) i j)
 
+/-- Uniformized form: `exp L = e^{-s} • exp (L + s•1)`. -/
+lemma exp_eq_uniformized (L : Matrix V V ℝ) :
+    exp ℝ L = Real.exp (-shift L) • exp ℝ (L + shift L • (1 : Matrix V V ℝ)) := by
+  set M := L + shift L • (1 : Matrix V V ℝ)
+  have hdecomp : L = M + (-shift L) • (1 : Matrix V V ℝ) := by
+    simp only [M, neg_smul]
+    abel
+  have hcomm : Commute M ((-shift L) • (1 : Matrix V V ℝ)) :=
+    (Commute.one_right M).smul_right _
+  conv_lhs => rw [hdecomp]
+  rw [exp_add_of_commute hcomm, exp_smul_one, Matrix.mul_smul, Matrix.mul_one]
+
+/-! ### Strict positivity for positive off-diagonal rates -/
+
+/-- **Entries of `exp L` are strictly positive** when all off-diagonal rates are positive. -/
+theorem exp_entry_pos (L : Matrix V V ℝ) (hL : IsGenerator L)
+    (hoff : ∀ x y, x ≠ y → 0 < L x y) (i j : V) : 0 < exp ℝ L i j := by
+  set M := L + shift L • (1 : Matrix V V ℝ)
+  have hM : ∀ a b, 0 ≤ M a b := shifted_nonneg L hL
+  rw [exp_eq_uniformized, Matrix.smul_apply, smul_eq_mul]
+  refine mul_pos (Real.exp_pos _) ?_
+  rw [exp_entry]
+  have hs := entry_summable M i j
+  have hnn : ∀ n, 0 ≤ ((n.factorial : ℝ)⁻¹) * (M ^ n) i j :=
+    fun n => mul_nonneg (inv_nonneg.mpr (Nat.cast_nonneg _)) (pow_entry_nonneg M hM n i j)
+  by_cases hij : i = j
+  · subst hij
+    have h0 : (0 : ℝ) < ((Nat.factorial 0 : ℝ)⁻¹) * (M ^ 0) i i := by simp
+    exact lt_of_lt_of_le h0 (hs.le_tsum 0 (fun n _ => hnn n))
+  · have h1 : (0 : ℝ) < ((Nat.factorial 1 : ℝ)⁻¹) * (M ^ 1) i j := by
+      have : M i j = L i j := by
+        simp only [M, Matrix.add_apply, Matrix.smul_apply, Matrix.one_apply, hij, if_false,
+          smul_eq_mul, mul_zero, add_zero]
+      simp only [Nat.factorial_one, Nat.cast_one, inv_one, one_mul, pow_one, this]
+      exact hoff i j hij
+    exact lt_of_lt_of_le h1 (hs.le_tsum 1 (fun n _ => hnn n))
+
+/-! ### Stationarity -/
+
+lemma vecMul_pow_succ_zero (L : Matrix V V ℝ) {π : V → ℝ} (hπL : π ᵥ* L = 0) :
+    ∀ n : ℕ, π ᵥ* L ^ (n + 1) = 0 := by
+  intro n
+  induction n with
+  | zero => simpa using hπL
+  | succ n ih => rw [pow_succ, ← Matrix.vecMul_vecMul, ih, Matrix.zero_vecMul]
+
+/-- **Stationarity transfers to the semigroup:** `π L = 0` implies `π exp L = π`. -/
+theorem exp_stationary (L : Matrix V V ℝ) {π : V → ℝ} (hπL : π ᵥ* L = 0) :
+    π ᵥ* exp ℝ L = π := by
+  funext j
+  simp only [Matrix.vecMul, dotProduct, exp_entry]
+  have hs : ∀ i, Summable (fun n : ℕ => π i * (((n.factorial : ℝ)⁻¹) * (L ^ n) i j)) :=
+    fun i => (entry_summable L i j).mul_left (π i)
+  simp only [← tsum_mul_left]
+  rw [← Summable.tsum_finsetSum (fun i _ => hs i)]
+  have h : ∀ n : ℕ, ∑ i, π i * (((n.factorial : ℝ)⁻¹) * (L ^ n) i j)
+      = if n = 0 then π j else 0 := by
+    intro n
+    have : ∑ i, π i * (((n.factorial : ℝ)⁻¹) * (L ^ n) i j)
+        = ((n.factorial : ℝ)⁻¹) * (π ᵥ* L ^ n) j := by
+      simp only [Matrix.vecMul, dotProduct, Finset.mul_sum]
+      exact Finset.sum_congr rfl (fun i _ => by ring)
+    rw [this]
+    rcases n with _ | n
+    · simp
+    · rw [vecMul_pow_succ_zero L hπL n]
+      simp
+  simp only [h]
+  exact tsum_ite_eq 0 (fun _ => π j)
+
+lemma offdiag_pos_smul (L : Matrix V V ℝ) (hoff : ∀ x y, x ≠ y → 0 < L x y) {t : ℝ} (ht : 0 < t) :
+    ∀ x y, x ≠ y → 0 < (t • L) x y := by
+  intro x y hxy
+  simp only [Matrix.smul_apply, smul_eq_mul]
+  exact mul_pos ht (hoff x y hxy)
+
 /-- **`exp L` is a stochastic kernel.** -/
 theorem exp_isStochastic (L : Matrix V V ℝ) (hL : IsGenerator L) :
     (∀ i j, 0 ≤ exp ℝ L i j) ∧ (∀ i, ∑ j, exp ℝ L i j = 1) :=
