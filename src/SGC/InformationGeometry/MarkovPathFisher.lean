@@ -184,6 +184,42 @@ theorem fisherLoss_markov_path_condVar (hP : ∀ x y, 0 < P x y) (hπ : ∀ x, 0
     (pathProb_pos P hP hπ T) (fun ω => surrogate P q π b T (macroPath q T ω))
     (pathDefect P q π b T) (surrogate P q π b T) (fun _ => rfl) (pathDeriv_div P q π b T hP hπ)
 
+/-- **Energy form of the directional bound:** `loss(T) ≤ T² · ‖δ_b‖²_π`. -/
+theorem fisherLoss_markov_path_le_energy (hP : ∀ x y, 0 < P x y) (hrow : ∀ x, ∑ y, P x y = 1)
+    (hπ : ∀ x, 0 < π x) (hstat : π ᵥ* P = π) :
+    ScoreProjection.fineFisher (pathProb P π T) (pathDeriv P q π b T)
+      - ScoreProjection.coarseFisher (macroPath q T) (pathProb P π T) (pathDeriv P q π b T)
+      ≤ (T : ℝ) ^ 2 * ∑ x, π x * BlockPairTilt.delta q π (blockExit P q) b x ^ 2 := by
+  set δ := BlockPairTilt.delta q π (blockExit P q) b
+  have h1 := ScoreProjection.fisherLoss_le_errorSq (macroPath q T) (pathDeriv P q π b T)
+    (pathProb_pos P hP hπ T) (fun ω => surrogate P q π b T (macroPath q T ω))
+    (pathDefect P q π b T) (surrogate P q π b T) (fun _ => rfl) (pathDeriv_div P q π b T hP hπ)
+  refine h1.trans ?_
+  have hcs : ∀ ω, pathProb P π T ω * pathDefect P q π b T ω ^ 2
+      ≤ pathProb P π T ω * ((T : ℝ) * ∑ t : Fin T, δ (ω (Fin.castSucc t)) ^ 2) := by
+    intro ω
+    refine mul_le_mul_of_nonneg_left ?_ (pathProb_pos P hP hπ T ω).le
+    have := sq_sum_le_card_mul_sum_sq (s := (univ : Finset (Fin T)))
+      (f := fun t => δ (ω (Fin.castSucc t)))
+    simpa [pathDefect, Finset.card_univ, Fintype.card_fin] using this
+  have hmarg : ∑ ω, pathProb P π T ω * ((T : ℝ) * ∑ t : Fin T, δ (ω (Fin.castSucc t)) ^ 2)
+      = (T : ℝ) * ∑ t : Fin T, ∑ x, π x * δ x ^ 2 := by
+    have hswap : ∀ ω, pathProb P π T ω * ((T : ℝ) * ∑ t : Fin T, δ (ω (Fin.castSucc t)) ^ 2)
+        = (T : ℝ) * ∑ t : Fin T, pathProb P π T ω * δ (ω (Fin.castSucc t)) ^ 2 := by
+      intro ω
+      rw [Finset.mul_sum, Finset.mul_sum, Finset.mul_sum]
+      exact Finset.sum_congr rfl (fun t _ => by ring)
+    rw [Finset.sum_congr rfl (fun ω _ => hswap ω), ← Finset.mul_sum, Finset.sum_comm]
+    congr 1
+    exact Finset.sum_congr rfl (fun t _ =>
+      sum_pathProb_stationary P hrow hstat T (Fin.castSucc t) (fun x => δ x ^ 2))
+  calc ∑ ω, pathProb P π T ω * pathDefect P q π b T ω ^ 2
+      ≤ ∑ ω, pathProb P π T ω * ((T : ℝ) * ∑ t : Fin T, δ (ω (Fin.castSucc t)) ^ 2) :=
+        Finset.sum_le_sum (fun ω _ => hcs ω)
+    _ = (T : ℝ) ^ 2 * ∑ x, π x * δ x ^ 2 := by
+        rw [hmarg, Finset.sum_const, Finset.card_univ, Fintype.card_fin, nsmul_eq_mul]
+        ring
+
 /-- **Directional closure bound on path space.** -/
 theorem fisherLoss_markov_path_le (hP : ∀ x y, 0 < P x y) (hrow : ∀ x, ∑ y, P x y = 1)
     (hπ : ∀ x, 0 < π x) (hstat : π ᵥ* P = π) {Bmax : ℝ} (hB : ∀ A, ∑ C, b A C ^ 2 ≤ Bmax) :
