@@ -222,6 +222,7 @@ import SGC.InformationGeometry.MarkovPathTower
 import SGC.InformationGeometry.LosslessIffLumpable
 import SGC.InformationGeometry.GeneralOneStep
 import SGC.InformationGeometry.TotalBudget
+import SGC.InformationGeometry.GeneralPathBound
 -- Continuous time: exp of a generator is a stochastic kernel (row sums, nonnegativity)
 import SGC.InformationGeometry.ContinuousTimeKernel
 -- Certified evaluation scope: computed defect, proved information horizon
