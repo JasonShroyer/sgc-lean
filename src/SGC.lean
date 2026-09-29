@@ -231,6 +231,10 @@ import SGC.InformationGeometry.StochasticObservation
 import SGC.InformationGeometry.TaskRelevantGain
 -- Value of information for finite typed decisions: refinement never hurts; zero iff no action change
 import SGC.InformationGeometry.DecisionValue
+-- Typed decisions: sufficiency = fiber-constancy; renaming is information-neutral; calibrated + closed does not imply sufficient
+import SGC.InformationGeometry.TypedDecision
+-- One-step refinement controller: refines iff voi > cost; dominates act-now and any fixed refinement
+import SGC.InformationGeometry.GatedController
 -- Continuous time: exp of a generator is a stochastic kernel (row sums, nonnegativity)
 import SGC.InformationGeometry.ContinuousTimeKernel
 -- Certified evaluation scope: computed defect, proved information horizon
