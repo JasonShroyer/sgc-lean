@@ -225,6 +225,12 @@ import SGC.InformationGeometry.TotalBudget
 import SGC.InformationGeometry.GeneralPathBound
 import SGC.InformationGeometry.InnovationFloor
 import SGC.InformationGeometry.Calibration
+-- Finite stochastic observation channels: exact loss, chain rule, deterministic reduction, gating
+import SGC.InformationGeometry.StochasticObservation
+-- Task-relevant gain of a refinement: reduction in optimal squared-error risk; telescoping
+import SGC.InformationGeometry.TaskRelevantGain
+-- Value of information for finite typed decisions: refinement never hurts; zero iff no action change
+import SGC.InformationGeometry.DecisionValue
 -- Continuous time: exp of a generator is a stochastic kernel (row sums, nonnegativity)
 import SGC.InformationGeometry.ContinuousTimeKernel
 -- Certified evaluation scope: computed defect, proved information horizon
