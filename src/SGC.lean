@@ -235,6 +235,8 @@ import SGC.InformationGeometry.DecisionValue
 import SGC.InformationGeometry.TypedDecision
 -- One-step refinement controller: refines iff voi > cost; dominates act-now and any fixed refinement
 import SGC.InformationGeometry.GatedController
+-- Two-step chain: lookahead dominates myopia; strictly iff the synergy trap; regret = net pair value
+import SGC.InformationGeometry.ChainController
 -- Continuous time: exp of a generator is a stochastic kernel (row sums, nonnegativity)
 import SGC.InformationGeometry.ContinuousTimeKernel
 -- Certified evaluation scope: computed defect, proved information horizon
