@@ -237,6 +237,8 @@ import SGC.InformationGeometry.TypedDecision
 import SGC.InformationGeometry.GatedController
 -- Two-step chain: lookahead dominates myopia; strictly iff the synergy trap; regret = net pair value
 import SGC.InformationGeometry.ChainController
+-- Value of information <= utility range * belief shift (L1 joint-vs-independent); no shift, no value
+import SGC.InformationGeometry.BeliefShiftBound
 -- Continuous time: exp of a generator is a stochastic kernel (row sums, nonnegativity)
 import SGC.InformationGeometry.ContinuousTimeKernel
 -- Certified evaluation scope: computed defect, proved information horizon
