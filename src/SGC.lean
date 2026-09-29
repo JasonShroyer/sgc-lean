@@ -224,6 +224,7 @@ import SGC.InformationGeometry.GeneralOneStep
 import SGC.InformationGeometry.TotalBudget
 import SGC.InformationGeometry.GeneralPathBound
 import SGC.InformationGeometry.InnovationFloor
+import SGC.InformationGeometry.Calibration
 -- Continuous time: exp of a generator is a stochastic kernel (row sums, nonnegativity)
 import SGC.InformationGeometry.ContinuousTimeKernel
 -- Certified evaluation scope: computed defect, proved information horizon
