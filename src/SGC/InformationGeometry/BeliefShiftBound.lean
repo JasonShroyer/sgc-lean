@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: SGC Formalization Team
 -/
 import SGC.InformationGeometry.DecisionValue
+import SGC.InformationGeometry.EstimatedDecision
 
 /-!
 # Value of information is bounded by belief shift
@@ -149,6 +150,26 @@ theorem voi_eq_zero_of_shift_zero (hw : ∀ x, 0 ≤ w x) (hW : 0 < W w) {R : �
   have h2 : value (trivialObs (Ω := Ω)) w u ≤ value q w u := by
     have := value_le_of_refine q (fun _ : β => ()) w u
     exact this
+  linarith
+
+theorem voi_le_estimated_shift (wHat : Ω → ℝ) (hwHat : ∀ x, 0 ≤ wHat x)
+    (hW : 0 < W wHat) {R M : ℝ}
+    (hR : ∀ a a' x, |u a x - u a' x| ≤ R) (hM : ∀ a x, |u a x| ≤ M) :
+    value q w u - value (trivialObs (Ω := Ω)) w u ≤
+      R * shift q wHat + 2 * (M * EstimatedDecision.l1Error w wHat) := by
+  have hshift := voi_le_range_mul_shift q wHat u hwHat hW hR
+  have herr := EstimatedDecision.voi_error_le q w wHat u (fun _ : β => ()) hM
+  change |(value q w u - value (trivialObs (Ω := Ω)) w u) -
+    (value q wHat u - value (trivialObs (Ω := Ω)) wHat u)| ≤ _ at herr
+  have hupper := (abs_le.mp herr).2
+  linarith
+
+theorem prune_of_estimated_shift (wHat : Ω → ℝ) (hwHat : ∀ x, 0 ≤ wHat x)
+    (hW : 0 < W wHat) {R M cost : ℝ}
+    (hR : ∀ a a' x, |u a x - u a' x| ≤ R) (hM : ∀ a x, |u a x| ≤ M)
+    (hcost : R * shift q wHat + 2 * (M * EstimatedDecision.l1Error w wHat) ≤ cost) :
+    value q w u - cost ≤ value (trivialObs (Ω := Ω)) w u := by
+  have h := voi_le_estimated_shift q w u wHat hwHat hW hR hM
   linarith
 
 end SGC.InformationGeometry.BeliefShiftBound
