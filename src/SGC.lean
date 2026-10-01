@@ -20,6 +20,7 @@ import SGC.Spectral.Envelope.Sector
 
 -- Renormalization Pillar: Spectral Gap Monotonicity
 import SGC.Renormalization.Lumpability
+import SGC.Renormalization.GapConvention
 
 -- Approximate Renormalization: Trajectory bounds for leakage defects
 import SGC.Renormalization.Approximate
@@ -325,6 +326,7 @@ import SGC.Bridge.MachineCertificate
 -- the axioms HeatKernel_opNorm_bound and Horizontal_Duhamel_integral_bound
 -- with computable exponential constants. Kernel-proven (2026-06-11).
 import SGC.Bridge.DefectHorizonBridge
+import SGC.Bridge.ContractiveHorizon
 
 -- Axiom retirement (2026-07-05): kernel-clean re-proofs of trajectory_closure_bound,
 -- vertical_error_bound, propagator_approximation_bound, spectral_stability_reversible,

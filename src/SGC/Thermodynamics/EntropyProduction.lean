@@ -1,5 +1,6 @@
 import SGC.Renormalization.Lumpability
 import SGC.Renormalization.Approximate
+import SGC.Renormalization.GapConvention
 import SGC.Thermodynamics.LogSum
 
 /-!
@@ -905,59 +906,43 @@ theorem hidden_entropy_bounded_by_defect
   · simp only [one_pow, mul_one] at h_bound
     exact h_bound
 
-/-- **The Gaspard Path-Space Identity**: Hidden entropy production is bounded
-    below by the spectral gap times the squared operator norm of the defect.
+/-- **The Gaspard Path-Space Identity** (RETIRED AXIOM, 2026-09-30; now a VACUOUS theorem).
 
-    σ_hid(L, P, π) ≥ γ · ‖D‖²_op
+    Intended content: σ_hid(L, P, π) ≥ γ · ‖D‖²_op with γ the spectral gap and D the
+    leakage defect (Gaspard 2004, Maes-Netočný 2003, arXiv:2602.15663).
 
-    where γ = DirichletGap(L, π) > 0 is the spectral gap and D is the defect
-    operator from approximate lumpability (`Approximate.DefectOperator`).
+    **Why it is retired.** The hypotheses combine the generator convention
+    (`hL_gen`: nonnegative off-diagonal entries; `h_stat`: `π L = 0`) with
+    `0 < γ ≤ DirichletGap L π`. But `DirichletGap L π = inf ⟨u, L u⟩_π/⟨u,u⟩_π` is
+    **nonpositive** for every stationary generator
+    (`SGC.dirichletGap_nonpos_of_stationary`, `Renormalization/GapConvention.lean`): the
+    spectral gap of a generator is `SpectralGap L π = DirichletGap (−L) π`. So the hypothesis
+    set is unsatisfiable, the statement is provable by contradiction, and it carries no
+    information about hidden entropy production. Numerical witness: the Z₂ lattice gauge
+    chains of `docs/experiments/gauge_lumpability_v1` have `DirichletGap (K − I) π = −0.999`
+    while the spectral gaps of `I − K` are `0.09` to `0.23`.
 
-    ## What this axiom captures (and what would close it)
+    **Status of the mathematics.** The correctly stated inequality
+    `γ · ‖D‖² ≤ σ_hid` with `γ ≤ SpectralGap L π` is an OPEN conjecture here; it is not
+    assumed as an axiom (no pre-flight ledger entry exists for it), and the downstream
+    theorems `hidden_entropy_lower_bound`, `efficiency_requires_prediction` and their
+    consumers inherit the vacuity of these hypotheses until it is proved or axiomatized
+    with the seven pre-flight checks.
 
-    **Mathematical staging** (Gaspard 2004, Maes-Netočný 2003, arXiv:2602.15663):
-
-    1. σ_hid = KL rate between forward and time-reversed coarse-grained path
-       measures (the **definitional** content of hidden entropy production).
-    2. This KL rate ≥ Dirichlet form ℰ(Df) for the defect operator
-       (the **path-space → pointwise bridge** — the deep step).
-    3. Poincaré inequality: ℰ(g) ≥ γ · ‖g‖²_π for g ⊥ constants
-       (already formalized via `DirichletForm` and `DirichletGap` in
-       `SGC.Renormalization.Lumpability` / `SGC.Renormalization.QuotientGenerator`).
-    4. Taking sup over unit-norm test functions: γ · ‖D‖²_op ≤ σ_hid (algebra).
-
-    Steps 1, 3, 4 are infrastructure-comfortable in the existing repo. Step 2 is
-    the genuinely open content: it requires formalizing path-space probability
-    measures, the time-reversal operator on path measures, and the
-    Donsker-Varadhan / Maes-Netočný identity that converts the path-space KL
-    rate into a pointwise Dirichlet form. None of this infrastructure currently
-    exists in Mathlib in the form needed for finite Markov chains.
-
-    **Stepping stones for future closure**:
-    - Path measure on continuous-time trajectories of an irreducible
-      finite-state Markov chain (would enable defining σ_hid directly as a
-      KL rate, replacing the current `HiddenEntropyProduction` definition).
-    - Time-reversal operator on those path measures.
-    - The Maes-Netočný "fluctuation symmetry": the difference of the forward
-      and time-reversed dynamical entropies equals the entropy production
-      rate. Once formalized, step 2 follows by combining with the Schnakenberg
-      formula (already in `EntropyProduction.lean`).
-
-    **Until those exist**, this axiom is the cleanest single-statement summary
-    of the path-space → operator-norm content.
-
-    **References**:
-    - Gaspard (2004) JSP 117:599 — time-reversed entropy and EP
-    - Maes & Netočný (2003) cond-mat/0202501 — entropy production and time reversal
-    - arXiv:2602.15663 (2026) — experimental confirmation of σ_hid ~ ε² scaling -/
-axiom gaspard_path_space_identity
+    **Stepping stones for a genuine proof** (unchanged): path measures on continuous-time
+    trajectories, the time-reversal operator, the Maes-Netočný fluctuation symmetry, then the
+    Donsker-Varadhan step from the path-space KL rate to the pointwise Dirichlet form. -/
+theorem gaspard_path_space_identity
     (L : Matrix V V ℝ) (P : Partition V) (pi_dist : V → ℝ) (hπ : ∀ x, 0 < pi_dist x)
     (hL_gen : ∀ x y, x ≠ y → 0 ≤ L x y)
     (h_stat : ∀ v, ∑ u, pi_dist u * L u v = 0)
     (γ : ℝ) (hγ : γ > 0)
     (hγ_gap : γ ≤ DirichletGap L pi_dist) :
     γ * (opNorm_pi pi_dist hπ (Approximate.DefectOperator L P pi_dist hπ))^2 ≤
-    HiddenEntropyProduction L P pi_dist
+    HiddenEntropyProduction L P pi_dist := by
+  exfalso
+  have h := dirichletGap_nonpos_of_stationary L pi_dist hπ hL_gen h_stat
+  linarith
 
 /-- **Backward-compatible alias** for the renamed `gaspard_path_space_identity`.
 

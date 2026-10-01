@@ -1,5 +1,38 @@
 # Axiom Discharge Campaign
 
+## VACUOUS AXIOM RETIRED: gaspard_path_space_identity (2026-09-30)
+
+Found by the lattice-gauge-theory numerical test bed (sgc-second-brain,
+docs/experiments/gauge_lumpability_v1): `SGC.DirichletGap L pi` is literally
+`inf <u, L u>_pi / <u, u>_pi` over mean-zero `u`. For a rate generator
+(nonnegative off-diagonal, `pi L = 0`) that infimum is NONPOSITIVE: the test
+vector `e_v - (pi_v / sum pi) 1` has nonpositive Dirichlet form (measured
+-0.99911 on the Z2 transfer chain while the spectral gaps of I - K are 0.09
+and 0.23). The axiom's hypotheses combined the generator convention
+(`hL_gen`, `h_stat`) with `0 < gamma <= DirichletGap L pi`, so they were
+jointly UNSATISFIABLE (pre-flight check 7, joint model): the axiom said
+nothing, and so do its consumers `hidden_entropy_lower_bound`,
+`efficiency_requires_prediction`, and their users in RennerSGC,
+SingularLearning, EmergenceEquivalence.
+
+REPAIR: `SGC.Renormalization.GapConvention` proves
+`dirichletGap_nonpos_of_stationary` (kernel-clean, handles |V| <= 1 via
+`sInf empty = 0`) and defines the generator-convention gap
+`SpectralGap L pi := DirichletGap (-L) pi`. The `axiom` was replaced by a
+`theorem` proved by contradiction from the nonpositivity lemma, with a
+docstring stating that it is VACUOUS. Net: one fewer axiom (13 refs), no
+consumer changed, no new axiom introduced. The correctly stated Gaspard
+inequality (`gamma <= SpectralGap L pi`) is now an OPEN conjecture with no
+axiom; it must pass the seven checks (including a numerical witness for
+sigma_hid >= gamma ||D||^2, which has NOT been run) before any restatement.
+
+LESSON: sign conventions are a satisfiability axis. The non-decrease theorem
+in Lumpability.lean is convention-neutral; every consumer that reads
+`DirichletGap` as a positive gap must be fed the positive Laplacian.
+Remaining consumers to audit for the same confusion: TsallisStatistics
+(QSpectralGap), PhaseClassifier, RennerSGC, Discretization (declares the
+Laplacian convention explicitly; fine), SingularLearning.
+
 ## SOUNDNESS HOLE FOUND AND REPAIRED (2026-08-22)
 
 During the ranked-discharge recon, the adjoint family in
@@ -354,7 +387,7 @@ Total `axiom` declarations under src/: **210**
 - `adjoint_pi` (SGC\Axioms\GeometryGeneral.lean L71) — 38 reference(s)
 - `RegularizedFisher` (SGC\InformationGeometry\FisherKL.lean L366) — 21 reference(s)
 - `traceNorm_pi` (SGC\Axioms\GeometryGeneral.lean L176) — 14 reference(s)
-- `gaspard_path_space_identity` (SGC\Thermodynamics\EntropyProduction.lean L968) — 13 reference(s)
+- ~~`gaspard_path_space_identity`~~ RETIRED 2026-09-30 (vacuous; now a theorem by contradiction, see top entry)
 - `StationaryDistribution` (SGC\Thermodynamics\Evolution.lean L115) — 11 reference(s)
 - `CommutatorNorm` (SGC\Bridge\CanonicalWavelet.lean L602) — 10 reference(s)
 - `YamabeFlow` (SGC\Geometry\Yamabe.lean L181) — 10 reference(s)
