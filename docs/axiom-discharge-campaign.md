@@ -1,5 +1,19 @@
 # Axiom Discharge Campaign
 
+## FOLLOW-UP (2026-10-04): the Gaspard content is FALSE, not merely vacuous
+
+Numerical witness (sgc-second-brain, docs/experiments/gaspard_witness_v1): the
+sign-corrected inequality gamma * ||D||_pi^2 <= sigma_hid fails for every
+non-lumpable partition of a reversible chain (detailed balance forces
+sigma(L,pi) = 0 and sigma(Lbar,pibar) = 0, so sigma_hid = 0 while ||D|| > 0;
+7/7 on the Z2 gauge heat-bath chain) and for 87% of 400 random non-reversible
+stationary generators. Leakage measures lost predictability, hidden entropy
+production measures lost irreversibility; no inequality runs from the second to
+the first. Consumers (hidden_entropy_lower_bound, efficiency_requires_prediction,
+RennerSGC, SingularLearning, EmergenceEquivalence) must not be cited for their
+intended content. Candidate Lean theorem: sigma_hid = 0 for reversible L and
+every partition.
+
 ## VACUOUS AXIOM RETIRED: gaspard_path_space_identity (2026-09-30)
 
 Found by the lattice-gauge-theory numerical test bed (sgc-second-brain,
