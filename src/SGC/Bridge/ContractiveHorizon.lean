@@ -356,4 +356,39 @@ theorem trajectory_closure_bound_generator (L : Matrix V V ℝ) (P : Partition V
   trajectory_closure_bound_contractive pi_dist hπ L P t ht f₀ hf₀
     (fun s hs => heatKernel_contractive_of_generator pi_dist hπ L hL hstat s hs) hcoarse
 
+/-! ## §5. Orbit-integrated leakage (discrete form)
+
+Bounding `‖(X − Y)·Yᵏf‖` by `‖X − Y‖·‖Yᵏf‖` in the telescoping throws away the direction
+of the coarse orbit. Keeping it gives a sharper, orbit-dependent radius: the sum of the
+one-step discrepancies along the coarse trajectory. Numerically (decision 0084) this
+radius is tight to within a factor ~1.4 in `L²(π)` where `t·ε` is loose by 25–250×.
+The continuum form `∫₀ᵗ ‖(I−Π)L e^{sL̄}f₀‖_π ds` is the natural conjecture; its proof
+needs the `O(h²)` one-step remainder and is not attempted here. -/
+
+/-- **Orbit telescoping**: with `X` a `π`-contraction,
+`‖(Xⁿ − Yⁿ)f‖_π ≤ Σ_{k<n} ‖(X − Y)(Yᵏf)‖_π`. -/
+lemma norm_pi_pow_sub_pow_mulVec_le_sum (X Y : Matrix V V ℝ) (f : V → ℝ)
+    (hX : opNorm_pi pi_dist hπ (matrixToLinearMap X) ≤ 1) (n : ℕ) :
+    norm_pi pi_dist ((X ^ n - Y ^ n) *ᵥ f) ≤
+      ∑ k ∈ Finset.range n, norm_pi pi_dist ((X - Y) *ᵥ (Y ^ k *ᵥ f)) := by
+  induction n with
+  | zero => simp [norm_pi, norm_sq_pi, inner_pi]
+  | succ m ih =>
+    have key : (X ^ (m + 1) - Y ^ (m + 1)) *ᵥ f =
+        X *ᵥ ((X ^ m - Y ^ m) *ᵥ f) + (X - Y) *ᵥ (Y ^ m *ᵥ f) := by
+      rw [Matrix.mulVec_mulVec, Matrix.mulVec_mulVec, ← Matrix.add_mulVec]
+      congr 1
+      rw [pow_succ', pow_succ']
+      noncomm_ring
+    rw [key, Finset.sum_range_succ]
+    have hXf : norm_pi pi_dist (X *ᵥ ((X ^ m - Y ^ m) *ᵥ f)) ≤
+        norm_pi pi_dist ((X ^ m - Y ^ m) *ᵥ f) := by
+      refine le_trans (opNorm_pi_bound pi_dist hπ (matrixToLinearMap X) _) ?_
+      exact mul_le_of_le_one_left (norm_pi_nonneg' pi_dist _) hX
+    calc norm_pi pi_dist (X *ᵥ ((X ^ m - Y ^ m) *ᵥ f) + (X - Y) *ᵥ (Y ^ m *ᵥ f))
+        ≤ norm_pi pi_dist (X *ᵥ ((X ^ m - Y ^ m) *ᵥ f)) +
+          norm_pi pi_dist ((X - Y) *ᵥ (Y ^ m *ᵥ f)) := norm_pi_add_le pi_dist hπ _ _
+      _ ≤ (∑ k ∈ Finset.range m, norm_pi pi_dist ((X - Y) *ᵥ (Y ^ k *ᵥ f))) +
+          norm_pi pi_dist ((X - Y) *ᵥ (Y ^ m *ᵥ f)) := add_le_add (le_trans hXf ih) le_rfl
+
 end SGC.Bridge.ContractiveHorizon
