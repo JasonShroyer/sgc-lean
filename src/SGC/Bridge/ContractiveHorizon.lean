@@ -29,19 +29,14 @@ Two levels:
 The fine-side hypothesis is discharged for genuine stochastic generators:
 `heatKernel_contractive_of_generator` — a rate generator with stationary `π` has
 `‖e^{sL}‖_π ≤ 1` (Jensen/Cauchy–Schwarz on a stochastic kernel with stationary weight).
-The coarse-side hypothesis `hcoarse` is left explicit; see the TODO below.
+The coarse-side hypothesis `hcoarse` is discharged in `Bridge/CoarseContraction.lean`.
 
 Numerical witness: `docs/experiments/gauge_lumpability_v1` (Z₂/Z₃ lattice gauge chains):
 `max_t err/(ε t) = 0.9985` over 472 (chain, partition, f₀) pairs, while the exponential
 constant of `defect_horizon_bound` overshoots by up to a factor 528.
 
-TODO (coarse side). Planned discharge without quotient types: for a stationary
-generator `L` put `L̃ := ΠLΠ + c(Π − I)`. Then `ΠLΠ` and `Π − I` commute (both products
-vanish), `(Π − I)f₀ = 0` so `e^{sL̃}f₀ = e^{sL̄}f₀`, `L̃·1 = 0`, `π L̃ = 0` (because `πΠ = π`),
-and for `c` large the off-diagonal entries of `L̃` are nonnegative (`ΠLΠ` is nonnegative
-off the diagonal blocks, and `cΠ` dominates inside them). So `L̃` is a stationary
-generator and `heatKernel_contractive_of_generator` gives `hcoarse`. Numerically
-`hcoarse` held in every pair of the gauge-theory run.
+Coarse side: discharged in `Bridge/CoarseContraction.lean` via `L̃ = ΠLΠ + c(Π − 1)`;
+see `trajectory_closure_bound_stationary` there for the unconditional statement.
 -/
 
 noncomputable section
