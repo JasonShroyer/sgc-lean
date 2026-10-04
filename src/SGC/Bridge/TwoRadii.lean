@@ -135,4 +135,256 @@ theorem estimation_radius [Nonempty V] (Xh X : Matrix V V ℝ)
       ≤ ∑ _k ∈ Finset.range n, η * l1 w := Finset.sum_le_sum hterm
     _ = (n : ℝ) * η * l1 w := by simp [Finset.sum_const, Finset.card_range]; ring
 
+/-! ## §2. Dobrushin contraction and the saturating estimation radius
+
+The linear radius `n·η` grows without bound while the actual estimation error saturates, because
+the coarse chain forgets. Dobrushin's ergodic coefficient quantifies the forgetting in total
+variation: for a row-stochastic `Y` with `τ(Y) := max_{a,b} ½ Σ_c |Y a c − Y b c|`, every
+**mean-zero** signed measure contracts, `‖v·Y‖₁ ≤ τ(Y)·‖v‖₁`. Since each telescoping term
+`(w·Xᵏ)·(X − Y)` is mean-zero, the later factors `Y^{n−1−k}` contract it, and the radius becomes
+`η·‖w‖₁·Σ_k τᵏ ≤ η·‖w‖₁/(1 − τ)`. The coefficient is that of the **estimated** kernel `Y`, so an
+agent can compute it. This is the L¹ counterpart of the library's `ε/γ` NCD bound: no spectral
+hypothesis, no reversibility, finite arithmetic only. -/
+
+/-- Dobrushin's total-variation diameter of the rows of `Y`: `max_{a,b} ½ Σ_c |Y a c − Y b c|`. -/
+def tvDiam [Nonempty V] (Y : Matrix V V ℝ) : ℝ :=
+  univ.sup' univ_nonempty (fun ab : V × V => (1/2 : ℝ) * ∑ c, |Y ab.1 c - Y ab.2 c|)
+
+lemma tvDiam_nonneg [Nonempty V] (Y : Matrix V V ℝ) : 0 ≤ tvDiam Y := by
+  unfold tvDiam
+  refine le_trans ?_ (Finset.le_sup' (fun ab : V × V => (1/2 : ℝ) * ∑ c, |Y ab.1 c - Y ab.2 c|)
+    (mem_univ (Classical.arbitrary V, Classical.arbitrary V)))
+  exact mul_nonneg (by norm_num) (Finset.sum_nonneg fun _ _ => abs_nonneg _)
+
+lemma half_sum_abs_le_tvDiam [Nonempty V] (Y : Matrix V V ℝ) (a b : V) :
+    (1/2 : ℝ) * ∑ c, |Y a c - Y b c| ≤ tvDiam Y :=
+  Finset.le_sup' (fun ab : V × V => (1/2 : ℝ) * ∑ c, |Y ab.1 c - Y ab.2 c|) (mem_univ (a, b))
+
+/-- Positive and negative parts of a signed measure. -/
+def posPart (v : V → ℝ) : V → ℝ := fun a => max (v a) 0
+def negPart (v : V → ℝ) : V → ℝ := fun a => max (-v a) 0
+
+lemma posPart_sub_negPart (v : V → ℝ) : v = posPart v - negPart v := by
+  funext a; simp only [posPart, negPart, Pi.sub_apply]
+  rcases le_total 0 (v a) with h | h
+  · rw [max_eq_left h, max_eq_right (by linarith)]; ring
+  · rw [max_eq_right h, max_eq_left (by linarith)]; ring
+
+lemma abs_eq_posPart_add_negPart (v : V → ℝ) (a : V) : |v a| = posPart v a + negPart v a := by
+  simp only [posPart, negPart]
+  rcases le_total 0 (v a) with h | h
+  · rw [abs_of_nonneg h, max_eq_left h, max_eq_right (by linarith)]; ring
+  · rw [abs_of_nonpos h, max_eq_right h, max_eq_left (by linarith)]; ring
+
+lemma posPart_nonneg (v : V → ℝ) (a : V) : 0 ≤ posPart v a := le_max_right _ _
+lemma negPart_nonneg (v : V → ℝ) (a : V) : 0 ≤ negPart v a := le_max_right _ _
+
+/-- For a mean-zero `v`, the positive and negative parts have equal mass `‖v‖₁/2`. -/
+lemma mass_posPart_of_sum_zero (v : V → ℝ) (hv : ∑ a, v a = 0) :
+    ∑ a, posPart v a = l1 v / 2 ∧ ∑ a, negPart v a = l1 v / 2 := by
+  have h1 : ∑ a, posPart v a - ∑ a, negPart v a = 0 := by
+    rw [← Finset.sum_sub_distrib, ← hv]
+    exact Finset.sum_congr rfl fun a _ => by
+      have := congr_fun (posPart_sub_negPart v) a; simp only [Pi.sub_apply] at this; linarith
+  have h2 : ∑ a, posPart v a + ∑ a, negPart v a = l1 v := by
+    unfold l1; rw [← Finset.sum_add_distrib]
+    exact Finset.sum_congr rfl fun a _ => (abs_eq_posPart_add_negPart v a).symm
+  constructor <;> linarith
+
+/-- **Dobrushin contraction**: a mean-zero signed measure contracts under a stochastic kernel by
+the total-variation diameter of its rows. -/
+theorem l1_vecMul_le_tvDiam_of_sum_zero [Nonempty V] (Y : Matrix V V ℝ)
+    (hrow : ∀ a, ∑ c, Y a c = 1) (v : V → ℝ) (hv : ∑ a, v a = 0) :
+    l1 (v ᵥ* Y) ≤ tvDiam Y * l1 v := by
+  obtain ⟨hp, hn⟩ := mass_posPart_of_sum_zero v hv
+  set m := l1 v / 2 with hm
+  have hm0 : 0 ≤ m := by rw [hm]; exact div_nonneg (l1_nonneg v) (by norm_num)
+  rcases eq_or_lt_of_le hm0 with hm_zero | hm_pos
+  · -- v = 0
+    have hv0 : v = 0 := by
+      funext a
+      have : |v a| = 0 := by
+        have hsum : ∑ a, |v a| = 0 := by unfold l1 at hm; linarith
+        exact (Finset.sum_eq_zero_iff_of_nonneg (fun _ _ => abs_nonneg _)).mp hsum a (mem_univ a)
+      exact abs_eq_zero.mp this
+    subst hv0
+    simp [l1, Matrix.zero_vecMul]
+  · -- v·Y = (1/m) Σ_{a,b} v⁺_a v⁻_b (Y_a − Y_b)
+    have hvY : ∀ c, (v ᵥ* Y) c = (1 / m) * ∑ a, ∑ b, posPart v a * negPart v b * (Y a c - Y b c) := by
+      intro c
+      have e1 : ∑ a, ∑ b, posPart v a * negPart v b * Y a c =
+          (∑ b, negPart v b) * ∑ a, posPart v a * Y a c := by
+        rw [Finset.sum_mul, Finset.sum_comm]
+        refine Finset.sum_congr rfl fun b _ => ?_
+        rw [Finset.mul_sum]
+        exact Finset.sum_congr rfl fun a _ => by ring
+      have e2 : ∑ a, ∑ b, posPart v a * negPart v b * Y b c =
+          (∑ a, posPart v a) * ∑ b, negPart v b * Y b c := by
+        rw [Finset.sum_mul]
+        refine Finset.sum_congr rfl fun a _ => ?_
+        rw [Finset.mul_sum]
+        exact Finset.sum_congr rfl fun b _ => by ring
+      have e : ∑ a, ∑ b, posPart v a * negPart v b * (Y a c - Y b c) =
+          (∑ b, negPart v b) * ∑ a, posPart v a * Y a c - (∑ a, posPart v a) * ∑ b, negPart v b * Y b c := by
+        simp_rw [mul_sub, Finset.sum_sub_distrib]
+        rw [e1, e2]
+      rw [e, hp, hn]
+      have : (v ᵥ* Y) c = ∑ a, posPart v a * Y a c - ∑ b, negPart v b * Y b c := by
+        simp only [Matrix.vecMul, dotProduct, ← Finset.sum_sub_distrib]
+        refine Finset.sum_congr rfl fun a _ => ?_
+        have := congr_fun (posPart_sub_negPart v) a; simp only [Pi.sub_apply] at this
+        rw [this]; ring
+      rw [this]; field_simp
+    unfold l1
+    calc ∑ c, |(v ᵥ* Y) c|
+        = ∑ c, |(1 / m) * ∑ a, ∑ b, posPart v a * negPart v b * (Y a c - Y b c)| := by
+          simp_rw [hvY]
+      _ ≤ ∑ c, (1 / m) * ∑ a, ∑ b, posPart v a * negPart v b * |Y a c - Y b c| := by
+          apply Finset.sum_le_sum; intro c _
+          rw [abs_mul, abs_of_pos (by positivity : (0:ℝ) < 1 / m)]
+          apply mul_le_mul_of_nonneg_left _ (by positivity)
+          refine (Finset.abs_sum_le_sum_abs _ _).trans (Finset.sum_le_sum fun a _ => ?_)
+          refine (Finset.abs_sum_le_sum_abs _ _).trans (Finset.sum_le_sum fun b _ => le_of_eq ?_)
+          rw [abs_mul, abs_of_nonneg (mul_nonneg (posPart_nonneg v a) (negPart_nonneg v b))]
+      _ = (1 / m) * ∑ a, ∑ b, posPart v a * negPart v b * ∑ c, |Y a c - Y b c| := by
+          rw [← Finset.mul_sum]; congr 1
+          rw [Finset.sum_comm]; refine Finset.sum_congr rfl fun a _ => ?_
+          rw [Finset.sum_comm]; refine Finset.sum_congr rfl fun b _ => ?_
+          rw [Finset.mul_sum]
+      _ ≤ (1 / m) * ∑ a, ∑ b, posPart v a * negPart v b * (2 * tvDiam Y) := by
+          apply mul_le_mul_of_nonneg_left _ (by positivity)
+          refine Finset.sum_le_sum fun a _ => Finset.sum_le_sum fun b _ => ?_
+          apply mul_le_mul_of_nonneg_left _ (mul_nonneg (posPart_nonneg v a) (negPart_nonneg v b))
+          have := half_sum_abs_le_tvDiam Y a b; linarith
+      _ = (1 / m) * (2 * tvDiam Y) * ((∑ a, posPart v a) * ∑ b, negPart v b) := by
+          have : ∑ a, ∑ b, posPart v a * negPart v b * (2 * tvDiam Y) =
+              (2 * tvDiam Y) * ((∑ a, posPart v a) * ∑ b, negPart v b) := by
+            have h1 : ∀ a, ∑ b, posPart v a * negPart v b * (2 * tvDiam Y) =
+                posPart v a * (2 * tvDiam Y) * ∑ b, negPart v b := by
+              intro a; rw [Finset.mul_sum]; exact Finset.sum_congr rfl fun b _ => by ring
+            simp_rw [h1]
+            rw [← Finset.sum_mul, ← Finset.sum_mul]
+            ring
+          rw [this]; ring
+      _ = tvDiam Y * l1 v := by
+          rw [hp, hn]
+          have hl1 : l1 v = 2 * m := by rw [hm]; ring
+          rw [hl1]; field_simp
+
+/-- Row sums of a product of row-stochastic matrices are one. -/
+lemma rowsum_mul_one (A B : Matrix V V ℝ) (hA : ∀ a, ∑ b, A a b = 1) (hB : ∀ b, ∑ c, B b c = 1)
+    (a : V) : ∑ c, (A * B) a c = 1 := by
+  simp only [Matrix.mul_apply]
+  rw [Finset.sum_comm]
+  simp_rw [← Finset.mul_sum, hB, mul_one]
+  exact hA a
+
+lemma rowsum_pow_one (A : Matrix V V ℝ) (hA : ∀ a, ∑ b, A a b = 1) (n : ℕ) (a : V) :
+    ∑ c, (A ^ n) a c = 1 := by
+  induction n generalizing a with
+  | zero => simp [Matrix.one_apply]
+  | succ m ih => rw [pow_succ]; exact rowsum_mul_one _ _ ih hA a
+
+/-- `u·(X − Y)` is mean-zero when both kernels are row-stochastic. -/
+lemma sum_vecMul_sub_eq_zero (X Y : Matrix V V ℝ) (hX : ∀ a, ∑ b, X a b = 1)
+    (hY : ∀ a, ∑ b, Y a b = 1) (u : V → ℝ) : ∑ c, (u ᵥ* (X - Y)) c = 0 := by
+  simp only [Matrix.vecMul, dotProduct, Matrix.sub_apply]
+  rw [Finset.sum_comm]
+  simp_rw [mul_sub, Finset.sum_sub_distrib, ← Finset.mul_sum, hX, hY]
+  simp
+
+/-- **Saturating orbit telescoping.** For row-stochastic `X` (truth) and `Y` (estimate) with
+`τ = tvDiam Y`: `‖w(Xⁿ − Yⁿ)‖₁ ≤ Σ_{k<n} τ^{n−1−k} ‖(wXᵏ)(X − Y)‖₁`. -/
+theorem l1_vecMul_pow_sub_pow_le_geom [Nonempty V] (X Y : Matrix V V ℝ)
+    (hX : ∀ a, ∑ b, X a b = 1) (hY : ∀ a, ∑ b, Y a b = 1) (w : V → ℝ) (n : ℕ) :
+    l1 (w ᵥ* (X ^ n - Y ^ n)) ≤
+      ∑ k ∈ Finset.range n, tvDiam Y ^ (n - 1 - k) * l1 ((w ᵥ* X ^ k) ᵥ* (X - Y)) := by
+  induction n with
+  | zero => simp [l1]
+  | succ m ih =>
+    have key : w ᵥ* (X ^ (m + 1) - Y ^ (m + 1)) =
+        (w ᵥ* (X ^ m - Y ^ m)) ᵥ* Y + (w ᵥ* X ^ m) ᵥ* (X - Y) := by
+      rw [Matrix.vecMul_vecMul, Matrix.vecMul_vecMul, ← Matrix.vecMul_add]
+      congr 1
+      rw [pow_succ, pow_succ]
+      noncomm_ring
+    have hmean : ∑ c, (w ᵥ* (X ^ m - Y ^ m)) c = 0 :=
+      sum_vecMul_sub_eq_zero (X ^ m) (Y ^ m) (rowsum_pow_one X hX m) (rowsum_pow_one Y hY m) w
+    have hcontr := l1_vecMul_le_tvDiam_of_sum_zero Y hY _ hmean
+    rw [key, Finset.sum_range_succ]
+    refine le_trans (l1_add_le _ _) ?_
+    have hτ := tvDiam_nonneg Y
+    have hshift : ∑ k ∈ Finset.range m, tvDiam Y ^ (m + 1 - 1 - k) * l1 ((w ᵥ* X ^ k) ᵥ* (X - Y)) =
+        tvDiam Y * ∑ k ∈ Finset.range m, tvDiam Y ^ (m - 1 - k) * l1 ((w ᵥ* X ^ k) ᵥ* (X - Y)) := by
+      rw [Finset.mul_sum]
+      refine Finset.sum_congr rfl fun k hk => ?_
+      have hk' : k < m := Finset.mem_range.mp hk
+      have : m + 1 - 1 - k = (m - 1 - k) + 1 := by omega
+      rw [this, pow_succ]; ring
+    rw [hshift]
+    simp only [Nat.add_sub_cancel, Nat.sub_self, pow_zero, one_mul]
+    have : tvDiam Y * l1 (w ᵥ* (X ^ m - Y ^ m)) ≤
+        tvDiam Y * ∑ k ∈ Finset.range m, tvDiam Y ^ (m - 1 - k) * l1 ((w ᵥ* X ^ k) ᵥ* (X - Y)) :=
+      mul_le_mul_of_nonneg_left ih hτ
+    linarith
+
+/-- **Saturating estimation radius**: with row-L¹ gap `η` between the estimate `Y` and the truth
+`X`, and `τ = tvDiam Y < 1`, `‖w(Xⁿ − Yⁿ)‖₁ ≤ η·‖w‖₁/(1 − τ)` for every `n`. -/
+theorem estimation_radius_saturating [Nonempty V] (X Y : Matrix V V ℝ)
+    (hXnn : ∀ a b, 0 ≤ X a b) (hX : ∀ a, ∑ b, X a b = 1) (hY : ∀ a, ∑ b, Y a b = 1)
+    (w : V → ℝ) (n : ℕ) {η : ℝ} (hη : rowL1Dist Y X ≤ η) (hτ : tvDiam Y < 1) :
+    l1 (w ᵥ* (X ^ n - Y ^ n)) ≤ η * l1 w / (1 - tvDiam Y) := by
+  have hτ0 := tvDiam_nonneg Y
+  have hdist0 : 0 ≤ rowL1Dist Y X := by
+    unfold rowL1Dist
+    exact le_trans (Finset.sum_nonneg fun _ _ => abs_nonneg _)
+      (Finset.le_sup' (fun a => ∑ b, |Y a b - X a b|) (mem_univ (Classical.arbitrary V)))
+  have hη0 : 0 ≤ η := le_trans hdist0 hη
+  have hterm : ∀ k ∈ Finset.range n,
+      tvDiam Y ^ (n - 1 - k) * l1 ((w ᵥ* X ^ k) ᵥ* (X - Y)) ≤ tvDiam Y ^ (n - 1 - k) * (η * l1 w) := by
+    intro k _
+    apply mul_le_mul_of_nonneg_left _ (pow_nonneg hτ0 _)
+    have hpow : ∀ j : ℕ, l1 (w ᵥ* X ^ j) ≤ l1 w := by
+      intro j
+      induction j with
+      | zero => simp
+      | succ j ihj =>
+        rw [pow_succ, ← Matrix.vecMul_vecMul]
+        exact le_trans (l1_vecMul_le_of_stochastic X hXnn hX _) ihj
+    have hsub : (w ᵥ* X ^ k) ᵥ* (X - Y) = -((w ᵥ* X ^ k) ᵥ* (Y - X)) := by
+      rw [← Matrix.vecMul_neg, neg_sub]
+    calc l1 ((w ᵥ* X ^ k) ᵥ* (X - Y)) = l1 ((w ᵥ* X ^ k) ᵥ* (Y - X)) := by
+          rw [hsub]; unfold l1; simp [abs_neg]
+      _ ≤ l1 (w ᵥ* X ^ k) * rowL1Dist Y X := l1_vecMul_sub_le Y X _
+      _ ≤ l1 w * η := mul_le_mul (hpow k) hη hdist0 (l1_nonneg w)
+      _ = η * l1 w := mul_comm _ _
+  have hgeom : ∑ k ∈ Finset.range n, tvDiam Y ^ (n - 1 - k) ≤ 1 / (1 - tvDiam Y) := by
+    have hre : ∑ k ∈ Finset.range n, tvDiam Y ^ (n - 1 - k) = ∑ k ∈ Finset.range n, tvDiam Y ^ k := by
+      rw [← Finset.sum_range_reflect]
+      refine Finset.sum_congr rfl fun k hk => ?_
+      have hk' : k < n := Finset.mem_range.mp hk
+      congr 1
+      omega
+    rw [hre]
+    have h1τ : 0 < 1 - tvDiam Y := by linarith
+    -- Σ_{k<n} τ^k = (1 − τ^n)/(1 − τ) ≤ 1/(1 − τ)
+    have hsum : ∑ k ∈ Finset.range n, tvDiam Y ^ k = (1 - tvDiam Y ^ n) / (1 - tvDiam Y) := by
+      have := geom_sum_eq (x := tvDiam Y) (by linarith : tvDiam Y ≠ 1) n
+      rw [this]
+      have h2 : tvDiam Y - 1 ≠ 0 := by linarith
+      field_simp
+      ring
+    rw [hsum]
+    apply div_le_div_of_nonneg_right _ h1τ.le
+    have := pow_nonneg hτ0 n
+    linarith
+  calc l1 (w ᵥ* (X ^ n - Y ^ n))
+      ≤ ∑ k ∈ Finset.range n, tvDiam Y ^ (n - 1 - k) * l1 ((w ᵥ* X ^ k) ᵥ* (X - Y)) :=
+        l1_vecMul_pow_sub_pow_le_geom X Y hX hY w n
+    _ ≤ ∑ k ∈ Finset.range n, tvDiam Y ^ (n - 1 - k) * (η * l1 w) := Finset.sum_le_sum hterm
+    _ = (∑ k ∈ Finset.range n, tvDiam Y ^ (n - 1 - k)) * (η * l1 w) := by rw [Finset.sum_mul]
+    _ ≤ (1 / (1 - tvDiam Y)) * (η * l1 w) :=
+        mul_le_mul_of_nonneg_right hgeom (mul_nonneg hη0 (l1_nonneg w))
+    _ = η * l1 w / (1 - tvDiam Y) := by ring
+
 end SGC.Bridge.TwoRadii
