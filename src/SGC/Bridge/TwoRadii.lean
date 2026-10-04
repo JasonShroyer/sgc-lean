@@ -387,4 +387,132 @@ theorem estimation_radius_saturating [Nonempty V] (X Y : Matrix V V ℝ)
         mul_le_mul_of_nonneg_right hgeom (mul_nonneg hη0 (l1_nonneg w))
     _ = η * l1 w / (1 - tvDiam Y) := by ring
 
+/-! ## §3. Per-mode accumulation: buy for slow modes, rent for fast ones
+
+Project the discrete telescoping `Xⁿ − Yⁿ = Σ_k X^{n−1−k}(X − Y)Yᵏ` onto a **left eigenvector**
+`v·X = μ·v` of the fine kernel (`0 ≤ μ < 1`: a decaying mode). The source seen by the mode at
+step `k` is `s_k := v·((X − Y)·(Yᵏ f))`; if `|s_k| ≤ S` for all `k`, then
+
+  `|v·((Xⁿ − Yⁿ) f)| ≤ S·(1 − μⁿ)/(1 − μ) ≤ S·min(n, 1/(1 − μ))`.
+
+A slow mode (`μ` near 1) accumulates `≈ S·n`; a fast mode saturates at the quasi-static level
+`S/(1 − μ)` and stays there while the source persists. This is the discrete-time form of the
+`S_k·min(t, 1/λ_k)` law of decision 0088 (4,264 numerical checks), and it needs no spectral
+theorem — one eigenvector and a source bound. The hypothesis on the source is the sup over
+steps, as a reviewer requested. -/
+
+/-- A left eigenvector sees the telescoping as a geometric sum of its own sources. -/
+lemma dot_pow_sub_pow_eq_sum (X Y : Matrix V V ℝ) (v f : V → ℝ) {μ : ℝ} (hv : v ᵥ* X = μ • v) (n : ℕ) :
+    v ⬝ᵥ ((X ^ n - Y ^ n) *ᵥ f) = ∑ k ∈ Finset.range n, μ ^ (n - 1 - k) * (v ⬝ᵥ ((X - Y) *ᵥ (Y ^ k *ᵥ f))) := by
+  induction n with
+  | zero => simp
+  | succ m ih =>
+    have key : (X ^ (m + 1) - Y ^ (m + 1)) *ᵥ f =
+        X *ᵥ ((X ^ m - Y ^ m) *ᵥ f) + (X - Y) *ᵥ (Y ^ m *ᵥ f) := by
+      rw [Matrix.mulVec_mulVec, Matrix.mulVec_mulVec, ← Matrix.add_mulVec]
+      congr 1
+      rw [pow_succ', pow_succ']
+      noncomm_ring
+    have hvX : ∀ u : V → ℝ, v ⬝ᵥ (X *ᵥ u) = μ * (v ⬝ᵥ u) := by
+      intro u
+      rw [Matrix.dotProduct_mulVec, hv, smul_dotProduct, smul_eq_mul]
+    rw [key, dotProduct_add, hvX, ih, Finset.sum_range_succ, Finset.mul_sum]
+    simp only [Nat.add_sub_cancel, Nat.sub_self, pow_zero, one_mul]
+    congr 1
+    refine Finset.sum_congr rfl fun k hk => ?_
+    have hk' : k < m := Finset.mem_range.mp hk
+    have : m - k = (m - 1 - k) + 1 := by omega
+    rw [this, pow_succ]; ring
+
+/-- **Per-mode accumulation bound.** For a left eigenvector `v·X = μ·v` with `0 ≤ μ < 1` and a
+source bound `|v·((X − Y)·(Yᵏ f))| ≤ S` for all `k`:
+`|v·((Xⁿ − Yⁿ)f)| ≤ S·(1 − μⁿ)/(1 − μ)`. -/
+theorem abs_dot_pow_sub_pow_le (X Y : Matrix V V ℝ) (v f : V → ℝ) {μ S : ℝ}
+    (hv : v ᵥ* X = μ • v) (hμ0 : 0 ≤ μ) (hμ1 : μ < 1) (hS0 : 0 ≤ S)
+    (hsrc : ∀ k : ℕ, |v ⬝ᵥ ((X - Y) *ᵥ (Y ^ k *ᵥ f))| ≤ S) (n : ℕ) :
+    |v ⬝ᵥ ((X ^ n - Y ^ n) *ᵥ f)| ≤ S * (1 - μ ^ n) / (1 - μ) := by
+  rw [dot_pow_sub_pow_eq_sum X Y v f hv n]
+  have h1μ : 0 < 1 - μ := by linarith
+  calc |∑ k ∈ Finset.range n, μ ^ (n - 1 - k) * (v ⬝ᵥ ((X - Y) *ᵥ (Y ^ k *ᵥ f)))|
+      ≤ ∑ k ∈ Finset.range n, |μ ^ (n - 1 - k) * (v ⬝ᵥ ((X - Y) *ᵥ (Y ^ k *ᵥ f)))| :=
+        Finset.abs_sum_le_sum_abs _ _
+    _ ≤ ∑ k ∈ Finset.range n, μ ^ (n - 1 - k) * S := by
+        apply Finset.sum_le_sum; intro k _
+        rw [abs_mul, abs_of_nonneg (pow_nonneg hμ0 _)]
+        exact mul_le_mul_of_nonneg_left (hsrc k) (pow_nonneg hμ0 _)
+    _ = (∑ k ∈ Finset.range n, μ ^ k) * S := by
+        rw [Finset.sum_mul]
+        rw [← Finset.sum_range_reflect]
+        refine Finset.sum_congr rfl fun k hk => ?_
+        have hk' : k < n := Finset.mem_range.mp hk
+        congr 2; omega
+    _ = S * (1 - μ ^ n) / (1 - μ) := by
+        rw [geom_sum_eq (by linarith : μ ≠ 1) n]
+        have h2 : μ - 1 ≠ 0 := by linarith
+        field_simp
+        ring
+
+/-- The rent-or-buy corollary: `S·(1 − μⁿ)/(1 − μ) ≤ S·min(n, 1/(1 − μ))`. -/
+theorem geom_accum_le_min {μ S : ℝ} (hμ0 : 0 ≤ μ) (hμ1 : μ < 1) (hS0 : 0 ≤ S) (n : ℕ) :
+    S * (1 - μ ^ n) / (1 - μ) ≤ S * min (n : ℝ) (1 / (1 - μ)) := by
+  have h1μ : 0 < 1 - μ := by linarith
+  have hμn : 0 ≤ μ ^ n := pow_nonneg hμ0 n
+  have hμn1 : μ ^ n ≤ 1 := pow_le_one₀ hμ0 hμ1.le
+  rw [mul_div_assoc]
+  apply mul_le_mul_of_nonneg_left _ hS0
+  apply le_min
+  · -- (1 − μⁿ)/(1 − μ) = Σ_{k<n} μᵏ ≤ n
+    rw [div_le_iff₀ h1μ]
+    -- 1 − μⁿ ≤ n(1 − μ): Bernoulli, i.e. μⁿ ≥ 1 − n(1 − μ)
+    have hb := one_add_mul_le_pow (by linarith : (-2 : ℝ) ≤ -(1 - μ)) n
+    have : 1 + (n : ℝ) * (-(1 - μ)) = 1 - (n : ℝ) * (1 - μ) := by ring
+    rw [this] at hb
+    have : (1 + -(1 - μ)) = μ := by ring
+    rw [this] at hb
+    linarith
+  · rw [div_le_div_iff_of_pos_right h1μ]
+    linarith
+
+/-! ## §4. One certificate, two radii -/
+
+lemma l1Error_triangle {Ω : Type*} [Fintype Ω] (p q r : Ω → ℝ) :
+    SGC.InformationGeometry.EstimatedDecision.l1Error p r ≤
+      SGC.InformationGeometry.EstimatedDecision.l1Error p q +
+      SGC.InformationGeometry.EstimatedDecision.l1Error q r := by
+  unfold SGC.InformationGeometry.EstimatedDecision.l1Error
+  rw [← Finset.sum_add_distrib]
+  exact Finset.sum_le_sum fun ω _ => by
+    have := abs_sub_le (p ω) (q ω) (r ω); exact this
+
+/-- **Two-radii refine certificate.** If the true law `p` is within `r₁` of the true coarse
+prediction `p̄` (coarse-graining: the orbit radius) and `p̄` is within `r₂` of the agent's
+estimated prediction `p̂` (estimation: `η/(1 − τ)` or `n·η`), then an estimated VOI clearing
+`cost + 2M(r₁ + r₂)` certifies refinement under the truth. -/
+theorem two_radii_refine_certificate {Ω β γ α : Type*} [Fintype Ω] [Fintype β] [DecidableEq β]
+    [Fintype γ] [DecidableEq γ] [Fintype α] [Nonempty α]
+    (q : Ω → β) (f : β → γ) (rule : β → α) (p pbar phat : Ω → ℝ) (u : α → Ω → ℝ)
+    (hopt : ∀ b, SGC.InformationGeometry.DecisionValue.blockUtility q phat u b (rule b) =
+      SGC.InformationGeometry.DecisionValue.blockValue q phat u b)
+    {M r₁ r₂ cost : ℝ} (hM0 : 0 ≤ M) (hM : ∀ a ω, |u a ω| ≤ M)
+    (h₁ : SGC.InformationGeometry.EstimatedDecision.l1Error p pbar ≤ r₁)
+    (h₂ : SGC.InformationGeometry.EstimatedDecision.l1Error pbar phat ≤ r₂)
+    (hmargin : cost + 2 * M * (r₁ + r₂) < SGC.InformationGeometry.DecisionValue.voi q f phat u) :
+    SGC.InformationGeometry.DecisionValue.value (f ∘ q) p u <
+      SGC.InformationGeometry.EstimatedDecision.policyValue q p u rule - cost :=
+  SGC.InformationGeometry.EstimatedDecision.empirical_refinement_safe_of_radius q p phat u f rule hopt hM0 hM
+    (le_trans (l1Error_triangle p pbar phat) (add_le_add h₁ h₂)) hmargin
+
+/-- **Two-radii stop certificate.** -/
+theorem two_radii_stop_certificate {Ω β γ α : Type*} [Fintype Ω] [Fintype β] [DecidableEq β]
+    [Fintype γ] [DecidableEq γ] [Fintype α] [Nonempty α]
+    (q : Ω → β) (f : β → γ) (p pbar phat : Ω → ℝ) (u : α → Ω → ℝ)
+    {M r₁ r₂ cost : ℝ} (hM0 : 0 ≤ M) (hM : ∀ a ω, |u a ω| ≤ M)
+    (h₁ : SGC.InformationGeometry.EstimatedDecision.l1Error p pbar ≤ r₁)
+    (h₂ : SGC.InformationGeometry.EstimatedDecision.l1Error pbar phat ≤ r₂)
+    (hmargin : SGC.InformationGeometry.DecisionValue.voi q f phat u + 2 * M * (r₁ + r₂) ≤ cost) :
+    SGC.InformationGeometry.DecisionValue.value q p u - cost ≤
+      SGC.InformationGeometry.DecisionValue.value (f ∘ q) p u :=
+  SGC.InformationGeometry.EstimatedDecision.refinement_not_profitable_of_radius q p phat u f hM0 hM
+    (le_trans (l1Error_triangle p pbar phat) (add_le_add h₁ h₂)) hmargin
+
 end SGC.Bridge.TwoRadii
