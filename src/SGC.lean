@@ -35,6 +35,7 @@ import SGC.Topology.PadicPathSpace
 -- Thermodynamics Pillar: Stochastic Thermodynamics of Surprise
 import SGC.Thermodynamics.DoobMeyer
 import SGC.Thermodynamics.EntropyProduction
+import SGC.Thermodynamics.EquilibriumExemption
 import SGC.Thermodynamics.FluxDecomposition
 
 -- Variational Pillar: Principle of Least Action

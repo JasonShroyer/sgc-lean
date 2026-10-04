@@ -30,9 +30,10 @@ so the coarse model's predicted law is within `t·ε·‖f₀‖_π` of the trut
 (`norm_pi_blockDensity`). The agent evolves it with the quotient model. The theorems
 below say exactly when a refine/stop decision taken from that prediction at horizon `t`
 is certified under the true dynamics: the operator-norm radius is `t·ε/√π̄(B)`. (The
-`1/√π̄(B)` penalty is a property of this worst-case bound, not of the actual error: the
-orbit radius of §6 is essentially independent of `π̄(B)`.) The band between the two
-certificates is *unresolved*, not "must refine".
+`1/√π̄(B)` factor is loose: on generic reversible chains the actual L¹ error from a rare
+macrostate is 3–8× that from a common one, not `√(π̄_common/π̄_rare)` ≈ 77×, and on the
+symmetric gauge chain it is flat; see decision 0084's rarity stress test.) The band between
+the two certificates is *unresolved*, not "must refine".
 
 **What is and is not assumed.** `ε` is a known upper bound on the leakage; the decision
 model is the finite one of `DecisionValue` (observation `q`, coarsening `f`, bounded
@@ -316,8 +317,8 @@ orbit-telescoping lemma gives, for every `n ≥ 1` and `h = t/n`,
   `‖p_t − p̂_t‖₁ ≤ Σ_{k<n} ‖(e^{hL} − e^{hL̄}) e^{khL̄} f₀‖_π`,
 
 a radius computed from the coarse trajectory and the fine *generator* (not the fine state).
-Numerically it is tight to a factor ≈ 1.4–1.9 in the gauge test bed and essentially
-independent of `π̄(B)` (decision 0084). -/
+Numerically it is tight to a factor ≈ 1.4–1.9 in the gauge test bed and tracks the actual
+error's dependence on `π̄(B)` (decision 0084). -/
 
 /-- Orbit radius at resolution `n`. -/
 def orbitRadius (t : ℝ) (f₀ : V → ℝ) (n : ℕ) : ℝ :=

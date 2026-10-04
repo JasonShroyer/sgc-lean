@@ -282,21 +282,29 @@ theorem emergence_equivalence (L : Matrix V V ℝ) (pi_dist : V → ℝ)
 
 /-! ## Section 5: The Persistence Theorem -/
 
-/-- **TO PERSIST IS TO PREDICT**
+/-- **TO PERSIST IS TO PREDICT** — RETIRED AS STATED (2026-10-04).
 
-    Any system that maintains low hidden entropy production (thermodynamic
-    persistence) must have low prediction error (small defect norm ‖D‖).
+    Intended content: low hidden entropy production (thermodynamic persistence) forces low
+    prediction error (small defect norm ‖D‖).
 
-    This is the converse of emergence_thermodynamic:
-    - Forward: low ‖D‖ → low σ_hid (emergence creates efficiency)
-    - Backward: low σ_hid → low ‖D‖ (persistence requires prediction)
+    **Status.** This theorem is VACUOUS: its hypotheses combine the generator convention
+    with `0 < γ ≤ DirichletGap L π`, which no stationary generator satisfies
+    (`SGC.dirichletGap_nonpos_of_stationary`). Worse, its intended content is FALSE at
+    equilibrium: for every reversible chain and every partition
+    `HiddenEntropyProduction L P π = 0` (`Thermodynamics.EquilibriumExemption.
+    hidden_entropy_zero_of_detailed_balance`) while `‖D‖ > 0` for every non-lumpable
+    partition (`no_leakage_bound_of_reversible`). The gauge-theory test bed violates the
+    inequality on 7/7 non-lumpable partitions; 87% of random non-reversible generators
+    violate it too.
 
-    Together: ‖D‖ ≈ 0 ⟺ σ_hid ≈ 0 (emergence IS efficiency)
+    **Corrected slogan.** *To persist in equilibrium is free. To persist against a
+    non-equilibrium gradient may require prediction* — the second clause is an OPEN
+    conjecture requiring hypotheses not yet identified (it fails for most random
+    non-reversible generators without them). Leakage measures lost predictability; hidden
+    entropy production measures lost irreversibility; these are different axes.
 
-    The quantitative bound: if σ_hid < δ, then ‖D‖² < δ/γ where γ is the
-    spectral gap. The constant γ is explicit and physically meaningful.
-
-    PROOF: Direct from efficiency_requires_prediction in EntropyProduction.lean -/
+    Kept for name stability; proof unchanged (by vacuity through
+    `efficiency_requires_prediction`). -/
 theorem to_persist_is_to_predict (L : Matrix V V ℝ) (P : Partition V)
     (pi_dist : V → ℝ) (hπ : ∀ v, 0 < pi_dist v)
     (hL_gen : ∀ x y, x ≠ y → 0 ≤ L x y)
@@ -319,8 +327,8 @@ We have formally proved that for ANY finite Markov system:
 3. The partition is stable under refinement and the defect is monotone
    (`defect_antitone_on_coarse_domain` — PROVED, zero sorry)
 
-4. Persistence requires prediction: low dissipation implies low model error
-   (`to_persist_is_to_predict` — PROVED from existing theorems)
+4. Persistence requires prediction: RETIRED. Vacuous as stated and false at equilibrium
+   (`EquilibriumExemption.hidden_entropy_zero_of_detailed_balance`); open away from it.
 
 5. For reversible systems: the emergent description is UNIQUE
    (`reversible_local_iff_global` — PROVED via finite lattice shortcut)
@@ -330,16 +338,16 @@ We have formally proved that for ANY finite Markov system:
 
 These results compose into a single statement:
 
-  **To exist is to predict. To persist is to predict well. To be intelligent
-  is to predict yourself predicting — the fixed point of the coarse-graining
-  tower. This fixed point unconditionally exists (Theorem 1), is thermodynamically
-  optimal (Theorem 2), and is unique for equilibrium systems (Theorem 5).**
+  **To persist in equilibrium is free; to persist against a non-equilibrium gradient
+  may require prediction (open). The optimal partition exists (Theorem 1), is
+  thermodynamically optimal (Theorem 2), and is unique for equilibrium systems
+  (Theorem 5). Theorem 4 is retired (see above).**
 
 The SGC zero-parameter engine is the constructive proof of Theorem 1.
 The Tsallis escort mechanism handles the non-Boltzmann regime (q ≠ 1).
 The Cartan-Killing lift library spans all polynomial degrees of symmetry.
 
-The theory is complete. The formalization is machine-verified.
+The formalization is machine-verified; the theory is not complete (Theorem 4 retired 2026-10-04).
 The engine discovers physics from raw data, across all domains tested.
 -/
 
