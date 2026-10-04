@@ -331,6 +331,7 @@ import SGC.Bridge.ContractiveHorizon
 import SGC.Bridge.CoarseContraction
 import SGC.Bridge.DecisionHorizon
 import SGC.Bridge.TwoRadii
+import SGC.Bridge.OrbitRadiusTV
 
 -- Axiom retirement (2026-07-05): kernel-clean re-proofs of trajectory_closure_bound,
 -- vertical_error_bound, propagator_approximation_bound, spectral_stability_reversible,
