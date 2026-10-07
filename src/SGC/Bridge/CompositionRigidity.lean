@@ -6,6 +6,8 @@ Authors: SGC Formalization Team
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Fintype.Card
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # Composition is rigid; invariance is not
@@ -150,5 +152,65 @@ theorem equivariant_iterate (z : X → V) (T : X → X) (h : Equivariant z T) (n
     rw [Function.iterate_succ_apply, Function.iterate_succ_apply, ih, hR]
 
 end Bridge
+
+
+/-!
+## The exact ceiling: invariance plus one witness per orbit is correctness
+
+For modular addition the task-preserving action is the gauge shift `T_t (a, b) = (a + t, b − t)`,
+whose orbits are exactly the label classes `{(a, b) | a + b = c}`. If a predictor `f` is invariant
+under every `T_t` and the observed data contain, for every sum `c`, one pair with that sum on which
+`f` is correct, then `f` is correct on every pair. This is the second review's direct argument; for
+the invariant case it is sharper than composition rigidity and it is the benchmark for the
+label-free contradiction sensor: a violation of invariance between two inputs with the same sum is a
+contradiction (both predictions cannot be correct), and invariance everywhere plus one witness per
+class is sufficiency everywhere.
+-/
+
+section Ceiling
+
+variable {p : ℕ} [NeZero p]
+
+/-- The gauge shift on pairs. -/
+def gaugeShift (t : ZMod p) (x : ZMod p × ZMod p) : ZMod p × ZMod p := (x.1 + t, x.2 - t)
+
+/-- Gauge shifts preserve the sum. -/
+theorem gaugeShift_sum (t : ZMod p) (x : ZMod p × ZMod p) :
+    (gaugeShift t x).1 + (gaugeShift t x).2 = x.1 + x.2 := by
+  simp only [gaugeShift]
+  ring
+
+/-- Any two pairs with the same sum are related by a gauge shift. -/
+theorem exists_gaugeShift_of_sum_eq (x w : ZMod p × ZMod p) (h : w.1 + w.2 = x.1 + x.2) :
+    gaugeShift (x.1 - w.1) w = x := by
+  ext
+  · simp [gaugeShift]
+  · simp only [gaugeShift]
+    linear_combination h
+
+/-- **Exact ceiling.** A gauge-invariant predictor that is correct on one observed pair per sum class
+is correct everywhere. -/
+theorem correct_everywhere_of_invariant (f : ZMod p × ZMod p → ZMod p) (D : Set (ZMod p × ZMod p))
+    (hinv : ∀ t x, f (gaugeShift t x) = f x)
+    (hwit : ∀ c : ZMod p, ∃ w ∈ D, w.1 + w.2 = c ∧ f w = c) :
+    ∀ x, f x = x.1 + x.2 := by
+  intro x
+  obtain ⟨w, -, hsum, hfw⟩ := hwit (x.1 + x.2)
+  have hx : gaugeShift (x.1 - w.1) w = x := exists_gaugeShift_of_sum_eq x w hsum
+  calc f x = f (gaugeShift (x.1 - w.1) w) := by rw [hx]
+    _ = f w := hinv _ _
+    _ = x.1 + x.2 := hfw
+
+/-- **Contradiction.** If the label is gauge-invariant, two inputs on one orbit with different
+predictions cannot both be correct: at least one prediction is wrong. -/
+theorem contradiction_of_orbit_disagreement (f : ZMod p × ZMod p → ZMod p) (t : ZMod p)
+    (x : ZMod p × ZMod p) (hne : f (gaugeShift t x) ≠ f x) :
+    f x ≠ x.1 + x.2 ∨ f (gaugeShift t x) ≠ (gaugeShift t x).1 + (gaugeShift t x).2 := by
+  by_contra hcon
+  push_neg at hcon
+  obtain ⟨h1, h2⟩ := hcon
+  exact hne (by rw [h2, gaugeShift_sum, h1])
+
+end Ceiling
 
 end SGC.Bridge.CompositionRigidity
