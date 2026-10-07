@@ -100,4 +100,55 @@ theorem invariance_on_observed_not_determined {α β : Type*} [DecidableEq α]
     simp [hxu]
   · simp [hv]
 
+
+/-!
+## The bridge: equivariance is lumpability of the fibers
+
+"Composition is lumpability" made exact. For a representation `z : X → V` and a transformation
+`T : X → X`, the fibers of `z` (its induced partition) are *lumpable* for `T` — `T` maps each fiber
+into a single fiber — if and only if `T` descends to the image: there is a map `R : V → V` with
+`z (T x) = R (z x)` for all `x` (equivariance). The theorem is stated for arbitrary `T`, so it covers
+every element of a group action separately; for a group action the family `R_t` is the quotient action.
+-/
+
+section Bridge
+
+variable {X V : Type*}
+
+/-- Fibers of `z` are lumpable for `T`: equal representations have equal representations after `T`. -/
+def FibersLumpable (z : X → V) (T : X → X) : Prop :=
+  ∀ x y, z x = z y → z (T x) = z (T y)
+
+/-- `z` is `T`-equivariant: `T` descends to a map on the representation space. -/
+def Equivariant (z : X → V) (T : X → X) : Prop :=
+  ∃ R : V → V, ∀ x, z (T x) = R (z x)
+
+/-- **Equivariance ⇔ lumpability of the fibers.** -/
+theorem equivariant_iff_fibersLumpable [Nonempty V] (z : X → V) (T : X → X) :
+    Equivariant z T ↔ FibersLumpable z T := by
+  constructor
+  · rintro ⟨R, hR⟩ x y hxy
+    rw [hR, hR, hxy]
+  · intro h
+    classical
+    refine ⟨fun v => if hv : ∃ x, z x = v then z (T hv.choose) else Classical.arbitrary V, ?_⟩
+    intro x
+    have hx : ∃ y, z y = z x := ⟨x, rfl⟩
+    simp only [dif_pos hx]
+    exact (h _ _ hx.choose_spec).symm
+
+/-- Composition for a group action: if every generator step is equivariant, so is every iterate
+(`T^[n]`), with the descended maps composing. -/
+theorem equivariant_iterate (z : X → V) (T : X → X) (h : Equivariant z T) (n : ℕ) :
+    Equivariant z (T^[n]) := by
+  obtain ⟨R, hR⟩ := h
+  refine ⟨R^[n], ?_⟩
+  intro x
+  induction n generalizing x with
+  | zero => rfl
+  | succ n ih =>
+    rw [Function.iterate_succ_apply, Function.iterate_succ_apply, ih, hR]
+
+end Bridge
+
 end SGC.Bridge.CompositionRigidity
