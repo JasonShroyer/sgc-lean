@@ -7,6 +7,7 @@ import Mathlib.Data.Real.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Max
 import Mathlib.Algebra.BigOperators.Ring.Finset
@@ -157,5 +158,76 @@ theorem regret_ge_floor (z : V → B) (μ : V → ℝ) (u : V → α → ℝ) (a
   linarith
 
 end RegretFloor
+
+
+/-!
+## History sufficiency and the task-directed planner bound
+
+Two of the three propositions the Q2 review asked for, in their finite exact forms.
+
+**History sufficiency.** Let `ℓ h b` be the probability of observing the coarse history `h` given
+that the present micro-state lies in block `b` — i.e. the likelihood of the history is
+**block-constant** (it depends on the present micro-state only through its block). Then no policy
+acting on the history can beat the best policy acting on the present block
+(`history_value_le_block_value`): the history gain is zero. For a *reversible* stationary chain with a
+lumpable partition the likelihood of the past coarse trajectory is block-constant (the reversed chain
+is the same chain and is lumpable), which is why the symmetry quotients of decision 0102 showed exactly
+zero gain. For a forward-lumpable but *non-reversible* chain the likelihood need not be block-constant
+and history can recover erased information (the shift-register counterexample) — the hypothesis of
+this theorem is precisely what fails there.
+
+**Task-directed planner bound.** If a planner's estimated values `v̂ a` are within `D` of the exact
+coarse-information values `v a` for every action, then choosing the planner's argmax loses at most
+`2 D` against the best action on the same information (`argmax_perturbation`). With
+`v a = (P e^{tL} u_a)(b)` and `v̂ a = (e^{tPLP} P u_a)(b)` this bounds Gap 2 by twice the
+task-directed predictive defect `D_U(P, t) = max_a ‖v_a − v̂_a‖_∞`.
+-/
+
+section HistoryAndPlanner
+
+open Finset
+
+variable {B Hs : Type*} [Fintype V] [Fintype B] [DecidableEq B] [Fintype α] [Fintype Hs]
+
+/-- **History sufficiency.** With a block-constant history likelihood `ℓ` (nonnegative, summing to one
+over histories for each block), every history-dependent policy `σ` is dominated by the per-block argmax. -/
+theorem history_value_le_block_value (z : V → B) (μ : V → ℝ) (u : V → α → ℝ)
+    (ℓ : Hs → B → ℝ) (hℓ0 : ∀ h b, 0 ≤ ℓ h b) (hℓ1 : ∀ b, ∑ h, ℓ h b = 1)
+    (sopt : B → α) (hs : ∀ b a, blockU z μ u b a ≤ blockU z μ u b (sopt b)) (σ : Hs → α) :
+    ∑ h, ∑ x, μ x * ℓ h (z x) * u x (σ h) ≤ ∑ b, blockU z μ u b (sopt b) := by
+  have hfib : ∀ h : Hs, ∑ x, μ x * ℓ h (z x) * u x (σ h) = ∑ b, ℓ h b * blockU z μ u b (σ h) := by
+    intro h
+    unfold blockU
+    rw [← Finset.sum_fiberwise (s := univ) (g := z) (f := fun x => μ x * ℓ h (z x) * u x (σ h))]
+    apply Finset.sum_congr rfl
+    intro b _
+    rw [Finset.mul_sum]
+    apply Finset.sum_congr rfl
+    intro x hx
+    rw [(Finset.mem_filter.mp hx).2]; ring
+  calc ∑ h, ∑ x, μ x * ℓ h (z x) * u x (σ h) = ∑ h, ∑ b, ℓ h b * blockU z μ u b (σ h) := by
+        apply Finset.sum_congr rfl; intro h _; exact hfib h
+    _ ≤ ∑ h, ∑ b, ℓ h b * blockU z μ u b (sopt b) := by
+        apply Finset.sum_le_sum; intro h _
+        apply Finset.sum_le_sum; intro b _
+        exact mul_le_mul_of_nonneg_left (hs b (σ h)) (hℓ0 h b)
+    _ = ∑ b, (∑ h, ℓ h b) * blockU z μ u b (sopt b) := by
+        rw [Finset.sum_comm]
+        apply Finset.sum_congr rfl; intro b _
+        rw [Finset.sum_mul]
+    _ = ∑ b, blockU z μ u b (sopt b) := by
+        apply Finset.sum_congr rfl; intro b _
+        rw [hℓ1 b, one_mul]
+
+/-- **Argmax perturbation.** If every estimated value is within `D` of the true value, the estimated
+argmax loses at most `2 D` against any action. -/
+theorem argmax_perturbation (v vhat : α → ℝ) (D : ℝ) (hD : ∀ a, |v a - vhat a| ≤ D)
+    (ahat : α) (hmax : ∀ a, vhat a ≤ vhat ahat) (a : α) : v a - v ahat ≤ 2 * D := by
+  have h1 := abs_le.mp (hD a)
+  have h2 := abs_le.mp (hD ahat)
+  have h3 := hmax a
+  linarith [h1.1, h1.2, h2.1, h2.2]
+
+end HistoryAndPlanner
 
 end SGC.Bridge.NoGo
