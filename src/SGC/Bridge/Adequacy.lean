@@ -111,4 +111,66 @@ theorem selector_sound {ι : Type*} (err bound : ι → ℝ) (hvalid : ∀ i, er
     (tol : ℝ) (i : ι) (hsel : bound i ≤ tol) : err i ≤ tol :=
   le_trans (hvalid i) hsel
 
+
+/-!
+## Approximate validity
+
+When the relation only *approximately* preserves the label, each bound acquires the violation rate of
+the relation as an additive term. `v_A = P[y (A X) ≠ y X]` for anchors, `v_T = P[y (T X) ≠ y X]` for a
+transformation. The pointwise argument is the same with one more case. The open problem these theorems
+make precise: `v` must be *bounded on the deployment distribution*; a relation that holds on all
+observed training pairs cannot be assigned `v = 0` elsewhere without an argument.
+-/
+
+section Approximate
+
+lemma ind_err_le_approx (f y : X → Y) (A : X → X) [DecidableEq Y] (x : X) :
+    ind (f x ≠ y x) ≤ ind (f x ≠ f (A x)) + ind (f (A x) ≠ y (A x)) + ind (y (A x) ≠ y x) := by
+  unfold ind
+  split_ifs with h0 h1 h2 h3 <;> try norm_num
+  all_goals (push_neg at *; exact absurd (by rw [‹f x = f (A x)›, ‹f (A x) = y (A x)›, ‹y (A x) = y x›]) h0)
+
+/-- **Anchor bound, approximate relation.**
+`P[f X ≠ y X] ≤ P[f X ≠ f (A X)] + P[f (A X) ≠ y (A X)] + P[y (A X) ≠ y X]`. -/
+theorem error_le_contradiction_add_anchor_error_add_violation (w : X → ℝ) (hw : ∀ x, 0 ≤ w x)
+    (f y : X → Y) (A : X → X) [DecidableEq Y] :
+    prob w (fun x => f x ≠ y x) ≤
+      prob w (fun x => f x ≠ f (A x)) + prob w (fun x => f (A x) ≠ y (A x)) +
+        prob w (fun x => y (A x) ≠ y x) := by
+  unfold prob
+  rw [← Finset.sum_add_distrib, ← Finset.sum_add_distrib]
+  apply Finset.sum_le_sum
+  intro x _
+  rw [← mul_add, ← mul_add]
+  exact mul_le_mul_of_nonneg_left (ind_err_le_approx f y A x) (hw x)
+
+lemma ind_contra_le_approx (f y : X → Y) (T : X → X) [DecidableEq Y] (x : X) :
+    ind (f (T x) ≠ f x) ≤ ind (f (T x) ≠ y (T x)) + ind (f x ≠ y x) + ind (y (T x) ≠ y x) := by
+  unfold ind
+  split_ifs with h0 h1 h2 h3 <;> try norm_num
+  all_goals (push_neg at *; exact absurd (by rw [‹f (T x) = y (T x)›, ‹y (T x) = y x›, ‹f x = y x›]) h0)
+
+/-- **Contradiction lower bound, approximate relation.** For a weight-preserving bijection `T`,
+`P[f (T X) ≠ f X] ≤ 2 P[f X ≠ y X] + P[y (T X) ≠ y X]`. -/
+theorem contradiction_le_two_mul_error_add_violation (w : X → ℝ) (hw : ∀ x, 0 ≤ w x) (f y : X → Y)
+    (T : X ≃ X) [DecidableEq Y] (hwT : ∀ x, w (T x) = w x) :
+    prob w (fun x => f (T x) ≠ f x) ≤
+      2 * prob w (fun x => f x ≠ y x) + prob w (fun x => y (T x) ≠ y x) := by
+  unfold prob
+  have hstep : ∑ x, w x * ind (f (T x) ≠ f x) ≤
+      ∑ x, w x * ind (f (T x) ≠ y (T x)) + ∑ x, w x * ind (f x ≠ y x) +
+        ∑ x, w x * ind (y (T x) ≠ y x) := by
+    rw [← Finset.sum_add_distrib, ← Finset.sum_add_distrib]
+    apply Finset.sum_le_sum
+    intro x _
+    rw [← mul_add, ← mul_add]
+    exact mul_le_mul_of_nonneg_left (ind_contra_le_approx f y T x) (hw x)
+  have hre : ∑ x, w x * ind (f (T x) ≠ y (T x)) = ∑ x, w x * ind (f x ≠ y x) := by
+    calc ∑ x, w x * ind (f (T x) ≠ y (T x)) = ∑ x, w (T x) * ind (f (T x) ≠ y (T x)) := by
+          apply Finset.sum_congr rfl; intro x _; rw [hwT]
+      _ = ∑ x, w x * ind (f x ≠ y x) := T.sum_comp (fun x => w x * ind (f x ≠ y x))
+  linarith
+
+end Approximate
+
 end SGC.Bridge.Adequacy
