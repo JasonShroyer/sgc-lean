@@ -213,4 +213,42 @@ theorem contradiction_of_orbit_disagreement (f : ZMod p × ZMod p → ZMod p) (t
 
 end Ceiling
 
+
+/-!
+## Validated relations compose (P29)
+
+The two tests of the relation-discovery learner are each closed under composition: if `K` is invariant
+under `T₁` and `T₂` (as a kernel on pairs) then under `T₁ ∘ T₂`; if a utility `u` is invariant under both,
+then under the composite. Hence the set of validated relations generates a group under which `K` and `u`
+are invariant, and the orbit partition of that group is the level whose exactness P6/P13 (dynamics) and
+P7 (task) then certify. This is the formal basis for "validate generators, compose, certify the whole".
+-/
+
+section ValidatedCompose
+
+variable {V : Type*}
+
+/-- Kernel invariance is closed under composition. -/
+theorem kernel_invariant_comp (K : V → V → ℝ) (T₁ T₂ : V → V)
+    (h₁ : ∀ x y, K (T₁ x) (T₁ y) = K x y) (h₂ : ∀ x y, K (T₂ x) (T₂ y) = K x y) :
+    ∀ x y, K (T₁ (T₂ x)) (T₁ (T₂ y)) = K x y := by
+  intro x y
+  rw [h₁, h₂]
+
+/-- Utility invariance is closed under composition. -/
+theorem utility_invariant_comp {β : Type*} (u : V → β) (T₁ T₂ : V → V)
+    (h₁ : ∀ x, u (T₁ x) = u x) (h₂ : ∀ x, u (T₂ x) = u x) :
+    ∀ x, u (T₁ (T₂ x)) = u x := by
+  intro x
+  rw [h₁, h₂]
+
+/-- A relation validated by both tests stays validated under composition with another such relation. -/
+theorem validated_comp {β : Type*} (K : V → V → ℝ) (u : V → β) (T₁ T₂ : V → V)
+    (hK₁ : ∀ x y, K (T₁ x) (T₁ y) = K x y) (hK₂ : ∀ x y, K (T₂ x) (T₂ y) = K x y)
+    (hu₁ : ∀ x, u (T₁ x) = u x) (hu₂ : ∀ x, u (T₂ x) = u x) :
+    (∀ x y, K (T₁ (T₂ x)) (T₁ (T₂ y)) = K x y) ∧ (∀ x, u (T₁ (T₂ x)) = u x) :=
+  ⟨kernel_invariant_comp K T₁ T₂ hK₁ hK₂, utility_invariant_comp u T₁ T₂ hu₁ hu₂⟩
+
+end ValidatedCompose
+
 end SGC.Bridge.CompositionRigidity
