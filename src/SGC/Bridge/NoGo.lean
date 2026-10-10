@@ -289,4 +289,58 @@ theorem argmax_preserved_of_estimated_margin (v vhat : α → ℝ) (ahat : α) (
 
 end Certificates
 
+
+/-!
+## Selector theorem and the contrast-based information certificate
+
+**Selector theorem (P21).** If every resource `r` has a valid certified objective `Ĵ r` with
+`J r ≤ Ĵ r ≤ J r + δ r`, then minimizing `Ĵ` returns a resource whose true objective is within
+`δ r*` of the optimum: `J r̂ ≤ J r* + δ r*`. Loose certificates on the *best* resource are what make a
+sound selector conservative; tightening must target `δ r*`. (Acquisition costs for inspecting several
+candidates are not modelled here; they change the meta-level problem.)
+
+**Contrast-based information certificate (P22).** If the *action contrasts* of the utilities deviate
+from a block-level comparator's contrasts by at most `dΔ x` at each state, the regret floor is at most
+`Σ_x μ x · dΔ x` — with factor one, and invariant to any action-independent (common-mode) variation
+within blocks, which the absolute-deviation certificate P20 pays for and the decision never does.
+No optimality hypothesis on the reference action is needed (the inequality holds for any `astar`).
+-/
+
+section SelectorAndContrast
+
+variable {R : Type*}
+
+/-- **P21 Selector theorem.** -/
+theorem selector_le_opt_add_slack (J Jhat δ : R → ℝ) (hlo : ∀ r, J r ≤ Jhat r)
+    (hhi : ∀ r, Jhat r ≤ J r + δ r) (rhat rstar : R) (hmin : ∀ r, Jhat rhat ≤ Jhat r) :
+    J rhat ≤ J rstar + δ rstar :=
+  le_trans (hlo rhat) (le_trans (hmin rstar) (hhi rstar))
+
+variable {B : Type*} [Fintype V] [Fintype B] [DecidableEq B] [Fintype α] [Nonempty α]
+
+/-- **P22 Contrast-based information certificate.** -/
+theorem regret_floor_le_contrast_deviation (z : V → B) (μ : V → ℝ) (hμ : ∀ x, 0 ≤ μ x)
+    (U : V → α → ℝ) (Ubar : B → α → ℝ) (dΔ : V → ℝ)
+    (hdev : ∀ x a b, |(U x a - U x b) - (Ubar (z x) a - Ubar (z x) b)| ≤ dΔ x)
+    (astar : V → α) (sbar : B → α) (hbar : ∀ b a, Ubar b a ≤ Ubar b (sbar b))
+    (sopt : B → α) (hs : ∀ b a, blockU z μ U b a ≤ blockU z μ U b (sopt b)) :
+    ∑ x, μ x * U x (astar x) - ∑ b, blockU z μ U b (sopt b) ≤ ∑ x, μ x * dΔ x := by
+  have h1 : ∑ x, μ x * U x (sbar (z x)) ≤ ∑ x, μ x * U x (sopt (z x)) :=
+    coarse_policy_le_argmax z μ U sopt hs sbar
+  have h2 : ∑ x, μ x * U x (sopt (z x)) = ∑ b, blockU z μ U b (sopt b) := utility_fiberwise z μ U sopt
+  have hpt : ∀ x, U x (astar x) - U x (sbar (z x)) ≤ dΔ x := by
+    intro x
+    have ha := (abs_le.mp (hdev x (astar x) (sbar (z x)))).2
+    have hc := hbar (z x) (astar x)
+    linarith
+  have h3 : ∑ x, μ x * U x (astar x) - ∑ x, μ x * U x (sbar (z x)) ≤ ∑ x, μ x * dΔ x := by
+    rw [← Finset.sum_sub_distrib]
+    apply Finset.sum_le_sum
+    intro x _
+    have := mul_le_mul_of_nonneg_left (hpt x) (hμ x)
+    linarith [this]
+  linarith
+
+end SelectorAndContrast
+
 end SGC.Bridge.NoGo

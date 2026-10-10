@@ -6,6 +6,7 @@ Authors: SGC Formalization Team
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Mul
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.NoncommRing
 import Mathlib.Tactic.Linarith
@@ -130,5 +131,59 @@ theorem margin_preserves_argmax (v vhat : α → ℝ) (astar : α) (m : ℝ)
   linarith
 
 end Contrast
+
+
+/-!
+## The projected-memory identity (finite Mori–Zwanzig)
+
+For resolved coordinates `p` and unresolved `q` evolving by `p_{t+1} = A p_t + B q_t`,
+`q_{t+1} = C p_t + D q_t`, the unresolved state is `q_t = D^t q_0 + Σ_{j<t} D^{t−1−j} C p_j`
+(`unresolved_closed_form`), so the resolved dynamics are
+`p_{t+1} = A p_t + B D^t q_0 + Σ_{j<t} B D^{t−1−j} C p_j` (`resolved_with_memory`): an autonomous
+term, an initial-condition term, and a **memory kernel** `B D^{t−1−j} C`. "Not closed" means the
+kernel is nonzero — not that the resolved coordinates are unpredictable. This is the algebraic form
+of what replaces closure when variables are eliminated.
+-/
+
+section Memory
+
+variable {m k : Type*} [Fintype m] [Fintype k] [DecidableEq m] [DecidableEq k]
+
+open Finset
+
+/-- Closed form of the unresolved coordinate. -/
+theorem unresolved_closed_form (A : Matrix m m ℝ) (B : Matrix m k ℝ) (C : Matrix k m ℝ)
+    (D : Matrix k k ℝ) (p : ℕ → (m → ℝ)) (q : ℕ → (k → ℝ))
+    (hq : ∀ t, q (t + 1) = C.mulVec (p t) + D.mulVec (q t)) :
+    ∀ t, q t = (D ^ t).mulVec (q 0) + ∑ j ∈ range t, (D ^ (t - 1 - j)).mulVec (C.mulVec (p j)) := by
+  intro t
+  induction t with
+  | zero => simp
+  | succ t ih =>
+    rw [hq t, ih, Finset.sum_range_succ, Matrix.mulVec_add, Matrix.mulVec_sum]
+    have hpow : (D ^ (t + 1)).mulVec (q 0) = D.mulVec ((D ^ t).mulVec (q 0)) := by
+      rw [pow_succ', Matrix.mulVec_mulVec]
+    have hlast : (D ^ (t + 1 - 1 - t)).mulVec (C.mulVec (p t)) = C.mulVec (p t) := by
+      simp
+    have hshift : ∀ j ∈ range t, D.mulVec ((D ^ (t - 1 - j)).mulVec (C.mulVec (p j))) =
+        (D ^ (t + 1 - 1 - j)).mulVec (C.mulVec (p j)) := by
+      intro j hj
+      have hj' : j < t := Finset.mem_range.mp hj
+      have : t + 1 - 1 - j = (t - 1 - j) + 1 := by omega
+      rw [this, pow_succ', Matrix.mulVec_mulVec]
+    rw [hpow, hlast, Finset.sum_congr rfl hshift]
+    abel
+
+/-- **Resolved dynamics with memory kernel.** -/
+theorem resolved_with_memory (A : Matrix m m ℝ) (B : Matrix m k ℝ) (C : Matrix k m ℝ)
+    (D : Matrix k k ℝ) (p : ℕ → (m → ℝ)) (q : ℕ → (k → ℝ))
+    (hp : ∀ t, p (t + 1) = A.mulVec (p t) + B.mulVec (q t))
+    (hq : ∀ t, q (t + 1) = C.mulVec (p t) + D.mulVec (q t)) :
+    ∀ t, p (t + 1) = A.mulVec (p t) + B.mulVec ((D ^ t).mulVec (q 0)) +
+      ∑ j ∈ range t, B.mulVec ((D ^ (t - 1 - j)).mulVec (C.mulVec (p j))) := by
+  intro t
+  rw [hp t, unresolved_closed_form A B C D p q hq t, Matrix.mulVec_add, Matrix.mulVec_sum, add_assoc]
+
+end Memory
 
 end SGC.Bridge.CoarsePlanner
