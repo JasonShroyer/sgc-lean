@@ -338,6 +338,7 @@ import SGC.Bridge.CompositionRigidity
 import SGC.Bridge.Adequacy
 import SGC.Bridge.NoGo
 import SGC.Bridge.CoarsePlanner
+import SGC.Bridge.FiniteSafeguards
 
 -- Axiom retirement (2026-07-05): kernel-clean re-proofs of trajectory_closure_bound,
 -- vertical_error_bound, propagator_approximation_bound, spectral_stability_reversible,
