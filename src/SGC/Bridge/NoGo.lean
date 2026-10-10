@@ -230,4 +230,63 @@ theorem argmax_perturbation (v vhat : α → ℝ) (D : ℝ) (hD : ∀ a, |v a - 
 
 end HistoryAndPlanner
 
+
+/-!
+## Reusable valid certificates
+
+Two certificates that a learner can hold for a whole task family after a one-time computation.
+
+**Information certificate (P20).** For any block-level comparator `Ubar : B → α → ℝ` and any pointwise
+deviation bound `dev x ≥ |U x a − Ubar (z x) a|`, the regret floor at the given utilities satisfies
+`Σ_x μ x · U x (astar x) − Σ_b blockU b (sopt b) ≤ 2 Σ_x μ x · dev x`.
+Taking `Ubar` to be the coarse model's prediction and `dev` the within-block deviation of the true
+horizon-`n` utilities, bounded through the operator norms of `(1−P)K^n P` and `(1−P)K^n(1−P)`
+(computed once), gives a valid, horizon-indexed information certificate at coarse cost per task.
+
+**Estimated-margin certificate (P19).** If the *estimated* values have margin `m̂` at `â` and all contrast
+errors are below `m̂`, then `â` is truly optimal: the planner's decision in that block costs nothing.
+Blocks failing the test are charged the contrast bound (P16). This is the margin-aware planner
+certificate, valid and computable from the coarse model's own values plus a reusable contrast bound.
+-/
+
+section Certificates
+
+variable {B : Type*} [Fintype V] [Fintype B] [DecidableEq B] [Fintype α] [Nonempty α]
+
+/-- **P20.** Regret floor ≤ twice the `μ`-weighted pointwise deviation from any block-level comparator. -/
+theorem regret_floor_le_two_deviation (z : V → B) (μ : V → ℝ) (hμ : ∀ x, 0 ≤ μ x) (U : V → α → ℝ)
+    (Ubar : B → α → ℝ) (dev : V → ℝ) (hdev : ∀ x a, |U x a - Ubar (z x) a| ≤ dev x)
+    (astar : V → α) (hstar : ∀ x a, U x a ≤ U x (astar x))
+    (sbar : B → α) (hbar : ∀ b a, Ubar b a ≤ Ubar b (sbar b))
+    (sopt : B → α) (hs : ∀ b a, blockU z μ U b a ≤ blockU z μ U b (sopt b)) :
+    ∑ x, μ x * U x (astar x) - ∑ b, blockU z μ U b (sopt b) ≤ 2 * ∑ x, μ x * dev x := by
+  have h1 : ∑ x, μ x * U x (sbar (z x)) ≤ ∑ x, μ x * U x (sopt (z x)) :=
+    coarse_policy_le_argmax z μ U sopt hs sbar
+  have h2 : ∑ x, μ x * U x (sopt (z x)) = ∑ b, blockU z μ U b (sopt b) := utility_fiberwise z μ U sopt
+  have hpt : ∀ x, U x (astar x) - U x (sbar (z x)) ≤ 2 * dev x := by
+    intro x
+    have ha := abs_le.mp (hdev x (astar x))
+    have hb := abs_le.mp (hdev x (sbar (z x)))
+    have hc := hbar (z x) (astar x)
+    linarith [ha.1, ha.2, hb.1, hb.2]
+  have h3 : ∑ x, μ x * U x (astar x) - ∑ x, μ x * U x (sbar (z x)) ≤ 2 * ∑ x, μ x * dev x := by
+    rw [← Finset.sum_sub_distrib, Finset.mul_sum]
+    apply Finset.sum_le_sum
+    intro x _
+    have := mul_le_mul_of_nonneg_left (hpt x) (hμ x)
+    linarith [this]
+  linarith
+
+/-- **P19.** Estimated margin `m̂` at `â` plus contrast errors below `m̂` ⇒ `â` is truly optimal. -/
+theorem argmax_preserved_of_estimated_margin (v vhat : α → ℝ) (ahat : α) (mhat : ℝ)
+    (hm : ∀ a, a ≠ ahat → mhat ≤ vhat ahat - vhat a)
+    (hc : ∀ a, |(vhat ahat - v ahat) - (vhat a - v a)| < mhat) :
+    ∀ a, a ≠ ahat → v a < v ahat := by
+  intro a ha
+  have h1 := hm a ha
+  have h2 := (abs_lt.mp (hc a)).2
+  linarith
+
+end Certificates
+
 end SGC.Bridge.NoGo
