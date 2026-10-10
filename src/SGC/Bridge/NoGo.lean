@@ -430,4 +430,36 @@ theorem margin_subtracted_regret (v vhat : α → ℝ) (ahat : α) (c : α → �
 
 end MarginSubtracted
 
+
+/-!
+## Selection decomposition and the refutation witness
+
+**P28 Selection decomposition.** With `ẑ` the minimizer of valid certified objectives over the evaluated
+set, `z_B` the true best *evaluated* candidate and `z*` the true best in the whole class,
+`J ẑ − J z* ≤ δ z_B + (J z_B − J z*)`: evaluation slack on the best evaluated candidate plus the coverage
+gap of the evaluated set. Breadth attacks the second term, depth the first.
+
+**Refutation needs a lower bound.** An upper bound exceeding the acceptance threshold does not refute:
+for any `U > τ` there is an admissible `J ≤ τ` with `J ≤ U` (`upper_excess_not_refutation`). A sound
+"refuted" label requires a valid lower bound `L > τ` or a counterexample.
+-/
+
+section SelectionDecomposition
+
+variable {R : Type*}
+
+/-- **P28.** -/
+theorem selection_decomposition (J Jhat δ : R → ℝ) (hlo : ∀ r, J r ≤ Jhat r)
+    (hhi : ∀ r, Jhat r ≤ J r + δ r) (zhat zB zstar : R) (hmin : Jhat zhat ≤ Jhat zB) :
+    J zhat - J zstar ≤ δ zB + (J zB - J zstar) := by
+  have h1 := hlo zhat
+  have h2 := hhi zB
+  linarith
+
+/-- An upper bound above the threshold is compatible with acceptability. -/
+theorem upper_excess_not_refutation (U τ : ℝ) (h : τ < U) : ∃ J : ℝ, J ≤ U ∧ J ≤ τ :=
+  ⟨τ, le_of_lt h, le_refl τ⟩
+
+end SelectionDecomposition
+
 end SGC.Bridge.NoGo
