@@ -240,9 +240,11 @@ Two certificates that a learner can hold for a whole task family after a one-tim
 **Information certificate (P20).** For any block-level comparator `Ubar : B → α → ℝ` and any pointwise
 deviation bound `dev x ≥ |U x a − Ubar (z x) a|`, the regret floor at the given utilities satisfies
 `Σ_x μ x · U x (astar x) − Σ_b blockU b (sopt b) ≤ 2 Σ_x μ x · dev x`.
-Taking `Ubar` to be the coarse model's prediction and `dev` the within-block deviation of the true
-horizon-`n` utilities, bounded through the operator norms of `(1−P)K^n P` and `(1−P)K^n(1−P)`
-(computed once), gives a valid, horizon-indexed information certificate at coarse cost per task.
+Taking `Ubar` to be the **projected true utility** `P K^n u` (block means of the true horizon-`n`
+utilities — *not* the coarse model's prediction, whose error is the planner certificate's business) and
+`dev` the within-block deviation `(1−P)K^n u`, bounded through the operator norms of `(1−P)K^n P` and
+`(1−P)K^n(1−P)` (computed once), gives a valid, horizon-indexed information certificate at coarse cost
+per task; the learner never computes the comparator.
 
 **Estimated-margin certificate (P19).** If the *estimated* values have margin `m̂` at `â` and all contrast
 errors are below `m̂`, then `â` is truly optimal: the planner's decision in that block costs nothing.
@@ -353,14 +355,22 @@ query interface and budget produce, and must output a decision admissible in the
 If two environments produce identical evidence but have disjoint admissible sets, no deterministic
 learner is sound in both (`no_sound_learner_of_indistinguishable`). If the learner may *abstain* —
 an output that is always admissible but carries a cost — then on indistinguishable environments with
-disjoint admissible sets it must abstain or err in at least one of them (`abstain_or_err`): the
-efficiency obstruction, in finite form. This is the necessity argument the archived manuscript lacked:
+disjoint admissible sets a sound learner returns abstention on `E₁`, hence (same evidence) on `E₂` as
+well (`abstain_or_err`): forced abstention in *both*. Abstention cost and admissibility are supplied by
+the application, not by the theorem; a quantitative efficiency obstruction needs them explicit. This is the necessity argument the archived manuscript lacked:
 it covers every learner with that evidence, not one simulator.
 
-**Investment certificate (P26).** For an acquisition package deployed over a task sequence, if a lower
-bound on realized savings exceeds an upper bound on acquisition plus maintenance cost, the package
-pays. The certificate is one-directional by construction: its failure means "not justified by this
-evidence", not "worthless".
+**Investment certificate (P26).** For an acquisition package deployed over a task sequence `s` (a
+`Finset` of *deployment occurrences*, so repeated task types are counted each time), if a lower bound
+on realized savings — relative to one fixed baseline, decision loss included — exceeds an upper bound
+on acquisition plus maintenance cost, the package pays. Individual savings may be negative. The
+certificate is one-directional by construction: its failure means "not justified by this evidence",
+not "worthless".
+
+**Margin-subtracted planner bound (P27).** With one-sided pairwise contrast-error bounds
+`(v a − v̂ a) − (v â − v̂ â) ≤ c a`, the planner's regret against `a` is at most
+`max 0 (c a − (v̂ â − v̂ a))`: pair-specific, one-sided, and crediting the estimated margin even when it
+is too small to certify zero regret (P19 is the case `c a < m̂`).
 -/
 
 section Indistinguishability
@@ -405,5 +415,19 @@ theorem investment_pays {ι : Type*} (s : Finset ι) (saving saving_lo : ι → 
   linarith
 
 end Investment
+
+section MarginSubtracted
+
+variable {α : Type*}
+
+/-- **P27.** One-sided pairwise contrast bounds give a margin-subtracted regret bound. -/
+theorem margin_subtracted_regret (v vhat : α → ℝ) (ahat : α) (c : α → ℝ)
+    (hc : ∀ a, (v a - vhat a) - (v ahat - vhat ahat) ≤ c a) (a : α) :
+    v a - v ahat ≤ max 0 (c a - (vhat ahat - vhat a)) := by
+  have h := hc a
+  have : v a - v ahat ≤ c a - (vhat ahat - vhat a) := by linarith
+  exact le_trans this (le_max_right _ _)
+
+end MarginSubtracted
 
 end SGC.Bridge.NoGo

@@ -21,8 +21,11 @@ SVD-based causal-emergence framework):
   (`K Kᵀ = Kᵀ K`), it has a *stochastic inverse* (`K Kᵀ = 1`, so it is "dynamically reversible" in the
   invertibility sense), and it is **not** detailed-balance reversible under its uniform stationary law
   (`π₀ K₀₁ = 1/3 ≠ 0 = π₁ K₁₀`). "Directed ⇒ non-normal" and "invertible ⇒ reversible" are both false.
-* **Exact temporal blocking composes transitions and discards nothing:** `K^b` is a transition matrix
-  on the *same* state space (row sums one), so blocking is not coarse-graining (`blocking_row_sums`).
+* **Exact temporal blocking composes transitions on the original state space:** `K^b` is a stochastic
+  matrix on the *same* state space (`blocking_row_sums`, `blocking_nonneg`), so blocking is not
+  coarse-graining. It does **not** construct a quotient, certify sufficiency, or preserve path
+  information: `cyc3 ^ 3 = 1` (`cyc3_pow_three`), so at lag 3 the cycle is indistinguishable from the
+  identity.
 -/
 
 namespace SGC.Bridge.FiniteSafeguards
