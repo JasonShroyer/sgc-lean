@@ -76,4 +76,29 @@ theorem blocking_row_sums {n : Type*} [Fintype n] [DecidableEq n] (K : Matrix n 
           apply Finset.sum_congr rfl; intro k _; rw [hK k, mul_one]
       _ = 1 := ih i
 
+
+/-!
+## Nonnegativity under blocking (the half `blocking_row_sums` does not cover)
+
+`blocking_row_sums` proves only row normalization. Entrywise nonnegativity is preserved too, so `K^b`
+is a genuine stochastic matrix. **Scope:** blocking composes transitions on the original state space;
+it does not construct a state-space quotient, does not certify information sufficiency, and does not
+preserve path information — the 3-cycle satisfies `K^3 = 1`, indistinguishable at lag 3 from the identity.
+-/
+
+theorem blocking_nonneg {n : Type*} [Fintype n] [DecidableEq n] (K : Matrix n n ℚ)
+    (hK : ∀ i j, 0 ≤ K i j) : ∀ b : ℕ, ∀ i j, 0 ≤ (K ^ b) i j := by
+  intro b
+  induction b with
+  | zero => intro i j; simp only [pow_zero, Matrix.one_apply]; split_ifs <;> norm_num
+  | succ b ih =>
+    intro i j
+    rw [pow_succ, Matrix.mul_apply]
+    exact Finset.sum_nonneg (fun k _ => mul_nonneg (ih i k) (hK k j))
+
+/-- The 3-cycle at lag 3 is the identity: temporal subsampling erases the intervening transitions. -/
+theorem cyc3_pow_three : cyc3 ^ 3 = 1 := by
+  ext i j
+  fin_cases i <;> fin_cases j <;> simp [cyc3, pow_succ, Matrix.mul_apply, Fin.sum_univ_three]
+
 end SGC.Bridge.FiniteSafeguards

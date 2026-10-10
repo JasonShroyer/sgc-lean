@@ -8,6 +8,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
+import Mathlib.Data.Set.Basic
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Max
 import Mathlib.Algebra.BigOperators.Ring.Finset
@@ -342,5 +343,67 @@ theorem regret_floor_le_contrast_deviation (z : V → B) (μ : V → ℝ) (hμ :
   linarith
 
 end SelectorAndContrast
+
+
+/-!
+## Indistinguishability no-go and the investment certificate
+
+**No-go (P25).** A learner observes an environment only through the evidence `ev E` its declared
+query interface and budget produce, and must output a decision admissible in the environment it is in.
+If two environments produce identical evidence but have disjoint admissible sets, no deterministic
+learner is sound in both (`no_sound_learner_of_indistinguishable`). If the learner may *abstain* —
+an output that is always admissible but carries a cost — then on indistinguishable environments with
+disjoint admissible sets it must abstain or err in at least one of them (`abstain_or_err`): the
+efficiency obstruction, in finite form. This is the necessity argument the archived manuscript lacked:
+it covers every learner with that evidence, not one simulator.
+
+**Investment certificate (P26).** For an acquisition package deployed over a task sequence, if a lower
+bound on realized savings exceeds an upper bound on acquisition plus maintenance cost, the package
+pays. The certificate is one-directional by construction: its failure means "not justified by this
+evidence", not "worthless".
+-/
+
+section Indistinguishability
+
+variable {Env Ev Dec : Type*}
+
+/-- **P25a.** Indistinguishable evidence with disjoint admissible sets admits no sound learner. -/
+theorem no_sound_learner_of_indistinguishable (ev : Env → Ev) (Adm : Env → Set Dec)
+    (E₁ E₂ : Env) (hev : ev E₁ = ev E₂) (hdisj : ∀ d, d ∈ Adm E₁ → d ∉ Adm E₂) :
+    ¬ ∃ learner : Ev → Dec, ∀ E, learner (ev E) ∈ Adm E := by
+  rintro ⟨learner, hsound⟩
+  have h₁ := hsound E₁
+  have h₂ := hsound E₂
+  rw [← hev] at h₂
+  exact hdisj _ h₁ h₂
+
+/-- **P25b.** With an abstention option (always admissible), a learner sound on both indistinguishable
+environments abstains in at least one of them. -/
+theorem abstain_or_err (ev : Env → Ev) (Adm : Env → Set Dec) (abstain : Dec)
+    (E₁ E₂ : Env) (hev : ev E₁ = ev E₂)
+    (hdisj : ∀ d, d ≠ abstain → d ∈ Adm E₁ → d ∉ Adm E₂)
+    (learner : Ev → Dec) (hsound : ∀ E, learner (ev E) ∈ Adm E) :
+    learner (ev E₁) = abstain := by
+  by_contra hne
+  have h₁ := hsound E₁
+  have h₂ := hsound E₂
+  rw [← hev] at h₂
+  exact hdisj _ hne h₁ h₂
+
+end Indistinguishability
+
+section Investment
+
+/-- **P26.** Lower-bounded savings over the deployed sequence exceeding upper-bounded acquisition and
+maintenance costs imply the package pays. -/
+theorem investment_pays {ι : Type*} (s : Finset ι) (saving saving_lo : ι → ℝ)
+    (hlo : ∀ t ∈ s, saving_lo t ≤ saving t) (c_acq c_maint c_acq_hi c_maint_hi : ℝ)
+    (hacq : c_acq ≤ c_acq_hi) (hmaint : c_maint ≤ c_maint_hi)
+    (hcert : c_acq_hi + c_maint_hi < ∑ t ∈ s, saving_lo t) :
+    c_acq + c_maint < ∑ t ∈ s, saving t := by
+  have := Finset.sum_le_sum hlo
+  linarith
+
+end Investment
 
 end SGC.Bridge.NoGo
