@@ -7,6 +7,7 @@ import Mathlib.Data.ZMod.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Fintype.Card
 import Mathlib.Tactic.Ring
+import Mathlib.GroupTheory.Index
 import Mathlib.Tactic.LinearCombination
 
 /-!
@@ -250,5 +251,45 @@ theorem validated_comp {β : Type*} (K : V → V → ℝ) (u : V → β) (T₁ T
   ⟨kernel_invariant_comp K T₁ T₂ hK₁ hK₂, utility_invariant_comp u T₁ T₂ hu₁ hu₂⟩
 
 end ValidatedCompose
+
+
+/-!
+## Validated masks form a subgroup; the constructed blocks are its cosets (P30)
+
+Specialize to an additive group `G` acting on itself by translation (the XOR-mask language is
+`G = Fin 8 → ZMod 2`). The set of masks under which the kernel and the utility are invariant contains
+`0`, is closed under addition (P29) and under negation (apply invariance at `x − m`), so it is an
+`AddSubgroup`. Its orbits on `G` are its cosets, hence `#blocks · |H| = |G|` (`card_mul_index`): for the
+8-bit language, `8 → 32`, `4 → 64`, `16 → 16`, `1 → 256` are theorems, not observations.
+-/
+
+section ValidatedSubgroup
+
+variable {G : Type*} [AddCommGroup G]
+
+/-- Masks under which both the kernel and the utility are translation-invariant. -/
+def validMasks {β : Type*} (K : G → G → ℝ) (u : G → β) : AddSubgroup G where
+  carrier := {m | (∀ x y, K (x + m) (y + m) = K x y) ∧ (∀ x, u (x + m) = u x)}
+  zero_mem' := by
+    refine ⟨fun x y => ?_, fun x => ?_⟩ <;> simp
+  add_mem' := by
+    rintro a b ⟨hKa, hua⟩ ⟨hKb, hub⟩
+    refine ⟨fun x y => ?_, fun x => ?_⟩
+    · rw [← add_assoc, ← add_assoc, hKb, hKa]
+    · rw [← add_assoc, hub, hua]
+  neg_mem' := by
+    rintro a ⟨hKa, hua⟩
+    refine ⟨fun x y => ?_, fun x => ?_⟩
+    · have := hKa (x + -a) (y + -a)
+      simpa using this.symm
+    · have := hua (x + -a)
+      simpa using this.symm
+
+/-- **P30 coset count.** The number of orbits (cosets) times the subgroup order is the group order. -/
+theorem validMasks_card_mul_index {β : Type*} (K : G → G → ℝ) (u : G → β) :
+    Nat.card (validMasks K u) * (validMasks K u).index = Nat.card G :=
+  AddSubgroup.card_mul_index _
+
+end ValidatedSubgroup
 
 end SGC.Bridge.CompositionRigidity
