@@ -158,6 +158,57 @@ theorem defectP_one (P K : R) (hP : P * P = P) : defectP P K 1 = 0 := by
     _ = P * K * P - P * K * (P * P) := by noncomm_ring
     _ = 0 := by rw [hP, sub_self]
 
+/-- **Mixing regime.** Under strict within-block contraction `‖(1−P)K(1−P)‖ ≤ 1 − γ`, the k-step reverse leakage is
+bounded uniformly in `k` by `‖PK(1−P)‖ / γ` (a geometric series in place of the linear growth of `rev_leak_bound`). -/
+theorem rev_leak_bound_mixing (P K : R) (hP : P * P = P) (hPKP : ∀ k, ‖P * K ^ k * P‖ ≤ 1)
+    {γ : ℝ} (hγ : 0 < γ) (hγ1 : γ ≤ 1) (hQKQ : ‖(1 - P) * K * (1 - P)‖ ≤ 1 - γ) (k : ℕ) :
+    ‖P * K ^ k * (1 - P)‖ ≤ ‖P * K * (1 - P)‖ / γ := by
+  have hε : 0 ≤ ‖P * K * (1 - P)‖ := norm_nonneg _
+  induction k with
+  | zero =>
+    have : P * K ^ 0 * (1 - P) = 0 := by
+      rw [pow_zero, mul_one]
+      calc P * (1 - P) = P - P * P := by noncomm_ring
+        _ = 0 := by rw [hP, sub_self]
+    rw [this, norm_zero]; positivity
+  | succ k ih =>
+    rw [rev_leak_step P K hP k]
+    have hA : ‖(P * K ^ k * P) * (P * K * (1 - P))‖ ≤ 1 * ‖P * K * (1 - P)‖ :=
+      le_trans (norm_mul_le _ _) (mul_le_mul_of_nonneg_right (hPKP k) hε)
+    have hB : ‖(P * K ^ k * (1 - P)) * ((1 - P) * K * (1 - P))‖ ≤ (‖P * K * (1 - P)‖ / γ) * (1 - γ) :=
+      le_trans (norm_mul_le _ _) (mul_le_mul ih hQKQ (norm_nonneg _) (by positivity))
+    have hsum := norm_add_le ((P * K ^ k * P) * (P * K * (1 - P))) ((P * K ^ k * (1 - P)) * ((1 - P) * K * (1 - P)))
+    have hid : ‖P * K * (1 - P)‖ / γ * (1 - γ) = ‖P * K * (1 - P)‖ / γ - ‖P * K * (1 - P)‖ := by
+      first | (field_simp; ring) | field_simp | ring
+    linarith
+
+/-- **P32 (mixing regime, horizon-linear).** `‖B_n P‖ ≤ n · ‖PK(1−P)‖ · ‖(1−P)KP‖ / γ` when the within-block
+propagator contracts at rate `γ`. Complementary to `defectP_second_order`: quadratic in the horizon with no mixing
+assumption, linear in the horizon with one; the minimum of the two is valid. -/
+theorem defectP_mixing (P K : R) (hP : P * P = P) (hPKP : ∀ k, ‖P * K ^ k * P‖ ≤ 1)
+    {γ : ℝ} (hγ : 0 < γ) (hγ1 : γ ≤ 1) (hQKQ : ‖(1 - P) * K * (1 - P)‖ ≤ 1 - γ) (n : ℕ) :
+    ‖defectP P K n‖ ≤ (n : ℝ) * (‖P * K * (1 - P)‖ * ‖(1 - P) * K * P‖) / γ := by
+  have hεr : 0 ≤ ‖P * K * (1 - P)‖ := norm_nonneg _
+  have hεf : 0 ≤ ‖(1 - P) * K * P‖ := norm_nonneg _
+  induction n with
+  | zero =>
+    have : defectP P K 0 = 0 := by
+      unfold defectP; rw [pow_zero, pow_zero, mul_one, one_mul, sub_self, zero_mul]
+    rw [this, norm_zero]; simp
+  | succ k ih =>
+    rw [defectP_step P K hP k]
+    have hPKP1 : ‖P * K * P‖ ≤ 1 := by simpa using hPKP 1
+    have hA : ‖defectP P K k * (P * K * P)‖ ≤ ‖defectP P K k‖ * 1 :=
+      le_trans (norm_mul_le _ _) (mul_le_mul_of_nonneg_left hPKP1 (norm_nonneg _))
+    have hB : ‖(P * K ^ k * (1 - P)) * ((1 - P) * K * P)‖ ≤ (‖P * K * (1 - P)‖ / γ) * ‖(1 - P) * K * P‖ :=
+      le_trans (norm_mul_le _ _) (mul_le_mul_of_nonneg_right (rev_leak_bound_mixing P K hP hPKP hγ hγ1 hQKQ k) hεf)
+    have hsum := norm_add_le (defectP P K k * (P * K * P)) ((P * K ^ k * (1 - P)) * ((1 - P) * K * P))
+    have hid : ((k : ℝ) + 1) * (‖P * K * (1 - P)‖ * ‖(1 - P) * K * P‖) / γ
+        = (k : ℝ) * (‖P * K * (1 - P)‖ * ‖(1 - P) * K * P‖) / γ + ‖P * K * (1 - P)‖ / γ * ‖(1 - P) * K * P‖ := by
+      first | (field_simp; ring) | field_simp | ring
+    push_cast
+    linarith
+
 end
 
 end SGC.Bridge.SecondOrderDefect
